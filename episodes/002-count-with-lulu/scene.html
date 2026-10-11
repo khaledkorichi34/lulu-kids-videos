@@ -1,0 +1,88 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 2 - Count with Lulu: 1 to 5.  Title, one scene per number, finale. */
+const SC=[0,4,9.5,15.5,22,29,36.5,43.5], DUR=43.5;
+const COL=['#FF5D8F','#FF9F1C','#19B8A6','#7B5CFF','#3FA9F5'];
+const NAMES=['1 sun','2 frogs','3 bunnies','4 flowers','5 bees'];
+const T0=1.3, STEP=.75;                       // first thing appears; gap between things
+
+function badge(x,y,k,col,lt,t0){
+  const u=prog(lt,t0+.1,t0+.4);if(u<=0)return '';
+  return `<g transform="translate(${x},${y}) scale(${back(u)})"><circle r="27" fill="#fff" stroke="${col}" stroke-width="5"/><text y="13" text-anchor="middle" font-size="36" fill="#2D2A6E">${k+1}</text></g>`;
+}
+function hearts(lt,t0){
+  let s='';
+  for(let k=0;k<9;k++){const q=lt-(t0+k*.4);if(q>0){const y=610-q*120,x=110+k*132+25*Math.sin(q*2+k),o=clamp((y-50)/140)*clamp(q*3)*.9;
+    if(y>40)s+=heart(x,y,1+(k%3)*.25,['#FF5D8F','#FF9F1C','#FFFFFF'][k%3],o);}}
+  return s;
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={};
+  if(i===0){
+    const j=jumps(lt,[1.4,2.4],.6,30);
+    chars=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:20+20*Math.sin(lt*9),eye:blink(t,0)}),{s:1.1,sx:j.sx,sy:j.sy});
+    pops=pop('Count with',640,128,84,'#2D2A6E',lt,.3)+pop(LULU,640,262,140,'#FF5D8F',lt,.7,-3);
+    for(let k=0;k<5;k++)pops+=pop(String(k+1),400+k*120,676,92,COL[k],lt,1.5+k*.3,(k%2?4:-4));
+  }else if(i<=5){
+    const N=i, col=COL[N-1], tc=T0+(N-1)*STEP+1.0;      // tc = moment everything has been counted
+    o={noSun:true,noFlowers:true};
+    const grow=k=>back(prog(lt,T0+k*STEP,T0+k*STEP+.35))*(lt>T0+k*STEP?1:0);
+    const cheer=k=>jumps(lt,[tc+.2+k*.08],.55,45);
+    const lj=jumps(lt,[tc+.2],.55,12);   // small hop: a bigger one would bump into the big number
+    chars=shadow(250,522,56,-lj.y)+place(250,520+lj.y,duck({eye:blink(t,0),wing:lt>tc?30*Math.abs(Math.sin(lt*10)):0}),{s:.95,sx:lj.sx,sy:lj.sy});
+    pops=pop(String(N),250,318,290,col,lt,.3,-4);
+    for(let k=0;k<N;k++){
+      const g=grow(k);if(g<=0)continue;
+      const j=cheer(k), tk=T0+k*STEP;
+      if(N===1){
+        props+=`<g transform="translate(850,${300+j.y}) scale(${1.7*g})">${sun(t,0,0)}</g>`;
+        pops+=badge(850,110,k,col,lt,tk);
+      }else if(N===2){
+        const x=[720,1010][k];
+        chars+=shadow(x,522,70,-j.y)+place(x,520+j.y,frog({eye:blink(t,k*1.1)}),{s:1.25*g,sx:j.sx,sy:j.sy});
+        pops+=badge(x,338,k,col,lt,tk);
+      }else if(N===3){
+        const x=[620,840,1060][k];
+        chars+=shadow(x,522,50,-j.y)+place(x,520+j.y,bunny({eye:blink(t,k*.9),ear:(-j.y/45)*10}),{s:g,sx:j.sx,sy:j.sy});
+        pops+=badge(x,246,k,col,lt,tk);
+      }else if(N===4){
+        const x=[590,755,920,1085][k], c=['#FF5D8F','#FFE14D','#B58CFF','#FF9F1C'][k];
+        props+=flower(x,535+j.y,150,c,t,k,g,k===1?'#FF8C1A':'#FFB703');
+        pops+=badge(x,300,k,col,lt,tk);
+      }else{
+        const P=[[610,250],[850,215],[1090,250],[730,405],[970,405]][k], y=P[1]+10*Math.sin(t*3+k)+j.y*.6;
+        chars+=place(P[0],y,bee({flap:Math.sin(t*55+k)}),{s:g});
+        pops+=badge(P[0],P[1]-98,k,col,lt,tk);
+      }
+    }
+    cap=caption(NAMES[N-1],lt,tc-.2);
+  }else{
+    const j=jumps(lt,[3.5,4.6,5.7],.6,35);
+    props=hearts(lt,3.2);
+    chars=shadow(580,522,66,-j.y)+place(580,520+j.y,duck({wing:25+25*Math.sin(lt*10),eye:blink(t,0)}),{s:1.1,sx:j.sx,sy:j.sy});
+    for(let k=0;k<5;k++)pops+=pop(String(k+1),200+k*190,235,170,COL[k],lt,.4+k*.5,(k%2?5:-5));
+    cap=caption('Great counting!',lt,3.2);
+  }
+  svg.innerHTML=bg(t,0,'',o)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(130,110,1.3,.95)+sun(3,1185,95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(330,662,150)+place(322,658,duck({wing:22}),{s:2.15});
+  s+=label('1',640,330,250,COL[0],-6)+label('2',810,330,250,COL[1],4)+label('3',985,330,250,COL[2],-4);
+  s+=label('Count with',820,460,70,'#2D2A6E')+label(LULU,820,610,150,'#FF5D8F',-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

@@ -1,0 +1,18 @@
+{
+  "number": 1,
+  "slug": "lulu-the-little-duck",
+  "format": "story",
+  "ages": "3-5",
+  "title": "Lulu the Little Duck | Short Story for Toddlers",
+  "description": "Meet Lulu the little duck! Lulu says hello to a jumping frog, a hopping bunny and a buzzing bee, and then they all play together under a rainbow.\n\nA gentle short story for toddlers and preschoolers, with simple words to read along:\nJump, jump, jump! Hop, hop, hop! Buzz, buzz, buzz!\n\nGood night, Lulu.",
+  "duration": 47,
+  "seed": 1,
+  "lullaby_from": 40,
+  "sfx": [
+    {"t": 13.6, "type": "boing_low"}, {"t": 14.7, "type": "boing_low"}, {"t": 15.8, "type": "boing_low"},
+    {"t": 20.6, "type": "boing_high"}, {"t": 21.7, "type": "boing_high"}, {"t": 22.8, "type": "boing_high"},
+    {"t": 27.6, "type": "buzz"}, {"t": 28.7, "type": "buzz"}, {"t": 29.8, "type": "buzz"},
+    {"t": 32.6, "type": "sparkle"}, {"t": 33.6, "type": "sparkle"}
+  ],
+  "check_times": [20.95, 23.15, 36.3]
+}

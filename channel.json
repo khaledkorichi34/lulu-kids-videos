@@ -1,0 +1,14 @@
+{
+  "audience_ages": "3-10",
+  "made_for_kids": true,
+  "timezone": "Europe/Madrid",
+  "videos_per_day": 3,
+  "thumbnails_enabled": false,
+  "make": {
+    "team_id": 1232334,
+    "organization_id": 2827705,
+    "publish_scenario_id": 9952264,
+    "thumbnail_scenario_id": 9952265,
+    "youtube_connection_id": 14659272
+  }
+}

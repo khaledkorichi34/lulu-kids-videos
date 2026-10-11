@@ -1,0 +1,24 @@
+[
+  {
+    "number": 1,
+    "slug": "lulu-the-little-duck",
+    "format": "story",
+    "ages": "3-5",
+    "title": "Lulu the Little Duck | Short Story for Toddlers",
+    "topic": "Lulu meets a frog (jump), a bunny (hop) and a bee (buzz); they play under a rainbow; good night",
+    "cast": ["duck", "frog", "bunny", "bee"],
+    "videoId": "ybTM6FCpv6E",
+    "published": "2026-10-11"
+  },
+  {
+    "number": 2,
+    "slug": "count-with-lulu-1-to-5",
+    "format": "learning",
+    "ages": "3-6",
+    "title": "Count with Lulu: 1 to 5 | Counting for Kids",
+    "topic": "Counting 1 to 5: 1 sun, 2 frogs, 3 bunnies, 4 flowers, 5 bees",
+    "cast": ["duck", "frog", "bunny", "bee"],
+    "videoId": "e8fYf3jUxMs",
+    "published": "2026-10-11"
+  }
+]

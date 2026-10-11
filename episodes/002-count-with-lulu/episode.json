@@ -1,0 +1,126 @@
+{
+  "number": 2,
+  "slug": "count-with-lulu-1-to-5",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "Count with Lulu: 1 to 5 | Counting for Kids",
+  "description": "Count from 1 to 5 with Lulu the little duck!\n\n1 sun, 2 frogs, 3 bunnies, 4 flowers and 5 bees. Count out loud together as each one appears.\n\nA short, gentle counting video for children aged 3 to 6.",
+  "duration": 43.5,
+  "seed": 2,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 5.3,
+      "type": "pop"
+    },
+    {
+      "t": 6.1,
+      "type": "ding"
+    },
+    {
+      "t": 10.8,
+      "type": "pop"
+    },
+    {
+      "t": 11.55,
+      "type": "pop"
+    },
+    {
+      "t": 12.35,
+      "type": "ding"
+    },
+    {
+      "t": 16.8,
+      "type": "pop"
+    },
+    {
+      "t": 17.55,
+      "type": "pop"
+    },
+    {
+      "t": 18.3,
+      "type": "pop"
+    },
+    {
+      "t": 19.1,
+      "type": "ding"
+    },
+    {
+      "t": 23.3,
+      "type": "pop"
+    },
+    {
+      "t": 24.05,
+      "type": "pop"
+    },
+    {
+      "t": 24.8,
+      "type": "pop"
+    },
+    {
+      "t": 25.55,
+      "type": "pop"
+    },
+    {
+      "t": 26.35,
+      "type": "ding"
+    },
+    {
+      "t": 30.3,
+      "type": "pop"
+    },
+    {
+      "t": 31.05,
+      "type": "pop"
+    },
+    {
+      "t": 31.8,
+      "type": "pop"
+    },
+    {
+      "t": 32.55,
+      "type": "pop"
+    },
+    {
+      "t": 33.3,
+      "type": "pop"
+    },
+    {
+      "t": 34.1,
+      "type": "ding"
+    },
+    {
+      "t": 36.9,
+      "type": "pop"
+    },
+    {
+      "t": 37.4,
+      "type": "pop"
+    },
+    {
+      "t": 37.9,
+      "type": "pop"
+    },
+    {
+      "t": 38.4,
+      "type": "pop"
+    },
+    {
+      "t": 38.9,
+      "type": "pop"
+    },
+    {
+      "t": 39.7,
+      "type": "sparkle"
+    }
+  ],
+  "check_times": [
+    3.2,
+    6.8,
+    13.05,
+    19.8,
+    27.05,
+    34.8,
+    40.5
+  ]
+}
