@@ -20,5 +20,16 @@
     "cast": ["duck", "frog", "bunny", "bee"],
     "videoId": "e8fYf3jUxMs",
     "published": "2026-10-11"
+  },
+  {
+    "number": 3,
+    "slug": "colours-with-lulu",
+    "format": "learning",
+    "ages": "3-6",
+    "title": "Colours with Lulu | Learn Colours for Kids",
+    "topic": "Five colours: red apple, green frog, blue bird, orange carrot, yellow duck (Lulu); all five together at the end",
+    "cast": ["duck", "frog", "bird", "bunny"],
+    "videoId": "XEmRwKyIqFc",
+    "published": "2026-10-11"
   }
 ]

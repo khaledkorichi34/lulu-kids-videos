@@ -118,6 +118,31 @@ function carrot(x,y,s){
   <path d="M-8,-46 L4,-46 M-4,-30 L6,-30" stroke="#D96B00" stroke-width="3" stroke-linecap="round"/></g>`;
 }
 
+// bird({eye,wing,col,dark,belly}): small round bird facing right (blue unless colours are given)
+function bird(o={}){
+  const e=o.eye==null?1:o.eye, wing=o.wing||0, c=o.col||'#2979E8', d=o.dark||'#1B5FC4', b=o.belly||'#CFE6FF';
+  return `
+  <rect x="-19" y="-30" width="7" height="27" rx="3" fill="#FF8C1A"/><rect x="11" y="-30" width="7" height="27" rx="3" fill="#FF8C1A"/>
+  <ellipse cx="-11" cy="-4" rx="15" ry="6.5" fill="#FF8C1A"/><ellipse cx="19" cy="-4" rx="15" ry="6.5" fill="#FF8C1A"/>
+  <path d="M-44,-94 Q-106,-114 -98,-62 Q-74,-52 -48,-56 Z" fill="${d}"/>
+  <ellipse cx="0" cy="-72" rx="58" ry="50" fill="${c}"/>
+  <ellipse cx="10" cy="-56" rx="36" ry="27" fill="${b}"/>
+  <path d="M26,-158 Q20,-184 37,-170 Q44,-188 48,-160 Z" fill="${c}"/>
+  <circle cx="34" cy="-126" r="38" fill="${c}"/>
+  <g transform="rotate(${wing} 12 -80)"><ellipse cx="-14" cy="-72" rx="30" ry="20" fill="${d}"/></g>
+  <path d="M68,-133 Q100,-124 100,-120 Q100,-116 68,-107 Z" fill="#FF9F1C"/>
+  <circle cx="34" cy="-106" r="8.5" fill="#FFA3B1" opacity=".95"/>
+  <g transform="translate(50,-132) scale(1,${e})"><circle r="8" fill="#14213d"/><circle cx="2.6" cy="-2.8" r="2.8" fill="#fff"/></g>`;
+}
+// apple(x,y,s): red apple standing on the ground (about 150 tall with its stalk)
+function apple(x,y,s){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M2,-108 Q4,-134 18,-146" stroke="#7A4B21" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <ellipse cx="38" cy="-134" rx="24" ry="11" fill="#3FA34D" transform="rotate(-22 38 -134)"/>
+  <ellipse cx="-25" cy="-62" rx="50" ry="58" fill="#E63946"/><ellipse cx="25" cy="-62" rx="50" ry="58" fill="#E63946"/>
+  <ellipse cx="-42" cy="-84" rx="10" ry="19" fill="#fff" opacity=".35" transform="rotate(22 -42 -84)"/></g>`;
+}
+
 /* ---------- background ---------- */
 const STARS=[];(function(){let s=7;const r=()=>(s=(s*16807)%2147483647)/2147483647;for(let i=0;i<46;i++)STARS.push([r()*1280,r()*350+12,1.6+r()*2.8,r()*6.28]);})();
 function sun(t,x,y){
@@ -136,7 +161,7 @@ function moon(x,y){
 function cloud(x,y,s,o){
   return `<g transform="translate(${x},${y}) scale(${s})" opacity="${o}" fill="#fff"><ellipse cx="0" cy="10" rx="70" ry="24"/><circle cx="-30" cy="-2" r="26"/><circle cx="6" cy="-16" r="34"/><circle cx="40" cy="0" r="24"/></g>`;
 }
-// bg(t, night 0..1, extra drawn behind the hills, {noSun, noFlowers})
+// bg(t, night 0..1, extra drawn behind the hills, {noSun, noFlowers, noClouds})
 function bg(t,n,behind='',o={}){
   let s=`<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${mix('#5EC2FF','#14153F',n)}"/><stop offset="1" stop-color="${mix('#DDF5FF','#4A4FA3',n)}"/></linearGradient><clipPath id="beeclip"><ellipse rx="46" ry="34"/></clipPath></defs>`;
   s+=`<rect width="1280" height="720" fill="url(#sky)"/>`;
@@ -144,7 +169,7 @@ function bg(t,n,behind='',o={}){
   if(!o.noSun)s+=sun(t,1150,100+n*560);
   if(n>0) s+=moon(1150,660-n*560);
   const co=1-n*.75;
-  s+=cloud(((200+t*14)%1500)-110,120,1.1,co)+cloud(((760+t*9)%1500)-110,74,.8,co)+cloud(((1180+t*11)%1500)-110,200,.9,co);
+  if(!o.noClouds)s+=cloud(((200+t*14)%1500)-110,120,1.1,co)+cloud(((760+t*9)%1500)-110,74,.8,co)+cloud(((1180+t*11)%1500)-110,200,.9,co);
   s+=behind;
   s+=`<path d="M0,440 Q300,330 640,410 T1280,400 L1280,720 L0,720Z" fill="${mix('#9ADB6F','#3E6B5A',n)}"/>`;
   s+=`<path d="M0,500 Q380,440 760,490 T1280,470 L1280,720 L0,720Z" fill="${mix('#6CC24A','#2F5A4C',n)}"/>`;

@@ -1,0 +1,115 @@
+{
+  "number": 3,
+  "slug": "colours-with-lulu",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "Colours with Lulu | Learn Colours for Kids",
+  "description": "Learn five colours with Lulu the little duck!\n\nA red apple, a green frog, a blue bird, an orange carrot and a yellow duck. Say each colour out loud together.\n\nA short, gentle colours video for children aged 3 to 6.",
+  "duration": 44.5,
+  "seed": 3,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.7,
+      "type": "sparkle"
+    },
+    {
+      "t": 4.9,
+      "type": "pop"
+    },
+    {
+      "t": 6.1,
+      "type": "ding"
+    },
+    {
+      "t": 8.7,
+      "type": "boing_low"
+    },
+    {
+      "t": 11.4,
+      "type": "pop"
+    },
+    {
+      "t": 12.6,
+      "type": "ding"
+    },
+    {
+      "t": 15.2,
+      "type": "boing_low"
+    },
+    {
+      "t": 17.9,
+      "type": "pop"
+    },
+    {
+      "t": 19.1,
+      "type": "ding"
+    },
+    {
+      "t": 21.7,
+      "type": "boing_high"
+    },
+    {
+      "t": 24.4,
+      "type": "pop"
+    },
+    {
+      "t": 25.6,
+      "type": "ding"
+    },
+    {
+      "t": 28.2,
+      "type": "boing_high"
+    },
+    {
+      "t": 30.9,
+      "type": "pop"
+    },
+    {
+      "t": 32.8,
+      "type": "ding"
+    },
+    {
+      "t": 34.7,
+      "type": "boing_high"
+    },
+    {
+      "t": 37.5,
+      "type": "pop"
+    },
+    {
+      "t": 38.1,
+      "type": "pop"
+    },
+    {
+      "t": 38.7,
+      "type": "pop"
+    },
+    {
+      "t": 39.3,
+      "type": "pop"
+    },
+    {
+      "t": 39.9,
+      "type": "pop"
+    },
+    {
+      "t": 40.8,
+      "type": "sparkle"
+    }
+  ],
+  "check_times": [
+    1.7,
+    3.2,
+    6.6,
+    9.0,
+    15.5,
+    22.0,
+    28.5,
+    32.3,
+    35.0,
+    39.6,
+    40.4,
+    41.75
+  ]
+}

@@ -1,0 +1,97 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 3 - Colours with Lulu.  Title, one scene per colour (red, green, blue, orange, yellow), finale. */
+const SC=[0,4.5,11,17.5,24,30.5,37,44.5], DUR=44.5;
+const NAVY='#2D2A6E';
+const WORD=['Red','Green','Blue','Orange','Yellow'];
+const COL=['#E63946','#2FA84A','#2979E8','#FF8C1A','#FFC400'];
+const CAP=['A red apple','A green frog','A blue bird','An orange carrot','A yellow duck'];
+const TW=.4, TO=1.6, TC=2.8, TJ=4.2;          // word, thing, caption, hop (time inside a colour scene)
+
+const dot=(x,y,r,c,g)=>g>0?`<g transform="translate(${x},${y}) scale(${g})"><circle r="${r}" fill="${c}" stroke="#fff" stroke-width="6"/></g>`:'';
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.35)):0;
+// two small clouds parked at the sides, so the big word in the middle stays on clear sky
+const sideClouds=t=>cloud(125+10*Math.sin(t*.3),96,.9,.95)+cloud(1150+12*Math.sin(t*.25+1),122,1,.95);
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',sky='',o={noClouds:true};
+  if(i===0){
+    const j=jumps(lt,[1.4,2.4],.6,30);
+    sky=cloud(150+10*Math.sin(t*.3),104,1,.95);
+    chars=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:20+20*Math.sin(lt*9),eye:blink(t,0)}),{s:1.1,sx:j.sx,sy:j.sy});
+    pops=pop('Colours with',640,128,84,NAVY,lt,.3)+pop(LULU,640,262,140,'#FF5D8F',lt,.7,-3);
+    for(let k=0;k<5;k++)pops+=dot(400+k*120,652,38,COL[k],grow(lt,1.6+k*.3));
+  }else if(i<=5){
+    const N=i-1, col=COL[N];
+    o={noSun:true,noFlowers:true,noClouds:true};
+    sky=sideClouds(t);
+    const g=grow(lt,TO), j=jumps(lt,[TJ],.6,N===1?45:35);
+    // the colour word with a paint stripe under it
+    const bw=360*eout(prog(lt,TW+.25,TW+.7));
+    pops=pop(WORD[N],640,150,140,col,lt,TW);
+    if(bw>0)pops+=`<rect x="${640-bw/2}" y="203" width="${bw}" height="26" rx="13" fill="${col}" stroke="#fff" stroke-width="5"/>`;
+    // Lulu watches from the left (in the yellow scene she walks to the middle: she is the yellow one)
+    const lj=jumps(lt,[TJ+.1],.55,12), flapping=lt>TJ?30*Math.abs(Math.sin(lt*10)):0;
+    if(N<4){
+      chars=shadow(230,522,56,-lj.y)+place(230,520+lj.y,duck({eye:blink(t,0),wing:flapping}),{s:.95,sx:lj.sx,sy:lj.sy});
+    }
+    if(g<=0){
+      // the thing has not appeared yet (a scale of 0 must not be passed to place())
+    }else if(N===0){
+      props=shadow(830,524,74,-j.y)+place(830,522+j.y,apple(0,0,1),{s:1.35*g,sx:j.sx,sy:j.sy,rot:lt>TJ+.75?3*Math.sin((lt-TJ)*3):0});
+    }else if(N===1){
+      chars+=shadow(830,522,84,-j.y)+place(830,520+j.y,frog({eye:blink(t,1.1)}),{s:1.6*g,sx:j.sx,sy:j.sy});
+    }else if(N===2){
+      chars+=shadow(830,522,62,-j.y)+place(830,520+j.y,bird({eye:blink(t,.8),wing:lt>TJ?-34*Math.abs(Math.sin(lt*10)):0}),{s:1.1*g,sx:j.sx,sy:j.sy,flip:true});
+    }else if(N===3){
+      const g2=grow(lt,TO+.5), bj=jumps(lt,[TJ+.2],.6,35);
+      props=shadow(770,524,46,-j.y)+place(770,522+j.y,carrot(0,0,1),{s:1.9*g,sx:j.sx,sy:j.sy});
+      if(g2>0)chars+=shadow(1010,522,44,-bj.y)+place(1010,520+bj.y,bunny({eye:blink(t,.9),ear:(-bj.y/35)*10}),{s:.85*g2,sx:bj.sx,sy:bj.sy});
+    }
+    if(N===4){
+      const u=eio(prog(lt,1.3,2.3)), mv=(lt>1.3&&lt<2.3)?1:0, x=lerp(230,640,u), s=lerp(.95,1.15,u);
+      const bob=-mv*Math.abs(Math.sin((lt-1.3)*Math.PI*4))*8, wob=mv*Math.sin((lt-1.3)*Math.PI*4)*5;
+      const yj=jumps(lt,[TJ],.6,40);
+      chars=shadow(x,522,58*s,-yj.y-bob)+place(x,520+yj.y+bob,duck({eye:blink(t,0),wing:flapping||mv*12*Math.sin(lt*13)}),{s,sx:yj.sx,sy:yj.sy,rot:wob});
+    }
+    cap=caption(CAP[N],lt,TC);
+  }else{
+    // all five colours again, each thing under its own colour
+    o={noSun:true,noFlowers:true,noClouds:true};
+    const X=[160,400,640,880,1120];
+    for(let k=0;k<5;k++){
+      const t0=.5+k*.6, g=grow(lt,t0), j=jumps(lt,[4.3+k*.12],.6,30);
+      pops+=dot(X[k],122,60,COL[k],g)+pop(WORD[k],X[k],248,50,NAVY,lt,t0+.1);
+      if(g<=0)continue;
+      if(k===0)props+=shadow(X[k],524,52,-j.y)+place(X[k],522+j.y,apple(0,0,1),{s:.95*g,sx:j.sx,sy:j.sy});
+      if(k===1)chars+=shadow(X[k],522,62,-j.y)+place(X[k],520+j.y,frog({eye:blink(t,1.1)}),{s:1.15*g,sx:j.sx,sy:j.sy});
+      if(k===2)chars+=shadow(X[k],522,48,-j.y)+place(X[k],520+j.y,bird({eye:blink(t,.8),wing:lt>4.3?-30*Math.abs(Math.sin(lt*10)):0}),{s:.85*g,sx:j.sx,sy:j.sy});
+      if(k===3)props+=shadow(X[k],524,36,-j.y)+place(X[k],522+j.y,carrot(0,0,1),{s:1.5*g,sx:j.sx,sy:j.sy});
+      if(k===4)chars+=shadow(X[k],522,50,-j.y)+place(X[k],520+j.y,duck({eye:blink(t,0),wing:lt>4.3?30*Math.abs(Math.sin(lt*10)):0}),{s:.85*g,sx:j.sx,sy:j.sy,flip:true});
+    }
+    cap=caption('So many colours!',lt,3.8);
+  }
+  svg.innerHTML=bg(t,0,'',o)+sky+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  const L=['C','o','l','o','u','r','s'], LC=['#E63946','#FF8C1A','#FFC400','#2FA84A','#2979E8','#7B5CFF','#FF5D8F'];
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(130,110,1.3,.95)+sun(3,1185,95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(330,662,150)+place(322,658,duck({wing:22}),{s:2.15});
+  s+=label(L.map((c,k)=>`<tspan fill="${LC[k]}">${c}</tspan>`).join(''),815,345,160,'#E63946',-3);
+  s+=label('with',815,445,66,NAVY)+label(LULU,815,588,145,'#FF5D8F',-2);
+  for(let k=0;k<5;k++)s+=dot(600+k*120,664,34,COL[k],1);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
