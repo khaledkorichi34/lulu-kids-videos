@@ -288,3 +288,40 @@ function lilyPad(x,y){
   return `<ellipse cx="${x}" cy="${y+3}" rx="90" ry="17" fill="#3FA34D"/><ellipse cx="${x}" cy="${y}" rx="90" ry="15" fill="#58C063"/>
   <path d="M${x},${y} L${x+70},${y-6} L${x+80},${y+6} Z" fill="#7DD3FA"/>`;
 }
+
+/* ---------- sing-along (nursery rhymes, see toolkit/rhymes.js) ---------- */
+// rhymeTimes(RHYMES.twinkle, start, repeat, gapBeats, bpm) -> lines [{t0,t1,verse,index,words:[{txt,t0,t1}]}]
+// Uses exactly the same timing as audio.py, so the lit-up words follow the music.
+function rhymeTimes(r,start,repeat=1,gap=4,bpm){
+  const spb=60/(bpm||r.bpm);let t=start;const out=[];
+  for(let k=0;k<repeat;k++){
+    r.lines.forEach((line,li)=>{const L={t0:t,words:[],verse:k,index:li};
+      line.forEach(([txt,note,b])=>{L.words.push({txt,t0:t,t1:t+b*spb});t+=b*spb;});
+      L.t1=t;out.push(L);});
+    if(k<repeat-1)t+=gap*spb;
+  }
+  return out;
+}
+const rhymeEnd=lines=>lines[lines.length-1].t1;
+// index of the line being sung at time t (-1 before the first one)
+function currentLine(lines,t){let i=-1;lines.forEach((L,k)=>{if(t>=L.t0-.15)i=k;});return i;}
+// 1 right when a syllable starts, fading to 0: use it to make things bounce with the music
+function beatPulse(lines,t){let last=-1e9;for(const L of lines)for(const w of L.words)if(w.t0<=t)last=w.t0;return Math.exp(-(t-last)*6);}
+// karaoke(lines,t): the current line in the caption bar, sung syllables turn colour
+function karaoke(lines,t,col='#FF5D8F'){
+  let L=null;for(const l of lines)if(t>=l.t0-.6)L=l;
+  if(!L||t>L.t1+1.2)return '';
+  let spans='',plain='';
+  L.words.forEach((w,k)=>{const join=w.txt.endsWith('-'), txt=join?w.txt.slice(0,-1):w.txt, sp=(join||k===L.words.length-1)?'':' ';
+    spans+=`<tspan fill="${t>=w.t0?col:'#2D2A6E'}">${txt}${sp}</tspan>`;plain+=txt+sp;});
+  const u=prog(t,L.t0-.6,L.t0-.3), s=lerp(.85,1,back(u)), w=plain.length*30+120;
+  return `<g transform="translate(640,652) scale(${s})" opacity="${u}"><rect x="${-w/2}" y="-46" width="${w}" height="92" rx="46" fill="#fff" stroke="#FFD23F" stroke-width="6"/><text y="18" text-anchor="middle" font-size="50" xml:space="preserve">${spans}</text></g>`;
+}
+// bigStar(x,y,r,colour,rot,face,eye): rounded five-point star, optionally with a sleepy smile
+function bigStar(x,y,r,col='#FFD93B',rot=0,face=false,e=1){
+  let d='';for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,rr=k%2?r*.5:r;d+=(k?'L':'M')+(Math.cos(a)*rr).toFixed(1)+','+(Math.sin(a)*rr).toFixed(1);}
+  const f=face?`<g transform="translate(${-r*.19},${r*.04}) scale(1,${e})"><circle r="${r*.075}" fill="#7a4b00"/></g><g transform="translate(${r*.19},${r*.04}) scale(1,${e})"><circle r="${r*.075}" fill="#7a4b00"/></g>
+    <path d="M${-r*.15},${r*.2} Q0,${r*.34} ${r*.15},${r*.2}" stroke="#7a4b00" stroke-width="${r*.055}" fill="none" stroke-linecap="round"/>
+    <circle cx="${-r*.34}" cy="${r*.2}" r="${r*.085}" fill="#FF9A6B" opacity=".6"/><circle cx="${r*.34}" cy="${r*.2}" r="${r*.085}" fill="#FF9A6B" opacity=".6"/>`:'';
+  return `<g transform="translate(${x},${y}) rotate(${rot})"><path d="${d}Z" fill="${col}" stroke="${col}" stroke-width="${r*.16}" stroke-linejoin="round"/>${f}</g>`;
+}

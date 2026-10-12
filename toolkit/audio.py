@@ -5,11 +5,28 @@ plus sound effects placed at given times.
     audio.py out.wav --duration 47 --seed 3 --events '[{"t":13.6,"type":"boing_low"}]' --lullaby-from 40
 
 Effect types: boing_low, boing_high, buzz, sparkle, pop, ding
+
+Sing-along mode plays a nursery rhyme from rhymes.js instead of the generated tune:
+    audio.py out.wav --duration 76 --rhyme twinkle --bpm 92 --start 5 --repeat 2 --gap 4
 """
-import sys, json, wave, random, argparse
+import os, sys, json, wave, random, argparse
 import numpy as np
 
 SR = 44100
+NOTE = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11}
+
+
+def freq(n):
+    p, i = NOTE[n[0]], 1
+    if n[1] in "#b":
+        p += 1 if n[1] == "#" else -1
+        i = 2
+    return 440 * 2 ** ((12 * (int(n[i:]) + 1) + p - 69) / 12)
+
+
+def load_rhymes():
+    src = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "rhymes.js")).read()
+    return json.loads(src[src.index("{"):src.rindex("}") + 1])
 
 
 def bell(f, dur, vol):
@@ -66,6 +83,11 @@ def main():
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--events", default="[]")
     ap.add_argument("--lullaby-from", type=float, default=0)
+    ap.add_argument("--rhyme", default="")
+    ap.add_argument("--bpm", type=float, default=0)
+    ap.add_argument("--start", type=float, default=4)
+    ap.add_argument("--repeat", type=int, default=1)
+    ap.add_argument("--gap", type=float, default=4)
     a = ap.parse_args()
     rnd = random.Random(a.seed)
     out = np.zeros(int(SR * (a.duration + 2)))
@@ -76,6 +98,58 @@ def main():
         if i < len(out):
             out[i:j] += sig[: j - i]
 
+    if a.rhyme:
+        sing_along(a, add)
+    else:
+        generated_tune(a, rnd, add)
+
+    for ev in json.loads(a.events):
+        add(effect(ev["type"]), float(ev["t"]))
+
+    out = out[: int(SR * a.duration)]
+    n = int(SR * 1.2)
+    out[-n:] *= np.linspace(1, 0, n)
+    out = out / max(1e-9, np.abs(out).max()) * 0.8
+    with wave.open(a.out, "wb") as w:
+        w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR)
+        w.writeframes((out * 32767).astype(np.int16).tobytes())
+    print("audio: %.1fs, rms %.3f" % (a.duration, float(np.sqrt((out ** 2).mean()))))
+
+
+def sing_along(a, add):
+    """Melody on music-box bells, a soft bass that follows the tune, a short intro and a closing chord.
+    Timing matches rhymeTimes() in lib.js exactly."""
+    r = load_rhymes()[a.rhyme]
+    spb = 60 / (a.bpm or r["bpm"])
+    t, notes = a.start, []
+    for k in range(a.repeat):
+        for line in r["lines"]:
+            for _, note, b in line:
+                notes.append((t, t + b * spb, note))
+                add(bell(freq(note), b * spb, 0.24), t)
+                t += b * spb
+        if k < a.repeat - 1:
+            t += a.gap * spb
+    end = t
+    root_of = {0: 0, 4: 0, 7: 0, 5: 5, 9: 5, 2: 7, 11: 7}       # C, F or G chord under each melody note
+    bt = a.start
+    while bt < end - 0.05:
+        cur = next((n for s, e, n in notes if s <= bt + 1e-6 < e), None)
+        if cur:
+            root = root_of.get(NOTE[cur[0]], 0)
+            add(bass(130.81 * 2 ** (root / 12), 2 * spb, 0.15), bt)
+        bt += 2 * spb
+    # intro: gentle broken chords until the singing starts
+    it = 0.6
+    for k, f in enumerate([523.25, 659.25, 783.99, 659.25] * 8):
+        if it + k * spb > a.start - 0.8:
+            break
+        add(bell(f, spb, 0.11), it + k * spb)
+    for f in (523.25, 659.25, 783.99, 1046.5):
+        add(bell(f, 1.6, 0.12), end + 0.4)
+
+
+def generated_tune(a, rnd, add):
     # --- tune: major pentatonic, new key / tempo / melody for every seed ---
     tonic = 523.25 * 2 ** (rnd.choice([0, 2, -3, -5, 5]) / 12)
     ladder = [tonic * 2 ** (s / 12) for s in (0, 2, 4, 7, 9, 12, 14, 16, 19, 21)]
@@ -122,17 +196,6 @@ def main():
         for idx in (0, 2, 3, 5):
             add(bell(ladder[idx], 1.2, 0.13), a.duration - 2.4)
 
-    for ev in json.loads(a.events):
-        add(effect(ev["type"]), float(ev["t"]))
-
-    out = out[: int(SR * a.duration)]
-    n = int(SR * 1.2)
-    out[-n:] *= np.linspace(1, 0, n)
-    out = out / max(1e-9, np.abs(out).max()) * 0.8
-    with wave.open(a.out, "wb") as w:
-        w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR)
-        w.writeframes((out * 32767).astype(np.int16).tobytes())
-    print("audio: %.1fs, rms %.3f" % (a.duration, float(np.sqrt((out ** 2).mean()))))
 
 
 def h_ok(root):

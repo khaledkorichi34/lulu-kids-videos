@@ -1,0 +1,80 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script src="../../toolkit/rhymes.js"></script>
+<script>
+/* Episode 7 - Twinkle, Twinkle, Little Star (sing-along). Night on the hill; the big star pulses with
+   every note; verse 2: bunny and frog join in; then everyone falls asleep. */
+const BPM=92, START=5.0;
+const LINES=rhymeTimes(RHYMES.twinkle,START,2,4,BPM);
+const END=rhymeEnd(LINES);                 // about 70.2 s
+const DUR=76, SC=[0,DUR];
+const SPB=60/BPM;
+const V2=LINES[6].t0;                      // second verse starts
+
+const GLOW='<defs><radialGradient id="glow"><stop offset="0" stop-color="#FFF3B8" stop-opacity=".5"/><stop offset="1" stop-color="#FFF3B8" stop-opacity="0"/></radialGradient></defs>';
+function diamond(x,y,s,o){return `<path transform="translate(${x},${y}) scale(${s})" d="M0,-16 L11,0 L0,16 L-11,0Z" fill="#CFF3FF" opacity="${o}"/><path transform="translate(${x},${y}) scale(${s})" d="M0,-16 L3,0 L0,16 L-3,0Z" fill="#fff" opacity="${o}"/>`;}
+
+function render(t){
+  const n=t<3?lerp(.45,1,eio(prog(t,0,3))):1;
+  const li=currentLine(LINES,t), L=li>=0?LINES[li]:null, line=L?L.index:-1;
+  const p=t<END+.5?beatPulse(LINES,t):0;
+  const sway=t>START-.5&&t<END+.6?Math.sin(2*Math.PI*(t-START)/(2*SPB)):0;
+  const sleep=t>END+1.4;
+  let props='',chars='',sky='',pops='',cap='';
+
+  // fireflies
+  for(let k=0;k<10;k++){const x=(k*137+t*(12+k*2))%1300-10,y=440+35*Math.sin(t*.8+k*1.7)+(k%3)*22,o=.5+.5*Math.sin(t*3+k);
+    props+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="10" fill="#FFF3A0" opacity="${(o*.22).toFixed(2)}"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5" fill="#FFF3A0" opacity="${(.4+.6*o).toFixed(2)}"/>`;}
+
+  // Lulu (and in verse 2 her friends) sway with the music
+  chars=shadow(380,522,60)+place(380,520-6*p,duck({eye:blink(t,0),asleep:sleep,wing:sleep?0:12+10*sway}),{s:1.05,rot:sleep?-3:4*sway});
+  const g2=back(prog(t,V2-2.2,V2-1.6))*(t>V2-2.2?1:0);
+  if(g2>0){
+    chars+=shadow(850,522,50)+place(850,520-5*p,bunny({eye:sleep?.12:blink(t,.7),ear:6*sway}),{s:g2,rot:-4*sway});
+    chars+=shadow(1030,527,62)+place(1030,525-5*p,frog({eye:sleep?.12:blink(t,1.3)}),{s:1.1*g2,rot:4*sway});
+  }
+
+  // the big star: up higher on "Up above the world so high"
+  const up=line===2?eio(prog(t,L.t0,L.t0+1.2)):line===3?1-eio(prog(t,L.t0,L.t0+1.4)):0;
+  const sg=back(prog(t,4.3,5.0))*(t>4.3?1:0);
+  if(sg>0){
+    const sy=215-55*up, sr=70*sg*(1+.12*p);
+    sky+=GLOW+`<circle cx="640" cy="${sy}" r="${165*sg*(1+.1*p)}" fill="url(#glow)"/>`;
+    sky+=bigStar(640,sy,sr,'#FFD93B',6*Math.sin(t*1.3),true,sleep?.15:blink(t,2));
+  }
+  // diamonds on "Like a diamond in the sky", one per syllable
+  for(const Lx of LINES)if(Lx.index===3&&t>=Lx.t0&&t<Lx.t1+2.5){
+    const fade=1-prog(t,Lx.t1+1.2,Lx.t1+2.5);
+    Lx.words.forEach((w,k)=>{if(t>=w.t0){const a=-2.6+k*.85,s=back(prog(t,w.t0,w.t0+.3))*(1+.15*Math.sin(t*6+k));
+      sky+=diamond(640+175*Math.cos(a),215+120*Math.sin(a)+20,s*1.3,fade);}});
+  }
+  // a little wonder bubble on "How I wonder what you are!"
+  for(const Lx of LINES)if(Lx.index===1&&t>=Lx.t0-.2&&t<Lx.t1+.6){
+    const o=prog(t,Lx.t0-.2,Lx.t0+.3)*(1-prog(t,Lx.t1,Lx.t1+.6));
+    sky+=`<g opacity="${o}"><circle cx="452" cy="318" r="9" fill="#fff"/><circle cx="470" cy="292" r="13" fill="#fff"/><circle cx="498" cy="246" r="38" fill="#fff"/><text x="498" y="262" text-anchor="middle" font-size="46" fill="#7B5CFF">?</text></g>`;
+  }
+
+  // title, then the words of the song, then good night
+  const to=1-prog(t,3.7,4.3);
+  if(to>0)pops=`<g opacity="${to}">`+pop('Twinkle, Twinkle,',640,160,82,'#FFD23F',t,.4,-2,'#2D2A6E')+pop('Little Star',640,272,110,'#FFD23F',t,1.0,2,'#2D2A6E')+`</g>`;
+  cap=t<END+1.4?karaoke(LINES,t,'#FF5D8F'):caption('Good night, little star!',t-END,1.6);
+  if(sleep)for(let k=0;k<3;k++){let q=t-END-2-k*.9;if(q>0){q%=2.7;
+    pops+=`<text x="${470+q*22}" y="${370-q*44}" font-size="${26+q*10}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}
+
+  svg.innerHTML=bg(t,n)+props+chars+nightTint(.4*n)+sky+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,1)+nightTint(.4);
+  s+=GLOW+`<circle cx="860" cy="240" r="260" fill="url(#glow)"/>`+bigStar(860,240,125,'#FFD93B',-6,true);
+  s+=shadow(310,662,140)+place(300,658,duck({wing:20}),{s:2.0});
+  s+=label('Twinkle, Twinkle,',850,520,78,'#FFD23F',-3,'#2D2A6E')+label('Little Star',850,640,112,'#FFD23F',-2,'#2D2A6E');
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

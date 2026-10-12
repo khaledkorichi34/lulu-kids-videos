@@ -92,5 +92,22 @@
     ],
     "videoId": "OzHKY0u11aw",
     "published": "2026-10-12"
+  },
+  {
+    "number": 7,
+    "slug": "twinkle-twinkle-little-star",
+    "format": "rhyme",
+    "ages": "3-6",
+    "title": "Twinkle, Twinkle, Little Star with Lulu | Nursery Rhyme for Kids",
+    "topic": "Sing-along: Twinkle, Twinkle, Little Star (2 verses) at night; star pulses with the music; bunny and frog join; everyone sleeps",
+    "rhyme": "twinkle",
+    "cast": [
+      "duck",
+      "bunny",
+      "frog",
+      "star"
+    ],
+    "videoId": "TMRXl7wBLgM",
+    "published": "2026-10-12"
   }
 ]

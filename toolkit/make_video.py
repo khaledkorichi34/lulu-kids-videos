@@ -76,6 +76,14 @@ def sheets(paths, out, per=6):
     return made
 
 
+def rhyme_args(cfg):
+    r = cfg.get("rhyme")
+    if not r:
+        return []
+    return ["--rhyme", r["name"], "--bpm", str(r.get("bpm", 0)), "--start", str(r.get("start", 4)),
+            "--repeat", str(r.get("repeat", 1)), "--gap", str(r.get("gap", 4))]
+
+
 def main():
     if len(sys.argv) >= 6 and sys.argv[1] == "--worker":
         asyncio.run(worker(sys.argv[2], int(sys.argv[3]), int(sys.argv[4]), sys.argv[5]))
@@ -111,7 +119,7 @@ def main():
     wav = os.path.join(build, "audio.wav")
     subprocess.run([sys.executable, os.path.join(HERE, "audio.py"), wav, "--duration", str(dur),
                     "--seed", str(cfg.get("seed", 1)), "--events", json.dumps(cfg.get("sfx", [])),
-                    "--lullaby-from", str(cfg.get("lullaby_from") or 0)], check=True)
+                    "--lullaby-from", str(cfg.get("lullaby_from") or 0)] + rhyme_args(cfg), check=True)
 
     mp4 = os.path.join(build, slug + ".mp4")
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-framerate", str(FPS), "-i", os.path.join(frames, "f%05d.png"),

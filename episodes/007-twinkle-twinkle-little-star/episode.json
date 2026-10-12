@@ -1,0 +1,39 @@
+{
+  "number": 7,
+  "slug": "twinkle-twinkle-little-star",
+  "format": "rhyme",
+  "ages": "3-6",
+  "title": "Twinkle, Twinkle, Little Star with Lulu | Nursery Rhyme for Kids",
+  "description": "Sing along to Twinkle, Twinkle, Little Star with Lulu the little duck! The words light up with the music, and Lulu's friends join in for the second verse.\n\nA classic nursery rhyme (words by Jane Taylor, 1806) for children aged 3 to 6.",
+  "duration": 76,
+  "seed": 7,
+  "lullaby_from": null,
+  "rhyme": {
+    "name": "twinkle",
+    "bpm": 92,
+    "start": 5.0,
+    "repeat": 2,
+    "gap": 4
+  },
+  "sfx": [
+    {
+      "t": 4.3,
+      "type": "sparkle"
+    }
+  ],
+  "check_times": [
+    2.0,
+    4.6,
+    9.2,
+    15.5,
+    20.3,
+    26.0,
+    33.0,
+    38.5,
+    47.0,
+    57.0,
+    66.0,
+    71.5,
+    74.0
+  ]
+}
