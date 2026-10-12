@@ -1,0 +1,133 @@
+{
+  "number": 4,
+  "slug": "shapes-with-lulu",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "Shapes with Lulu | Learn Shapes for Kids",
+  "description": "Learn four shapes with Lulu the little duck!\n\nA circle, a square, a triangle and a star. Count the sides and points, then see the shapes make a little house.\n\nA short, gentle shapes video for children aged 3 to 6.",
+  "duration": 48,
+  "seed": 4,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.7,
+      "type": "sparkle"
+    },
+    {
+      "t": 4.9,
+      "type": "pop"
+    },
+    {
+      "t": 8.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 11.4,
+      "type": "pop"
+    },
+    {
+      "t": 13.7,
+      "type": "ding"
+    },
+    {
+      "t": 14.2,
+      "type": "ding"
+    },
+    {
+      "t": 14.7,
+      "type": "ding"
+    },
+    {
+      "t": 15.2,
+      "type": "ding"
+    },
+    {
+      "t": 16.8,
+      "type": "boing_high"
+    },
+    {
+      "t": 18.9,
+      "type": "pop"
+    },
+    {
+      "t": 21.2,
+      "type": "ding"
+    },
+    {
+      "t": 21.7,
+      "type": "ding"
+    },
+    {
+      "t": 22.2,
+      "type": "ding"
+    },
+    {
+      "t": 23.8,
+      "type": "boing_high"
+    },
+    {
+      "t": 25.9,
+      "type": "pop"
+    },
+    {
+      "t": 28.2,
+      "type": "ding"
+    },
+    {
+      "t": 28.7,
+      "type": "ding"
+    },
+    {
+      "t": 29.2,
+      "type": "ding"
+    },
+    {
+      "t": 29.7,
+      "type": "ding"
+    },
+    {
+      "t": 30.2,
+      "type": "ding"
+    },
+    {
+      "t": 31.8,
+      "type": "boing_high"
+    },
+    {
+      "t": 33.9,
+      "type": "pop"
+    },
+    {
+      "t": 35.8,
+      "type": "boing_low"
+    },
+    {
+      "t": 36.3,
+      "type": "pop"
+    },
+    {
+      "t": 45.6,
+      "type": "sparkle"
+    }
+  ],
+  "check_times": [
+    2.7,
+    6.3,
+    8.7,
+    9.5,
+    13.0,
+    16.0,
+    17.2,
+    21.0,
+    23.6,
+    24.3,
+    28.0,
+    30.6,
+    32.25,
+    35.0,
+    37.0,
+    39.0,
+    45.9,
+    46.2
+  ]
+}

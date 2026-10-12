@@ -6,7 +6,12 @@
     "ages": "3-5",
     "title": "Lulu the Little Duck | Short Story for Toddlers",
     "topic": "Lulu meets a frog (jump), a bunny (hop) and a bee (buzz); they play under a rainbow; good night",
-    "cast": ["duck", "frog", "bunny", "bee"],
+    "cast": [
+      "duck",
+      "frog",
+      "bunny",
+      "bee"
+    ],
     "videoId": "ybTM6FCpv6E",
     "published": "2026-10-11"
   },
@@ -17,7 +22,12 @@
     "ages": "3-6",
     "title": "Count with Lulu: 1 to 5 | Counting for Kids",
     "topic": "Counting 1 to 5: 1 sun, 2 frogs, 3 bunnies, 4 flowers, 5 bees",
-    "cast": ["duck", "frog", "bunny", "bee"],
+    "cast": [
+      "duck",
+      "frog",
+      "bunny",
+      "bee"
+    ],
     "videoId": "e8fYf3jUxMs",
     "published": "2026-10-11"
   },
@@ -28,8 +38,27 @@
     "ages": "3-6",
     "title": "Colours with Lulu | Learn Colours for Kids",
     "topic": "Five colours: red apple, green frog, blue bird, orange carrot, yellow duck (Lulu); all five together at the end",
-    "cast": ["duck", "frog", "bird", "bunny"],
+    "cast": [
+      "duck",
+      "frog",
+      "bird",
+      "bunny"
+    ],
     "videoId": "XEmRwKyIqFc",
     "published": "2026-10-11"
+  },
+  {
+    "number": 4,
+    "slug": "shapes-with-lulu",
+    "format": "learning",
+    "ages": "3-6",
+    "title": "Shapes with Lulu | Learn Shapes for Kids",
+    "topic": "Four shapes: circle (round), square (count 4 sides), triangle (count 3 sides), star (count 5 points); square + triangle + circle make a house; all four together",
+    "cast": [
+      "duck",
+      "shapes with faces"
+    ],
+    "videoId": "D22QQkV9s60",
+    "published": "2026-10-12"
   }
 ]

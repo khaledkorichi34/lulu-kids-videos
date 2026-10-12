@@ -1,0 +1,131 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 4 - Shapes with Lulu.  Title, circle, square (4 sides), triangle (3 sides), star (5 points),
+   a house made of shapes, finale. */
+const SC=[0,4.5,11,18.5,25.5,33.5,41,48], DUR=48;
+const NAVY='#2D2A6E';
+const KIND=['circle','square','triangle','star'];
+const WORD=['Circle','Square','Triangle','Star'];
+const COL=['#FF5D8F','#2979E8','#2FA84A','#FFC400'];
+const DARK=['#D9396C','#1B5FC4','#1F7F37','#F08C00'];
+const CAP=['A circle is round','A square has 4 sides','A triangle has 3 sides','A star has 5 points'];
+const CX=800, CY=395;                          // where the big shape sits
+
+// outline path of a shape centred at (x,y); r = half the size
+function spath(k,x,y,r){
+  if(k==='circle')return `M${x},${y-r} A${r},${r} 0 1 1 ${x},${y+r} A${r},${r} 0 1 1 ${x},${y-r} Z`;
+  if(k==='square')return `M${x-r},${y-r} H${x+r} V${y+r} H${x-r} Z`;
+  if(k==='triangle')return `M${x},${y-r*1.05} L${x+r*1.12},${y+r} L${x-r*1.12},${y+r} Z`;
+  let d='';for(let i=0;i<10;i++){const a=(-90+36*i)*Math.PI/180, q=i%2?r*.45:r*1.08;d+=(i?'L':'M')+(x+Math.cos(a)*q).toFixed(1)+','+(y+Math.sin(a)*q).toFixed(1)+' ';}
+  return d+'Z';
+}
+// a friendly face (eyes, smile, cheeks); s = size factor
+function face(x,y,s,e){
+  const eye=dx=>`<g transform="translate(${x+dx*s},${y}) scale(${s},${s*e})"><circle r="8" fill="#2b1d12"/><circle cx="2.6" cy="-2.8" r="2.8" fill="#fff"/></g>`;
+  return eye(-20)+eye(20)+`<path d="M${x-13*s},${y+16*s} Q${x},${y+29*s} ${x+13*s},${y+16*s}" stroke="#2b1d12" stroke-width="${4.5*s}" fill="none" stroke-linecap="round"/>`+
+    `<circle cx="${x-34*s}" cy="${y+12*s}" r="${8*s}" fill="#FF9AA2" opacity=".8"/><circle cx="${x+34*s}" cy="${y+12*s}" r="${8*s}" fill="#FF9AA2" opacity=".8"/>`;
+}
+// draw shape k: d = outline progress 0..1, f = fill 0..1, e = eye openness, fs = face size
+function shape(k,x,y,r,d,f,e,fs){
+  if(d<=0)return '';
+  const i=KIND.indexOf(k), fy=k==='triangle'?y+r*.3:(k==='star'?y+r*.05:y);
+  let s=`<path d="${spath(k,x,y,r)}" fill="${COL[i]}" fill-opacity="${f}" stroke="${DARK[i]}" stroke-width="${Math.max(6,r*.07)}" stroke-linejoin="round" pathLength="1" stroke-dasharray="1.02" stroke-dashoffset="${1-d}"/>`;
+  if(f>.5&&fs>0)s+=`<g opacity="${(f-.5)*2}">${face(x,fy,fs,e)}</g>`;
+  return s;
+}
+// numbered badge for counting sides / points
+function badge(n,x,y,col,lt,t0){
+  const u=prog(lt,t0,t0+.35);if(u<=0)return '';
+  return `<g transform="translate(${x},${y}) scale(${back(u)})"><circle r="30" fill="#fff" stroke="${col}" stroke-width="7"/><text y="14" text-anchor="middle" font-size="40" fill="${NAVY}">${n}</text></g>`;
+}
+// where the numbers go: middle of each side, or each star point
+function spots(k,r){
+  if(k==='square')return [[0,-r],[r,0],[0,r],[-r,0]];
+  if(k==='triangle')return [[r*.56+34,-r*.02-14],[0,r+2],[-r*.56-34,-r*.02-14]];
+  if(k==='star'){const p=[];for(let i=0;i<5;i++){const a=(-90+72*i)*Math.PI/180;p.push([Math.cos(a)*(r*1.08+36),Math.sin(a)*(r*1.08+36)]);}return p;}
+  return [];
+}
+// point at fraction u along an outline (measured with a hidden path; depends only on its inputs)
+const MEAS=document.createElementNS('http://www.w3.org/2000/svg','path');
+function onPath(d,u){MEAS.setAttribute('d',d);const L=MEAS.getTotalLength();return MEAS.getPointAtLength(u*L);}
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.35)):0;
+const sideClouds=t=>cloud(125+10*Math.sin(t*.3),96,.9,.95)+cloud(1150+12*Math.sin(t*.25+1),122,1,.95);
+const lulu=(x,lt,t,hop,s=.95)=>{
+  const j=jumps(lt,[hop],.55,14), w=lt>hop?30*Math.abs(Math.sin(lt*10)):0;
+  return shadow(x,522,56*s/.95,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy});
+};
+const NUM_T=[2.7,3.2,3.7,4.2,4.7];
+const CAP_T=[2.8,4.7,4.2,5.2];
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',sky='',o={noSun:true,noFlowers:true,noClouds:true};
+  if(i===0){
+    o={noClouds:true};
+    const j=jumps(lt,[1.4,2.4],.6,30);
+    sky=cloud(150+10*Math.sin(t*.3),104,1,.95);
+    chars=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:20+20*Math.sin(lt*9),eye:blink(t,0)}),{s:1.1,sx:j.sx,sy:j.sy});
+    pops=pop('Shapes with',640,128,84,NAVY,lt,.3)+pop(LULU,640,262,140,'#FF5D8F',lt,.7,-3);
+    for(let k=0;k<4;k++){const g=grow(lt,1.6+k*.3);if(g>0)pops+=`<g transform="translate(${460+k*120},652) scale(${g})">${shape(KIND[k],0,0,32,1,1,1,0)}</g>`;}
+  }else if(i<=4){
+    const N=i-1, k=KIND[N], r=N===3?118:112;
+    sky=sideClouds(t);
+    pops=pop(WORD[N],640,150,130,DARK[N],lt,.4);
+    const d=eio(prog(lt,1.0,2.2)), f=prog(lt,2.2,2.6);
+    const hop=CAP_T[N]+1.1, sj=jumps(lt,[hop+.15],.6,22);
+    // shapes hop without squash, so a circle always stays a true circle
+    props=(f>0?shadow(CX,524,r*.8*f,-sj.y):'')+`<g transform="translate(0,${sj.y})">${shape(k,CX,CY,r,d,f,blink(t,.7),1.1)}</g>`;
+    // a little pencil dot that runs along the outline while it is drawn
+    if(d>0&&d<1){const q=onPath(spath(k,CX,CY,r),d);props+=`<circle cx="${q.x}" cy="${q.y}" r="13" fill="#fff" stroke="${DARK[N]}" stroke-width="5"/>`;}
+    chars=lulu(230,lt,t,hop);
+    spots(k,r).forEach((p,n)=>{pops+=badge(n+1,CX+p[0],CY+p[1],DARK[N],lt,NUM_T[n]);});
+    cap=caption(CAP[N],lt,CAP_T[N]);
+  }else if(i===5){
+    // a house made of shapes: square walls, triangle roof, circle window
+    sky=sideClouds(t);
+    const gw=grow(lt,.4), drop=eout(prog(lt,1.6,2.3)), gc=grow(lt,2.8);
+    const hop=5.0, hj=jumps(lt,[hop+.15],.6,16);
+    let h='';
+    if(gw>0)h+=`<g transform="translate(760,510) scale(${gw}) translate(-760,-510)"><path d="M670,330 H850 V510 H670 Z" fill="${COL[1]}" stroke="${DARK[1]}" stroke-width="8" stroke-linejoin="round"/></g>`;
+    if(lt>1.6)h+=`<g transform="translate(0,${-170*(1-drop)})" opacity="${clamp(drop*3)}"><path d="M760,200 L890,332 L630,332 Z" fill="${COL[2]}" stroke="${DARK[2]}" stroke-width="8" stroke-linejoin="round"/></g>`;
+    if(gc>0)h+=`<g transform="translate(760,420) scale(${gc})"><circle r="44" fill="#FFF3B8" stroke="${DARK[0]}" stroke-width="8"/><path d="M-44,0 H44 M0,-44 V44" stroke="${DARK[0]}" stroke-width="6"/></g>`;
+    props=shadow(760,526,140)+`<g transform="translate(760,510) scale(${hj.sx},${hj.sy}) translate(-760,-510) translate(0,${hj.y})">${h}</g>`;
+    props+=flower(950,522,70,'#FF7FB0',t,1,.7)+flower(1010,522,60,'#B58CFF',t,2,.6);
+    chars=lulu(230,lt,t,hop);
+    pops=pop('square',1060,420,52,DARK[1],lt,.7)+pop('triangle',1050,262,52,DARK[2],lt,2.0)+pop('circle',505,435,52,DARK[0],lt,3.0);
+    cap=caption('Shapes make a house!',lt,3.8);
+  }else{
+    // finale: all four shapes in a row, with their names
+    const X=[180,440,700,960];
+    for(let k=0;k<4;k++){
+      const t0=.5+k*.5, g=grow(lt,t0), j=jumps(lt,[4.6+k*.12],.6,26), r=k===3?72:68;
+      if(g<=0)continue;
+      props+=shadow(X[k],380,58,-j.y)+`<g transform="translate(${X[k]},${300+j.y}) scale(${g})">${shape(KIND[k],0,0,r,1,1,blink(t,k*.6),.75)}</g>`;
+      pops+=pop(WORD[k],X[k],470,48,NAVY,lt,t0+.15);
+    }
+    chars=lulu(1150,lt,t,4.6+.5,.85);
+    cap=caption('So many shapes!',lt,3.4);
+  }
+  svg.innerHTML=bg(t,0,'',o)+sky+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  const L=['S','h','a','p','e','s'], LC=['#FF5D8F','#FF8C1A','#FFC400','#2FA84A','#2979E8','#7B5CFF'];
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(130,110,1.3,.95)+cloud(1150,100,1.1,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(330,662,150)+place(322,658,duck({wing:22}),{s:2.15});
+  s+=label(L.map((c,k)=>`<tspan fill="${LC[k]}">${c}</tspan>`).join(''),815,325,160,'#E63946',-3);
+  s+=label('with',815,452,66,NAVY)+label(LULU,815,588,145,'#FF5D8F',-2);
+  for(let k=0;k<4;k++)s+=`<g transform="translate(${640+k*115},662)">${shape(KIND[k],0,0,36,1,1,1,0)}</g>`;
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
