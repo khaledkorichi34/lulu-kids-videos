@@ -243,3 +243,48 @@ function bush(x,y,s=1){
 function sparkle(x,y,s,o=1){
   return `<path transform="translate(${x},${y}) scale(${s})" d="M0,-14 Q2,-2 14,0 Q2,2 0,14 Q-2,2 -14,0 Q-2,-2 0,-14Z" fill="#FFFFFF" opacity="${o}"/>`;
 }
+
+/* ---------- kitten, ball and pond (episode 6) ---------- */
+// kitten({eye, tail, asleep, tilt}): little orange kitten facing the viewer, origin at its feet (about 200 tall).
+// tail = sway of the tail (-1..1), tilt = head tilt in degrees, asleep = closed eyes
+function kitten(o={}){
+  const e=o.eye==null?1:o.eye, tl=o.tail||0, tilt=o.tilt||0;
+  const C='#FFA552', D='#E9822F', L='#FFE2C2';
+  const eye=x=>o.asleep
+    ?`<path d="M${x-8},-122 Q${x},-114 ${x+8},-122" stroke="#3a2a1a" stroke-width="4.5" fill="none" stroke-linecap="round"/>`
+    :`<g transform="translate(${x},-122) scale(1,${e})"><circle r="7.5" fill="#2b1d12"/><circle cx="2.4" cy="-2.6" r="2.6" fill="#fff"/></g>`;
+  return `
+  <g transform="rotate(${tl*14} 34 -26)"><path d="M34,-26 Q84,-34 80,-84 Q78,-112 96,-120" stroke="${C}" stroke-width="16" fill="none" stroke-linecap="round"/>
+  <circle cx="96" cy="-120" r="9" fill="${D}"/></g>
+  <ellipse cx="-22" cy="-6" rx="20" ry="10" fill="${C}"/><ellipse cx="22" cy="-6" rx="20" ry="10" fill="${C}"/>
+  <ellipse cx="0" cy="-46" rx="46" ry="44" fill="${C}"/>
+  <ellipse cx="0" cy="-36" rx="27" ry="27" fill="${L}"/>
+  <g transform="rotate(${tilt} 0 -80)">
+  <path d="M-46,-136 L-40,-190 L-6,-156 Z" fill="${C}"/><path d="M46,-136 L40,-190 L6,-156 Z" fill="${C}"/>
+  <path d="M-38,-148 L-36,-176 L-17,-157 Z" fill="#FFB3C7"/><path d="M38,-148 L36,-176 L17,-157 Z" fill="#FFB3C7"/>
+  <ellipse cx="0" cy="-116" rx="50" ry="44" fill="${C}"/>
+  <path d="M-10,-158 L-7,-142 M0,-160 L0,-143 M10,-158 L7,-142" stroke="${D}" stroke-width="5" stroke-linecap="round"/>
+  <ellipse cx="0" cy="-100" rx="24" ry="16" fill="${L}"/>
+  ${eye(-19)}${eye(19)}
+  <path d="M-6,-108 L6,-108 L0,-101 Z" fill="#FF7FA5"/>
+  <path d="M0,-101 Q-5,-94 -10,-97 M0,-101 Q5,-94 10,-97" stroke="#8a5a3a" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M-28,-104 L-52,-108 M-28,-98 L-52,-94 M28,-104 L52,-108 M28,-98 L52,-94" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".9"/>
+  <circle cx="-31" cy="-106" r="8" fill="#FF9AA2" opacity=".75"/><circle cx="31" cy="-106" r="8" fill="#FF9AA2" opacity=".75"/>
+  </g>`;
+}
+// ball(x,y,r,rot): red ball with a yellow stripe resting on the ground at (x,y); rot = rolling angle in degrees
+function ball(x,y,r=34,rot=0){
+  return `<g transform="translate(${x},${y-r}) rotate(${rot})">
+  <circle r="${r}" fill="#E63946"/>
+  <path d="M${-r*.97},${-r*.22} Q0,${r*.32} ${r*.97},${-r*.22}" stroke="#FFD23F" stroke-width="${r*.3}" fill="none"/>
+  <circle cx="${-r*.36}" cy="${-r*.42}" r="${r*.2}" fill="#fff" opacity=".55"/></g>`;
+}
+// pond(x,y,w): flat blue pond centred at (x,y), w = half width
+function pond(x,y,w=230){
+  return `<ellipse cx="${x}" cy="${y}" rx="${w}" ry="${w*.165}" fill="#4DB8F0"/><ellipse cx="${x}" cy="${y-3}" rx="${w*.89}" ry="${w*.126}" fill="#7DD3FA"/>`;
+}
+// lilyPad(x,y): green lily pad lying on the water
+function lilyPad(x,y){
+  return `<ellipse cx="${x}" cy="${y+3}" rx="90" ry="17" fill="#3FA34D"/><ellipse cx="${x}" cy="${y}" rx="90" ry="15" fill="#58C063"/>
+  <path d="M${x},${y} L${x+70},${y-6} L${x+80},${y+6} Z" fill="#7DD3FA"/>`;
+}

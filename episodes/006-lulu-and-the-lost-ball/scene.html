@@ -1,0 +1,113 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 6 - Lulu and the Lost Ball. Pip the kitten has lost her ball. Lulu helps her look:
+   by the flowers (a bee), behind the bush (a snail), then a frog finds it in the pond.
+   They play, and at night everyone sleeps. */
+const DUR=45, SC=[0,5,11,17,23,30,37,45];
+const NAVY='#2D2A6E', PINK='#FF5D8F', ORANGE='#F08A00', GREEN='#16A34A', PURPLE='#7B5CFF';
+const lulu=(x,lt,t,hops=[],h=30,s=1,wave=false)=>{
+  const j=jumps(lt,hops,.6,h), w=wave?20+20*Math.sin(lt*9):0;
+  return shadow(x,522,60*s,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy});
+};
+const pip=(x,lt,t,hops=[],h=30,s=1,tilt=0)=>{
+  const j=jumps(lt,hops,.6,h);
+  return shadow(x,522,54*s,-j.y)+place(x,520+j.y,kitten({eye:blink(t,1.1),tail:Math.sin(t*2.2),tilt}),{s,sx:j.sx,sy:j.sy});
+};
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',pops='',cap='';
+  switch(i){
+  case 0:{
+    chars=lulu(400,lt,t,[1.3,2.3,3.3],30,1.05,true)+pip(820,lt,t,[1.6,2.6,3.6],26,1.05)+ball(960,520,34,0);
+    pops=pop(LULU,640,160,140,PINK,lt,.4,-3)+pop('and the Lost Ball',640,236,60,NAVY,lt,1.0);
+    break;}
+  case 1:{
+    const x=lerp(-130,400,eio(prog(lt,.2,2.6))), mv=(lt>.2&&lt<2.6)?1:0;
+    const wob=mv*Math.sin(lt*13)*7, bob=-mv*Math.abs(Math.sin(lt*13))*9;
+    chars=shadow(x,522,60,-bob)+place(x,520+bob,duck({eye:blink(t,0),wing:mv*10*Math.sin(lt*13)}),{rot:wob})
+         +pip(780,lt,t,[],0,1.05,lt>3?10*Math.sin((lt-3)*2.2):0);
+    cap=lt<3.2?caption('This is Pip the kitten.',lt,.4):caption('Pip lost her red ball.',lt,3.2);
+    pops=pop('Where is it?',640,170,92,PURPLE,lt,3.4,-2);
+    break;}
+  case 2:{
+    // by the flowers: a bee comes out
+    props=flower(790,535,110,'#FF5D8F',t,4)+flower(905,548,140,'#FFE14D',t,5,1,'#FF8C1A')+flower(1015,535,95,'#B58CFF',t,6);
+    const u=prog(lt,2.4,3.4);
+    let bx=905, by=lerp(410,330,eout(u));
+    if(lt>3.4){const w=(lt-3.4)*1.6;bx=905+150*Math.sin(w);by=330+40*Math.sin(2*w);}
+    const dx=lt>3.4?Math.cos((lt-3.4)*1.6):0;
+    const beeG=place(bx,by,bee({flap:Math.sin(t*55)}),{flip:dx>0});
+    chars=(lt<3.4?beeG+props:props+beeG)+lulu(200,lt,t)+pip(390,lt,t,[],0,1,lt<2.4?-8:0);
+    props='';
+    cap=lt<2.6?caption('Is it by the flowers?',lt,.4):caption('No. Hello, bee!',lt,2.6);
+    pops=pop('Buzz!',640,170,92,ORANGE,lt,2.8,-4);
+    break;}
+  case 3:{
+    // behind the bush: a snail comes out
+    const u=eio(prog(lt,2.2,4.4)), sx=lerp(900,1110,u);
+    props=place(sx,520,snail({eye:blink(t,.4),look:Math.sin(lt*2)}),{s:.8})+bush(900,520);
+    chars=lulu(200,lt,t)+pip(390,lt,t,[],0,1,lt<2.4?8:0);
+    cap=lt<2.6?caption('Is it behind the bush?',lt,.4):caption('No. Hello, snail!',lt,2.6);
+    pops=pop('Peek!',640,170,92,GREEN,lt,3.0,3);
+    break;}
+  case 4:{
+    // the pond: the ball floats, the frog jumps and bumps it out
+    props=pond(900,546);
+    const fj=jumps(lt,[2.4],.8,120);
+    // ball: floats near the frog, then flies out in an arc to the grass
+    let bx=1040, by=548+3*Math.sin(t*3), rot=0;
+    const a=prog(lt,3.2,4.3);
+    if(a>0){bx=lerp(1040,560,a);by=lerp(548,520,a)-4*230*a*(1-a);rot=-a*540;}
+    const v=prog(lt,3.2,3.8);
+    if(v>0&&v<1)props+=`<ellipse cx="1040" cy="546" rx="${40+v*70}" ry="${9+v*9}" fill="none" stroke="#fff" stroke-width="4" opacity="${1-v}"/>`;
+    props+=lilyPad(880,543);
+    chars=lulu(200,lt,t,[4.4],30,1,lt>4.2)+pip(390,lt,t,[4.6],26)
+         +place(880,540+fj.y,frog({eye:blink(t,1.3)}),{s:1.05,sx:fj.sx,sy:fj.sy})+ball(bx,by,30,rot);
+    cap=lt<3.6?caption('Look! In the pond!',lt,.4):caption('The frog helps!',lt,3.6);
+    pops=pop('Boing!',640,170,92,GREEN,lt,3.2,-3);
+    break;}
+  case 5:{
+    // play together: the ball rolls between Lulu and Pip; hearts float up behind them
+    for(let k=0;k<7;k++){const q=lt-(1+k*.6);if(q>0){const y=560-q*100,x=420+k*85+20*Math.sin(q*2+k),o=clamp((y-260)/120)*clamp(q*3)*.85;
+      if(y>250)props+=heart(x,y,1+(k%3)*.25,['#FF5D8F','#FF9F1C','#FFFFFF'][k%3],o);}}
+    const RT=[1.2,3.0,4.8], XS=[330,960,330,960];let bx=330;
+    RT.forEach((a,k)=>{const u=prog(lt,a,a+1.4);if(u>0)bx=lerp(XS[k],XS[k+1],eio(u));});
+    chars=lulu(200,lt,t,[2.6,6.2],26,1,lt>5.8)+pip(1100,lt,t,[4.4],26,1)+ball(bx,520,30,(bx-330)*1.9);
+    cap=caption('Pip and Lulu play.',lt,.4);
+    pops=pop('Roll,',300,170,84,PINK,lt,RT[0]+.1,-6)+pop('roll,',590,150,84,ORANGE,lt,RT[1]+.1,3)+pop('roll!',880,170,84,PINK,lt,RT[2]+.1,6);
+    break;}
+  case 6:{
+    n=eio(prog(lt,.3,2.4));
+    const asleep=lt>2.0;
+    chars=shadow(470,522,64)+place(470,520,duck({asleep,eye:blink(t,0)}),{s:1.05,sy:1+.025*Math.sin(lt*2.2),rot:asleep?-3:0})
+         +shadow(790,522,56)+place(790,520,kitten({asleep,eye:blink(t,1.1),tail:.3*Math.sin(lt)}),{s:1.0,sy:1+.025*Math.sin(lt*2.2+1),rot:asleep?3:0})
+         +ball(930,520,30,0);
+    for(let k=0;k<3;k++){let q=lt-2.5-k*.9;if(q>0){q%=2.7;
+      pops+=`<text x="${600+q*24+8*Math.sin(q*3)}" y="${360-q*40}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}
+    cap=caption('Good night, friends.',lt,.5);
+    pops+=pop('The End',640,190,112,'#FFE58A',lt,3.6,-3,NAVY);
+    break;}
+  }
+  svg.innerHTML=bg(t,n)+props+chars+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(130,110,1.2,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(240,662,130)+place(232,658,duck({wing:22}),{s:1.9});
+  s+=shadow(1010,662,100)+place(1010,658,kitten({tail:.4}),{s:1.75});
+  s+=ball(640,660,60,-20);
+  s+=label(LULU,640,190,170,PINK,-3)+label('and the Lost Ball',640,285,70,NAVY);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

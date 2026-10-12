@@ -1,0 +1,79 @@
+{
+  "number": 6,
+  "slug": "lulu-and-the-lost-ball",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and the Lost Ball | Bedtime Story for Kids",
+  "description": "Pip the kitten has lost her red ball, so Lulu the little duck helps her look for it.\nThey meet a bee, a snail and a kind frog, then play together and say good night.\nA gentle short story for children aged 3 to 6.",
+  "duration": 45,
+  "seed": 6,
+  "lullaby_from": 37,
+  "sfx": [
+    {
+      "t": 1.3,
+      "type": "boing_high"
+    },
+    {
+      "t": 2.3,
+      "type": "boing_high"
+    },
+    {
+      "t": 3.3,
+      "type": "boing_high"
+    },
+    {
+      "t": 8.4,
+      "type": "pop"
+    },
+    {
+      "t": 13.8,
+      "type": "buzz"
+    },
+    {
+      "t": 20.0,
+      "type": "pop"
+    },
+    {
+      "t": 25.4,
+      "type": "boing_low"
+    },
+    {
+      "t": 26.2,
+      "type": "boing_low"
+    },
+    {
+      "t": 27.1,
+      "type": "ding"
+    },
+    {
+      "t": 31.3,
+      "type": "pop"
+    },
+    {
+      "t": 33.1,
+      "type": "pop"
+    },
+    {
+      "t": 34.9,
+      "type": "pop"
+    },
+    {
+      "t": 40.6,
+      "type": "sparkle"
+    }
+  ],
+  "check_times": [
+    2.0,
+    9.0,
+    14.2,
+    15.5,
+    20.5,
+    25.8,
+    26.6,
+    27.5,
+    32.0,
+    34.0,
+    36.4,
+    41.5
+  ]
+}
