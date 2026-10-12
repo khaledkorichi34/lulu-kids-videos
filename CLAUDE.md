@@ -17,13 +17,17 @@ When in doubt, make the simpler, calmer video.
 
 ## Formats and ages
 
-Find the slot with `TZ=Europe/Madrid date +%H`:
+Find the slot with `TZ=Europe/Madrid date +%H` and the weekday with `TZ=Europe/Madrid date +%u` (1 = Monday):
 
 | Slot | Hour | Format | Ages |
 |---|---|---|---|
 | Morning | before 11 | **Learning**: counting, letters and first words, colours, shapes, opposites, simple sums (2 + 3) | 3 to 7 |
-| Afternoon | 11 to 16 | **Curious**: "Who am I?" riddle (three clues, then the reveal) or "Did you know?" (three facts about one animal or one thing in nature) | 6 to 10 |
+| Afternoon, Mon / Wed / Fri / Sun | 11 to 16 | **Rhyme**: sing-along of a traditional nursery rhyme from `toolkit/rhymes.js` (see "Nursery rhymes" below) | 2 to 6 |
+| Afternoon, Tue / Thu / Sat | 11 to 16 | **Curious**: "Who am I?" riddle (three clues, then the reveal) or "Did you know?" (three facts about one animal or one thing in nature) | 6 to 10 |
 | Evening | 17 and later | **Story**: a small story with Lulu and friends that ends calmly, usually at night (`lullaby_from`) | 3 to 6 |
+
+The owner asked for videos in the style of nursery-rhyme channels such as HooplaKidz: classic rhymes,
+a recurring cast, bright and simple. Take the genre, never their material (see Content rules).
 
 Vary the topic and the cast from day to day. Never repeat a topic that is already in the log
 (a new counting video must count different things or a different range, and so on).
@@ -35,13 +39,17 @@ Vary the topic and the cast from day to day. Never repeat a topic that is alread
 - Kind and calm. Nothing scary, violent, sad without comfort, rude or unsafe to copy.
 - Facts must be simple, well established and true. If you are not sure a fact is right, do not use it.
   No health, medical, diet or safety advice.
-- Original material only: no brands, no existing characters, songs, rhymes or stories from
-  books, films or TV. No real people.
+- Original material only: no brands, no existing characters, songs or stories from books, films,
+  TV or other YouTube channels (never copy another channel's characters, animation, titles or
+  thumbnails). No real people. The one exception: the traditional public-domain nursery rhymes in
+  `toolkit/rhymes.js` (words and tunes). Never use any other song, and never modern children's
+  songs that only sound traditional (for example "Wheels on the Bus", "I'm a Little Teapot",
+  "Baby Shark", "If You're Happy and You Know It": these are not free to use).
 - The channel is "Made for Kids": never ask viewers to like, subscribe, comment, click, buy or
   share anything about themselves. No links in titles or descriptions.
 - Title: at most 70 characters, plain and honest, no ALL CAPS, pattern `Topic | Kind of video`.
   Description: 2 to 4 short lines saying what happens and "for children aged X to Y".
-- Length 40 to 75 seconds.
+- Length 40 to 75 seconds (rhymes up to 90).
 
 ## The stage
 
@@ -71,6 +79,10 @@ Vary the topic and the cast from day to day. Never repeat a topic that is alread
 - Background: `bg(t, night 0..1, behindHills, {noSun, noFlowers})`.
 - Text: `caption(text,lt,t0)`, `pop(text,x,y,size,fill,lt,t0,rot,stroke)`,
   `label(...)` for still text, `LULU` (the coloured name).
+- More cast and props added by earlier runs (read their comments in `lib.js`): `bird`, `kitten`,
+  `snail`, `apple`, `bush`, `sparkle`, `ball`, `pond`, `lilyPad`, `bigStar(x,y,r,colour,rot,face,eye)`.
+- Sing-along: `rhymeTimes(RHYMES.name,start,repeat,gapBeats,bpm)`, `rhymeEnd(lines)`,
+  `currentLine(lines,t)`, `beatPulse(lines,t)` (1 on each note, fading), `karaoke(lines,t,colour)`.
 
 New characters and props are welcome: the cast should grow (cat, fish, turtle, owl, ladybird,
 snail, tree, boat, stars and so on). Draw them in the same style and add them to `lib.js`
@@ -86,6 +98,27 @@ white highlight, pink cheeks, origin at the feet. Check a new character with `--
 - Hearts or confetti drawn over faces look messy: draw them before the characters.
 - Text on top of a cloud or the sun is hard to read: move one of them.
 
+## Nursery rhymes
+
+- Load `<script src="../../toolkit/rhymes.js"></script>` after `lib.js`. Copy
+  `episodes/007-twinkle-twinkle-little-star/scene.html` as the starting point.
+- The music plays the rhyme's tune on music-box bells (there is no singing voice); the words of
+  the current line appear in the caption bar and light up note by note (`karaoke`). Children sing
+  along. Say "sing along" in the description, never claim there is singing.
+- Structure: title card (4 to 5 s, rhyme title in big letters) then the rhyme, then a calm ending
+  card. Short rhymes (under 30 s) repeat 3 times, others 2 times, with `gap` 4 beats between.
+  `duration` = `rhymeEnd` + about 5 seconds, rounded up.
+- Illustrate each line (what the words say) with the cast, make things bounce with `beatPulse`,
+  and change something between verses (friends join, new place, day to night).
+- Each rhyme at most once in any 10 days (check the log's `rhyme` field), and each time with a
+  different setting or cast. Title: `<Rhyme title> with Lulu | Nursery Rhyme for Kids`.
+  Description: what happens, "for children aged X to Y", and the source line from `rhymes.js`.
+- Add `"rhyme": {"name": "twinkle", "bpm": 92, "start": 5.0, "repeat": 2, "gap": 4}` to
+  `episode.json` (use the rhyme's own `bpm` unless it feels too fast or slow) and record
+  `"rhyme": "<name>"` in the log entry.
+- Only add a rhyme to `rhymes.js` when both its words and its tune are traditional, older than
+  1929, and you are certain of every note and word. If in doubt, use one that is already there.
+
 ## episode.json
 
 ```json
@@ -99,6 +132,7 @@ white highlight, pink cheeks, origin at the feet. Check a new character with `--
 ```
 
 - `duration` must equal the last value of `SC`. `seed` picks the tune: use the episode number.
+  Rhyme episodes add the `rhyme` block (the rhyme's melody then replaces the generated tune).
 - `lullaby_from`: time when a slow bedtime ending starts (use the start of the night scene), or `null`.
 - `sfx` types: `pop`, `ding`, `boing_low`, `boing_high`, `buzz`, `sparkle`. Place them on the
   exact moment of the action. Do not overdo it: 25 at most.
