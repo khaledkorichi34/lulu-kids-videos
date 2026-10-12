@@ -1,0 +1,104 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 5 - Who am I? A garden riddle.  Title, three clues (house on my back, very slow, shiny trail),
+   "Who am I?", the reveal (a snail), a snail fact, goodbye. */
+const SC=[0,5.5,12.5,19.5,25.5,31.5,39,47,54], DUR=54;
+const NAVY='#2D2A6E', PURPLE='#7B5CFF', GREEN='#1F7F37', ORANGE='#E76F2E';
+const BX=700;                                   // bush centre
+const lulu=(x,lt,t,hops,h=20,s=.95,wave=false)=>{
+  const j=jumps(lt,hops,.6,h), w=wave?20+20*Math.sin(lt*9):0;
+  return shadow(x,522,56*s/.95,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy});
+};
+const qmark=(lt,t)=>label('?',BX,480+4*Math.sin(t*3),110,'#fff',0,GREEN,.12);
+// shiny trail along the ground from x0 to x1 (y = ground)
+function trail(x0,x1,y,t,o=1){
+  if(Math.abs(x1-x0)<2)return '';
+  const a=Math.min(x0,x1), b=Math.max(x0,x1);
+  let s=`<rect x="${a}" y="${y-11}" width="${b-a}" height="22" rx="11" fill="#CFE6FA" stroke="#6FA3D0" stroke-width="3" opacity="${o}"/>`;
+  s+=`<rect x="${a+6}" y="${y-3}" width="${Math.max(0,b-a-12)}" height="5" rx="2.5" fill="#fff" opacity="${o}"/>`;
+  for(let k=0;k<8;k++){const x=a+20+k*44;if(x>b-8)break;s+=sparkle(x,y-4,1.0+.35*Math.sin(t*4+k*1.7),o*(.55+.45*Math.sin(t*5+k)));}
+  return s;
+}
+function houseIcon(x,y,g){
+  if(g<=0)return '';
+  return `<g transform="translate(${x},${y}) scale(${g})"><circle r="92" fill="#fff" stroke="#FFD23F" stroke-width="7"/>
+  <path d="M-42,-4 H42 V52 H-42 Z" fill="#2979E8"/><path d="M0,-58 L56,-2 L-56,-2 Z" fill="#E63946"/>
+  <rect x="-12" y="18" width="24" height="34" rx="5" fill="#FFD23F"/></g>`;
+}
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.4)):0;
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={noClouds:true};
+  const sky=cloud(130+10*Math.sin(t*.3),100,.9,.95)+cloud(430+8*Math.sin(t*.25+1),255,.75,.9);
+  if(i===0){
+    chars=lulu(330,lt,t,[1.3,2.3],30,1.1,true);
+    props=bush(BX+180,520,.8);
+    pops=pop('Who am I?',640,165,120,PURPLE,lt,.3,-3);
+    cap=caption('A riddle with '+LULU,lt,1.8);
+  }else if(i>=1&&i<=3){
+    const N=i;
+    if(N===2){const sx=lerp(610,740,prog(lt,.6,6.6));props+=place(sx,508,snail({noHead:true}),{s:1.15});}
+    props+=bush(BX,520)+qmark(lt,t);
+    if(N===3)props+=trail(Math.max(370,BX-150-260*eout(prog(lt,.8,3.2))),BX-150,524,t);
+    if(N===1)props+=houseIcon(1060,370,grow(lt,2.4));
+    chars=lulu(230,lt,t,[3.2]);
+    pops=pop('Clue '+N,640,150,100,ORANGE,lt,.3);
+    cap=caption(['','I carry my house on my back.','I move very, very slowly.','I leave a shiny trail behind me.'][N],lt,1.2);
+  }else if(i===4){
+    // who am I?
+    props=bush(BX+18*Math.sin(lt*14)*prog(lt,4.2,4.5)*(1-prog(lt,5.6,6)),520)+qmark(lt,t)+trail(370,BX-150,524,t);
+    chars=lulu(230,lt,t,[]);
+    pops=pop('house',360,160,64,'#2979E8',lt,.3)+pop('slow',640,160,64,GREEN,lt,.9)+pop('shiny',920,160,64,'#8A63D2',lt,1.5);
+    cap=caption('Who am I? Can you guess?',lt,2.2);
+  }else if(i===5){
+    // the reveal: the snail comes out from behind the bush, leaving a new shiny trail
+    const u=eio(prog(lt,.5,3.5)), sx=lerp(680,960,u);
+    props=trail(720,Math.max(720,sx-110),524,t,prog(lt,1.2,1.8))+shadow(sx,522,110);
+    props+=place(sx,520,snail({eye:blink(t,.4),look:Math.sin(lt*2)}),{s:1.1});
+    props+=bush(BX-140,520);
+    for(let k=0;k<6;k++){const a=k*1.05+lt*.6, r=prog(lt,3.5,4.3)*120;if(r>0&&lt<6.5)props+=sparkle(sx+20+Math.cos(a)*r*1.4,400+Math.sin(a)*r*.7,1.4,1-prog(lt,5.5,6.5));}
+    chars=lulu(230,lt,t,[3.9,4.6],30,.95,lt>3.8);
+    pops=pop('A snail!',640,165,120,ORANGE,lt,3.6,-3);
+    cap=caption('I am a snail!',lt,4.1);
+  }else if(i===6){
+    // did you know?
+    o={noFlowers:true,noClouds:true};
+    const SX=700;
+    props=shadow(SX,522,170)+place(SX,520,snail({eye:blink(t,.4),look:Math.sin(lt*1.6)}),{s:1.6});
+    chars=lulu(170,lt,t,[],0,.85);
+    pops=pop('Did you know?',640,150,86,PURPLE,lt,.3);
+    const a1=prog(lt,1.4,1.8), a2=prog(lt,4.5,4.9);
+    if(a1>0&&lt<4.4)pops+=`<path d="M455,360 Q520,350 560,380" stroke="${NAVY}" stroke-width="7" fill="none" stroke-linecap="round" opacity="${a1}"/>`+pop('shell',400,355,62,ORANGE,lt,1.4);
+    if(a2>0)pops+=`<path d="M985,300 Q950,262 922,262" stroke="${NAVY}" stroke-width="7" fill="none" stroke-linecap="round" opacity="${a2}"/>`+pop('eyes',1030,330,62,GREEN,lt,4.5);
+    cap=lt<4.4?caption('My shell is my home.',lt,1.4):caption('My eyes are on long stalks.',lt,4.5);
+  }else{
+    // goodbye
+    props=heart(600,300+6*Math.sin(t*3),1.4,'#FF7FB0',.85*prog(lt,2,2.5))+heart(660,250+6*Math.sin(t*3+1),1,'#FF9AA2',.85*prog(lt,2.3,2.8));
+    props+=trail(830,1150,524,t,.8)+shadow(800,522,110)+place(800,520,snail({eye:blink(t,.4),look:Math.sin(lt*3)}),{s:1.1,flip:true});
+    chars=lulu(440,lt,t,[1.0,1.8],26,.95,true);
+    pops=pop('Bye bye!',640,160,110,PURPLE,lt,.4,-2);
+    cap=caption('Bye bye, little snail!',lt,1.6);
+  }
+  svg.innerHTML=bg(t,0,'',o)+sky+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(140,110,1.2,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(175,662,100)+place(170,658,duck({wing:22}),{s:1.5});
+  s+=bush(930,660,1.25)+label('?',930,600,170,'#fff',0,GREEN,.12);
+  s+=label('Who',640,190,150,'#FF5D8F',-3)+label('am I?',660,350,150,PURPLE,-3);
+  s+=label('A riddle with '+LULU,640,465,60,NAVY);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

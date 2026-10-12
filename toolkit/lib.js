@@ -209,3 +209,37 @@ function fades(t,SC,DUR){
   return f>0?`<rect width="1280" height="720" fill="${fc}" opacity="${clamp(f)}"/>`:'';
 }
 const nightTint=n=>n>0?`<rect width="1280" height="720" fill="#14153F" opacity="${n*.28}"/>`:'';
+
+/* ---------- snail and bush (episode 5) ---------- */
+// snail({eye, look, noHead}): garden snail facing right, origin at its feet (about 170 tall with eye stalks).
+// look = small wiggle of the eye stalks (-1..1); noHead = only the shell (for peeking over a bush)
+const SNAIL_SPIRAL=(function(){let d='';const N=60,T=4.2*Math.PI;for(let k=0;k<=N;k++){const a=T*k/N, r=4+50*k/N;d+=(k?'L':'M')+(-15+Math.cos(-a-1.2)*r).toFixed(1)+','+(-80+Math.sin(-a-1.2)*r).toFixed(1)+' ';}return d;})();
+function snail(o={}){
+  const e=o.eye==null?1:o.eye, lk=o.look||0;
+  const shell=`<circle cx="-15" cy="-80" r="72" fill="#F4A261"/><circle cx="-26" cy="-92" r="52" fill="#F7B983" opacity=".55"/>
+  <path d="${SNAIL_SPIRAL}" stroke="#C8693A" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+  if(o.noHead)return shell;
+  const stalk=(bx,tx,ty)=>`<path d="M${bx},-92 Q${(bx+tx)/2},-120 ${tx},${ty}" stroke="#EBCB9C" stroke-width="10" fill="none" stroke-linecap="round"/><circle cx="${tx}" cy="${ty}" r="11" fill="#EBCB9C"/>
+  <g transform="translate(${tx+2},${ty}) scale(1,${e})"><circle r="7" fill="#2b1d12"/><circle cx="2.3" cy="-2.4" r="2.4" fill="#fff"/></g>`;
+  return `
+  <path d="M-120,0 Q-128,-14 -104,-20 L80,-26 L132,-22 Q150,-10 138,0 Z" fill="#D4AE7C"/>
+  ${stalk(94,84+lk*6,-160)}${stalk(114,128+lk*6,-156)}
+  <ellipse cx="108" cy="-62" rx="34" ry="44" fill="#EBCB9C"/>
+  <path d="M124,-74 Q138,-80 146,-70" stroke="#EBCB9C" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M110,-52 Q121,-42 132,-54" stroke="#7A5230" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <circle cx="98" cy="-50" r="7" fill="#FF9AA2" opacity=".8"/>
+  ${shell}`;
+}
+// bush(x,y,s): round green bush standing on the ground, about 320 wide and 150 tall
+function bush(x,y,s=1){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <circle cx="-110" cy="-50" r="52" fill="#3E9E3E"/><circle cx="110" cy="-50" r="52" fill="#3E9E3E"/>
+  <circle cx="-55" cy="-78" r="64" fill="#47AD47"/><circle cx="55" cy="-78" r="64" fill="#47AD47"/>
+  <circle cx="0" cy="-80" r="70" fill="#52BA52"/>
+  <rect x="-150" y="-50" width="300" height="50" rx="20" fill="#3E9E3E"/>
+  <circle cx="-60" cy="-96" r="14" fill="#6FCF6F" opacity=".7"/><circle cx="40" cy="-118" r="12" fill="#6FCF6F" opacity=".7"/></g>`;
+}
+// sparkle(x,y,s,opacity): small four-point twinkle
+function sparkle(x,y,s,o=1){
+  return `<path transform="translate(${x},${y}) scale(${s})" d="M0,-14 Q2,-2 14,0 Q2,2 0,14 Q-2,2 -14,0 Q-2,-2 0,-14Z" fill="#FFFFFF" opacity="${o}"/>`;
+}
