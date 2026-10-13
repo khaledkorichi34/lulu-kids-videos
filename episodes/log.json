@@ -109,5 +109,21 @@
     ],
     "videoId": "TMRXl7wBLgM",
     "published": "2026-10-12"
+  },
+  {
+    "number": 8,
+    "slug": "add-with-lulu",
+    "format": "learning",
+    "ages": "3-6",
+    "title": "Add with Lulu: Little Sums | Adding for Kids",
+    "topic": "Simple sums with counting: 1+1=2 birds, 2+1=3 apples, 1+2=3 kittens, 2+2=4 balls, 3+2=5 ladybirds",
+    "cast": [
+      "duck",
+      "bird",
+      "kitten",
+      "ladybird"
+    ],
+    "videoId": "uoiMjXwHyVo",
+    "published": "2026-10-13"
   }
 ]
