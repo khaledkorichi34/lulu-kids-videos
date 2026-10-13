@@ -1,0 +1,98 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 8 - Add with Lulu: five little sums.  Title, one scene per sum, finale. */
+// TIMING-START
+const SUMS=[[1,1,'birds'],[2,1,'apples'],[1,2,'kittens'],[2,2,'balls'],[3,2,'ladybirds']];
+const OBJ=.3, BADGE=.36;
+function plan(a,b){
+  const p={a,b,N:a+b};
+  p.tA=k=>.5+k*OBJ; p.tAn=.5+a*OBJ+.05; p.tPlus=p.tAn+.45;
+  p.tB=k=>p.tAn+.8+k*OBJ; p.tBn=p.tAn+.8+b*OBJ+.05;
+  p.tc=k=>p.tBn+.55+k*BADGE; p.tr=p.tBn+.55+p.N*BADGE+.1;
+  p.len=Math.round((p.tr+2.85)*2)/2;
+  return p;
+}
+const PLANS=SUMS.map(s=>plan(s[0],s[1]));
+const SC=[0,4.5];PLANS.forEach(p=>SC.push(SC[SC.length-1]+p.len));SC.push(SC[SC.length-1]+6.5);
+const DUR=SC[SC.length-1];
+// TIMING-END
+const CA='#FF5D8F', CB='#19B8A6', CR='#7B5CFF', INK='#2D2A6E';
+const XA=290, XPLUS=495, XB=720, XEQ=880, XR=1040, EY=170;
+
+function badge(x,y,k,lt,t0){
+  const u=prog(lt,t0,t0+.3);if(u<=0)return '';
+  return `<g transform="translate(${x},${y}) scale(${back(u)})"><circle r="25" fill="#fff" stroke="${CR}" stroke-width="5"/><text y="12" text-anchor="middle" font-size="34" fill="${INK}">${k+1}</text></g>`;
+}
+function hearts(lt,t0){
+  let s='';
+  for(let k=0;k<9;k++){const q=lt-(t0+k*.4);if(q>0){const y=610-q*120,x=110+k*132+25*Math.sin(q*2+k),o=clamp((y-50)/140)*clamp(q*3)*.9;
+    if(y>40)s+=heart(x,y,1+(k%3)*.25,['#FF5D8F','#FF9F1C','#FFFFFF'][k%3],o);}}
+  return s;
+}
+// one object of kind `kind` at x (feet on the ground), grown by g, hopping by j
+function thing(kind,x,g,j,t,k){
+  if(kind==='birds')return shadow(x,522,48,-j.y)+place(x,520+j.y,bird({eye:blink(t,k*.8),wing:-j.y*.6}),{s:.78*g,sx:j.sx,sy:j.sy});
+  if(kind==='apples')return shadow(x,522,48,-j.y)+apple(x,520+j.y,.72*g);
+  if(kind==='kittens')return shadow(x,522,40,-j.y)+place(x,520+j.y,kitten({eye:blink(t,k*1.3),tail:Math.sin(t*2+k)}),{s:.72*g,sx:j.sx,sy:j.sy});
+  if(kind==='balls')return shadow(x,522,36,-j.y)+ball(x,520+j.y,48*g,0);
+  return shadow(x,522,50,-j.y)+place(x,520+j.y,ladybird({eye:blink(t,k*.7),wiggle:Math.sin(t*3+k)}),{s:.8*g,sx:j.sx,sy:j.sy});
+}
+const SPACE={birds:150,apples:145,kittens:150,balls:120,ladybirds:145};
+const xs=(n,c,sp)=>Array.from({length:n},(_,k)=>c+(k-(n-1)/2)*sp);
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={};
+  if(i===0){
+    const j=jumps(lt,[1.4,2.4],.6,30);
+    chars=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:20+20*Math.sin(lt*9),eye:blink(t,0)}),{s:1.1,sx:j.sx,sy:j.sy});
+    pops=pop('Add with',640,128,84,INK,lt,.3)+pop(LULU,640,262,140,'#FF5D8F',lt,.7,-3);
+    ['1','+','1','=','2'].forEach((c,k)=>{pops+=pop(c,440+k*100,680,92,[CA,INK,CB,INK,CR][k],lt,1.5+k*.3);});
+  }else if(i<=SUMS.length){
+    const [a,b,kind]=SUMS[i-1], p=PLANS[i-1], N=a+b;
+    o={noSun:true,noFlowers:true,noClouds:true};
+    const sp=SPACE[kind], X=xs(a,XA,sp).concat(xs(b,XB,sp));
+    X.forEach((x,k)=>{
+      const t0=k<a?p.tA(k):p.tB(k-a);
+      const g=lt>t0?back(prog(lt,t0,t0+.35)):0;if(g<=0)return;
+      const j=jumps(lt,[p.tr+.25+k*.08],.55,28);
+      chars+=thing(kind,x,g,j,t,k);
+      pops+=badge(x,563,k,lt,p.tc(k));
+    });
+    // Lulu watches from the right and cheers when the answer appears
+    const lj=jumps(lt,[p.tr+.2],.55,18);
+    chars+=shadow(1075,522,52,-lj.y)+place(1075,520+lj.y,duck({eye:blink(t,.5),wing:lt>p.tr?28*Math.abs(Math.sin(lt*10)):0}),{s:.85,sx:lj.sx,sy:lj.sy,flip:true});
+    pops+=pop(String(a),XA,EY,150,CA,lt,p.tAn)+pop('+',XPLUS,EY,130,INK,lt,p.tPlus)+pop(String(b),XB,EY,150,CB,lt,p.tBn)
+         +pop('=',XEQ,EY,130,INK,lt,p.tr-.15)+pop(String(N),XR,EY,170,CR,lt,p.tr,-4);
+    cap=caption(`${a} and ${b} make ${N}`,lt,p.tr+.1);
+  }else{
+    const j=jumps(lt,[2.6,3.7,4.8],.6,35), jb=jumps(lt,[2.9,4.0,5.1],.55,30);
+    props=hearts(lt,2.4);o={noClouds:true};
+    chars=shadow(320,522,46,-jb.y)+place(320,520+jb.y,bird({eye:blink(t,.4),wing:-jb.y*.6}),{s:.85,sx:jb.sx,sy:jb.sy});
+    chars+=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:25+25*Math.sin(lt*10),eye:blink(t,0)}),{s:1.1,sx:j.sx,sy:j.sy});
+    chars+=shadow(930,522,50,-jb.y)+place(930,520+jb.y,ladybird({eye:blink(t,1.1),wiggle:Math.sin(t*3)}),{s:1.15,sx:jb.sx,sy:jb.sy});
+    pops=pop('Well done!',640,170,120,'#FF9F1C',lt,.4,-3);
+    cap=caption('Great adding!',lt,1.6);
+  }
+  svg.innerHTML=bg(t,0,'',o)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(1130,110,1.2,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(250,662,140)+place(232,658,duck({wing:22}),{s:2.0});
+  s+=label('2',540,250,190,CA,-5)+label('+',665,240,150,INK)+label('1',790,250,190,CB,4)+label('=',915,240,150,INK)+label('3',1060,255,210,CR,-4);
+  s+=apple(630,620,.85)+apple(770,620,.85)+apple(960,620,.85);
+  s+=label('Add with',820,400,70,INK)+label(LULU,1120,410,90,'#FF5D8F',-3);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

@@ -325,3 +325,24 @@ function bigStar(x,y,r,col='#FFD93B',rot=0,face=false,e=1){
     <circle cx="${-r*.34}" cy="${r*.2}" r="${r*.085}" fill="#FF9A6B" opacity=".6"/><circle cx="${r*.34}" cy="${r*.2}" r="${r*.085}" fill="#FF9A6B" opacity=".6"/>`:'';
   return `<g transform="translate(${x},${y}) rotate(${rot})"><path d="${d}Z" fill="${col}" stroke="${col}" stroke-width="${r*.16}" stroke-linejoin="round"/>${f}</g>`;
 }
+
+/* ---------- ladybird (episode 8) ---------- */
+// ladybird({eye, wiggle}): small red ladybird seen from the side, facing right, origin at its feet
+// (about 130 wide and 90 tall, 110 with antennae). wiggle = antenna sway (-1..1)
+function ladybird(o={}){
+  const e=o.eye==null?1:o.eye, w=o.wiggle||0, D='#2b2b3a';
+  const leg=x=>`<path d="M${x},-16 L${x+6},-1" stroke="${D}" stroke-width="6" stroke-linecap="round"/>`;
+  return `
+  ${leg(-34)}${leg(-6)}${leg(22)}
+  <path d="M58,-56 Q${64+w*4},-82 ${78+w*6},-88" stroke="${D}" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="${78+w*6}" cy="${-88}" r="5" fill="${D}"/>
+  <path d="M66,-52 Q${78+w*4},-72 ${92+w*6},-74" stroke="${D}" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="${92+w*6}" cy="-74" r="5" fill="${D}"/>
+  <circle cx="58" cy="-34" r="27" fill="${D}"/>
+  <ellipse cx="0" cy="-44" rx="64" ry="46" fill="#E63946"/>
+  <circle cx="-34" cy="-56" r="10" fill="${D}"/><circle cx="-4" cy="-72" r="9" fill="${D}"/><circle cx="24" cy="-50" r="10" fill="${D}"/>
+  <circle cx="-30" cy="-26" r="8" fill="${D}"/><circle cx="2" cy="-30" r="8" fill="${D}"/>
+  <ellipse cx="-24" cy="-74" rx="16" ry="7" fill="#fff" opacity=".35" transform="rotate(-20 -24 -74)"/>
+  <circle cx="69" cy="-40" r="9" fill="#fff"/>
+  <g transform="translate(71,-40) scale(1,${e})"><circle r="5" fill="#14141f"/><circle cx="1.8" cy="-1.8" r="1.8" fill="#fff"/></g>
+  <circle cx="76" cy="-24" r="5.5" fill="#FF9AA2" opacity=".9"/>
+  <path d="M64,-22 Q72,-15 80,-21" stroke="#fff" stroke-width="2.8" fill="none" stroke-linecap="round"/>`;
+}

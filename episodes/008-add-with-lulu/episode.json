@@ -1,0 +1,135 @@
+{
+  "number": 8,
+  "slug": "add-with-lulu",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "Add with Lulu: Little Sums | Adding for Kids",
+  "description": "Add small numbers with Lulu the little duck!\n\nCount birds, apples, kittens, balls and ladybirds, then put them together: 1 and 1 make 2, all the way to 3 and 2 make 5.\n\nA short, gentle first sums video for children aged 3 to 6.",
+  "duration": 46.5,
+  "seed": 8,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.7,
+      "type": "sparkle"
+    },
+    {
+      "t": 7.1,
+      "type": "ding"
+    },
+    {
+      "t": 7.46,
+      "type": "ding"
+    },
+    {
+      "t": 7.92,
+      "type": "sparkle"
+    },
+    {
+      "t": 13.4,
+      "type": "ding"
+    },
+    {
+      "t": 13.76,
+      "type": "ding"
+    },
+    {
+      "t": 14.12,
+      "type": "ding"
+    },
+    {
+      "t": 14.58,
+      "type": "sparkle"
+    },
+    {
+      "t": 20.4,
+      "type": "ding"
+    },
+    {
+      "t": 20.76,
+      "type": "ding"
+    },
+    {
+      "t": 21.12,
+      "type": "ding"
+    },
+    {
+      "t": 21.58,
+      "type": "sparkle"
+    },
+    {
+      "t": 27.7,
+      "type": "ding"
+    },
+    {
+      "t": 28.06,
+      "type": "ding"
+    },
+    {
+      "t": 28.42,
+      "type": "ding"
+    },
+    {
+      "t": 28.78,
+      "type": "ding"
+    },
+    {
+      "t": 29.24,
+      "type": "sparkle"
+    },
+    {
+      "t": 35.5,
+      "type": "ding"
+    },
+    {
+      "t": 35.86,
+      "type": "ding"
+    },
+    {
+      "t": 36.22,
+      "type": "ding"
+    },
+    {
+      "t": 36.58,
+      "type": "ding"
+    },
+    {
+      "t": 36.94,
+      "type": "ding"
+    },
+    {
+      "t": 37.4,
+      "type": "sparkle"
+    },
+    {
+      "t": 40.45,
+      "type": "pop"
+    }
+  ],
+  "check_times": [
+    1.2,
+    3.2,
+    6.1,
+    7.57,
+    8.39,
+    9.87,
+    12.4,
+    14.23,
+    15.05,
+    16.53,
+    19.1,
+    21.23,
+    22.05,
+    23.53,
+    26.4,
+    28.89,
+    29.71,
+    31.19,
+    34.2,
+    37.05,
+    37.87,
+    39.35,
+    42.88,
+    44
+  ]
+}
