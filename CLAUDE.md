@@ -162,6 +162,11 @@ Settings and IDs are in `channel.json`.
    execution (`executions_get-detail`) and search the channel (Make `rpc_execute`, app
    `youtube` version 4, rpc `searchVideos`, data `{"__IMTCONN__": youtube_connection_id,
    "channelId": "me", "q": "<title>"}`) to see whether the video is already there.
+   A `[403] Forbidden` from `uploadVideo` can mean the video WAS uploaded but its title and
+   description were not set: it then appears as "unknown". So also search with `"q": "unknown"`.
+   If an "unknown" video turns up, do not run the scenario again: record its `videoId`, and in
+   the final message ask the owner to paste the title and description into YouTube Studio.
+   If neither search finds it, still do not retry in the same run: stop and report the error.
 3. Only if `thumbnails_enabled` is true in `channel.json`: run `thumbnail_scenario_id` with
    `{"video_id", "thumbnail_url"}`. While it is false, skip this step (the channel is not
    verified yet and the call fails).
