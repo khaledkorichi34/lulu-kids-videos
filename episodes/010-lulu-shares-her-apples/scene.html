@@ -1,0 +1,139 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 10 - Lulu Shares Her Apples. Three apples fall from a tree. Lulu gives one to a little
+   bird and one to a bunny, keeps one for herself, and they all say "yum". The sun goes down,
+   the friends say bye-bye, and Lulu goes to sleep. */
+const DUR=45, SC=[0,5,12.5,18.5,24.5,31,37.5,45];
+const NAVY='#2D2A6E', PINK='#FF5D8F', ORANGE='#F08A00', GREEN='#16A34A', PURPLE='#7B5CFF', RED='#E63946';
+const TX=1010, HANG=[[-80,-250],[0,-292],[78,-236]];
+const lulu=(x,lt,t,hops=[],h=30,s=1,wave=false)=>{
+  const j=jumps(lt,hops,.6,h), w=wave?20+20*Math.sin(lt*9):0;
+  return shadow(x,522,60*s,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy});
+};
+const birdie=(x,lt,t,hops=[],h=34,s=.95,flap=0)=>{
+  const j=jumps(lt,hops,.5,h);
+  return shadow(x,522,50*s,-j.y)+place(x,520+j.y,bird({eye:blink(t,.7),wing:flap}),{s,sx:j.sx,sy:j.sy,flip:true});
+};
+const bun=(x,lt,t,hops=[],h=34,s=.95,ear=0)=>{
+  const j=jumps(lt,hops,.55,h);
+  return shadow(x,522,50*s,-j.y)+place(x,520+j.y,bunny({eye:blink(t,1.6),ear}),{s,sx:j.sx,sy:j.sy});
+};
+// walking duck coming in from the left
+const walkIn=(x0,x1,lt,a,b,t)=>{
+  const x=lerp(x0,x1,eio(prog(lt,a,b))), mv=(lt>a&&lt<b)?1:0;
+  const wob=mv*Math.sin(lt*13)*7, bob=-mv*Math.abs(Math.sin(lt*13))*9;
+  return shadow(x,522,60,-bob)+place(x,520+bob,duck({eye:blink(t,0),wing:mv*10*Math.sin(lt*13)}),{rot:wob});
+};
+// an apple flying in a small arc from xa to xb between times a and b (lands on the ground)
+const toss=(xa,xb,lt,a,b,s=.42)=>{
+  const u=prog(lt,a,b), x=lerp(xa,xb,eio(u)), y=520-4*150*u*(1-u);
+  return apple(x,y,s);
+};
+// hopping in from the right edge: x moves in steps with each hop
+const hopX=(x0,x1,lt,hops,d)=>{let x=x0;hops.forEach((h,k)=>{const u=prog(lt,h,h+d);x=x-(x0-x1)/hops.length*u;});return x;};
+
+// clouds only at the sides, below the words (the drifting default clouds pass behind the text)
+const sideClouds=(t,n)=>cloud(110+12*Math.sin(t*.3),300,.7,1-n*.75)+cloud(1170+12*Math.sin(t*.25+1),250,.6,1-n*.75);
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',pops='',cap='',o={},behind='';
+  switch(i){
+  case 0:{
+    o={noSun:true,noClouds:true};
+    props=tree(TX,520);
+    HANG.forEach(([dx,dy])=>{props+=apple(TX+dx,520+dy,.3);});
+    chars=lulu(380,lt,t,[1.3,2.3,3.3],30,1.05,true);
+    pops=pop(LULU,520,160,140,PINK,lt,.4,-3)+pop('Shares Her Apples',520,236,60,NAVY,lt,1.0);
+    break;}
+  case 1:{
+    // apples fall one by one: count them (no sun, no small flowers, so only apples are counted)
+    o={noSun:true,noFlowers:true,noClouds:true};
+    props=tree(TX,520);
+    const FT=[3.0,3.8,4.6];
+    HANG.forEach(([dx,dy],k)=>{
+      const u=prog(lt,FT[k],FT[k]+.45);
+      let y=lerp(520+dy,520,u*u);
+      const b=lt-(FT[k]+.45);if(b>0&&b<.3)y-=Math.sin(Math.PI*b/.3)*14;
+      props+=apple(TX+dx,y,.3);
+    });
+    chars=walkIn(-130,470,lt,.2,2.4,t);
+    cap=lt<3.0?caption('Lulu sees an apple tree.',lt,.4):caption('Three red apples!',lt,5.0);
+    pops=pop('One,',200,170,78,RED,lt,FT[0]+.45,-6)+pop('two,',430,150,78,ORANGE,lt,FT[1]+.45,3)+pop('three!',680,170,78,RED,lt,FT[2]+.45,6);
+    break;}
+  case 2:{
+    // a little bird hops in; Lulu gives it an apple
+    props=apple(460,520,.42)+apple(535,520,.42);
+    props+=lt<3.0?apple(610,520,.42):toss(610,770,lt,3.0,3.8);
+    const H=[.2,.7,1.2,1.7];
+    chars=lulu(300,lt,t,[],0,1,lt>2.6&&lt<3.8)+birdie(hopX(1380,880,lt,H,.5),lt,t,H.concat([4.3]),34,.95,lt>4.2?-20*Math.abs(Math.sin(lt*8)):0);
+    cap=lt<3.0?caption('Hello, little bird!',lt,.4):caption('This one is for you.',lt,3.0);
+    pops=pop('Thank you!',640,170,92,PURPLE,lt,4.0,-3);
+    break;}
+  case 3:{
+    // a bunny hops in; Lulu gives it an apple
+    props=apple(460,520,.42);
+    props+=lt<3.0?apple(535,520,.42):toss(535,750,lt,3.0,3.8);
+    const H=[.2,.75,1.3,1.85];
+    chars=lulu(300,lt,t,[],0,1,lt>2.6&&lt<3.8)+bun(hopX(1380,880,lt,H,.55),lt,t,H.concat([4.3]),34,.95,lt>4.2?8*Math.sin(lt*6):0);
+    cap=lt<3.0?caption('Hello, bunny!',lt,.4):caption('This one is for you.',lt,3.0);
+    pops=pop('Thank you!',640,170,92,GREEN,lt,4.0,3);
+    break;}
+  case 4:{
+    // everyone has an apple: yum, yum, yum! hearts float up behind them
+    for(let k=0;k<7;k++){const q=lt-(3.6+k*.35);if(q>0){const y=560-q*110,x=240+k*130+20*Math.sin(q*2+k),op=clamp((y-260)/120)*clamp(q*3)*.85;
+      if(y>250)props+=heart(x,y,1+(k%3)*.25,['#FF5D8F','#FF9F1C','#FFFFFF'][k%3],op);}}
+    const Y=[1.0,1.7,2.4];
+    props+=apple(400,520,.42)+apple(720,520,.42)+apple(1060,520,.42);
+    chars=lulu(260,lt,t,[Y[0]],30,1,lt>3.4)+birdie(600,lt,t,[Y[1]],34,.95)+bun(940,lt,t,[Y[2]],34,.95);
+    cap=lt<3.4?caption('One for Lulu, too!',lt,.4):caption('Sharing is fun!',lt,3.4);
+    pops=pop('Yum,',300,170,84,PINK,lt,Y[0],-6)+pop('yum,',590,150,84,ORANGE,lt,Y[1],3)+pop('yum!',880,170,84,PINK,lt,Y[2],6);
+    break;}
+  case 5:{
+    // the sun goes down; the friends say bye-bye and go home
+    n=.35*eio(prog(lt,.3,3.5));
+    o={noSun:true};
+    behind=sun(t,1150,lerp(100,540,eio(prog(lt,.3,3.4))));
+    const away=eio(prog(lt,3.8,6.3));
+    chars=lulu(300,lt,t,[],0,1,lt>3.2)
+         +birdie(lerp(640,1420,away),lt,t,[4.0,4.5,5.0,5.5],30,.95,lt>3.2&&lt<4?-20*Math.abs(Math.sin(lt*8)):0)
+         +bun(lerp(900,1600,away),lt,t,[4.0,4.55,5.1,5.65],30,.95);
+    cap=lt<3.2?caption('The sun goes down.',lt,.4):caption('Bye-bye, friends!',lt,3.2);
+    pops=pop('Bye-bye!',640,170,92,PURPLE,lt,3.4,-3);
+    break;}
+  case 6:{
+    n=lerp(.35,1,eio(prog(lt,.2,2.4)));
+    o={noSun:true};
+    const asleep=lt>2.0;
+    chars=shadow(560,522,64)+place(560,520,duck({asleep,eye:blink(t,0)}),{s:1.05,sy:1+.025*Math.sin(lt*2.2),rot:asleep?-3:0})
+         +apple(720,520,.42);
+    for(let k=0;k<3;k++){let q=lt-2.5-k*.9;if(q>0){q%=2.7;
+      pops+=`<text x="${640+q*24+8*Math.sin(q*3)}" y="${360-q*40}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}
+    cap=caption('Good night, Lulu.',lt,.5);
+    pops+=pop('The End',560,190,112,'#FFE58A',lt,3.6,-3,NAVY);
+    break;}
+  }
+  o.noClouds=true;
+  svg.innerHTML=bg(t,n,sideClouds(t,n)+behind,o)+props+chars+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(130,110,1.2,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=tree(1080,640,1.1);
+  [[-90,-270],[0,-320],[86,-258]].forEach(([dx,dy])=>{s+=apple(1080+dx*1.1,640+dy*1.1,.36);});
+  s+=shadow(240,662,130)+place(232,658,duck({wing:22}),{s:1.9});
+  s+=apple(470,660,.75);
+  s+=label(LULU,560,190,170,PINK,-3)+label('Shares Her Apples',560,285,70,NAVY);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

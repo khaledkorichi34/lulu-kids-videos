@@ -367,3 +367,20 @@ function tadpole(o={}){
 function bubble(x,y,r,o=1){
   return `<g opacity="${o}"><circle cx="${x}" cy="${y}" r="${r}" fill="#fff" opacity=".35" stroke="#fff" stroke-width="2.5"/><circle cx="${x-r*.35}" cy="${y-r*.35}" r="${r*.25}" fill="#fff"/></g>`;
 }
+
+/* ---------- tree (episode 10) ---------- */
+// tree(x,y,s,face): round leafy tree standing on the ground, origin at the foot of the trunk
+// (about 300 wide and 410 tall at s=1). Draw small apples on it with apple(x,y,.3): the canopy
+// covers roughly x-150..x+150, y-410..y-190. face = true adds a sleepy smiling face to the trunk.
+function tree(x,y,s=1,face=false){
+  const f=face?`<path d="M-16,-120 Q-10,-114 -4,-120 M4,-120 Q10,-114 16,-120" stroke="#5a3418" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M-8,-104 Q0,-97 8,-104" stroke="#5a3418" stroke-width="4" fill="none" stroke-linecap="round"/>`:'';
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-30,0 Q-22,-110 -24,-230 L24,-230 Q22,-110 30,0 Z" fill="#9C6B3F"/>
+  <path d="M-30,0 Q-40,-6 -48,0 M30,0 Q40,-6 48,0" stroke="#9C6B3F" stroke-width="12" stroke-linecap="round"/>
+  <ellipse cx="-8" cy="-150" rx="7" ry="12" fill="#7E5230"/>${f}
+  <circle cx="-95" cy="-260" r="72" fill="#3E9E3E"/><circle cx="95" cy="-260" r="72" fill="#3E9E3E"/>
+  <circle cx="-60" cy="-330" r="80" fill="#47AD47"/><circle cx="60" cy="-330" r="80" fill="#47AD47"/>
+  <circle cx="0" cy="-300" r="92" fill="#52BA52"/>
+  <circle cx="-70" cy="-352" r="16" fill="#6FCF6F" opacity=".7"/><circle cx="40" cy="-380" r="13" fill="#6FCF6F" opacity=".7"/></g>`;
+}
