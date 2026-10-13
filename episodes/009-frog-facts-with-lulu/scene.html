@@ -1,0 +1,118 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 9 - Did you know? Frog facts.  Title, fact 1 (a frog starts life as a tadpole),
+   it grows legs and becomes a frog, fact 2 (land and water), fact 3 (strong back legs to jump),
+   recap, goodbye. */
+const SC=[0,5.5,12.5,19.5,26.5,33.5,41,48], DUR=48;
+const NAVY='#2D2A6E', PURPLE='#7B5CFF', GREEN='#1F7F37', ORANGE='#E76F2E', BLUE='#2979E8';
+const lulu=(x,lt,t,hops,h=20,s=.95,wave=false,flip=false)=>{
+  const j=jumps(lt,hops,.6,h), w=wave?20+20*Math.sin(lt*9):0;
+  return shadow(x,522,56*s/.95,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy,flip});
+};
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.4)):0;
+// round "look into the pond" window with water plants and rising bubbles
+let WIN=0;
+function waterWin(x,y,r,g,inner,t){
+  if(g<=0)return '';
+  const id='w'+(WIN++);
+  let b='';for(let k=0;k<5;k++){const ph=((t*.35+k*.21)%1);b+=bubble(-r*.6+k*r*.3,r*.8-ph*r*1.6,4+k%3*3,(1-ph)*.9);}
+  let weeds='';for(let k=0;k<4;k++){const wx=-r*.7+k*r*.47, sw=Math.sin(t*1.3+k)*10;weeds+=`<path d="M${wx},${r} Q${wx+sw},${r*.55} ${wx-sw*.5},${r*.25}" stroke="#2F9E44" stroke-width="9" fill="none" stroke-linecap="round" opacity=".7"/>`;}
+  return `<g transform="translate(${x},${y}) scale(${g})"><defs><clipPath id="${id}"><circle r="${r}"/></clipPath></defs>
+  <g clip-path="url(#${id})"><circle r="${r}" fill="#5CC4F2"/><rect x="${-r}" y="${-r}" width="${2*r}" height="${r*.5}" fill="#8AD8FA"/>${weeds}${b}${inner}</g>
+  <circle r="${r}" fill="none" stroke="#fff" stroke-width="9"/></g>`;
+}
+function arrow(x,y,o){
+  return o>0?`<path d="M${x-36},${y} H${x+22} M${x+6},${y-18} L${x+28},${y} L${x+6},${y+18}" stroke="${NAVY}" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="${o}"/>`:'';
+}
+function ripples(x,y,lt,t0){
+  let s='';for(let k=0;k<3;k++){const u=prog(lt,t0+k*.25,t0+k*.25+1.2);if(u>0&&u<1)s+=`<ellipse cx="${x}" cy="${y}" rx="${60+u*130}" ry="${10+u*20}" fill="none" stroke="#fff" stroke-width="4" opacity="${1-u}"/>`;}
+  return s;
+}
+// a frog that hops from x0 to x1 (one hop starting at t0)
+function hopX(lt,t0,dur,x0,x1){return lerp(x0,x1,eio(prog(lt,t0,t0+dur)));}
+function frogAt(x,y,lt,t,hops,dur,h,s,flip=false){
+  const j=jumps(lt,hops,dur,h);
+  return shadow(x,y+2,62*s,-j.y)+place(x,y+j.y,frog({eye:blink(t,.7)}),{s,sx:j.sx,sy:j.sy,flip});
+}
+
+function render(t){
+  WIN=0;
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={};
+  const sky=i===5?'':cloud(130+8*Math.sin(t*.3),105,.9,.95);
+  if(i===0){
+    props=pond(900,548,250)+lilyPad(900,548);
+    chars=lulu(330,lt,t,[1.3,2.3],30,1.1,true)+frogAt(900,548,lt,t,[3.2],.6,40,1.1,true);
+    pops=pop('Did you know?',620,165,100,PURPLE,lt,.3,-3);
+    cap=caption('Fun frog facts with Lulu',lt,1.8);
+  }else if(i===1){
+    o={noFlowers:true};
+    const tx=60*Math.sin(lt*.9), ty=12*Math.sin(lt*1.7);
+    props=waterWin(660,372,165,grow(lt,.2),place(tx,ty,tadpole({eye:blink(t,.3),wig:Math.sin(lt*7)}),{s:1.35}),t);
+    chars=lulu(210,lt,t,[],0,.9);
+    pops=pop('Fact 1',640,150,100,ORANGE,lt,.3);
+    cap=caption('A frog starts life as a tadpole.',lt,1.2);
+  }else if(i===2){
+    o={noFlowers:true};
+    props=waterWin(270,370,120,grow(lt,.6),place(0,0,tadpole({eye:blink(t,.3),wig:Math.sin(lt*7)}),{s:1.05}),t);
+    props+=arrow(455,370,prog(lt,1.6,2));
+    props+=waterWin(640,370,120,grow(lt,2.0),place(8,-4,tadpole({eye:blink(t,.9),wig:Math.sin(lt*6+1),legs:1,tail:.6}),{s:1.05}),t);
+    props+=arrow(825,370,prog(lt,3.0,3.4));
+    props+=waterWin(1010,370,120,grow(lt,3.4),place(0,62,frog({eye:blink(t,1.4)}),{s:.78}),t);
+    pops=pop('It grows!',640,160,100,GREEN,lt,.3);
+    cap=caption('It grows legs and becomes a frog.',lt,3.6);
+  }else if(i===3){
+    const fx=hopX(lt,3.0,.9,470,880), landed=lt>3.9;
+    props=pond(880,548,260)+lilyPad(880,548)+ripples(880,548,lt,3.85);
+    chars=lulu(170,lt,t,[],0,.9)+frogAt(fx,landed?548:520+28*prog(lt,3.0,3.9),lt,t,[3.0],.9,130,1.1);
+    pops=pop('Fact 2',640,150,100,ORANGE,lt,.3)+pop('land',330,300,64,'#9A6324',lt,1.6)+pop('water',1060,400,64,BLUE,lt,4.4);
+    cap=caption('Frogs can live on land and in water.',lt,1.0);
+  }else if(i===4){
+    o={noFlowers:true};
+    const x=lt<3.4?hopX(lt,1.6,1.0,230,640):hopX(lt,3.4,1.0,640,1050);
+    // dotted path of the jumps
+    const path=(x0,x1,t0)=>{let d='';const u=prog(lt,t0,t0+1.0);for(let k=1;k<12;k++){const v=k/12;if(eio(v)>eio(u)*1.0001&&u<1)break;const a=4*v*(1-v);d+=`<circle cx="${lerp(x0,x1,eio(v))}" cy="${520-60-170*a}" r="5" fill="#fff" opacity=".85"/>`;}return d;};
+    props=path(230,640,1.6)+path(640,1050,3.4);
+    chars=frogAt(x,520,lt,t,[1.6,3.4],1.0,170,1.1);
+    pops=pop('Fact 3',640,150,100,ORANGE,lt,.3)+pop('far!',1050,330,72,PURPLE,lt,4.6,-4);
+    cap=caption('Frogs use strong back legs to jump.',lt,0.9);
+  }else if(i===5){
+    o={noFlowers:true,noSun:true};
+    const b=k=>1+.06*Math.sin(t*4+k*2);
+    props=waterWin(260,370,105,grow(lt,.5)*b(0),place(0,0,tadpole({eye:blink(t,.3),wig:Math.sin(lt*7)}),{s:.95}),t);
+    props+=waterWin(640,370,105,grow(lt,1.3)*b(1),place(0,58,frog({eye:blink(t,.8)}),{s:.62}),t);
+    const jy=-40*Math.abs(Math.sin(t*2.4));
+    props+=`<g transform="translate(1020,370) scale(${grow(lt,2.1)*b(2)})"><circle r="105" fill="#FFF3C4"/><path d="M-70,60 Q0,-60 70,60" stroke="#E7B93A" stroke-width="6" stroke-dasharray="4 14" stroke-linecap="round" fill="none"/>${place(0,62+jy,frog({eye:blink(t,1.1)}),{s:.6})}<circle r="105" fill="none" stroke="#fff" stroke-width="9"/></g>`;
+    pops=pop('tadpole',260,170,56,GREEN,lt,.5)+pop('land &amp; water',640,170,56,BLUE,lt,1.3)+pop('jump',1020,170,56,ORANGE,lt,2.1);
+    cap=caption('Frogs are amazing!',lt,3.0);
+  }else{
+    props=heart(600,320+6*Math.sin(t*3),1.4,'#FF7FB0',.85*prog(lt,2,2.5))+heart(660,270+6*Math.sin(t*3+1),1,'#FF9AA2',.85*prog(lt,2.3,2.8));
+    props+=pond(860,548,240)+lilyPad(860,548);
+    chars=lulu(420,lt,t,[1.0,1.8],26,.95,true)+frogAt(860,548,lt,t,[1.3,2.1],.6,40,1.05,true);
+    pops=pop('Bye bye!',640,160,110,PURPLE,lt,.4,-2);
+    cap=caption('Bye bye, little frog!',lt,1.6);
+  }
+  o.noClouds=true;
+  svg.innerHTML=bg(t,0,'',o)+sky+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(1120,110,1.1,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=pond(860,665,380)+lilyPad(960,662)+place(620,650,tadpole({}),{s:.9})+bubble(700,620,9)+bubble(720,598,6);
+  s+=shadow(185,662,100)+place(180,658,duck({wing:22}),{s:1.45});
+  s+=shadow(960,664,130)+place(960,660,frog({}),{s:2.0,flip:true});
+  s+=label('Did you know?',640,200,130,PURPLE,-3);
+  s+=label('Fun frog facts',640,330,84,GREEN,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

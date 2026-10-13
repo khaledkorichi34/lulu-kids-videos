@@ -346,3 +346,24 @@ function ladybird(o={}){
   <circle cx="76" cy="-24" r="5.5" fill="#FF9AA2" opacity=".9"/>
   <path d="M64,-22 Q72,-15 80,-21" stroke="#fff" stroke-width="2.8" fill="none" stroke-linecap="round"/>`;
 }
+
+/* ---------- tadpole and bubbles (episode 9) ---------- */
+// tadpole({eye, wig, legs, tail}): little tadpole facing right, origin at the centre of its body
+// (about 150 wide, 70 tall). wig = tail wiggle (-1..1), legs = 0..1 shows two back legs, tail = 0..1 tail length
+function tadpole(o={}){
+  const e=o.eye==null?1:o.eye, w=o.wig||0, lg=o.legs||0, tl=o.tail==null?1:o.tail;
+  const C='#5E8C3A', L='#A9CF7A';
+  const tail=tl>0?`<g transform="translate(-26,0) scale(${tl},1)"><path d="M4,-16 Q-40,${-14+w*16} -84,${w*24} Q-40,${14+w*16} 4,16 Z" fill="${C}"/><path d="M0,-6 Q-36,${-4+w*12} -70,${w*20}" stroke="${L}" stroke-width="4" fill="none" stroke-linecap="round" opacity=".6"/></g>`:'';
+  const legs=lg>0?`<g opacity="${lg}"><path d="M-16,20 Q-26,40 -6,46" stroke="${C}" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M10,22 Q4,42 22,46" stroke="${C}" stroke-width="10" fill="none" stroke-linecap="round"/></g>`:'';
+  return `${tail}${legs}
+  <ellipse cx="0" cy="0" rx="40" ry="32" fill="${C}"/>
+  <ellipse cx="6" cy="10" rx="24" ry="14" fill="${L}"/>
+  <circle cx="20" cy="-12" r="11" fill="#fff"/>
+  <g transform="translate(22,-12) scale(1,${e})"><circle r="6.5" fill="#1f2d1f"/><circle cx="2" cy="-2.3" r="2.3" fill="#fff"/></g>
+  <circle cx="26" cy="8" r="6.5" fill="#FF9AA2" opacity=".8"/>
+  <path d="M30,0 Q35,5 39,0" stroke="#2c4a1c" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+}
+// bubble(x,y,r,opacity): round water bubble with a small highlight
+function bubble(x,y,r,o=1){
+  return `<g opacity="${o}"><circle cx="${x}" cy="${y}" r="${r}" fill="#fff" opacity=".35" stroke="#fff" stroke-width="2.5"/><circle cx="${x-r*.35}" cy="${y-r*.35}" r="${r*.25}" fill="#fff"/></g>`;
+}

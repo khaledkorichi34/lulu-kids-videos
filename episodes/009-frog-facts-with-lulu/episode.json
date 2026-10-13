@@ -1,0 +1,115 @@
+{
+  "number": 9,
+  "slug": "frog-facts-with-lulu",
+  "format": "curious",
+  "ages": "6-10",
+  "title": "Did You Know? Fun Frog Facts with Lulu | Facts for Kids",
+  "description": "Lulu the little duck shares three fun facts about frogs!\n\nSee how a tiny tadpole grows legs and becomes a frog, where frogs live, and how they jump.\n\nA gentle nature video for children aged 6 to 10.",
+  "duration": 48,
+  "seed": 9,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.3,
+      "type": "sparkle"
+    },
+    {
+      "t": 1.3,
+      "type": "boing_high"
+    },
+    {
+      "t": 2.3,
+      "type": "boing_high"
+    },
+    {
+      "t": 5.8,
+      "type": "pop"
+    },
+    {
+      "t": 12.8,
+      "type": "ding"
+    },
+    {
+      "t": 13.1,
+      "type": "pop"
+    },
+    {
+      "t": 14.5,
+      "type": "pop"
+    },
+    {
+      "t": 15.9,
+      "type": "pop"
+    },
+    {
+      "t": 19.8,
+      "type": "pop"
+    },
+    {
+      "t": 22.5,
+      "type": "boing_low"
+    },
+    {
+      "t": 23.35,
+      "type": "sparkle"
+    },
+    {
+      "t": 26.8,
+      "type": "pop"
+    },
+    {
+      "t": 28.1,
+      "type": "boing_low"
+    },
+    {
+      "t": 29.9,
+      "type": "boing_low"
+    },
+    {
+      "t": 31.1,
+      "type": "ding"
+    },
+    {
+      "t": 34.0,
+      "type": "pop"
+    },
+    {
+      "t": 34.8,
+      "type": "pop"
+    },
+    {
+      "t": 35.6,
+      "type": "pop"
+    },
+    {
+      "t": 36.5,
+      "type": "sparkle"
+    },
+    {
+      "t": 41.4,
+      "type": "pop"
+    },
+    {
+      "t": 42.0,
+      "type": "boing_high"
+    },
+    {
+      "t": 42.8,
+      "type": "boing_high"
+    }
+  ],
+  "check_times": [
+    1.6,
+    2.6,
+    9.0,
+    17.2,
+    22.95,
+    24.4,
+    28.6,
+    30.4,
+    31.8,
+    36.6,
+    42.3,
+    44.5
+  ]
+}
