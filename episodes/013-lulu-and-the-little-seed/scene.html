@@ -1,0 +1,137 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 13 - Lulu and the Little Seed. Lulu plants a seed and pats the soil. A little cloud
+   brings rain, the warm sun comes out, a sprout appears and grows, day by day, into a pink flower.
+   Bunny and Bee come to see it, the sun goes down, and Lulu sleeps next to her flower. */
+const DUR=45, SC=[0,5,11.5,18,24.5,31,38,45];
+const NAVY='#2D2A6E', PINK='#FF5D8F', ORANGE='#F08A00', GREEN='#16A34A', PURPLE='#7B5CFF', BLUE='#1B7FD6';
+const FX=660, LX=440, FCOL='#FF7FB0';
+const lulu=(x,lt,t,hops=[],h=30,s=1,wave=false)=>{
+  const j=jumps(lt,hops,.6,h), w=wave?20+20*Math.sin(lt*9):0;
+  return shadow(x,522,60*s,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy});
+};
+const bun=(x,lt,t,hops=[],h=34,s=.95,ear=0)=>{
+  const j=jumps(lt,hops,.55,h);
+  return shadow(x,522,50*s,-j.y)+place(x,520+j.y,bunny({eye:blink(t,1.6),ear}),{s,sx:j.sx,sy:j.sy});
+};
+const hopX=(x0,x1,lt,hops,d)=>{let x=x0;hops.forEach(h=>{const u=prog(lt,h,h+d);x=x-(x0-x1)/hops.length*u;});return x;};
+const sideClouds=(t,n)=>cloud(110+12*Math.sin(t*.3),300,.7,1-n*.75)+cloud(1170+12*Math.sin(t*.25+1),250,.6,1-n*.75);
+// flower height and opening over the whole story (only ever grows)
+function growth(t){
+  let h=0,op=0;
+  if(t>=SC[3]){const lt=t-SC[3];h=70*eout(prog(lt,2.8,4.2));}
+  if(t>=SC[4]){const lt=t-SC[4];h=70;[.3,.9,1.5].forEach(g=>{h+=46*eout(prog(lt,g,g+.45));});op=eout(prog(lt,3.0,3.9));}
+  return [h,op];
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',pops='',cap='',o={},behind='';
+  const [fh,fo]=growth(t);
+  switch(i){
+  case 0:{
+    props=growFlower(980,520,190,1,FCOL,t,{face:true,s:1.1});
+    chars=lulu(380,lt,t,[1.3,2.3,3.3],30,1.05,true);
+    pops=pop(LULU,520,160,140,PINK,lt,.4,-3)+pop('and the Little Seed',520,236,60,NAVY,lt,1.0);
+    break;}
+  case 1:{
+    // Lulu walks in with a seed, drops it in a hole, then pats the soil three times
+    const x=lerp(-130,LX,eio(prog(lt,.2,2.2))), mv=(lt>.2&&lt<2.2)?1:0;
+    const wob=mv*Math.sin(lt*13)*7, bob=-mv*Math.abs(Math.sin(lt*13))*9;
+    const P=[3.6,4.3,5.0];
+    const pats=P.filter(p=>lt>p+.55).length;
+    props=hole(FX,522);
+    if(lt>3.4)props+=soil(FX,522,clamp(.35+pats*.22+.2*prog(lt,3.4,3.6)));
+    if(lt<2.5)props+=seed(x+96,520+bob-90,1);
+    else if(lt<3.05){const u=prog(lt,2.5,3.05);props+=seed(lerp(LX+96,FX,u),lerp(430,512,u*u)-40*Math.sin(Math.PI*u)*.6,1);}
+    else if(lt<3.4)props+=seed(FX,514,1);
+    if(lt<2.3)chars=shadow(x,522,60,-bob)+place(x,520+bob,duck({eye:blink(t,0),wing:mv*10*Math.sin(lt*13)}),{rot:wob});
+    else chars=lulu(LX,lt,t,P,26,1,lt>3.5&&lt<5.6);
+    cap=lt<3.2?caption('Lulu has a little seed.',lt,.4):caption('Into the ground it goes.',lt,3.2);
+    pops=pop('Pat,',300,170,80,ORANGE,lt,P[0]+.5,-6)+pop('pat,',590,150,80,PINK,lt,P[1]+.5,3)+pop('pat!',880,170,80,ORANGE,lt,P[2]+.5,6);
+    break;}
+  case 2:{
+    // a little cloud comes and rains on the seed
+    o={noSun:true};
+    props=soil(FX,522,1);
+    const cx=lerp(1450,FX,eio(prog(lt,.2,2.0)));
+    for(let k=0;k<12;k++){const q=lt-2.2-k*.27;if(q>0&&lt<5.9){const qq=q%0.9, dx=-60+((k*47)%120);
+      const y=lerp(300,515,qq/.9);props+=raindrop(FX+dx,y,1,.9);}}
+    props+=rainCloud(cx,250,1.25,blink(t,.5));
+    chars=lulu(LX,lt,t,[5.2],26,1,lt>5.0);
+    cap=lt<3.0?caption('A little cloud comes.',lt,.4):caption('Drink, little seed!',lt,3.0);
+    pops=pop('Drip,',300,170,84,BLUE,lt,2.4,-6)+pop('drop!',980,170,84,BLUE,lt,3.0,6);
+    break;}
+  case 3:{
+    // the warm sun comes up from behind the hills; a sprout pops up
+    o={noSun:true};
+    behind=sun(t,1150,lerp(330,100,eio(prog(lt,.2,2.4))));
+    props=soil(FX,522,1)+growFlower(FX,512,fh,0,FCOL,t,{s:1.25});
+    chars=lulu(LX,lt,t,[4.6],26,1,lt>4.6);
+    cap=lt<3.0?caption('The warm sun shines.',lt,.4):caption('Look! A little sprout!',lt,3.0);
+    pops=pop('Hello, sprout!',640,170,88,GREEN,lt,4.0,-3);
+    break;}
+  case 4:{
+    // day by day it grows: grow, grow, grow, then the bud opens
+    props=soil(FX,522,1)+growFlower(FX,512,fh,fo,FCOL,t,{face:true,s:1.25});
+    chars=lulu(LX,lt,t,[4.2],28,1,lt>4.0);
+    for(let k=0;k<4;k++){const q=lt-3.3-k*.2;if(q>0&&q<1.2){const a=k*Math.PI/2+.6, r=60+q*70;
+      props+=sparkle(FX+Math.cos(a)*r,512-fh*1.25+Math.sin(a)*r*.7,1.3,Math.sin(Math.PI*q/1.2));}}
+    cap=lt<3.4?caption('Day by day, it grows.',lt,.4):caption('A pink flower!',lt,3.4);
+    if(lt<4.0)pops=pop('Grow,',300,170,80,GREEN,lt,.3,-6)+pop('grow,',590,150,80,GREEN,lt,.9,3)+pop('grow!',880,170,80,GREEN,lt,1.5,6);
+    else pops=pop('Wow!',640,150,110,PINK,lt,4.0,-3);
+    break;}
+  case 5:{
+    // Bunny and Bee come to see the flower; then the sun goes down and they go home
+    n=.35*eio(prog(lt,3.3,6.5));
+    o={noSun:true};
+    behind=sun(t,1150,lerp(100,540,eio(prog(lt,3.3,6.5))));
+    props=soil(FX,522,1)+growFlower(FX,512,fh,fo,FCOL,t,{face:true,s:1.25});
+    const H=[.2,.75,1.3,1.85], away=eio(prog(lt,4.4,6.6));
+    const bx=hopX(1380,900,lt,H,.55)+lerp(0,700,away);
+    chars=lulu(LX,lt,t,[],0,1,lt>4.0)+bun(bx,lt,t,H.concat(lt>4.4?[4.4,4.95,5.5,6.05]:[2.6]),34,.95,lt>2.2&&lt<4.2?8*Math.sin(lt*6):0);
+    // bee: flies in from the left, circles the flower, then flies away up and right
+    let ex,ey,flip;
+    const w=lt*1.6;
+    const ox=FX+115*Math.cos(w), oy=325+24*Math.sin(w);
+    if(lt<1.6){const u=eio(prog(lt,0,1.6));ex=lerp(-120,ox,u);ey=lerp(260,oy,u);flip=true;}
+    else if(lt<4.4){ex=ox;ey=oy;flip=-Math.sin(w)>0;}
+    else{const u=eio(prog(lt,4.4,6.4)), ax=FX+115*Math.cos(4.4*1.6), ay=325+24*Math.sin(4.4*1.6);ex=lerp(ax,1450,u);ey=lerp(ay,240,u);flip=true;}
+    chars+=place(ex,ey+4*Math.sin(lt*7),bee({flap:Math.abs(Math.sin(lt*30))}),{s:.75,flip});
+    cap=lt<4.0?caption('Friends come to see.',lt,.4):caption('Bye-bye, friends!',lt,4.0);
+    pops=lt<4.0?pop('So pretty!',640,140,92,PURPLE,lt,1.4,-3):pop('Bye-bye!',640,140,92,PURPLE,lt,4.0,3);
+    break;}
+  case 6:{
+    n=lerp(.35,1,eio(prog(lt,.2,2.4)));
+    o={noSun:true};
+    const asleep=lt>2.0, close=lerp(1,.6,eio(prog(lt,1.5,3.5)));
+    props=soil(FX,522,1)+growFlower(FX,512,fh,close,FCOL,t,{face:true,asleep,s:1.25});
+    chars=shadow(LX,522,64)+place(LX,520,duck({asleep,eye:blink(t,0)}),{s:1.05,sy:1+.025*Math.sin(lt*2.2),rot:asleep?-3:0});
+    for(let k=0;k<3;k++){let q=lt-2.5-k*.9;if(q>0){q%=2.7;
+      pops+=`<text x="${430-q*26+8*Math.sin(q*3)}" y="${350-q*36}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}
+    cap=caption('Good night, little flower.',lt,.5);
+    pops+=pop('The End',640,155,112,'#FFE58A',lt,3.6,-3,NAVY);
+    break;}
+  }
+  o.noClouds=true;
+  svg.innerHTML=bg(t,n,sideClouds(t,n)+behind,o)+props+chars+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=sun(0,1160,110)+cloud(130,110,1.2,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=soil(1000,652,1)+growFlower(1000,644,200,1,FCOL,0,{face:true,s:1.45});
+  s+=shadow(240,662,130)+place(232,658,duck({wing:22}),{s:1.9});
+  s+=label(LULU,600,190,170,PINK,-3)+label('and the Little Seed',600,285,70,NAVY);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

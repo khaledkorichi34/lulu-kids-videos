@@ -434,3 +434,50 @@ function stream(t,y,n=0,speed=40){
     s+=`<path d="M${x.toFixed(1)},${yy} q18,-8 36,0 q18,8 36,0" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity="${(.45-.25*n).toFixed(2)}"/>`;}
   return s;
 }
+
+/* ---------- seed, soil, growing flower and rain cloud (episode 13) ---------- */
+// seed(x,y,s): small brown seed (about 22 wide, 30 tall) centred at (x,y)
+function seed(x,y,s=1){
+  return `<g transform="translate(${x},${y}) scale(${s})"><ellipse rx="11" ry="15" fill="#8A5A2B"/><ellipse cx="-3" cy="-5" rx="3" ry="5" fill="#B98A5A"/></g>`;
+}
+// hole(x,y): small dark planting hole in the ground; soil(x,y,u): little brown mound, u = 0..1 how heaped
+function hole(x,y){return `<ellipse cx="${x}" cy="${y}" rx="36" ry="9" fill="#5a3418"/>`;}
+function soil(x,y,u=1){
+  return `<path d="M${x-48},${y+4} Q${x},${y-4-22*u} ${x+48},${y+4} Z" fill="#8A5A2B"/><ellipse cx="${x-10}" cy="${y-6*u}" rx="12" ry="${1.5+2.5*u}" fill="#A8743F" opacity=".8"/>`;
+}
+// growFlower(x,y,h,open,col,t,o): flower growing from the ground at (x,y). h = stem height (0 = nothing,
+// small h = sprout with two leaves), open = 0..1 petals opening (0 shows a green bud once h > 60).
+// o = {s, face, asleep}: face adds a smile to the centre, asleep closes its eyes. Head centre at y-h*s.
+function growFlower(x,y,h,open,col,t,o={}){
+  if(h<=0)return '';
+  const s=o.s||1, sw=Math.sin(t*1.3)*2.5, lf=clamp(h/40);
+  let head='';
+  if(open>0){
+    for(let k=0;k<6;k++){const a=k*Math.PI/3+.26, d=12+18*open;
+      head+=`<circle cx="${(Math.cos(a)*d).toFixed(1)}" cy="${(-h+Math.sin(a)*d).toFixed(1)}" r="${(8+14*open).toFixed(1)}" fill="${col}"/>`;}
+    head+=`<circle cx="0" cy="${-h}" r="${10+9*open}" fill="#FFB703"/>`;
+    if(o.face&&open>.5){
+      const e=o.asleep?`<path d="M-9,${-h-3} Q-6,${-h} -3,${-h-3} M3,${-h-3} Q6,${-h} 9,${-h-3}" stroke="#7a4b00" stroke-width="2.5" fill="none" stroke-linecap="round"/>`
+        :`<circle cx="-6" cy="${-h-3}" r="2.8" fill="#7a4b00"/><circle cx="6" cy="${-h-3}" r="2.8" fill="#7a4b00"/>`;
+      head+=e+`<path d="M-6,${-h+5} Q0,${-h+10} 6,${-h+5}" stroke="#7a4b00" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+    }
+  }else if(h>60){
+    const b=clamp((h-60)/40);
+    head=`<g transform="translate(0,${-h}) scale(${b})"><ellipse cx="0" cy="-4" rx="13" ry="20" fill="${col}"/><path d="M-15,0 Q-14,18 0,20 Q14,18 15,0 Q8,-8 0,4 Q-8,-8 -15,0Z" fill="#3FA34D"/></g>`;
+  }
+  return `<g transform="translate(${x},${y}) scale(${s}) rotate(${sw})">
+  <path d="M0,0 Q8,${-h/2} 0,${-h}" stroke="#2F9E44" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <g transform="translate(0,${-Math.min(h*.45,60)}) scale(${lf})"><ellipse cx="17" cy="-6" rx="18" ry="8" fill="#3FA34D" transform="rotate(-28 17 -6)"/><ellipse cx="-17" cy="-6" rx="18" ry="8" fill="#47AD47" transform="rotate(28 -17 -6)"/></g>
+  ${head}</g>`;
+}
+// rainCloud(x,y,s,eye): soft blue-grey cloud with a kind face (about 200 wide, 110 tall at s=1), centred at (x,y)
+function rainCloud(x,y,s=1,e=1){
+  return `<g transform="translate(${x},${y}) scale(${s})"><g fill="#C9D6E8"><ellipse cx="0" cy="18" rx="96" ry="32"/><circle cx="-44" cy="0" r="38"/><circle cx="8" cy="-22" r="48"/><circle cx="54" cy="2" r="34"/></g>
+  <g transform="translate(-18,4) scale(1,${e})"><circle r="6" fill="#3a4a6a"/><circle cx="2" cy="-2" r="2" fill="#fff"/></g><g transform="translate(18,4) scale(1,${e})"><circle r="6" fill="#3a4a6a"/><circle cx="2" cy="-2" r="2" fill="#fff"/></g>
+  <path d="M-9,20 Q0,28 9,20" stroke="#3a4a6a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <circle cx="-34" cy="18" r="7" fill="#FF9AA2" opacity=".7"/><circle cx="34" cy="18" r="7" fill="#FF9AA2" opacity=".7"/></g>`;
+}
+// raindrop(x,y,s,opacity): little blue drop, point up, centred near (x,y)
+function raindrop(x,y,s=1,o=1){
+  return `<path transform="translate(${x},${y}) scale(${s})" d="M0,-14 Q9,0 7,6 Q4,12 0,12 Q-4,12 -7,6 Q-9,0 0,-14Z" fill="#5BB8F5" opacity="${o}"/>`;
+}

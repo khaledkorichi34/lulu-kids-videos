@@ -1,0 +1,32 @@
+{
+  "number": 13,
+  "slug": "lulu-and-the-little-seed",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and the Little Seed | Bedtime Story for Kids",
+  "description": "Lulu the little duck plants a tiny seed. A little cloud brings rain, the warm sun shines, and day by day it grows into a pink flower.\nBunny and Bee come to see it, and at night Lulu sleeps next to her flower.\nA gentle short story for children aged 3 to 6.",
+  "duration": 45,
+  "seed": 13,
+  "lullaby_from": 38.0,
+  "sfx": [
+    {"t": 0.4, "type": "sparkle"},
+    {"t": 8.05, "type": "pop"},
+    {"t": 9.2, "type": "boing_low"},
+    {"t": 9.9, "type": "boing_low"},
+    {"t": 10.6, "type": "boing_low"},
+    {"t": 13.9, "type": "pop"},
+    {"t": 14.5, "type": "pop"},
+    {"t": 20.8, "type": "sparkle"},
+    {"t": 22.0, "type": "ding"},
+    {"t": 24.8, "type": "boing_high"},
+    {"t": 25.4, "type": "boing_high"},
+    {"t": 26.0, "type": "boing_high"},
+    {"t": 27.5, "type": "sparkle"},
+    {"t": 28.5, "type": "ding"},
+    {"t": 31.3, "type": "buzz"},
+    {"t": 32.4, "type": "pop"},
+    {"t": 35.0, "type": "ding"},
+    {"t": 41.6, "type": "sparkle"}
+  ],
+  "check_times": [2.0, 8.0, 8.9, 9.6, 10.3, 14.6, 17.0, 22.9, 26.2, 27.8, 29.0, 33.5, 35.5, 37.0, 42.0]
+}
