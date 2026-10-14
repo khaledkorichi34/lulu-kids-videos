@@ -384,3 +384,53 @@ function tree(x,y,s=1,face=false){
   <circle cx="0" cy="-300" r="92" fill="#52BA52"/>
   <circle cx="-70" cy="-352" r="16" fill="#6FCF6F" opacity=".7"/><circle cx="40" cy="-380" r="13" fill="#6FCF6F" opacity=".7"/></g>`;
 }
+
+/* ---------- boat, fish, reeds and water (episode 12) ---------- */
+// boatBack(x,y) and boatFront(x,y): little rowing boat seen from the side, origin at the waterline
+// centre (about 420 wide, 70 tall above the water). Draw boatBack, then the passengers (their feet
+// at y-28, they are hidden below the rim), then boatFront.
+function boatBack(x,y){
+  return `<path d="M${x-196},${y-66} Q${x},${y-80} ${x+196},${y-66} L${x+180},${y-56} L${x-180},${y-56} Z" fill="#B5723C"/>`;
+}
+function boatFront(x,y){
+  return `<g transform="translate(${x},${y})">
+  <path d="M-212,-70 L212,-70 Q190,6 120,12 L-120,12 Q-190,6 -212,-70 Z" fill="#E76F51"/>
+  <rect x="-214" y="-76" width="428" height="16" rx="8" fill="#F4A261"/>
+  <path d="M-192,-34 L192,-34" stroke="#F7C59F" stroke-width="8" stroke-linecap="round" opacity=".8"/>
+  <circle cx="-150" cy="-12" r="9" fill="#FFF3D6" opacity=".9"/><circle cx="150" cy="-12" r="9" fill="#FFF3D6" opacity=".9"/></g>`;
+}
+// oar(px,py,angle): wooden oar turning about the pivot (px,py) on the rim; angle in degrees from
+// straight down (positive = blade forward to the right). About 190 long; blade centre 100 from the pivot.
+function oar(px,py,a){
+  return `<g transform="translate(${px},${py}) rotate(${-a})">
+  <rect x="-5" y="-62" width="10" height="170" rx="5" fill="#8A5A2B"/>
+  <ellipse cx="0" cy="100" rx="14" ry="28" fill="#A8743F"/><circle cx="0" cy="-62" r="9" fill="#6E4520"/></g>`;
+}
+// fish({eye, col, tail}): round little fish facing right, origin at its centre (about 130 wide, 80 tall)
+function fish(o={}){
+  const e=o.eye==null?1:o.eye, c=o.col||'#FF9F1C', w=o.tail||0;
+  return `
+  <path d="M-40,0 L${-78},${-30+w*8} Q-70,0 ${-78},${30+w*8} Z" fill="${c}"/>
+  <path d="M-12,-34 Q6,-56 26,-34 Z" fill="${c}"/>
+  <ellipse cx="0" cy="0" rx="50" ry="38" fill="${c}"/>
+  <ellipse cx="6" cy="14" rx="30" ry="16" fill="#FFE2B0" opacity=".8"/>
+  <path d="M-6,4 Q-18,18 -4,22" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7"/>
+  <g transform="translate(24,-8) scale(1,${e})"><circle r="7" fill="#1d2433"/><circle cx="2.3" cy="-2.4" r="2.4" fill="#fff"/></g>
+  <circle cx="22" cy="12" r="6" fill="#FF9AA2" opacity=".9"/>
+  <path d="M38,6 Q44,11 48,5" stroke="#7a3d00" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+}
+// reed(x,y,h,t,i): cattail reed at the water's edge, sways gently
+function reed(x,y,h,t,i){
+  return `<g transform="translate(${x},${y}) rotate(${Math.sin(t*1.2+i*2.1)*3})">
+  <path d="M0,0 Q4,${-h/2} 0,${-h}" stroke="#4E8F3A" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <ellipse cx="2" cy="${-h+26}" rx="8" ry="22" fill="#8A5A2B"/>
+  <path d="M-4,0 Q-26,${-h*.4} -30,${-h*.62}" stroke="#5DA544" stroke-width="7" fill="none" stroke-linecap="round"/></g>`;
+}
+// stream(t,y,n,speed): river from y to the bottom of the stage with ripples drifting left
+function stream(t,y,n=0,speed=40){
+  let s=`<path d="M0,${y} Q320,${y-8} 640,${y} T1280,${y} L1280,720 L0,720Z" fill="${mix('#4DB8F0','#2B4C8C',n)}"/>`;
+  s+=`<rect x="0" y="${y+60}" width="1280" height="${720-y-60}" fill="${mix('#3AA6E3','#24407A',n)}" opacity=".6"/>`;
+  for(let k=0;k<14;k++){const x=((k*197+40-t*speed*(1+(k%3)*.25))%1400+1400)%1400-60, yy=y+18+(k*37)%170;
+    s+=`<path d="M${x.toFixed(1)},${yy} q18,-8 36,0 q18,8 36,0" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity="${(.45-.25*n).toFixed(2)}"/>`;}
+  return s;
+}

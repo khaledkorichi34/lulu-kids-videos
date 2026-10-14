@@ -159,5 +159,23 @@
     "videoId": "Dj3WBpjiS9k",
     "published": "2026-10-14",
     "note": "Upload returned 403; video appeared on the channel as 'unknown'. Title and description must be set by hand in YouTube Studio."
+  },
+  {
+    "number": 12,
+    "slug": "row-row-row-your-boat",
+    "format": "rhyme",
+    "ages": "2-6",
+    "title": "Row, Row, Row Your Boat with Lulu | Nursery Rhyme for Kids",
+    "topic": "Sing-along: Row, Row, Row Your Boat (3 verses); Lulu rows down a stream, fish jump on every 'merrily', dream bubble on 'life is but a dream'; a frog hops in from a lily pad (verse 2), a bird flies in at sunset (verse 3); everyone sleeps under the moon",
+    "rhyme": "row",
+    "cast": [
+      "duck",
+      "frog",
+      "bird",
+      "fish",
+      "boat"
+    ],
+    "videoId": "sbUQ5yt8cyo",
+    "published": "2026-10-14"
   }
 ]

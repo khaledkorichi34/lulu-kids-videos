@@ -1,0 +1,122 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script src="../../toolkit/rhymes.js"></script>
+<script>
+/* Episode 12 - Row, Row, Row Your Boat (sing-along). Lulu rows a little boat down a stream.
+   Verse 1: Lulu alone, fish jump on every "merrily". Verse 2: a frog hops in from a lily pad.
+   Verse 3: a blue bird flies in and the sun sets. Then everyone falls asleep under the moon. */
+const BPM=96, START=5.0;
+const LINES=rhymeTimes(RHYMES.row,START,3,4,BPM);
+const END=rhymeEnd(LINES);                 // 55.0 s
+const DUR=61, SC=[0,DUR];
+const SPB=60/BPM;
+const V2=LINES[4].t0, V3=LINES[8].t0;      // 22.5 s, 40.0 s
+const WATER=500, BX=640;
+const FROG_HOP=V2-2.2, BIRD_LAND=V3-.6;
+const FISH_X=[80,1040,220,900], FISH_D=[1,-1,1,1], FISH_C=['#FF9F1C','#FF7FB0','#FFC928','#B58CFF'];
+
+function night(t){
+  if(t<V3-1)return 0;
+  if(t<END)return .28*eio(prog(t,V3-1,END));
+  return lerp(.28,1,eio(prog(t,END,END+3)));
+}
+
+function render(t){
+  const n=night(t);
+  const li=currentLine(LINES,t), L=li>=0?LINES[li]:null, line=L?L.index:-1;
+  const singing=t>START-.4&&t<END+.3;
+  const p=t<END+.5?beatPulse(LINES,t):0;
+  const sleep=t>END+1.4;
+  const flow=singing?1:(t<START?prog(t,1,START-.4):1-prog(t,END,END+2));
+  const by=585+4*Math.sin(t*2.1);
+  let far='',chars='',front='',sky='',pops='',cap='';
+
+  // reeds on the far bank drift past (the boat goes down the stream)
+  const sx=t*38;
+  for(let k=0;k<7;k++){const x=((k*230+120-sx)%1610+1610)%1610-120;far+=reed(x,WATER+6,110+(k%3)*22,t,k);}
+
+  // lily pad with the frog floating in from the right, the frog hops into the boat
+  const padX=1420-62*(t-12);
+  if(padX>-120&&padX<1400){
+    far+=`<ellipse cx="${padX}" cy="${WATER+44}" rx="80" ry="15" fill="#3FA34D"/><ellipse cx="${padX}" cy="${WATER+41}" rx="80" ry="13" fill="#58C063"/>`;
+  }
+  const hop=prog(t,FROG_HOP,FROG_HOP+.75);
+  let frogX,frogY,frogIn=false;
+  if(t<FROG_HOP){frogX=padX;frogY=WATER+42;}
+  else if(hop<1){const u=eio(hop);frogX=lerp(1420-62*(FROG_HOP-12),BX+150,u);frogY=lerp(WATER+42,by-62,u)-150*4*hop*(1-hop);}
+  else{frogX=BX+150;frogY=by-62;frogIn=true;}
+  const frogG=frog({eye:sleep?.12:blink(t,1.3)});
+  if(!frogIn&&padX<1400)far+=place(frogX,frogY,frogG,{s:.72});
+
+  // the bird flies in for verse 3 and lands on the back of the boat
+  const fl=prog(t,V3-3,BIRD_LAND);
+  let birdS='';
+  if(fl>0){
+    const u=eout(fl), bx=lerp(-120,BX-150,u), byy=lerp(260,by-58,u)-60*Math.sin(Math.PI*u);
+    const flap=fl<1?30*Math.sin(t*22):(sleep?0:8*Math.sin(t*3));
+    birdS=place(bx,fl<1?byy:by-58-4*p,bird({eye:sleep?.12:blink(t,2.1),wing:flap}),{s:.7});
+  }
+
+  // Lulu rows: one stroke every one and a half beats while the song plays
+  const ph=singing?2*Math.PI*(t-START)/(3*SPB):0;
+  const row=Math.sin(ph)*flow;
+  const oa=38+16*row;
+  chars+=boatBack(BX,by);
+  chars+=birdS;
+  chars+=place(BX-30,by-58-5*p,duck({eye:blink(t,0),asleep:sleep,wing:sleep?0:-10-22*row}),{s:.95,rot:sleep?-3:3*row});
+  if(frogIn)chars+=place(frogX,frogY-4*p,frogG,{s:.85});
+  front+=boatFront(BX,by)+oar(BX+118,by-66,oa);
+  // ripples at the oar blade and a little wake behind the boat
+  const bladeX=BX+118+100*Math.sin(oa*Math.PI/180);
+  front+=`<ellipse cx="${bladeX.toFixed(1)}" cy="${by+14}" rx="${30+10*row}" ry="7" fill="#fff" opacity="${(.5*flow).toFixed(2)}"/>`;
+  for(let k=0;k<3;k++){const q=((t*.9+k/3)%1);front+=`<path d="M${BX-220-q*140},${by-4+q*10} q-20,-6 -40,0" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity="${((1-q)*.6*flow).toFixed(2)}"/>`;}
+
+  // a fish jumps on every "merrily"
+  for(const Lx of LINES)if(Lx.index===2&&t>=Lx.t0&&t<Lx.t1+1.5){
+    [0,3,6,9].forEach((wi,k)=>{const w=Lx.words[wi], u=(t-w.t0)/1.0;if(u<0||u>1.3)return;
+      const x0=FISH_X[k], dr=FISH_D[k];
+      if(u<=1){const x=x0+130*u*dr, y=WATER+60-160*4*u*(1-u), ang=lerp(-55,55,u);
+        front+=place(x,y,fish({col:FISH_C[k],eye:blink(t,k),tail:Math.sin(t*14)}),{s:.62,rot:ang,flip:dr<0});}
+      [[x0,0],[x0+130*dr,1]].forEach(([sx2,d])=>{const q=u-d*.92;if(q>0&&q<.4)front+=`<ellipse cx="${sx2}" cy="${WATER+62}" rx="${20+70*q}" ry="${6+12*q}" fill="none" stroke="#fff" stroke-width="4" opacity="${(1-q/.4).toFixed(2)}"/>`;});
+    });
+  }
+
+  // a dream bubble on "Life is but a dream"
+  for(const Lx of LINES)if(Lx.index===3&&t>=Lx.t0-.2&&t<Lx.t1+.7){
+    const o=prog(t,Lx.t0-.2,Lx.t0+.3)*(1-prog(t,Lx.t1+.1,Lx.t1+.7));
+    sky+=`<g opacity="${o.toFixed(2)}"><circle cx="566" cy="372" r="9" fill="#fff"/><circle cx="538" cy="338" r="14" fill="#fff"/>
+      <ellipse cx="420" cy="250" rx="112" ry="78" fill="#fff"/><ellipse cx="420" cy="250" rx="98" ry="64" fill="#E9E4FF"/>
+      <circle cx="388" cy="242" r="34" fill="#FFE27A"/><circle cx="404" cy="230" r="30" fill="#E9E4FF"/>
+      ${bigStar(452,216,16,'#FFC928',8*Math.sin(t*3))}${bigStar(466,282,11,'#FFC928',-8*Math.sin(t*3))}${sparkle(490,242,1)}</g>`;
+  }
+
+  // title card, then the words of the song, then good night
+  const to=1-prog(t,3.9,4.5);
+  if(to>0)pops=`<g opacity="${to}">`+pop('Row, Row, Row',640,165,96,'#FF5D8F',t,.4,-2,'#fff')+pop('Your Boat',640,285,112,'#19B8A6',t,1.0,2,'#fff')+`</g>`;
+  cap=t<END+1.4?karaoke(LINES,t,'#FF5D8F'):caption('Sweet dreams, little boat!',t-END,1.6);
+  if(sleep)for(let k=0;k<3;k++){let q=t-END-2-k*.9;if(q>0){q%=2.7;
+    pops+=`<text x="${650+q*22}" y="${370-q*44}" font-size="${26+q*10}" fill="#fff" opacity="${(Math.sin(Math.PI*q/2.7)*.95).toFixed(2)}">z</text>`;}}
+
+  const cl=cloud(150+12*Math.sin(t*.3),100,.8,1-n*.75);
+  // own sun so it fades out before the moon rises past it
+  const so=1-prog(n,.28,.38), sn=so>0?`<g opacity="${so.toFixed(2)}">${sun(t,1150,100+n*560)}</g>`:'';
+  svg.innerHTML=bg(t,n,sn,{noSun:true,noFlowers:true,noClouds:true})+cl+stream(t,WATER,n,38*flow+6)+far+chars+front+nightTint(.4*n)+sky+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,'',{noFlowers:true,noClouds:true})+stream(0,WATER,0,0);
+  for(let k=0;k<6;k++)s+=reed(60+k*240,WATER+6,120+(k%3)*22,0,k);
+  const by=590;
+  s+=boatBack(BX,by)+place(BX-150,by-58,bird({wing:10}),{s:.7})+place(BX-30,by-58,duck({wing:-20}),{s:.95})+place(BX+150,by-62,frog({}),{s:.85});
+  s+=boatFront(BX,by)+oar(BX+118,by-66,40);
+  s+=place(1090,470,fish({col:'#FF7FB0'}),{s:.8,rot:-30});
+  s+=label('Row, Row, Row',600,175,118,'#FF5D8F',-3,'#fff')+label('Your Boat',600,320,132,'#19B8A6',-2,'#fff');
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
