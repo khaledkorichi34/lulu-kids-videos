@@ -141,5 +141,23 @@
     ],
     "videoId": "FaTCsJziBP4",
     "published": "2026-10-13"
+  },
+  {
+    "number": 11,
+    "slug": "opposites-with-lulu",
+    "format": "learning",
+    "ages": "3-6",
+    "title": "Opposites with Lulu | Learn Opposites for Kids",
+    "topic": "Four opposites: big and small (balls), up and down (birds), fast and slow (bunny and snail), awake and asleep (Lulu and a kitten)",
+    "cast": [
+      "duck",
+      "bird",
+      "bunny",
+      "snail",
+      "kitten"
+    ],
+    "videoId": "Dj3WBpjiS9k",
+    "published": "2026-10-14",
+    "note": "Upload returned 403; video appeared on the channel as 'unknown'. Title and description must be set by hand in YouTube Studio."
   }
 ]

@@ -1,0 +1,123 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 11 - Opposites with Lulu: big/small, up/down, fast/slow, awake/asleep. Title, one scene per pair, finale. */
+const SC=[0,4.5,14,23.5,33,42.5,49];
+const DUR=SC[SC.length-1];
+const CA='#FF5D8F', CB='#19B8A6', INK='#2D2A6E';
+const XL=320, XR=960, WY=160;
+// in every pair scene: left thing at T1, its caption at C1; right thing at T2, caption C2; "X and Y" at C3
+const T1=.5, C1=.8, T2=3.6, C2=3.9, C3=6.7;
+const PAIRS=[['big','small','The ball is big','The ball is small'],
+             ['up','down','The bird is up','The bird is down'],
+             ['fast','slow','The bunny is fast','The snail is slow'],
+             ['awake','asleep','Lulu is awake','The kitten is asleep']];
+const cap1=s=>s[0].toUpperCase()+s.slice(1);
+
+function hearts(lt,t0){
+  let s='';
+  for(let k=0;k<9;k++){const q=lt-(t0+k*.4);if(q>0){const y=610-q*120,x=110+k*132+25*Math.sin(q*2+k),o=clamp((y-50)/140)*clamp(q*3)*.9;
+    if(y>40)s+=heart(x,y,1+(k%3)*.25,['#FF5D8F','#FF9F1C','#FFFFFF'][k%3],o);}}
+  return s;
+}
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.4)):0;
+// the two words; after C3 they gently pulse together
+function words(p,lt,sizeA=130,sizeB=130){
+  const pl=lt>C3?1+.06*Math.sin((lt-C3)*6):1;
+  const w=(txt,x,size,col,t0,rot)=>{const s=pop(txt,x,WY,size,col,lt,t0,rot);return s&&pl!==1?`<g transform="translate(${x},${WY-size*.35}) scale(${pl}) translate(${-x},${-(WY-size*.35)})">${s}</g>`:s;};
+  return w(p[0],XL,sizeA,CA,T1,-4)+w(p[1],XR,sizeB,CB,T2,4);
+}
+function caps(p,lt){
+  if(lt>=C3)return caption(`${cap1(p[0])} and ${p[1]}!`,lt,C3);
+  if(lt>=C2)return caption(p[3],lt,C2);
+  return caption(p[2],lt,C1);
+}
+function zzz(x,y,lt,t0){
+  let s='';
+  for(let k=0;k<3;k++){const q=((lt-t0-k*.8)%2.4+2.4)%2.4;if(lt<t0+k*.8)continue;
+    const o=clamp(q*2)*clamp((2.4-q)*1.5);
+    s+=`<text x="${x+q*22+k*6}" y="${y-q*34}" font-size="${30+k*8}" fill="#7B5CFF" opacity="${o}" stroke="#fff" stroke-width="5" paint-order="stroke">z</text>`;}
+  return s;
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={noSun:true,noClouds:true};
+  if(i===0){
+    o={};
+    const j=jumps(lt,[1.4,2.4],.6,30);
+    chars=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:20+20*Math.sin(lt*9),eye:blink(t,0)}),{s:1.1,sx:j.sx,sy:j.sy});
+    pops=pop('Opposites with',640,128,84,INK,lt,.3)+pop(LULU,640,262,140,'#FF5D8F',lt,.7,-3);
+    pops+=pop('big',380,680,100,CA,lt,1.6,-4)+pop('small',900,672,56,CB,lt,2.1,4);
+  }else if(i<=4){
+    const p=PAIRS[i-1];
+    if(i===1){ // big and small balls, Lulu in the middle looks at each one
+      const gA=grow(lt,T1), gB=grow(lt,T2);
+      const jA=jumps(lt,[C3+.2],.6,26), jB=jumps(lt,[C3+.45],.5,40);
+      if(gA>0)chars+=shadow(XL,522,100*gA,-jA.y)+ball(XL,520+jA.y,110*gA,0);
+      if(gB>0)chars+=shadow(XR,522,28*gB,-jB.y)+ball(XR,520+jB.y,30*gB,0);
+      const lookR=lt>T2;
+      chars+=shadow(640,522,52)+place(640,520,duck({eye:blink(t,.3),wing:lt>C3?24*Math.abs(Math.sin(lt*9)):0}),{s:.85,flip:!lookR});
+      pops=words(p,lt,170,72);
+    }else if(i===2){ // a bird up in the sky, a bird down on the ground
+      const gA=grow(lt,T1), gB=grow(lt,T2);
+      const by=360+8*Math.sin(lt*3);
+      if(gA>0)chars+=shadow(XL,522,44*gA,160)+place(XL,by,bird({eye:blink(t,.2),wing:-30+30*Math.sin(lt*14)}),{s:.75*gA});
+      const jB=jumps(lt,[C3+.3],.5,24);
+      if(gB>0)chars+=shadow(XR,522,48*gB,-jB.y)+place(XR,520+jB.y,bird({eye:blink(t,1.1),col:'#FF7FB0',dark:'#E0558C',belly:'#FFE0EC'}),{s:.75*gB,sx:jB.sx,sy:jB.sy,flip:true});
+      chars+=shadow(640,522,52)+place(640,520,duck({eye:blink(t,.6)}),{s:.85,flip:lt<T2});
+      pops=words(p,lt);
+    }else if(i===3){ // the bunny hops fast back and forth, the snail creeps slowly
+      if(lt>T1){
+        const q=lt-T1, per=.32, n=Math.floor(q/per), u=(q%per)/per;
+        const leg=Math.floor(n/8), k=n%8, dir=leg%2?-1:1;
+        const x0=dir>0?140:500, step=45*dir;
+        const x=x0+step*(k+u), y=-40*4*u*(1-u);
+        const g=grow(lt,T1);
+        chars+=shadow(x,522,46,-y)+place(x,520+y,bunny({eye:blink(t,.4),ear:6*Math.sin(u*Math.PI)}),{s:.8*g,sx:1-.06*Math.sin(u*Math.PI),sy:1+.08*Math.sin(u*Math.PI)});
+      }
+      const gB=grow(lt,T2);
+      if(gB>0){const x=720+240*prog(lt,T2,SC[4]-SC[3]);
+        chars+=shadow(x+10,522,90*gB)+place(x,520,snail({eye:blink(t,.9),look:Math.sin(lt*1.5)}),{s:.7*gB});}
+      pops=words(p,lt);
+    }else{ // Lulu is awake, the kitten is asleep
+      const j=jumps(lt,[1.2,2.2,C3+.2],.6,24);
+      chars+=shadow(XL,522,60,-j.y)+place(XL,520+j.y,duck({wing:22+22*Math.sin(lt*9),eye:blink(t,0)}),{s:.95,sx:j.sx,sy:j.sy});
+      const gB=grow(lt,T2);
+      if(gB>0){const br=1+.025*Math.sin(lt*2.2);
+        chars+=shadow(XR,522,50*gB)+place(XR,520,kitten({asleep:true,tilt:-8,tail:.3*Math.sin(lt*.8)}),{s:gB,sx:br,sy:br});
+        chars+=zzz(XR+50,350,lt,T2+.5);}
+      pops=words(p,lt);
+    }
+    cap=caps(p,lt);
+  }else{
+    o={noClouds:true};
+    const j=jumps(lt,[2.6,3.7,4.8],.6,35), jb=jumps(lt,[2.9,4.0,5.1],.55,30);
+    props=hearts(lt,2.4);
+    chars=shadow(300,522,46,-jb.y)+place(300,520+jb.y,bunny({eye:blink(t,.4)}),{s:.85,sx:jb.sx,sy:jb.sy});
+    chars+=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:25+25*Math.sin(lt*10),eye:blink(t,0)}),{s:1.05,sx:j.sx,sy:j.sy});
+    chars+=shadow(960,522,46,-jb.y)+place(960,520+jb.y,kitten({eye:blink(t,1.1),tail:Math.sin(t*2)}),{s:.9,sx:jb.sx,sy:jb.sy});
+    pops=pop('Well done!',640,170,120,'#FF9F1C',lt,.4,-3);
+    cap=caption('Opposites are fun!',lt,1.6);
+  }
+  svg.innerHTML=bg(t,0,'',o)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(640,662,140)+place(630,658,duck({wing:22}),{s:1.9});
+  s+=shadow(240,662,120)+ball(240,660,140,0);
+  s+=shadow(1060,662,34)+ball(1060,660,38,0);
+  s+=label('big',250,250,170,CA,-5)+label('small',1050,240,90,CB,4);
+  s+=label('Opposites',640,120,96,INK)+label(LULU,640,230,96,'#FF5D8F',-3);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

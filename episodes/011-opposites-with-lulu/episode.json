@@ -1,0 +1,95 @@
+{
+  "number": 11,
+  "slug": "opposites-with-lulu",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "Opposites with Lulu | Learn Opposites for Kids",
+  "description": "Learn opposites with Lulu the little duck!\n\nA big ball and a small ball, a bird up and a bird down, a fast bunny and a slow snail, and an awake duck next to a sleepy kitten.\n\nA short, gentle first-words video for children aged 3 to 6.",
+  "duration": 49,
+  "seed": 11,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.7,
+      "type": "sparkle"
+    },
+    {
+      "t": 5.0,
+      "type": "boing_low"
+    },
+    {
+      "t": 8.1,
+      "type": "boing_high"
+    },
+    {
+      "t": 11.2,
+      "type": "ding"
+    },
+    {
+      "t": 14.5,
+      "type": "pop"
+    },
+    {
+      "t": 17.6,
+      "type": "pop"
+    },
+    {
+      "t": 20.7,
+      "type": "ding"
+    },
+    {
+      "t": 24.0,
+      "type": "boing_high"
+    },
+    {
+      "t": 27.1,
+      "type": "pop"
+    },
+    {
+      "t": 30.2,
+      "type": "ding"
+    },
+    {
+      "t": 33.5,
+      "type": "pop"
+    },
+    {
+      "t": 36.6,
+      "type": "pop"
+    },
+    {
+      "t": 39.7,
+      "type": "ding"
+    },
+    {
+      "t": 42.9,
+      "type": "sparkle"
+    },
+    {
+      "t": 45.1,
+      "type": "boing_high"
+    }
+  ],
+  "check_times": [
+    1.2,
+    3.2,
+    7.1,
+    10.1,
+    11.5,
+    13.1,
+    16.6,
+    19.6,
+    21.0,
+    22.6,
+    26.1,
+    29.1,
+    30.5,
+    32.1,
+    35.6,
+    38.6,
+    40.0,
+    41.6,
+    45.6,
+    47.0
+  ]
+}
