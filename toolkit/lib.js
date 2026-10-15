@@ -496,3 +496,76 @@ function egg(x,y,s=1,wob=0){
   <path d="M-104,-36 Q-100,0 0,0 Q100,0 104,-36 Q60,-20 0,-22 Q-60,-20 -104,-36Z" fill="#C68B4E"/>
   <path d="M-86,-24 Q-40,-8 -6,-16 M-30,-6 Q20,-2 70,-18 M-70,-12 Q-20,4 40,-6" stroke="#8C5A2B" stroke-width="4" fill="none" stroke-linecap="round"/></g>`;
 }
+
+/* ---------- butterfly life cycle (episode 15) ---------- */
+// leaf(x,y,s,rot,col): big flat leaf lying sideways, centred at (x,y), about 420 wide and 170 tall at s=1, with a stalk on the left
+function leaf(x,y,s=1,rot=0,col='#4CB85A'){
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})">
+  <path d="M-250,8 Q-232,4 -206,0" stroke="#3B8E3F" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M-210,0 C-140,-96 120,-100 210,0 C120,100 -140,96 -210,0Z" fill="${col}"/>
+  <path d="M-205,0 Q0,-8 200,0" stroke="#8FD86E" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path d="M-110,-3 Q-80,-40 -50,-58 M-20,-5 Q10,-44 40,-62 M70,-5 Q100,-36 125,-48 M-110,3 Q-80,40 -50,58 M-20,5 Q10,44 40,62 M70,5 Q100,36 125,48" stroke="#8FD86E" stroke-width="4" fill="none" stroke-linecap="round" opacity=".8"/></g>`;
+}
+// tinyEgg(x,y,s,wob): very small pale butterfly egg standing on a leaf, origin at its bottom (about 26 wide, 36 tall at s=1)
+function tinyEgg(x,y,s=1,wob=0){
+  return `<g transform="translate(${x},${y}) rotate(${wob}) scale(${s})"><ellipse cx="0" cy="-18" rx="13" ry="18" fill="#FFF3B0"/>
+  <path d="M-6,-32 Q-8,-18 -6,-4 M0,-35 V-2 M6,-32 Q8,-18 6,-4" stroke="#E9D57A" stroke-width="1.6" fill="none"/>
+  <ellipse cx="-4" cy="-25" rx="3" ry="5" fill="#fff" opacity=".8"/></g>`;
+}
+// caterpillar({eye, wig, munch}): green caterpillar facing right, origin at its feet (about 230 wide, 120 tall
+// with antennae). wig = body wave (-1..1, use Math.sin(t*k)), munch = 0..1 mouth open
+function caterpillar(o={}){
+  const e=o.eye==null?1:o.eye, w=o.wig||0, m=o.munch||0;
+  let segs='';
+  for(let k=0;k<5;k++){
+    const x=-96+k*36, y=-26-Math.max(0,Math.sin(k*1.1+w*2.2))*8;
+    segs+=`<ellipse cx="${x}" cy="-3" rx="7" ry="4.5" fill="#2E7D32"/><circle cx="${x}" cy="${y}" r="26" fill="${k%2?'#7ED957':'#66C94A'}"/><circle cx="${x-6}" cy="${y-10}" r="7" fill="#C6F3A6" opacity=".6"/>`;
+  }
+  const mouth=m>0?`<ellipse cx="96" cy="-34" rx="7" ry="${2+m*6}" fill="#2a3a1a"/>`:`<path d="M88,-36 Q95,-29 102,-36" stroke="#2a3a1a" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+  return `${segs}
+  <path d="M60,-82 Q56,-104 46,-112 M78,-84 Q84,-106 96,-112" stroke="#2a3a1a" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <circle cx="46" cy="-112" r="5.5" fill="#FF8C1A"/><circle cx="96" cy="-112" r="5.5" fill="#FF8C1A"/>
+  <ellipse cx="72" cy="-4" rx="8" ry="4.5" fill="#2E7D32"/>
+  <circle cx="74" cy="-50" r="36" fill="#8BE063"/>
+  <g transform="translate(84,-58) scale(1,${e})"><circle r="7.5" fill="#1f2d1f"/><circle cx="2.4" cy="-2.6" r="2.6" fill="#fff"/></g>
+  <circle cx="64" cy="-40" r="8" fill="#FF9AA2" opacity=".8"/>
+  ${mouth}`;
+}
+// chrysalis(x,y,s,wob,sleepy): green chrysalis hanging from a twig; (x,y) is the point where it hangs.
+// About 70 wide and 150 long at s=1. wob = swing in degrees; sleepy = small closed eyes and smile
+function chrysalis(x,y,s=1,wob=0,sleepy=true){
+  const face=sleepy?`<path d="M-15,62 Q-10,67 -5,62 M5,62 Q10,67 15,62" stroke="#2E6B2E" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M-5,76 Q0,80 5,76" stroke="#2E6B2E" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="-20" cy="72" r="5" fill="#FF9AA2" opacity=".7"/><circle cx="20" cy="72" r="5" fill="#FF9AA2" opacity=".7"/>`:'';
+  return `<g transform="translate(${x},${y}) rotate(${wob}) scale(${s})">
+  <rect x="-5" y="-2" width="10" height="16" rx="4" fill="#3B5E2B"/>
+  <path d="M0,10 C30,14 40,52 36,84 C32,120 14,146 0,152 C-14,146 -32,120 -36,84 C-40,52 -30,14 0,10Z" fill="#7FCF6A"/>
+  <path d="M-22,40 Q0,30 22,40" stroke="#E7B93A" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <circle cx="-14" cy="104" r="3.5" fill="#E7B93A"/><circle cx="0" cy="110" r="3.5" fill="#E7B93A"/><circle cx="14" cy="104" r="3.5" fill="#E7B93A"/>
+  <ellipse cx="-16" cy="80" rx="6" ry="22" fill="#B9EBA6" opacity=".6"/>
+  ${face}</g>`;
+}
+// twig(x0,x1,y): thin brown branch from x0 to x1 at height y, with two small leaves
+function twig(x0,x1,y){
+  return `<path d="M${x0},${y} Q${(x0+x1)/2},${y-10} ${x1},${y+4}" stroke="#8B5A2B" stroke-width="14" fill="none" stroke-linecap="round"/>
+  <ellipse cx="${x0+40}" cy="${y-18}" rx="26" ry="11" fill="#4CB85A" transform="rotate(-30 ${x0+40} ${y-18})"/>
+  <ellipse cx="${x1-50}" cy="${y-16}" rx="26" ry="11" fill="#4CB85A" transform="rotate(25 ${x1-50} ${y-16})"/>`;
+}
+// bigButterfly({flap, eye, col, col2}): friendly butterfly seen from the front, origin at the centre of its body
+// (about 230 wide and 200 tall with antennae at flap 1). flap = 0..1 how open the wings are (0 = closed, edge on).
+// The mouth is at (0,-36): draw a sipping tongue from there.
+function bigButterfly(o={}){
+  const e=o.eye==null?1:o.eye, f=o.flap==null?1:o.flap, w=.12+.88*f, c=o.col||'#FF8C42', c2=o.col2||'#FFC94D';
+  const wings=`<g transform="scale(${w},1)">
+  <ellipse cx="-52" cy="-18" rx="56" ry="44" fill="${c}" transform="rotate(-18 -52 -18)"/><ellipse cx="52" cy="-18" rx="56" ry="44" fill="${c}" transform="rotate(18 52 -18)"/>
+  <ellipse cx="-40" cy="36" rx="36" ry="32" fill="${c2}"/><ellipse cx="40" cy="36" rx="36" ry="32" fill="${c2}"/>
+  <circle cx="-62" cy="-24" r="16" fill="#fff" opacity=".55"/><circle cx="62" cy="-24" r="16" fill="#fff" opacity=".55"/>
+  <circle cx="-44" cy="40" r="10" fill="#fff" opacity=".5"/><circle cx="44" cy="40" r="10" fill="#fff" opacity=".5"/></g>`;
+  return `${wings}
+  <path d="M-8,-64 Q-16,-92 -30,-100 M8,-64 Q16,-92 30,-100" stroke="#4a3328" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <circle cx="-30" cy="-100" r="6" fill="#4a3328"/><circle cx="30" cy="-100" r="6" fill="#4a3328"/>
+  <ellipse cx="0" cy="12" rx="13" ry="52" fill="#6B4A3A"/>
+  <circle cx="0" cy="-48" r="24" fill="#7A5644"/>
+  <g transform="translate(-9,-52) scale(1,${e})"><circle r="5.5" fill="#1a1010"/><circle cx="1.8" cy="-1.9" r="1.9" fill="#fff"/></g>
+  <g transform="translate(9,-52) scale(1,${e})"><circle r="5.5" fill="#1a1010"/><circle cx="1.8" cy="-1.9" r="1.9" fill="#fff"/></g>
+  <circle cx="-15" cy="-40" r="5" fill="#FF9AA2" opacity=".85"/><circle cx="15" cy="-40" r="5" fill="#FF9AA2" opacity=".85"/>
+  <path d="M-6,-38 Q0,-33 6,-38" stroke="#2a1a14" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+}

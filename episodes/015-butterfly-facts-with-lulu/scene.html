@@ -1,0 +1,150 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 15 - Did you know? Butterfly facts.  Title, fact 1 (a butterfly starts as a tiny egg),
+   a hungry caterpillar hatches, fact 2 (it changes inside a chrysalis), out comes a butterfly,
+   fact 3 (butterflies sip nectar from flowers, like a straw), recap of the four stages, goodbye. */
+const SC=[0,5.5,12,18.5,25,31.5,38.5,46,53], DUR=53;
+const NAVY='#2D2A6E', PURPLE='#7B5CFF', GREEN='#1F7F37', ORANGE='#E76F2E', PINK='#E8467C';
+const lulu=(x,lt,t,hops,h=20,s=.95,wave=false,flip=false)=>{
+  const j=jumps(lt,hops,.6,h), w=wave?20+20*Math.sin(lt*9):0;
+  return shadow(x,522,56*s/.95,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy,flip});
+};
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.4)):0;
+const flapAt=(t,k=0)=>.55+.45*Math.sin(t*9+k);
+// round "look closer" window with a soft leafy background
+let WIN=0;
+function closeWin(x,y,r,g,inner,bgc='#DFF6C8'){
+  if(g<=0)return '';
+  const id='w'+(WIN++);
+  return `<g transform="translate(${x},${y}) scale(${g})"><defs><clipPath id="${id}"><circle r="${r}"/></clipPath></defs>
+  <g clip-path="url(#${id})"><circle r="${r}" fill="${bgc}"/><circle cx="${-r*.5}" cy="${-r*.55}" r="${r*.5}" fill="#fff" opacity=".35"/>${inner}</g>
+  <circle r="${r}" fill="none" stroke="#fff" stroke-width="9"/></g>`;
+}
+function arrow(x,y,o){
+  return o>0?`<path d="M${x-30},${y} H${x+18} M${x+2},${y-16} L${x+22},${y} L${x+2},${y+16}" stroke="${NAVY}" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="${o}"/>`:'';
+}
+function sparkles(x,y,lt,t0){
+  const u=prog(lt,t0,t0+1.2);if(u<=0||u>=1)return '';
+  let s='';for(let k=0;k<6;k++){const a=k*Math.PI/3+.4, d=40+u*90;s+=sparkle(x+Math.cos(a)*d,y+Math.sin(a)*d,1.1,1-u);}
+  return s;
+}
+// a butterfly flying gently around (x,y)
+function flyer(x,y,t,s,k=0){
+  const fx=x+30*Math.sin(t*1.3+k), fy=y+18*Math.sin(t*2.1+k);
+  return place(fx,fy,bigButterfly({flap:flapAt(t,k),eye:blink(t,.5+k)}),{s,rot:6*Math.sin(t*1.3+k)});
+}
+// leaf with bites taken out of its edge (n = number of bites shown, 0..3)
+function bittenLeaf(x,y,s,bites,bgc){
+  let b='';const pts=[[150,-36],[110,-52],[70,-60]];
+  for(let k=0;k<bites;k++)b+=`<circle cx="${x+pts[k][0]*s}" cy="${y+pts[k][1]*s}" r="${24*s}" fill="${bgc}"/>`;
+  return leaf(x,y,s)+b;
+}
+
+function render(t){
+  WIN=0;
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={};
+  const sky=cloud(130+8*Math.sin(t*.3),105,.9,.95);
+  if(i===0){
+    props=flower(840,520,150,'#FF7FB0',t,0,1.1)+flower(990,520,120,'#B58CFF',t,1,1.0);
+    chars=lulu(330,lt,t,[1.3,2.3],30,1.1,true)+flyer(630,320,t,.8);
+    pops=pop('Did you know?',620,165,100,PURPLE,lt,.3,-3);
+    cap=caption('Fun butterfly facts with Lulu',lt,1.8);
+  }else if(i===1){
+    o={noFlowers:true};
+    const hatch=prog(lt,4.2,4.8);
+    const wob=8*Math.sin(lt*14)*prog(lt,3.3,3.6);
+    let inner=leaf(0,30,.62);
+    if(hatch<1)inner+=`<g opacity="${1-hatch}">${tinyEgg(10,24,2.2,wob)}</g>`;
+    if(hatch>0)inner+=place(-10,30,caterpillar({eye:blink(t,.3),wig:Math.sin(lt*4)}),{s:.45*back(hatch)});
+    props=closeWin(660,372,165,grow(lt,.2),inner);
+    chars=lulu(210,lt,t,[],0,.9);
+    pops=pop('Fact 1',640,150,100,ORANGE,lt,.3);
+    cap=caption('A butterfly starts as a tiny egg.',lt,1.2);
+  }else if(i===2){
+    o={noFlowers:true};
+    const bites=lt>4.6?3:lt>3.2?2:lt>1.8?1:0, grown=.7+.3*prog(lt,1.8,5.2);
+    const m=Math.abs(Math.sin(lt*10))*(lt>1.2&&lt<5.4?1:0);
+    const inner=bittenLeaf(-40,70,.75,bites,'#DFF6C8')+place(-70,60,caterpillar({eye:blink(t,.6),wig:Math.sin(lt*5),munch:m}),{s:grown});
+    props=closeWin(640,380,190,1,inner);
+    pops=pop('munch, munch!',640,155,84,GREEN,lt,1.4,-2);
+    cap=caption('Out hatches a hungry caterpillar!',lt,0.6);
+  }else if(i===3){
+    o={noFlowers:true};
+    const walk=prog(lt,.4,2.6), cx=lerp(470,610,eio(walk)), change=prog(lt,3.0,3.8);
+    props=twig(380,900,300);
+    if(change<1)chars+=`<g opacity="${1-change}">${place(cx,288,caterpillar({eye:blink(t,.2),wig:Math.sin(lt*6)*(walk<1?1:.2)}),{s:.75})}</g>`;
+    if(change>0)chars+=`<g opacity="${change}">${chrysalis(700,300,1.25*lerp(.6,1,eout(change)),3*Math.sin(t*1.5))}</g>`;
+    chars+=sparkles(700,400,lt,3.0)+lulu(170,lt,t,[],0,.9);
+    pops=pop('Fact 2',640,150,100,ORANGE,lt,.3);
+    cap=caption('Then it changes inside a chrysalis.',lt,3.6);
+  }else if(i===4){
+    o={noFlowers:true};
+    const wob=lt<2.2?10*Math.sin(lt*12)*prog(lt,.5,1):0, out=prog(lt,2.2,2.8);
+    props=twig(380,900,300);
+    if(out<1)props+=`<g opacity="${1-out}">${chrysalis(700,300,1.25,wob)}</g>`;
+    const open=prog(lt,2.8,3.8), fly=prog(lt,4.2,6.2);
+    if(out>0){
+      const f=open<1?open:flapAt(t);
+      const bx=lerp(700,860,eio(fly))+(fly>0?20*Math.sin(t*1.7):0), by=lerp(395,350,eio(fly))+(fly>0?12*Math.sin(t*2.3):0);
+      chars+=place(bx,by,bigButterfly({flap:f,eye:blink(t,.4)}),{s:.85*lerp(.7,1,eout(out))});
+    }
+    chars+=sparkles(700,390,lt,2.2)+lulu(220,lt,t,[3.9],24,.9,lt>3.9);
+    pops=pop('Hello!',640,170,90,PINK,lt,4.0,-3);
+    cap=caption('Out comes a butterfly!',lt,2.6);
+  }else if(i===5){
+    o={noFlowers:true};
+    const arrive=prog(lt,.3,1.8), sip=prog(lt,2.2,3.0);
+    const bx=lerp(1050,790,eio(arrive)), by=330+(arrive<1?20*Math.sin(t*2.5):4*Math.sin(t*2));
+    props=flower(580,520,150,'#FF7FB0',t,0,1.3)+flower(420,520,100,'#B58CFF',t,1,1.0);
+    // the long tongue reaching down into the flower
+    const head=[bx,by-36*.9];
+    const tongue=sip>0?`<path d="M${head[0]-4},${head[1]+2} Q690,352 598,328" pathLength="1" stroke="#4a3328" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="1 1" stroke-dashoffset="${1-sip}"/>`:'';
+    chars=tongue+place(bx,by,bigButterfly({flap:flapAt(t)*(sip>0?.6:1)+(sip>0?.3:0),eye:blink(t,.4)}),{s:.9})+lulu(180,lt,t,[],0,.85);
+    pops=pop('Fact 3',640,150,100,ORANGE,lt,.3)+pop('like a straw!',1030,450,56,PURPLE,lt,3.4,-3);
+    cap=caption('Butterflies sip nectar from flowers.',lt,1.0);
+  }else if(i===6){
+    o={noFlowers:true,noSun:true};
+    const b=k=>1+.05*Math.sin(t*4+k*2), X=[190,490,790,1090], Y=380;
+    props=closeWin(X[0],Y,105,grow(lt,.4)*b(0),leaf(0,40,.4)+tinyEgg(0,36,2.2));
+    props+=arrow(340,Y,prog(lt,1.1,1.4));
+    props+=closeWin(X[1],Y,105,grow(lt,1.4)*b(1),place(-14,36,caterpillar({eye:blink(t,.8),wig:Math.sin(t*4)}),{s:.62}));
+    props+=arrow(640,Y,prog(lt,2.1,2.4));
+    props+=closeWin(X[2],Y,105,grow(lt,2.4)*b(2),`<path d="M-110,-82 Q0,-92 110,-80" stroke="#8B5A2B" stroke-width="12" fill="none"/>`+chrysalis(0,-86,.95,2*Math.sin(t*1.5)));
+    props+=arrow(940,Y,prog(lt,3.1,3.4));
+    props+=closeWin(X[3],Y,105,grow(lt,3.4)*b(3),place(0,10,bigButterfly({flap:flapAt(t),eye:blink(t,1.2)}),{s:.62}));
+    pops=pop('egg',X[0],215,44,'#B08A1E',lt,.4)+pop('caterpillar',X[1],215,44,GREEN,lt,1.4)
+      +pop('chrysalis',X[2],215,44,'#2E8B57',lt,2.4)+pop('butterfly',X[3],215,44,ORANGE,lt,3.4);
+    cap=caption('Butterflies are amazing!',lt,4.2);
+  }else{
+    props=heart(570,330+6*Math.sin(t*3),1.4,'#FF7FB0',.85*prog(lt,2,2.5))+heart(630,280+6*Math.sin(t*3+1),1,'#FF9AA2',.85*prog(lt,2.3,2.8));
+    props+=flower(960,520,150,'#FF7FB0',t,0,1.1)+flower(1090,520,110,'#FFD23F',t,2,1.0,'#FF8C1A');
+    chars=lulu(400,lt,t,[1.0,1.8],26,.95,true)+flyer(790,310,t,.75,1);
+    pops=pop('Bye bye!',640,160,110,PURPLE,lt,.4,-2);
+    cap=caption('Bye bye, little butterfly!',lt,1.6);
+  }
+  o.noClouds=true;
+  svg.innerHTML=bg(t,0,'',o)+(i===6?'':sky)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(1120,110,1.1,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=flower(1180,690,170,'#FF7FB0',0,0,1.1);
+  s+=leaf(560,640,.55,-6)+place(560,628,caterpillar({}),{s:.75});
+  s+=shadow(185,662,100)+place(180,658,duck({wing:22}),{s:1.45});
+  s+=place(960,520,bigButterfly({flap:1}),{s:1.25,rot:8});
+  s+=label('Did you know?',640,190,130,PURPLE,-3);
+  s+=label('Fun butterfly facts',640,315,84,GREEN,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

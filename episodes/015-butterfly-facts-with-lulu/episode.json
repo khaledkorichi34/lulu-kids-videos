@@ -1,0 +1,125 @@
+{
+  "number": 15,
+  "slug": "butterfly-facts-with-lulu",
+  "format": "curious",
+  "ages": "6-10",
+  "title": "Did You Know? Fun Butterfly Facts with Lulu | Facts for Kids",
+  "description": "Lulu the little duck shares three fun facts about butterflies!\nWatch a tiny egg become a caterpillar, then a chrysalis, then a butterfly.\nSee how butterflies sip sweet nectar from flowers.\nA gentle nature video for children aged 6 to 10.",
+  "duration": 53,
+  "seed": 15,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.3,
+      "type": "sparkle"
+    },
+    {
+      "t": 1.3,
+      "type": "boing_high"
+    },
+    {
+      "t": 2.3,
+      "type": "boing_high"
+    },
+    {
+      "t": 5.8,
+      "type": "pop"
+    },
+    {
+      "t": 9.7,
+      "type": "pop"
+    },
+    {
+      "t": 13.4,
+      "type": "pop"
+    },
+    {
+      "t": 13.8,
+      "type": "pop"
+    },
+    {
+      "t": 15.2,
+      "type": "pop"
+    },
+    {
+      "t": 18.8,
+      "type": "pop"
+    },
+    {
+      "t": 21.5,
+      "type": "sparkle"
+    },
+    {
+      "t": 27.2,
+      "type": "sparkle"
+    },
+    {
+      "t": 28.9,
+      "type": "boing_high"
+    },
+    {
+      "t": 29.0,
+      "type": "pop"
+    },
+    {
+      "t": 31.8,
+      "type": "pop"
+    },
+    {
+      "t": 33.7,
+      "type": "ding"
+    },
+    {
+      "t": 34.9,
+      "type": "pop"
+    },
+    {
+      "t": 38.9,
+      "type": "pop"
+    },
+    {
+      "t": 39.9,
+      "type": "pop"
+    },
+    {
+      "t": 40.9,
+      "type": "pop"
+    },
+    {
+      "t": 41.9,
+      "type": "pop"
+    },
+    {
+      "t": 42.7,
+      "type": "ding"
+    },
+    {
+      "t": 46.4,
+      "type": "pop"
+    },
+    {
+      "t": 47.0,
+      "type": "boing_high"
+    },
+    {
+      "t": 47.8,
+      "type": "boing_high"
+    }
+  ],
+  "check_times": [
+    1.6,
+    2.6,
+    9.0,
+    10.5,
+    15.5,
+    21.8,
+    23.5,
+    28.6,
+    29.6,
+    35.5,
+    37.5,
+    43.5,
+    47.3,
+    49.5
+  ]
+}
