@@ -1,0 +1,31 @@
+{
+  "number": 16,
+  "slug": "lulu-and-the-little-turtle",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and the Little Turtle | Bedtime Story for Kids",
+  "description": "Lulu the little duck meets a little turtle who wants to go to the pond, and walks slowly with her all the way.\nA little rain comes and Turtle hides in her shell. Then the sun comes back, Turtle swims in the pond and says thank you.\nAt night everyone goes to sleep. A gentle short story for children aged 3 to 6.",
+  "duration": 46,
+  "seed": 16,
+  "lullaby_from": 38.5,
+  "sfx": [
+    {"t": 0.4, "type": "sparkle"},
+    {"t": 8.4, "type": "pop"},
+    {"t": 8.6, "type": "boing_high"},
+    {"t": 15.1, "type": "pop"},
+    {"t": 15.9, "type": "pop"},
+    {"t": 16.7, "type": "pop"},
+    {"t": 20.9, "type": "pop"},
+    {"t": 21.1, "type": "boing_low"},
+    {"t": 21.5, "type": "pop"},
+    {"t": 25.4, "type": "sparkle"},
+    {"t": 27.6, "type": "boing_high"},
+    {"t": 28.8, "type": "boing_high"},
+    {"t": 29.5, "type": "boing_high"},
+    {"t": 32.9, "type": "boing_low"},
+    {"t": 34.6, "type": "ding"},
+    {"t": 35.0, "type": "sparkle"},
+    {"t": 42.1, "type": "sparkle"}
+  ],
+  "check_times": [2.0, 8.0, 9.0, 13.0, 16.5, 20.0, 22.0, 24.0, 27.0, 28.6, 29.0, 31.5, 33.0, 34.0, 36.0, 37.5, 40.0, 43.5]
+}

@@ -1,0 +1,118 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 16 - Lulu and the Little Turtle. Lulu meets a little turtle who wants to go to the pond.
+   Lulu walks slowly with her. A little rain comes and Turtle hides in her shell; the sun comes back
+   and she peeks out. At the pond Turtle swims (splash!) and says thank you. At night they sleep. */
+const DUR=46, SC=[0,5,11.5,18.5,25,31,38.5,46];
+const NAVY='#2D2A6E', PINK='#FF5D8F', ORANGE='#F08A00', GREEN='#16A34A', PURPLE='#7B5CFF', BLUE='#1B7FD6';
+const TS=1.15;
+const lulu=(x,lt,t,hops=[],h=30,s=1,wave=false,flip=false)=>{
+  const j=jumps(lt,hops,.6,h), w=wave?20+20*Math.sin(lt*9):0;
+  return shadow(x,522,60*s,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy,flip});
+};
+// a slow waddle for Lulu (mv = 1 while walking)
+const walkDuck=(x,lt,t,mv,flip=false)=>{
+  const wob=mv*Math.sin(lt*9)*5, bob=-mv*Math.abs(Math.sin(lt*9))*7;
+  return shadow(x,522,60,-bob)+place(x,520+bob,duck({eye:blink(t,0),wing:mv*8*Math.sin(lt*9)}),{rot:wob,flip});
+};
+const tur=(x,y,lt,t,o={})=>shadow(x,y+2,80*TS)+place(x,y,turtle({eye:blink(t,1.1),...o}),{s:TS,flip:o.flip});
+const sideClouds=(t,n)=>cloud(110+12*Math.sin(t*.3),300,.7,1-n*.75)+cloud(1170+12*Math.sin(t*.25+1),250,.6,1-n*.75);
+const PX=860, PY=552;
+const pondArt=()=>pond(PX,PY,240);
+const CLIPDEF='<defs><clipPath id="aw"><rect x="0" y="0" width="1280" height="551"/></clipPath></defs>';
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',pops='',cap='',o={},behind='';
+  switch(i){
+  case 0:{
+    chars=lulu(330,lt,t,[1.3,2.3,3.3],30,1.05,true)+tur(900,520,lt,t,{step:0});
+    pops=pop(LULU,640,150,140,PINK,lt,.4,-3)+pop('and the Little Turtle',640,236,60,NAVY,lt,1.0);
+    break;}
+  case 1:{
+    // Lulu waits on the grass; a little turtle walks in slowly from the left
+    const tx=lerp(-140,430,eio(prog(lt,.2,3.0))), mv=(lt>.2&&lt<3.0)?1:0;
+    chars=tur(tx,520,lt,t,{step:mv*lt*8})+lulu(800,lt,t,[3.6],24,1,lt>3.2,true);
+    cap=lt<3.0?caption('Lulu meets a little turtle.',lt,.4):caption('Hello, Little Turtle!',lt,3.0);
+    pops=pop('Hello!',640,160,100,PINK,lt,3.4,-4);
+    break;}
+  case 2:{
+    // they walk to the pond together: Turtle goes first, Lulu walks slowly behind her
+    const u=prog(lt,.6,6.4), tx=lerp(380,700,u), mv=(lt>.6&&lt<6.4)?1:0;
+    chars=walkDuck(tx-280,lt,t,mv)+tur(tx,520,lt,t,{step:mv*lt*8});
+    cap=lt<3.2?caption('Turtle wants to go to the pond.',lt,.4):caption('Lulu walks slowly, too.',lt,3.2);
+    pops=pop('Step,',300,170,80,ORANGE,lt,3.6,-6)+pop('step,',590,150,80,GREEN,lt,4.4,3)+pop('step!',880,170,80,ORANGE,lt,5.2,6);
+    break;}
+  case 3:{
+    // a little rain cloud comes; Turtle hides in her shell, Lulu flaps happily
+    o={noSun:true};
+    const cx=lerp(1450,700,eio(prog(lt,.2,2.0)));
+    for(let k=0;k<12;k++){const q=lt-2.0-k*.27;if(q>0){const qq=q%0.9, dx=-80+((k*47)%160);
+      props+=raindrop(700+dx,lerp(300,505,qq/.9),1,.9);}}
+    props+=rainCloud(cx,250,1.2,blink(t,.5));
+    chars=lulu(420,lt,t,[],0,1,lt>3.0)+tur(700,520,lt,t,{hide:eio(prog(lt,2.6,3.3))});
+    cap=lt<3.2?caption('Oh! A little rain.',lt,.4):caption('Turtle hides in her shell.',lt,3.2);
+    pops=pop('Drip,',300,170,84,BLUE,lt,2.4,-6)+pop('drop!',1000,170,84,BLUE,lt,3.0,6);
+    break;}
+  case 4:{
+    // the sun comes back up; Turtle peeks out; Lulu jumps for joy
+    o={noSun:true};
+    behind=sun(t,1150,lerp(330,100,eio(prog(lt,.2,2.2))));
+    chars=lulu(420,lt,t,[3.8,4.5],28,1,lt>3.6)+tur(700,520,lt,t,{hide:1-eio(prog(lt,1.8,2.6))});
+    cap=lt<2.6?caption('The sun comes back.',lt,.4):caption('Turtle peeks out.',lt,2.6);
+    pops=pop('Peek-a-boo!',640,160,96,PURPLE,lt,2.6,-3);
+    break;}
+  case 5:{
+    // the pond: Turtle walks in and swims (splash!), Frog waves from a lily pad, then sunset
+    n=.35*eio(prog(lt,4.4,7.4));
+    o={noSun:true};
+    behind=sun(t,1150,lerp(100,540,eio(prog(lt,4.4,7.4))));
+    props=pondArt()+lilyPad(1020,PY);
+    const tx=lerp(500,730,eio(prog(lt,.3,3.2))), mv=(lt>.3&&lt<3.2)?1:0;
+    const ty=lerp(520,578,eio(prog(tx,610,710)));
+    let sw='';
+    if(tx>640){for(let k=0;k<2;k++){const q=((lt-1.6+k*.6)%1.2+1.2)%1.2;
+      sw+=`<ellipse cx="${tx+20}" cy="${PY}" rx="${60+q*70}" ry="${10+q*10}" fill="none" stroke="#fff" stroke-width="4" opacity="${(1-q/1.2)*.8}"/>`;}}
+    chars=lulu(250,lt,t,[],0,1,lt>3.6)+place(1020,PY-2,frog({eye:blink(t,2.2)}),{s:.75});
+    chars+=`<g clip-path="url(#aw)">${place(tx,ty,turtle({eye:blink(t,1.1),step:mv*lt*8}),{s:TS})}</g>`+sw;
+    for(let k=0;k<3;k++){const q=lt-4.0-k*.5;if(q>0&&q<2.6)props+=heart(560+k*40,330-q*40,1,PINK,Math.sin(Math.PI*q/2.6));}
+    cap=lt<3.4?caption('Here is the pond!',lt,.4):caption('Thank you, Lulu!',lt,3.4);
+    pops=lt<3.4?pop('Splash!',640,160,100,BLUE,lt,2.3,-4):pop('Thank you!',640,160,96,PINK,lt,3.6,3);
+    break;}
+  case 6:{
+    // night: Turtle sleeps tucked in her shell by the pond, Frog and Lulu sleep too
+    n=lerp(.35,1,eio(prog(lt,.2,2.4)));
+    o={noSun:true};
+    const asleep=lt>2.0;
+    props=pondArt()+lilyPad(1020,PY);
+    chars=place(1020,PY-2,frog({eye:asleep?.12:blink(t,2.2)}),{s:.75});
+    chars+=shadow(380,522,64)+place(380,520,duck({asleep,eye:blink(t,0)}),{s:1.05,sy:1+.025*Math.sin(lt*2.2),rot:asleep?-3:0});
+    chars+=tur(600,520,lt,t,{hide:eio(prog(lt,1.4,2.4)),asleep});
+    for(let k=0;k<3;k++){let q=lt-2.5-k*.9;if(q>0){q%=2.7;
+      pops+=`<text x="${370-q*26+8*Math.sin(q*3)}" y="${350-q*36}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}
+    cap=caption('Good night, Little Turtle.',lt,.5);
+    pops+=pop('The End',640,155,112,'#FFE58A',lt,3.6,-3,NAVY);
+    break;}
+  }
+  o.noClouds=true;
+  svg.innerHTML=CLIPDEF+bg(t,n,sideClouds(t,n)+behind,o)+props+chars+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=sun(0,1160,110)+cloud(130,110,1.2,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(980,664,190)+place(960,660,turtle({}),{s:2.1});
+  s+=shadow(240,662,130)+place(232,658,duck({wing:22}),{s:1.9});
+  s+=label(LULU,600,190,170,PINK,-3)+label('and the Little Turtle',600,285,70,NAVY);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

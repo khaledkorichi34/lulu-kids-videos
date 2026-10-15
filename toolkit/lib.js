@@ -569,3 +569,30 @@ function bigButterfly(o={}){
   <circle cx="-15" cy="-40" r="5" fill="#FF9AA2" opacity=".85"/><circle cx="15" cy="-40" r="5" fill="#FF9AA2" opacity=".85"/>
   <path d="M-6,-38 Q0,-33 6,-38" stroke="#2a1a14" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
 }
+
+/* ---------- turtle (episode 16) ---------- */
+// turtle({eye, step, hide, asleep}): little green turtle facing right, origin at its feet
+// (about 120 tall and 190 wide at s=1). step = walking phase in radians (legs shuffle),
+// hide = 0..1 head and legs go into the shell, asleep = closed eye.
+function turtle(o={}){
+  const e=o.eye==null?1:o.eye, h=clamp(o.hide||0), st=o.step||0;
+  const leg=(x,ph,col)=>`<ellipse cx="${x+7*Math.sin(st+ph)*(1-h)}" cy="${-9+5*h}" rx="${17*(1-h*.4)}" ry="${13*(1-h*.85)}" fill="${col}"/>`;
+  const eye=o.asleep
+    ?`<path d="M94,-62 Q101,-55 108,-62" stroke="#1f2d1f" stroke-width="4" fill="none" stroke-linecap="round"/>`
+    :`<g transform="translate(101,-62) scale(1,${e})"><circle r="7.5" fill="#1f2d1f"/><circle cx="2.4" cy="-2.6" r="2.6" fill="#fff"/></g>`;
+  return `${leg(-36,Math.PI,'#5FAE48')}${leg(40,0,'#5FAE48')}
+  <path d="M-70,-22 L-92,-14 L-68,-10 Z" fill="#7CCB5E" transform="translate(${18*h},0)"/>
+  <g transform="translate(${-52*h},${10*h}) scale(${1-.3*h})">
+    <ellipse cx="66" cy="-40" rx="22" ry="15" fill="#7CCB5E"/>
+    <circle cx="92" cy="-54" r="28" fill="#7CCB5E"/>
+    ${eye}
+    <circle cx="86" cy="-42" r="7" fill="#FF9AA2" opacity=".8"/>
+    <path d="M102,-44 Q110,-38 117,-46" stroke="#1f2d1f" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  </g>
+  ${leg(-54,0,'#7CCB5E')}${leg(24,Math.PI,'#7CCB5E')}
+  <ellipse cx="-4" cy="-16" rx="76" ry="13" fill="#E9C46A"/>
+  <path d="M-74,-18 Q-72,-108 -4,-110 Q64,-108 68,-18 Z" fill="#2FA37A"/>
+  <ellipse cx="-4" cy="-72" rx="24" ry="20" fill="#6FD3A0"/>
+  <ellipse cx="-46" cy="-46" rx="15" ry="14" fill="#6FD3A0"/><ellipse cx="38" cy="-46" rx="15" ry="14" fill="#6FD3A0"/>
+  <ellipse cx="-34" cy="-90" rx="16" ry="7" fill="#fff" opacity=".35" transform="rotate(-25 -34 -90)"/>`;
+}
