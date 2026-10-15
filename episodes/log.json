@@ -194,5 +194,22 @@
     ],
     "videoId": "CmeozUlTsBE",
     "published": "2026-10-14"
+  },
+  {
+    "number": 14,
+    "slug": "abc-with-lulu",
+    "format": "learning",
+    "ages": "3-6",
+    "title": "ABC with Lulu: A to E | Learn Letters for Kids",
+    "topic": "Letters A to E with first words: A is for apple, B is for ball, C is for cat, D is for duck (Lulu), E is for egg (in a nest); all five together at the end",
+    "cast": [
+      "duck",
+      "kitten",
+      "apple",
+      "ball",
+      "egg"
+    ],
+    "videoId": "Io3e-R7Jbds",
+    "published": "2026-10-15"
   }
 ]

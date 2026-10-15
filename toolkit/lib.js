@@ -178,9 +178,10 @@ function bg(t,n,behind='',o={}){
 }
 
 /* ---------- text ---------- */
-function caption(txt,lt,t0){
+// caption(txt,lt,t0,plain): plain = the text without markup (pass it when txt contains <tspan> colours, so the bar fits)
+function caption(txt,lt,t0,plain){
   const u=prog(lt,t0,t0+.4);if(u<=0)return '';
-  const s=lerp(.7,1,back(u)), w=txt.length*30+120;
+  const s=lerp(.7,1,back(u)), w=(plain||txt).length*30+120;
   return `<g transform="translate(640,652) scale(${s})" opacity="${Math.min(1,u*2.5)}"><rect x="${-w/2}" y="-46" width="${w}" height="92" rx="46" fill="#fff" stroke="#FFD23F" stroke-width="6"/><text y="18" text-anchor="middle" font-size="50" fill="#2D2A6E">${txt}</text></g>`;
 }
 function pop(txt,x,y,size,fill,lt,t0,rot=0,stroke='#fff'){
@@ -480,4 +481,18 @@ function rainCloud(x,y,s=1,e=1){
 // raindrop(x,y,s,opacity): little blue drop, point up, centred near (x,y)
 function raindrop(x,y,s=1,o=1){
   return `<path transform="translate(${x},${y}) scale(${s})" d="M0,-14 Q9,0 7,6 Q4,12 0,12 Q-4,12 -7,6 Q-9,0 0,-14Z" fill="#5BB8F5" opacity="${o}"/>`;
+}
+
+/* ---------- egg and nest (episode 14) ---------- */
+// egg(x,y,s,wobble): cream egg with soft speckles sitting in a little straw nest, origin at the bottom of the nest
+// (about 150 tall, 210 wide at s=1); wobble = tilt of the egg in degrees
+function egg(x,y,s=1,wob=0){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <ellipse cx="0" cy="-34" rx="104" ry="34" fill="#A8743F"/>
+  <g transform="rotate(${wob} 0 -40)">
+  <path d="M0,-150 C46,-150 66,-92 62,-62 C58,-30 32,-18 0,-18 C-32,-18 -58,-30 -62,-62 C-66,-92 -46,-150 0,-150Z" fill="#FFF4DC"/>
+  <ellipse cx="-24" cy="-106" rx="11" ry="20" fill="#fff" opacity=".7" transform="rotate(20 -24 -106)"/>
+  <circle cx="22" cy="-112" r="5" fill="#E8D3A8"/><circle cx="34" cy="-80" r="4" fill="#E8D3A8"/><circle cx="-10" cy="-70" r="4.5" fill="#E8D3A8"/><circle cx="8" cy="-132" r="3.5" fill="#E8D3A8"/></g>
+  <path d="M-104,-36 Q-100,0 0,0 Q100,0 104,-36 Q60,-20 0,-22 Q-60,-20 -104,-36Z" fill="#C68B4E"/>
+  <path d="M-86,-24 Q-40,-8 -6,-16 M-30,-6 Q20,-2 70,-18 M-70,-12 Q-20,4 40,-6" stroke="#8C5A2B" stroke-width="4" fill="none" stroke-linecap="round"/></g>`;
 }
