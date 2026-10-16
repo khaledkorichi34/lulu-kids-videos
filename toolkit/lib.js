@@ -633,3 +633,15 @@ function juice(x,y,s=1){
   <path d="M-62,-170 A30,30 0 0 1 -2,-170 Z" fill="#FF9F1C"/><path d="M-56,-170 A24,24 0 0 1 -8,-170 Z" fill="#FFD27A"/>
   <path d="M-32,-170 L-32,-190 M-32,-170 L-47,-182 M-32,-170 L-17,-182" stroke="#FF9F1C" stroke-width="2.5"/></g>`;
 }
+
+/* ---------- bell (episode 18) ---------- */
+// bell(x,y,s,rot,col): little golden bell hanging from a short cord, origin at the top of the cord
+// (about 80 wide and 115 long at s=1). rot = swing in degrees about the hanging point.
+function bell(x,y,s=1,rot=0,col='#FFC928'){
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})">
+  <path d="M0,0 L0,24" stroke="#8B5A2B" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="0" cy="104" r="11" fill="#E39B1A"/>
+  <path d="M-12,32 Q-14,24 0,22 Q14,24 12,32 Q36,40 34,74 Q34,90 44,98 L-44,98 Q-34,90 -34,74 Q-36,40 -12,32 Z" fill="${col}"/>
+  <path d="M-44,98 L44,98 Q46,106 38,106 L-38,106 Q-46,106 -44,98 Z" fill="#F0A81E"/>
+  <path d="M-18,46 Q-24,64 -22,84" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round" opacity=".5"/></g>`;
+}
