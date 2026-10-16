@@ -596,3 +596,40 @@ function turtle(o={}){
   <ellipse cx="-46" cy="-46" rx="15" ry="14" fill="#6FD3A0"/><ellipse cx="38" cy="-46" rx="15" ry="14" fill="#6FD3A0"/>
   <ellipse cx="-34" cy="-90" rx="16" ry="7" fill="#fff" opacity=".35" transform="rotate(-25 -34 -90)"/>`;
 }
+
+/* ---------- letters F to J (episode 17) ---------- */
+// grapes(x,y,s): purple bunch of grapes resting on the ground, origin at its bottom tip
+// (about 130 wide and 200 tall with stalk and leaf at s=1)
+function grapes(x,y,s=1){
+  const rows=[[0],[-22,22],[-44,0,44],[-60,-20,20,60]];   // bottom row first
+  let g='';
+  for(let k=rows.length-1;k>=0;k--)rows[k].forEach((cx,m)=>{   // top rows first, so lower grapes sit in front
+    g+=`<circle cx="${cx}" cy="${-24-k*30}" r="24" fill="${(k+m)%2?'#6A4BE0':'#7B5CFF'}"/><circle cx="${cx-8}" cy="${-32-k*30}" r="6" fill="#fff" opacity=".4"/>`;});
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M4,-128 Q6,-160 20,-176" stroke="#7A4B21" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <ellipse cx="46" cy="-160" rx="32" ry="15" fill="#3FA34D" transform="rotate(-24 46 -160)"/>
+  ${g}</g>`;
+}
+// hat(x,y,s): round sun hat (coral with a yellow band and a little flower), origin at the centre of the brim.
+// About 150 wide and 70 tall at s=1. On Lulu (inside her place()): hat(42,-142,.72) sits on her head.
+function hat(x,y,s=1){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <ellipse cx="0" cy="0" rx="76" ry="16" fill="#E8556F"/>
+  <path d="M-46,-2 Q-48,-62 0,-64 Q48,-62 46,-2 Z" fill="#FF7A90"/>
+  <path d="M-46,-12 Q0,-2 46,-12 L46,-24 Q0,-14 -46,-24 Z" fill="#FFD23F"/>
+  <circle cx="30" cy="-20" r="9" fill="#fff"/><circle cx="30" cy="-20" r="4" fill="#FF9F1C"/>
+  <ellipse cx="-22" cy="-46" rx="10" ry="5" fill="#fff" opacity=".35" transform="rotate(-30 -22 -46)"/></g>`;
+}
+// juice(x,y,s): glass of orange juice with a striped straw and an orange slice, standing on the ground
+// (origin at the bottom of the glass, about 120 wide and 230 tall with the straw at s=1)
+function juice(x,y,s=1){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M10,-120 L34,-224 L46,-222 L22,-118 Z" fill="#fff"/>
+  <path d="M15,-140 L19,-158 L31,-156 L27,-138 Z M24,-180 L28,-198 L40,-196 L36,-178 Z" fill="#FF5D8F"/>
+  <path d="M-52,-170 L52,-170 L42,-4 Q41,0 36,0 L-36,0 Q-41,0 -42,-4 Z" fill="#DFF4FF" opacity=".75"/>
+  <path d="M-49,-130 L49,-130 L42,-6 Q41,-2 36,-2 L-36,-2 Q-41,-2 -42,-6 Z" fill="#FFA62B"/>
+  <path d="M-49,-130 L49,-130 L48,-118 L-48,-118 Z" fill="#FFC15E"/>
+  <path d="M-34,-110 L-28,-20" stroke="#fff" stroke-width="8" stroke-linecap="round" opacity=".45"/>
+  <path d="M-62,-170 A30,30 0 0 1 -2,-170 Z" fill="#FF9F1C"/><path d="M-56,-170 A24,24 0 0 1 -8,-170 Z" fill="#FFD27A"/>
+  <path d="M-32,-170 L-32,-190 M-32,-170 L-47,-182 M-32,-170 L-17,-182" stroke="#FF9F1C" stroke-width="2.5"/></g>`;
+}

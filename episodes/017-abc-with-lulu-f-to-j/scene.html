@@ -1,0 +1,101 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 17 - ABC with Lulu: letters F to J with a first word each. Title, one scene per letter, finale. */
+const SC=[0,4.5,12.5,20.5,28.5,36.5,44.5,51];
+const DUR=SC[SC.length-1];
+const INK='#2D2A6E';
+// letter scene timing: letter pops at TL, the thing appears at TT, caption 1 at C1, Lulu hops + caption 2 at C2
+const TL=.5, TT=1.6, C1=2.0, C2=4.8;
+const L=[['F','f','fish','#FF7A1A'],['G','g','grapes','#7B5CFF'],['H','h','hat','#E8556F'],['I','i','insect','#E63946'],['J','j','juice','#19A88F']];
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.45)):0;
+const letterPop=(k,x,y,size,lt,t0)=>pop(`${L[k][0]} ${L[k][1]}`,x,y,size,L[k][3],lt,t0,k%2?3:-3);
+const word=k=>`<tspan fill="${L[k][3]}">${L[k][2][0]}</tspan>${L[k][2].slice(1)}`;
+
+// a little fish leaping out of a pond again and again: pond centre (x,py), w = half width of the leap, h = height
+function leapingFish(x,py,lt,t0,w,h,s,id){
+  let out=pond(x,py+8,w*1.9);
+  if(lt<t0)return out;
+  const per=1.55,dur=1.3,q=(lt-t0)%per,u=q/dur;
+  if(u<1){
+    const fx=x-w+2*w*u, fy=py-h*4*u*(1-u), rot=Math.atan2(-h*4*(1-2*u),2*w)*180/Math.PI;
+    out+=`<defs><clipPath id="aw${id}"><rect x="0" y="0" width="1280" height="${py+2}"/></clipPath></defs>`;
+    out+=`<g clip-path="url(#aw${id})">${place(fx,fy,fish({eye:1,tail:Math.sin(lt*14)}),{s,rot})}</g>`;
+  }
+  // ripples where the fish leaves and comes back into the water
+  [[x-w,0],[x+w,dur]].forEach(([rx,tt])=>{const r=q-tt;if(r>=0&&r<.7){const a=1-r/.7;out+=`<ellipse cx="${rx}" cy="${py+2}" rx="${(20+70*r)*s}" ry="${(5+16*r)*s}" fill="none" stroke="#fff" stroke-width="4" opacity="${a*.8}"/>`;}});
+  return out;
+}
+
+function thing(k,x,lt,g,s=1,id='a'){
+  if(g<=0)return '';
+  if(k===0)return leapingFish(x,556,lt,TT,105*s,190*s,.9*s,id);
+  if(k===1){const r=lt>C2?5*Math.sin((lt-C2)*6)*clamp(1-(lt-C2)/2):0;
+    return shadow(x,522,70*g*s)+`<g transform="rotate(${r} ${x} 520)">${grapes(x,522,1.15*g*s)}</g>`;}
+  if(k===3){const j=jumps(lt,[C2+.2,C2+1.2],.6,30*s);
+    return shadow(x,522,80*g*s,-j.y)+place(x,520+j.y,ladybird({eye:blink(lt,.6),wiggle:Math.sin(lt*3)}),{s:1.7*g*s,sx:j.sx,sy:j.sy});}
+  if(k===4){let sp='';
+    if(lt>C2)for(let m=0;m<4;m++){const q=lt-C2-m*.3;if(q>0&&q<1.2)sp+=sparkle(x+[-90,95,-70,80][m]*s,400*s+120*(1-s)+[0,-30,70,50][m],1.2*s,clamp(1-q/1.2));}
+    return shadow(x,522,62*g*s)+juice(x,520,1.1*g*s)+sp;}
+  return '';
+}
+// Lulu wearing the hat (the hat pops onto her head with hg 0..1)
+function luluHat(x,lt,t,s,hg,hops,wingOn){
+  const j=jumps(lt,hops,.6,26);
+  return shadow(x,522,60*s/1.0,-j.y)+place(x,520+j.y,duck({wing:lt>wingOn?22+22*Math.sin(lt*9):0,eye:blink(t,0)})+(hg>0?hat(42,-144,.82*hg):''),{s,sx:j.sx,sy:j.sy});
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={noSun:true,noClouds:true};
+  if(i===0){
+    o={};
+    const j=jumps(lt,[1.4,2.4],.6,30);
+    chars=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:20+20*Math.sin(lt*9),eye:blink(t,0)}),{s:1.1,sx:j.sx,sy:j.sy});
+    pops=pop('ABC with',640,128,84,INK,lt,.3)+pop(LULU,640,262,140,'#FF5D8F',lt,.7,-3);
+    L.forEach((l,k)=>{pops+=pop(l[0],240+k*200,680,96,l[3],lt,1.5+k*.3,k%2?5:-5);});
+  }else if(i<=5){
+    const k=i-1;
+    if(k===2){ // H is for hat: the hat pops onto Lulu's head, in the middle
+      chars=luluHat(640,lt,t,1.1,grow(lt,TT),[C2+.2,C2+1.1],C2);
+      for(let m=0;m<4;m++){const q=lt-TT-m*.25;if(q>0&&q<1.2)props+=sparkle(640+[-160,160,-130,140][m],350+[0,-20,80,60][m],1.4,clamp(1-q/1.2));}
+    }else{
+      const j=jumps(lt,[C2+.1],.6,26);
+      chars=shadow(300,522,52,-j.y)+place(300,520+j.y,duck({eye:blink(t,.3),wing:lt>C2?20*Math.abs(Math.sin(lt*9)):0}),{s:.85,sx:j.sx,sy:j.sy});
+      chars+=thing(k,780,lt,grow(lt,TT));
+    }
+    pops=letterPop(k,640,200,170,lt,TL);
+    cap=lt>=C2?caption(`${L[k][0]}, ${L[k][1]}, ${word(k)}!`,lt,C2,`${L[k][0]}, ${L[k][1]}, ${L[k][2]}!`):caption(`${L[k][0]} is for ${word(k)}`,lt,C1,`${L[k][0]} is for ${L[k][2]}`);
+  }else{
+    o={noClouds:true,noSun:true,noFlowers:true};
+    const xs=[160,400,640,880,1120];
+    L.forEach((l,k)=>{
+      const g=grow(lt,.3+k*.35);
+      if(k===2)chars+=g>0?luluHat(xs[k],lt,t,.8*g,1,[3.9,4.9],3.8):'';
+      else if(k===0)chars+=g>0?pond(xs[k],564,105)+`<defs><clipPath id="awf"><rect x="0" y="0" width="1280" height="558"/></clipPath></defs><g clip-path="url(#awf)">${place(xs[k],546+8*Math.sin(lt*3),fish({eye:blink(t,.5),tail:Math.sin(lt*8)}),{s:.85*g,rot:-8*Math.sin(lt*3)})}</g>`:'';
+      else chars+=thing(k,xs[k],lt+1.0,g,k===1?.75:k===3?.62:.72);
+      pops+=pop(l[0],xs[k],230,120,l[3],lt,.3+k*.35,k%2?4:-4);
+    });
+    cap=lt>=3.8?caption('Well done!',lt,3.8):caption('F, G, H, I, J!',lt,1.2);
+  }
+  svg.innerHTML=bg(t,0,'',o)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(640,662,120)+place(620,658,duck({wing:22})+hat(42,-144,.82),{s:1.8});
+  s+=pond(230,668,170)+place(230,560,fish({}),{s:1.4,rot:-25});
+  s+=shadow(1060,662,80)+grapes(1060,662,1.35);
+  s+=label('F',230,400,150,L[0][3],-6)+label('G',1060,380,150,L[1][3],6);
+  s+=label('ABC with',640,120,96,INK)+label(LULU,640,230,96,'#FF5D8F',-3);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

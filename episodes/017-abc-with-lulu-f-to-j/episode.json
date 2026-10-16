@@ -1,0 +1,126 @@
+{
+  "number": 17,
+  "slug": "abc-with-lulu-f-to-j",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "ABC with Lulu: F to J | Learn Letters for Kids",
+  "description": "Learn the letters F, G, H, I and J with Lulu the little duck!\nF is for fish, G is for grapes, H is for hat, I is for insect and J is for juice.\nA short, gentle first-letters video for children aged 3 to 6.",
+  "duration": 51,
+  "seed": 17,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.7,
+      "type": "sparkle"
+    },
+    {
+      "t": 1.5,
+      "type": "pop"
+    },
+    {
+      "t": 5.0,
+      "type": "ding"
+    },
+    {
+      "t": 6.1,
+      "type": "pop"
+    },
+    {
+      "t": 9.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 13.0,
+      "type": "ding"
+    },
+    {
+      "t": 14.1,
+      "type": "pop"
+    },
+    {
+      "t": 17.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 21.0,
+      "type": "ding"
+    },
+    {
+      "t": 22.1,
+      "type": "sparkle"
+    },
+    {
+      "t": 25.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 29.0,
+      "type": "ding"
+    },
+    {
+      "t": 30.1,
+      "type": "pop"
+    },
+    {
+      "t": 33.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 37.0,
+      "type": "ding"
+    },
+    {
+      "t": 38.1,
+      "type": "pop"
+    },
+    {
+      "t": 41.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 44.8,
+      "type": "sparkle"
+    },
+    {
+      "t": 48.3,
+      "type": "ding"
+    },
+    {
+      "t": 48.4,
+      "type": "boing_high"
+    }
+  ],
+  "check_times": [
+    1.2,
+    3.2,
+    5.5,
+    7.7,
+    9.8,
+    10.3,
+    11.5,
+    13.5,
+    15.7,
+    17.8,
+    18.3,
+    19.5,
+    21.5,
+    23.7,
+    25.8,
+    26.3,
+    27.5,
+    29.5,
+    31.7,
+    33.8,
+    34.3,
+    35.5,
+    37.5,
+    39.7,
+    41.8,
+    42.3,
+    43.5,
+    45.5,
+    47.0,
+    48.7,
+    50.0
+  ]
+}
