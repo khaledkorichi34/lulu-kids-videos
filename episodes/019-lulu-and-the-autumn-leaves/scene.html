@@ -1,0 +1,137 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 19 - Lulu and the Autumn Leaves. Red, orange and yellow leaves fall from a big tree.
+   Lulu and Bunny make a big pile, Bunny jumps in (whoosh!), a leaf lands on Lulu's head (hee hee!),
+   the sun goes down, Bunny hops home, and Lulu sleeps by the leaf pile. */
+const DUR=45, SC=[0,5,11.5,18.5,25,31.5,38,45];
+const NAVY='#2D2A6E', PINK='#FF5D8F', RED='#E63946', ORANGE='#F08A00', GOLD='#E0A800', PURPLE='#7B5CFF', GREEN='#16A34A';
+const TX=130, TS=.85, BS=.9;
+const lulu=(x,lt,t,hops=[],h=30,s=1,wave=false,flip=false)=>{
+  const j=jumps(lt,hops,.6,h), w=wave?20+20*Math.sin(lt*9):0;
+  return shadow(x,522,60*s,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy,flip});
+};
+const bun=(x,lt,t,hops=[],h=30,o={})=>{
+  const j=jumps(lt,hops,.6,h);
+  return shadow(x,522,50,-j.y)+place(x,(o.y||520)+j.y,bunny({eye:blink(t,1.3),ear:o.ear||0}),{s:BS,sx:j.sx,sy:j.sy});
+};
+// leaves falling from the tree canopy (deterministic, depends only on lt)
+const falling=(lt,count=7,o=1)=>{
+  let s='';
+  for(let k=0;k<count;k++){const P=4.2, q=((lt+k*.63)%P)/P, bx=40+((k*83)%250);
+    const y=lerp(250,515,q), x=bx+26*Math.sin(q*7+k), op=o*Math.min(1,q*6,(1-q)*6);
+    s+=`<g opacity="${op}">${autumnLeaf(x,y,1,40*Math.sin(q*9+k),AUTUMN[k%3])}</g>`;}
+  return s;
+};
+// a few leaves lying on the grass
+const GL=[[70,560,0],[250,548,1],[330,585,2],[505,560,0],[760,575,2],[1010,555,1],[1110,588,0],[1215,560,2]];
+const ground=()=>GL.map(([x,y,c],i)=>autumnLeaf(x,y,1,i*47%180-90,AUTUMN[c])).join('');
+const treeArt=()=>autumnTree(TX,520,TS);
+const sideClouds=(t,n)=>cloud(560+12*Math.sin(t*.3),300,.6,1-n*.75)+cloud(1000+12*Math.sin(t*.25+1),260,.55,1-n*.75);
+const PX=680;
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',pops='',cap='',o={},behind='';
+  switch(i){
+  case 0:{
+    props=treeArt()+ground()+falling(lt)+leafPile(1000,524,.7,.8);
+    chars=lulu(470,lt,t,[1.3,2.3,3.3],30,1.05,true)+bun(800,lt,t,[1.8,2.8],26);
+    pops=pop(LULU,640,150,140,PINK,lt,.4,-3)+pop('and the Autumn Leaves',650,236,60,NAVY,lt,1.0);
+    break;}
+  case 1:{
+    // the leaves fall; Bunny hops in from the right
+    props=treeArt()+ground()+falling(lt,9);
+    const bx=lerp(1400,860,eio(prog(lt,.3,2.4)));
+    chars=lulu(540,lt,t,[],0,1,lt>3.4)+bun(bx,lt,t,[.4,1.1,1.8],34);
+    cap=lt<3.2?caption('The leaves are falling.',lt,.4):caption('Red, orange and yellow!',lt,3.2);
+    pops=pop('Red,',330,170,62,RED,lt,3.6,-6)+pop('orange,',610,150,62,ORANGE,lt,4.3,3)+pop('yellow!',890,170,62,GOLD,lt,5.0,6);
+    break;}
+  case 2:{
+    // Lulu and Bunny toss leaves onto a pile that grows
+    props=treeArt()+ground()+falling(lt,5);
+    const u=eio(prog(lt,.6,6.0));
+    for(let k=0;k<10;k++){const st=.6+k*.55, q=(lt-st)/.7; if(q>0&&q<1){
+      const fromL=k%2===0, x0=fromL?430:880, x=lerp(x0,PX+(fromL?-40:40),q), y=lerp(440,500-100*u,q)-120*4*q*(1-q);
+      props+=autumnLeaf(x,y,1.1,q*300*(fromL?1:-1),AUTUMN[k%3]);}}
+    props+=leafPile(PX,524,u);
+    chars=lulu(380,lt,t,[],0,1,lt>.5&&lt<6.2)+bun(940,lt,t,[1.1,2.2,3.3,4.4],22);
+    cap=lt<3.4?caption('Lulu and Bunny make a pile.',lt,.4):caption('A big, big pile!',lt,3.4);
+    pops=pop('Big pile!',640,160,100,ORANGE,lt,4.0,-3);
+    break;}
+  case 3:{
+    // Bunny jumps into the pile, leaves fly up
+    props=treeArt()+ground();
+    const ju=prog(lt,1.0,2.1), bx=lerp(920,PX,eio(ju));
+    const by=ju>0&&ju<1?-140*4*ju*(1-ju):0;
+    const sink=lt>2.1?26:0;
+    const pu=1-.3*eio(prog(lt,2.1,2.6));
+    chars=lulu(330,lt,t,[3.4,4.0],26,1,lt>2.4);
+    chars+=shadow(bx,522,50,-by)+place(bx,520+by+sink,bunny({eye:blink(t,1.3),ear:lt>2.1?10:0}),{s:BS});
+    chars+=leafPile(PX,524,pu);
+    for(let k=0;k<16;k++){const q=lt-2.1; if(q>0&&q<3.6){
+      const a=-Math.PI*(.12+.76*k/15), sp=170+(k*37)%90, x=PX+Math.cos(a)*sp*Math.min(q,1.2)+20*Math.sin(q*4+k);
+      const y=470+Math.sin(a)*sp*eout(Math.min(q/1.2,1))+Math.max(0,q-1.2)*70;
+      chars+=`<g opacity="${Math.min(1,(3.6-q)*1.5)}">${autumnLeaf(x,Math.min(y,515),1.1,q*200+k*40,AUTUMN[k%3])}</g>`;}}
+    cap=lt<2.2?caption('Bunny jumps in the leaves!',lt,.3):caption('Lulu laughs. So soft!',lt,3.0);
+    pops=pop('Jump!',400,170,90,PURPLE,lt,1.1,-6)+pop('Whoosh!',815,170,80,ORANGE,lt,2.2,6);
+    break;}
+  case 4:{
+    // one more leaf floats down and lands on Lulu's head
+    props=treeArt()+ground()+leafPile(PX,524,.7);
+    const LX=430, q=prog(lt,.3,3.0);
+    const lx=lerp(240,LX+32,q)+(q<1?40*Math.sin(q*9):0), ly=lerp(210,520-168,eio(q)), rot=q<1?50*Math.sin(q*8):-12;
+    chars=lulu(LX,lt,t,[],0,1,lt>3.4)+bun(940,lt,t,[3.9,4.6],30);
+    chars+=autumnLeaf(lx,ly,1.4,rot,RED);
+    cap=lt<3.0?caption('One more leaf falls down.',lt,.3):caption("It lands on Lulu's head!",lt,3.0);
+    pops=pop('Hee hee!',700,160,96,PINK,lt,3.5,-3);
+    break;}
+  case 5:{
+    // sunset: Bunny hops home, Lulu waves
+    n=.35*eio(prog(lt,3.5,6.5));
+    o={noSun:true};
+    behind=sun(t,1150,lerp(100,540,eio(prog(lt,.3,6.5))));
+    props=treeArt()+ground()+leafPile(PX,524,.7)+falling(lt,4,.8);
+    const bx=lerp(880,1420,eio(prog(lt,3.6,6.2)));
+    chars=lulu(420,lt,t,[],0,1,lt>2.8)+bun(bx,lt,t,[3.6,4.2,4.8,5.4],36);
+    cap=lt<3.0?caption('The sun goes down.',lt,.4):caption('Bye-bye, Bunny!',lt,3.0);
+    pops=pop('Bye-bye!',640,160,100,PURPLE,lt,3.2,-3);
+    break;}
+  case 6:{
+    // night: Lulu sleeps by the soft leaf pile
+    n=lerp(.35,1,eio(prog(lt,.2,2.4)));
+    o={noSun:true};
+    const asleep=lt>2.0;
+    props=treeArt()+ground()+leafPile(PX,524,.7);
+    {const q=prog(lt,.4,5.5); if(q>0&&q<1)props+=`<g opacity="${Math.min(1,(1-q)*5)}">${autumnLeaf(300+30*Math.sin(q*8),lerp(250,515,q),1,40*Math.sin(q*7),ORANGE)}</g>`;}
+    chars=shadow(470,522,64)+place(470,520,duck({asleep,eye:blink(t,0)}),{s:1.05,sy:1+.025*Math.sin(lt*2.2),rot:asleep?-3:0});
+    for(let k=0;k<3;k++){let q=lt-2.5-k*.9;if(q>0){q%=2.7;
+      pops+=`<text x="${470-q*26+8*Math.sin(q*3)}" y="${350-q*36}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}
+    cap=caption('Good night, Lulu.',lt,.5);
+    pops+=pop('The End',700,155,112,'#FFE58A',lt,3.6,-3,NAVY);
+    break;}
+  }
+  o.noClouds=true; o.noFlowers=true;
+  svg.innerHTML=bg(t,n,sideClouds(t,n)+behind,o)+props+chars+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=sun(0,1160,110)+cloud(560,90,1.0,.9);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=autumnTree(105,600,.8);
+  s+=leafPile(660,668,1,1.3);
+  [[200,640,0,20],[460,630,1,-40],[880,640,2,60],[1180,650,0,-20]].forEach(([x,y,c,r])=>{s+=autumnLeaf(x,y,1.6,r,AUTUMN[c]);});
+  s+=shadow(330,664,110)+place(320,660,duck({wing:22}),{s:1.7});
+  s+=shadow(1000,664,90)+place(1000,660,bunny({}),{s:1.45});
+  s+=label(LULU,640,190,170,PINK,-3)+label('and the Autumn Leaves',650,285,68,NAVY);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

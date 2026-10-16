@@ -1,0 +1,31 @@
+{
+  "number": 19,
+  "slug": "lulu-and-the-autumn-leaves",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and the Autumn Leaves | Bedtime Story for Kids",
+  "description": "Red, orange and yellow leaves fall from a big tree. Lulu the little duck and Bunny make a big leaf pile, and Bunny jumps in. Whoosh!\nA leaf lands on Lulu's head, the sun goes down, and Lulu sleeps by the soft leaves.\nA gentle short story for children aged 3 to 6.",
+  "duration": 45,
+  "seed": 19,
+  "lullaby_from": 38.0,
+  "sfx": [
+    {"t": 0.4, "type": "sparkle"},
+    {"t": 5.4, "type": "boing_high"},
+    {"t": 6.1, "type": "boing_high"},
+    {"t": 6.8, "type": "boing_high"},
+    {"t": 8.6, "type": "pop"},
+    {"t": 9.3, "type": "pop"},
+    {"t": 10.0, "type": "pop"},
+    {"t": 15.5, "type": "ding"},
+    {"t": 19.5, "type": "boing_high"},
+    {"t": 20.6, "type": "pop"},
+    {"t": 20.7, "type": "sparkle"},
+    {"t": 27.5, "type": "ding"},
+    {"t": 28.0, "type": "pop"},
+    {"t": 35.1, "type": "boing_high"},
+    {"t": 35.7, "type": "boing_high"},
+    {"t": 36.3, "type": "boing_high"},
+    {"t": 41.6, "type": "sparkle"}
+  ],
+  "check_times": [2.0, 8.0, 10.5, 14.0, 17.0, 20.0, 21.0, 23.0, 26.5, 28.5, 30.0, 34.0, 36.0, 41.0, 43.5]
+}

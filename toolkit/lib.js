@@ -645,3 +645,38 @@ function bell(x,y,s=1,rot=0,col='#FFC928'){
   <path d="M-44,98 L44,98 Q46,106 38,106 L-38,106 Q-46,106 -44,98 Z" fill="#F0A81E"/>
   <path d="M-18,46 Q-24,64 -22,84" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round" opacity=".5"/></g>`;
 }
+
+/* ---------- autumn leaves (episode 19) ---------- */
+// autumnLeaf(x,y,s,rot,col): small falling leaf centred at (x,y), about 46 wide and 30 tall at s=1,
+// with a short stem on the left. Colours used: '#E63946' red, '#F28C28' orange, '#F6C026' yellow.
+function autumnLeaf(x,y,s=1,rot=0,col='#F28C28'){
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})">
+  <path d="M-26,2 L-18,0" stroke="#8B5A2B" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M-19,0 C-10,-17 12,-18 23,0 C12,18 -10,17 -19,0Z" fill="${col}"/>
+  <path d="M-17,0 Q2,-1 20,0" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".45"/></g>`;
+}
+const AUTUMN=['#E63946','#F28C28','#F6C026'];
+// autumnTree(x,y,s): the round tree of episode 10 with orange, red and yellow autumn leaves,
+// origin at the foot of the trunk (canopy covers about x-150..x+150, y-410..y-190 at s=1).
+function autumnTree(x,y,s=1){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-30,0 Q-22,-110 -24,-230 L24,-230 Q22,-110 30,0 Z" fill="#9C6B3F"/>
+  <path d="M-30,0 Q-40,-6 -48,0 M30,0 Q40,-6 48,0" stroke="#9C6B3F" stroke-width="12" stroke-linecap="round"/>
+  <ellipse cx="-8" cy="-150" rx="7" ry="12" fill="#7E5230"/>
+  <circle cx="-95" cy="-260" r="72" fill="#E8742A"/><circle cx="95" cy="-260" r="72" fill="#D9482E"/>
+  <circle cx="-60" cy="-330" r="80" fill="#F5A623"/><circle cx="60" cy="-330" r="80" fill="#EE8A2A"/>
+  <circle cx="0" cy="-300" r="92" fill="#F6B830"/>
+  <circle cx="-70" cy="-352" r="16" fill="#FFD66B" opacity=".8"/><circle cx="40" cy="-380" r="13" fill="#FFD66B" opacity=".8"/>
+  <circle cx="-110" cy="-250" r="12" fill="#FFC14D" opacity=".7"/><circle cx="100" cy="-230" r="11" fill="#F27E4E" opacity=".8"/></g>`;
+}
+// leafPile(x,y,u,s): heap of autumn leaves on the ground, origin at the bottom centre.
+// u = 0..1 how big it has grown (full size about 300 wide and 110 tall at s=1).
+function leafPile(x,y,u=1,s=1){
+  if(u<=0)return '';
+  let p=`<path d="M-150,0 Q-120,-100 0,-104 Q120,-100 150,0 Z" fill="#E8742A"/>`;
+  let k=11;const r=()=>(k=(k*16807)%2147483647)/2147483647;
+  for(let i=0;i<34;i++){const a=r()*Math.PI, d=Math.sqrt(r());
+    const lx=Math.cos(a)*138*d, ly=-Math.sin(a)*96*d-6;
+    p+=autumnLeaf(lx,ly,1.05,r()*360,AUTUMN[i%3]);}
+  return `<g transform="translate(${x},${y}) scale(${s*(.3+.7*u)},${s*u})">${p}</g>`;
+}

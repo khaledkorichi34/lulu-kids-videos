@@ -282,5 +282,22 @@
     "videoId": "fSvJjjnsII8",
     "published": "2026-10-16",
     "note": "Upload returned 403; a new video appeared on the channel as 'unknown' (fSvJjjnsII8). Title and description must be set by hand in YouTube Studio. Check it is this 70-second video (episode 9 also had a 403 earlier and was never found)."
+  },
+  {
+    "number": 19,
+    "slug": "lulu-and-the-autumn-leaves",
+    "format": "story",
+    "ages": "3-6",
+    "title": "Lulu and the Autumn Leaves | Bedtime Story for Kids",
+    "topic": "Autumn leaves: red, orange and yellow leaves fall from a tree; Lulu and Bunny make a big leaf pile; Bunny jumps in (whoosh!); a leaf lands on Lulu's head (hee hee!); sunset, bye-bye Bunny; Lulu sleeps by the leaf pile",
+    "cast": [
+      "duck",
+      "bunny",
+      "autumn tree",
+      "autumn leaves",
+      "leaf pile"
+    ],
+    "videoId": "LHUyCnmPh9Y",
+    "published": "2026-10-16"
   }
 ]
