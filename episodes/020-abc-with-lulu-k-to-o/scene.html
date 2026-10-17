@@ -1,0 +1,102 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 20 - ABC with Lulu: letters K to O with a first word each. Title, one scene per letter, finale. */
+const SC=[0,4.5,12.5,20.5,28.5,36.5,44.5,51];
+const DUR=SC[SC.length-1];
+const INK='#2D2A6E';
+// letter scene timing: letter pops at TL, the thing appears at TT, caption 1 at C1, Lulu hops + caption 2 at C2
+const TL=.5, TT=1.6, C1=2.0, C2=4.8;
+const L=[['K','k','kite','#FF5D8F'],['L','l','leaf','#E63946'],['M','m','moon','#7B5CFF'],['N','n','nest','#2979E8'],['O','o','orange','#FF8C1A']];
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.45)):0;
+const letterPop=(k,x,y,size,lt,t0)=>pop(`${L[k][0]} ${L[k][1]}`,x,y,size,L[k][3],lt,t0,k%2?3:-3);
+const word=k=>`<tspan fill="${L[k][3]}">${L[k][2][0]}</tspan>${L[k][2].slice(1)}`;
+const X=820;
+
+// kite flying at (x,y) with a string down to (hx,hy)
+function flyingKite(x,y,s,lt,hx,hy){
+  const kx=x+10*Math.sin(lt*1.3), ky=y+12*Math.sin(lt*1.7), r=8*Math.sin(lt*1.1);
+  const bx=kx-Math.sin(r*Math.PI/180)*85*s, by=ky+Math.cos(r*Math.PI/180)*85*s;
+  const str=hx==null?'':`<path d="M${hx},${hy} Q${(hx+bx)/2},${Math.max(hy,by)+40} ${bx},${by}" stroke="#fff" stroke-width="3" fill="none" opacity=".9"/>`;
+  return str+kite(kx,ky,s,r,Math.sin(lt*2.2));
+}
+// a red autumn leaf drifting down from (x,y0) and landing at (x,y1)
+function fallingLeaf(x,y0,y1,s,lt,t0,dur){
+  const u=prog(lt,t0,t0+dur), sw=Math.sin(u*Math.PI*3)*(1-u);
+  return autumnLeaf(x+50*sw,lerp(y0,y1,eio(u)),s,lerp(-25,-8,u)+22*sw+(u>=1?3*Math.sin((lt-t0-dur)*2):0),'#E63946');
+}
+// a little bird sitting in a nest; hop = jump offset
+function birdNest(x,y,s,lt,t,hops){
+  const j=jumps(lt,hops,.55,22);
+  return shadow(x,y+2,110*s)+nestBack(x,y,s)+place(x,y-14*s+j.y,bird({eye:blink(t,.8),wing:hops.some(h=>lt>h&&lt<h+1.2)?-20*Math.abs(Math.sin(lt*10)):0}),{s:.78*s,sx:j.sx,sy:j.sy})+nestFront(x,y,s);
+}
+
+function thing(k,lt,t,g){
+  if(g<=0)return '';
+  if(k===0)return flyingKite(X+40,330,1.05*g,lt,355,520-70+jumps(lt,[C2+.1],.6,26).y);
+  if(k===1)return shadow(X,522,90*clamp(prog(lt,TT,TT+2.4)))+fallingLeaf(X,330,486,4.2,lt,TT,2.4);
+  if(k===3)return birdNest(X,520,1.1*g,lt,t,[C2+.2,C2+1.1]);
+  if(k===4){const r=lt>C2?6*Math.sin((lt-C2)*6)*clamp(1-(lt-C2)/2):0;let sp='';
+    if(lt>C2)for(let m=0;m<4;m++){const q=lt-C2-m*.3;if(q>0&&q<1.2)sp+=sparkle(X+[-110,115,-90,100][m],[380,350,450,430][m],1.2,clamp(1-q/1.2));}
+    return shadow(X,522,74*g)+`<g transform="rotate(${r} ${X} 520)">${orange(X,520,1.15*g)}</g>`+sp;}
+  return '';
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={noSun:true,noClouds:true},n=0,behind='';
+  if(i===0){
+    o={};
+    const j=jumps(lt,[1.4,2.4],.6,30);
+    chars=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:20+20*Math.sin(lt*9),eye:blink(t,0)}),{s:1.1,sx:j.sx,sy:j.sy});
+    pops=pop('ABC with',640,128,84,INK,lt,.3)+pop(LULU,640,262,140,'#FF5D8F',lt,.7,-3);
+    L.forEach((l,k)=>{pops+=pop(l[0],240+k*200,680,96,l[3],lt,1.5+k*.3,k%2?5:-5);});
+  }else if(i<=5){
+    const k=i-1;
+    if(k===2){ // M is for moon: night comes and the moon rises from behind the hills
+      n=.82*eio(prog(lt,.3,1.8)); o.noMoon=true;
+      behind=`<g transform="translate(${X+40},${lerp(560,320,eout(prog(lt,TT-.4,TT+1.4)))}) scale(1.6)">${moon(0,0)}</g>`;
+    }
+    const j=jumps(lt,[C2+.1],.6,26);
+    chars=shadow(300,522,52,-j.y)+place(300,520+j.y,duck({eye:blink(t,.3),wing:lt>C2?20*Math.abs(Math.sin(lt*9)):0}),{s:.85,sx:j.sx,sy:j.sy});
+    chars+=thing(k,lt,t,grow(lt,TT));
+    if(k===2)chars+=nightTint(n*.5);
+    pops=letterPop(k,640,200,170,lt,TL);
+    cap=lt>=C2?caption(`${L[k][0]}, ${L[k][1]}, ${word(k)}!`,lt,C2,`${L[k][0]}, ${L[k][1]}, ${L[k][2]}!`):caption(`${L[k][0]} is for ${word(k)}`,lt,C1,`${L[k][0]} is for ${L[k][2]}`);
+  }else{
+    o={noClouds:true,noSun:true,noFlowers:true};
+    const xs=[160,400,640,880,1120];
+    L.forEach((l,k)=>{
+      const g=grow(lt,.3+k*.35), x=xs[k], j=jumps(lt,[3.9+k*.12],.55,20);
+      if(g>0){
+        if(k===0)chars+=flyingKite(x,370+j.y,.55*g,lt+k);
+        if(k===1)chars+=shadow(x,522,60*g)+autumnLeaf(x,488+j.y,2.9*g,-8+3*Math.sin(lt*2),'#E63946');
+        if(k===2)chars+=`<g transform="translate(${x},${400+j.y}) scale(${g})">${moon(0,0)}</g>`;
+        if(k===3)chars+=birdNest(x,520,.72*g,lt,t,[3.9+k*.12]);
+        if(k===4)chars+=shadow(x,522,56*g,-j.y)+orange(x,520+j.y,.82*g);
+      }
+      pops+=pop(l[0],x,230,120,l[3],lt,.3+k*.35,k%2?4:-4);
+    });
+    cap=lt>=3.8?caption('Well done!',lt,3.8):caption('K, L, M, N, O!',lt,1.2);
+  }
+  svg.innerHTML=bg(t,n,behind,o)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=`<path d="M720,520 Q900,470 1050,430" stroke="#fff" stroke-width="4" fill="none"/>`+kite(1060,340,1.15,10,.5);
+  s+=shadow(640,662,120)+place(620,658,duck({wing:30}),{s:1.8});
+  s+=shadow(220,662,90)+orange(220,662,1.3);
+  s+=label('K',1185,640,150,L[0][3],6)+label('O',220,400,150,L[4][3],-6);
+  s+=label('ABC with',640,120,96,INK)+label(LULU,640,230,96,'#FF5D8F',-3);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

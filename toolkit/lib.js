@@ -161,13 +161,13 @@ function moon(x,y){
 function cloud(x,y,s,o){
   return `<g transform="translate(${x},${y}) scale(${s})" opacity="${o}" fill="#fff"><ellipse cx="0" cy="10" rx="70" ry="24"/><circle cx="-30" cy="-2" r="26"/><circle cx="6" cy="-16" r="34"/><circle cx="40" cy="0" r="24"/></g>`;
 }
-// bg(t, night 0..1, extra drawn behind the hills, {noSun, noFlowers, noClouds})
+// bg(t, night 0..1, extra drawn behind the hills, {noSun, noFlowers, noClouds, noMoon})
 function bg(t,n,behind='',o={}){
   let s=`<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${mix('#5EC2FF','#14153F',n)}"/><stop offset="1" stop-color="${mix('#DDF5FF','#4A4FA3',n)}"/></linearGradient><clipPath id="beeclip"><ellipse rx="46" ry="34"/></clipPath></defs>`;
   s+=`<rect width="1280" height="720" fill="url(#sky)"/>`;
   if(n>0) STARS.forEach((p,i)=>{s+=`<circle cx="${p[0]}" cy="${p[1]}" r="${p[2]}" fill="#FFF8D6" opacity="${n*(.55+.45*Math.sin(t*3+p[3]))}"/>`;});
   if(!o.noSun)s+=sun(t,1150,100+n*560);
-  if(n>0) s+=moon(1150,660-n*560);
+  if(n>0&&!o.noMoon) s+=moon(1150,660-n*560);
   const co=1-n*.75;
   if(!o.noClouds)s+=cloud(((200+t*14)%1500)-110,120,1.1,co)+cloud(((760+t*9)%1500)-110,74,.8,co)+cloud(((1180+t*11)%1500)-110,200,.9,co);
   s+=behind;
@@ -679,4 +679,42 @@ function leafPile(x,y,u=1,s=1){
     const lx=Math.cos(a)*138*d, ly=-Math.sin(a)*96*d-6;
     p+=autumnLeaf(lx,ly,1.05,r()*360,AUTUMN[i%3]);}
   return `<g transform="translate(${x},${y}) scale(${s*(.3+.7*u)},${s*u})">${p}</g>`;
+}
+
+/* ---------- letters K to O (episode 20) ---------- */
+// kite(x,y,s,sway): diamond kite in four colours with a wavy tail of little bows, origin at the centre of the kite
+// (about 130 wide and 170 tall at s=1, the tail hangs about 150 below). sway = -1..1 waves the tail.
+// The string starts at kiteStringPoint (0,85) below the centre (scaled by s).
+function kite(x,y,s=1,rot=0,sway=0){
+  let tail=`M0,85`;const bows=[];
+  for(let k=1;k<=4;k++){const ty=85+k*36, tx=Math.sin(k*1.3+sway*2)*14*k/2;tail+=` Q${tx-12},${ty-18} ${tx},${ty}`;bows.push([tx,ty]);}
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})">
+  <path d="${tail}" stroke="#2D2A6E" stroke-width="3" fill="none" stroke-linecap="round"/>
+  ${bows.map(([bx,by],k)=>`<path d="M${bx},${by} L${bx-12},${by-8} L${bx-12},${by+8} Z M${bx},${by} L${bx+12},${by-8} L${bx+12},${by+8} Z" fill="${['#FF5D8F','#FFD23F','#19B8A6','#7B5CFF'][k]}"/>`).join('')}
+  <path d="M0,-85 L-65,-15 L0,0 Z" fill="#FF5D8F"/><path d="M0,-85 L65,-15 L0,0 Z" fill="#FFD23F"/>
+  <path d="M-65,-15 L0,85 L0,0 Z" fill="#19B8A6"/><path d="M65,-15 L0,85 L0,0 Z" fill="#7B5CFF"/>
+  <path d="M0,-85 L0,85 M-65,-15 L65,-15" stroke="#fff" stroke-width="3" opacity=".6"/>
+  <ellipse cx="-24" cy="-40" rx="8" ry="14" fill="#fff" opacity=".35" transform="rotate(40 -24 -40)"/></g>`;
+}
+// nestBack(x,y,s) / nestFront(x,y,s): a straw nest in two layers, origin at the bottom of the nest
+// (about 210 wide and 40 tall at s=1). Draw nestBack, then what sits in the nest, then nestFront.
+function nestBack(x,y,s=1){
+  return `<g transform="translate(${x},${y}) scale(${s})"><ellipse cx="0" cy="-34" rx="104" ry="30" fill="#8C5A2B"/><ellipse cx="0" cy="-36" rx="88" ry="20" fill="#6E4420"/></g>`;
+}
+function nestFront(x,y,s=1){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-106,-36 Q-100,0 0,0 Q100,0 106,-36 Q60,-20 0,-22 Q-60,-20 -106,-36Z" fill="#C68B4E"/>
+  <path d="M-88,-24 Q-40,-8 -6,-16 M-30,-6 Q20,-2 70,-18 M-70,-12 Q-20,4 40,-6 M-100,-34 Q-60,-22 -20,-24 M20,-24 Q60,-22 100,-34" stroke="#8C5A2B" stroke-width="4" fill="none" stroke-linecap="round"/></g>`;
+}
+// orange(x,y,s): round orange fruit with a little green leaf, standing on the ground,
+// origin at its bottom (about 140 wide and 165 tall with the leaf at s=1)
+function orange(x,y,s=1){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <circle cx="0" cy="-70" r="70" fill="#FF9F1C"/>
+  <circle cx="10" cy="-60" r="56" fill="#FFAA33" opacity=".5"/>
+  <ellipse cx="-30" cy="-100" rx="13" ry="22" fill="#fff" opacity=".35" transform="rotate(35 -30 -100)"/>
+  <circle cx="22" cy="-50" r="2.5" fill="#E8850F"/><circle cx="36" cy="-76" r="2.5" fill="#E8850F"/><circle cx="8" cy="-28" r="2.5" fill="#E8850F"/><circle cx="-20" cy="-40" r="2.5" fill="#E8850F"/>
+  <circle cx="0" cy="-138" r="6" fill="#7A4B21"/>
+  <ellipse cx="24" cy="-150" rx="24" ry="10" fill="#3FA34D" transform="rotate(-24 24 -150)"/>
+  <path d="M6,-142 Q24,-152 42,-158" stroke="#2E8A3C" stroke-width="2.5" fill="none" stroke-linecap="round"/></g>`;
 }
