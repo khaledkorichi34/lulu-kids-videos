@@ -1,0 +1,120 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 22 - Lulu and the Little Owl. The sun goes down and Lulu yawns. "Hoo! Hoo!" A little owl
+   wakes up in the tree. Owl is awake at night. Owl flies down to a stump and they look at the moon
+   and the stars. Owl sings softly, hoo, hoo, and Lulu falls asleep while Owl keeps watch. */
+const DUR=45, SC=[0,5,11.5,18,24.5,31,37.5,45];
+const NAVY='#2D2A6E', PINK='#FF5D8F', ORANGE='#F08A00', GOLD='#FFE58A', PURPLE='#7B5CFF', BROWN='#8A5A33';
+const TX=230, OX=420, OY=316, OS=.85, SX=900, SY=520-72*.9;   // tree, owl on the branch, stump
+const lulu=(x,lt,t,o={})=>{
+  const j=jumps(lt,o.hops||[],.6,o.h||28), w=o.wave?20+20*Math.sin(lt*9):0;
+  return shadow(x,522,60,-j.y)+place(x,520+j.y,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),{s:1,sx:j.sx,sy:j.sy*(o.sy||1),flip:o.flip,rot:o.rot||0});
+};
+const owlAt=(x,y,o={})=>place(x,y,owl(o),{s:OS});
+const scenery=()=>tree(TX,520,1)+branch(TX+10,334,OX+40,OY+2)+stump(SX,520,.9);
+const sideClouds=(t,n)=>cloud(640+12*Math.sin(t*.3),300,.6,1-n*.8)+cloud(1010+12*Math.sin(t*.25+1),250,.5,1-n*.8);
+const flap=(lt,k=14)=>30+30*Math.sin(lt*k);
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',pops='',cap='',o={},behind='';
+  switch(i){
+  case 0:{
+    // title: late afternoon, the owl sleeps on its branch
+    n=.08; o={noSun:true}; behind=sun(t,1150,150);
+    props=scenery();
+    chars=owlAt(OX,OY,{asleep:true})+lulu(640,lt,t,{hops:[1.4,2.4,3.4],h:30,wave:true});
+    pops=pop(LULU,800,150,140,PINK,lt,.4,-3)+pop('and the Little Owl',800,236,60,NAVY,lt,1.0);
+    break;}
+  case 1:{
+    // the sun goes down, Lulu yawns and stretches
+    n=.45*eio(prog(lt,.5,6.5)); o={noSun:true};
+    behind=sun(t,1150,lerp(150,560,eio(prog(lt,.3,6.5))));
+    props=scenery();
+    const st=lt>3.6&&lt<5.6?1+.06*Math.sin(Math.PI*prog(lt,3.6,5.6)):1;
+    chars=owlAt(OX,OY,{asleep:true})+lulu(660,lt,t,{eye:lt>3.6&&lt<5.6?.35:blink(t,0),sy:st,wave:lt>3.8&&lt<5.4});
+    cap=lt<3.2?caption('The sun goes down.',lt,.4):caption('Lulu yawns. Time for bed!',lt,3.2);
+    pops=pop('Yaaawn!',900,170,84,PURPLE,lt,3.8,4);
+    break;}
+  case 2:{
+    // "Hoo! Hoo!" - the owl wakes up in the tree
+    n=lerp(.45,.7,eio(prog(lt,0,6))); o={noSun:true};
+    props=scenery();
+    const awake=lt>1.0, e=awake?Math.min(1,(lt-1.0)*4)*blink(t,.7):1;
+    chars=owlAt(OX,OY,{asleep:!awake,eye:e,wing:lt>1.4&&lt<2.8?flap(lt):0,tilt:lt>4?8*Math.sin(lt*2):0});
+    chars+=lulu(700,lt,t,{flip:true,hops:[2.2],h:26});
+    cap=lt<3.6?caption('Who says hoo, hoo?',lt,1.2):caption('A little owl in the tree!',lt,3.6);
+    pops=pop('Hoo!',640,165,90,ORANGE,lt,.5,-6)+pop('Hoo!',900,165,90,ORANGE,lt,1.3,6);
+    break;}
+  case 3:{
+    // hello: Lulu waves, Owl flaps its wings
+    n=lerp(.7,.85,eio(prog(lt,0,6))); o={noSun:true};
+    props=scenery();
+    chars=owlAt(OX,OY,{eye:blink(t,.7),wing:(lt>1.0&&lt<2.6)||(lt>4.0&&lt<5.2)?flap(lt):0});
+    chars+=lulu(700,lt,t,{flip:true,wave:lt>.6&&lt<3.0});
+    cap=lt<3.4?caption('Hello, Owl!',lt,.4):caption('Owl is awake at night.',lt,3.4);
+    pops=pop('Hello!',900,165,96,PINK,lt,.8,4);
+    break;}
+  case 4:{
+    // Owl flies down to the stump; they look at the moon and the stars
+    n=lerp(.85,1,eio(prog(lt,0,4))); o={noSun:true};
+    props=scenery();
+    const q=eio(prog(lt,.4,2.6)), fx=lerp(OX,SX,q), fy=lerp(OY,SY,q)-130*4*q*(1-q);
+    const flying=lt>.4&&lt<2.9;
+    chars=lulu(620,lt,t,{flip:lt<.6});
+    chars+=owlAt(fx,fy,{eye:blink(t,.7),wing:flying?flap(lt,18):0,tilt:lt>3.4?-6:0});
+    cap=lt<3.0?caption('Owl flies down.',lt,.4):caption('Look! The moon and stars!',lt,3.0);
+    pops=pop('Twinkle!',580,165,84,GOLD,lt,3.6,-4,NAVY);
+    for(let k=0;k<4;k++){const sx=[160,300,760,880][k], sy=[70,170,60,200][k];
+      pops+=sparkle(sx,sy,1.6+.4*Math.sin(t*4+k),clamp((lt-3.6-k*.25)*3)*(.8+.2*Math.sin(t*5+k)));}
+    break;}
+  case 5:{
+    // Owl sings softly; Lulu feels sleepy
+    n=1; o={noSun:true};
+    props=scenery();
+    const sway=Math.sin(lt*1.6);
+    chars=lulu(620,lt,t,{eye:lt>3.4?.45:blink(t,0),rot:lt>3.4?2*sway:0});
+    chars+=owlAt(SX,SY,{eye:blink(t,.7),tilt:6*sway});
+    for(let k=0;k<3;k++){let q=lt-1.0-k*1.1;if(q>0){q%=3.3;
+      const nx=SX-20-q*40, ny=SY-170-q*30;
+      pops+=`<text x="${nx}" y="${ny}" font-size="${34+q*6}" fill="#FFE58A" opacity="${Math.sin(Math.PI*q/3.3)*.9}">&#9834;</text>`;}}
+    cap=lt<3.4?caption('Owl sings: hoo, hoo.',lt,.4):caption('Lulu feels sleepy.',lt,3.4);
+    pops+=pop('Hoo... hoo...',660,165,72,GOLD,lt,1.0,-3,NAVY);
+    break;}
+  case 6:{
+    // Lulu sleeps; Owl keeps watch under the moon
+    n=1; o={noSun:true};
+    props=scenery();
+    const asleep=lt>1.2;
+    chars=shadow(620,522,64)+place(620,520,duck({asleep,eye:.45}),{s:1,sy:1+.025*Math.sin(lt*2.2),rot:asleep?-3:0});
+    chars+=owlAt(SX,SY,{eye:blink(t,.7),wing:lt>3.0&&lt<3.8?flap(lt,10)*.5:0});
+    for(let k=0;k<3;k++){let q=lt-1.8-k*.9;if(q>0){q%=2.7;
+      pops+=`<text x="${640-q*26+8*Math.sin(q*3)}" y="${350-q*36}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}
+    cap=caption('Good night, Lulu.',lt,.5);
+    pops+=pop('The End',760,160,112,GOLD,lt,3.8,-3,NAVY);
+    break;}
+  }
+  o.noClouds=true; o.noFlowers=true;
+  svg.innerHTML=bg(t,n,sideClouds(t,n)+behind,o)+props+chars+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#2B2F7A','#7A6FD0')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  STARS.forEach(p=>{s+=`<circle cx="${p[0]}" cy="${p[1]}" r="${p[2]*1.2}" fill="#FFF8D6" opacity=".85"/>`;});
+  s+=moon(1150,110);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#5E9E6A"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#4C8C55"/>`;
+  s+=tree(170,640,1.05)+branch(180,440,400,420);
+  s+=place(380,414,owl({wing:30}),{s:1.25});
+  s+=shadow(800,664,110)+place(790,660,duck({wing:22}),{s:1.7,flip:true});
+  s+=label(LULU,830,190,170,PINK,-3)+label('and the Little Owl',830,290,72,'#FFE58A',0,NAVY);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

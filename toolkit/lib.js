@@ -746,3 +746,47 @@ function honeycomb(x,y,s=1,fill=1){
     if(u>0)g+=`<g transform="translate(${cx},${cy}) scale(${.82*u})"><path d="${hx(0,0)}" fill="#F5A623"/><circle cx="-10" cy="-12" r="7" fill="#fff" opacity=".45"/></g>`;});
   return `<g transform="translate(${x},${y}) scale(${s})">${g}</g>`;
 }
+
+/* ---------- owl, branch and stump (episode 22) ---------- */
+// owl({eye, wing, asleep, tilt}): little brown owl facing the viewer, origin at its feet (about 175 tall,
+// 110 wide, 150 wide with the wings open). wing = 0..60 degrees each wing lifts outwards (flap with
+// 30+30*Math.sin(t*k)), tilt = head tilt in degrees, asleep = closed eyes.
+function owl(o={}){
+  const e=o.eye==null?1:o.eye, w=o.wing||0, tilt=o.tilt||0;
+  const C='#A9784F', D='#86593A', L='#F3DDB5', F='#FBEFD6';
+  const eye=x=>o.asleep
+    ?`<path d="M${x-9},-132 Q${x},-124 ${x+9},-132" stroke="#3a2a1a" stroke-width="4.5" fill="none" stroke-linecap="round"/>`
+    :`<g transform="translate(${x},-131) scale(1,${e})"><circle r="9" fill="#2b1d12"/><circle cx="3" cy="-3.2" r="3.2" fill="#fff"/></g>`;
+  return `
+  <ellipse cx="-17" cy="-5" rx="14" ry="7" fill="#FF9F1C"/><ellipse cx="17" cy="-5" rx="14" ry="7" fill="#FF9F1C"/>
+  <g transform="rotate(${w} -44 -98)"><ellipse cx="-50" cy="-60" rx="17" ry="40" fill="${D}"/></g>
+  <g transform="rotate(${-w} 44 -98)"><ellipse cx="50" cy="-60" rx="17" ry="40" fill="${D}"/></g>
+  <ellipse cx="0" cy="-58" rx="50" ry="56" fill="${C}"/>
+  <ellipse cx="0" cy="-46" rx="33" ry="38" fill="${L}"/>
+  <path d="M-14,-62 l7,7 l7,-7 M0,-62 l7,7 l7,-7 M-7,-44 l7,7 l7,-7 M-21,-44 l7,7 l7,-7 M7,-44 l7,7 l7,-7" stroke="#D9BC8C" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <g transform="rotate(${tilt} 0 -110)">
+  <path d="M-42,-150 L-40,-186 L-14,-164 Z" fill="${C}"/><path d="M42,-150 L40,-186 L14,-164 Z" fill="${C}"/>
+  <ellipse cx="0" cy="-128" rx="50" ry="44" fill="${C}"/>
+  <circle cx="-20" cy="-130" r="20" fill="${F}"/><circle cx="20" cy="-130" r="20" fill="${F}"/>
+  ${eye(-20)}${eye(20)}
+  <path d="M-7,-118 L7,-118 L0,-104 Z" fill="#FF9F1C"/>
+  <circle cx="-38" cy="-108" r="7.5" fill="#FF9AA2" opacity=".8"/><circle cx="38" cy="-108" r="7.5" fill="#FF9AA2" opacity=".8"/>
+  </g>`;
+}
+// branch(x0,y0,x1,y1): thick brown branch from (x0,y0) (put it inside a tree canopy) to (x1,y1),
+// with two small leaves near the tip. A character sitting on it stands at about (x, y-6).
+function branch(x0,y0,x1,y1){
+  const mx=(x0+x1)/2, my=(y0+y1)/2+8;
+  return `<path d="M${x0},${y0} Q${mx},${my} ${x1},${y1}" stroke="#8A5A33" stroke-width="18" fill="none" stroke-linecap="round"/>
+  <ellipse cx="${x1+14}" cy="${y1-14}" rx="20" ry="9" fill="#3E9E3E" transform="rotate(-35 ${x1+14} ${y1-14})"/>
+  <ellipse cx="${x1-30}" cy="${y1+14}" rx="18" ry="8" fill="#47AD47" transform="rotate(25 ${x1-30} ${y1+14})"/>`;
+}
+// stump(x,y,s): short tree stump standing on the ground, origin at its foot; its flat top is at y-72*s
+// (about 130 wide at s=1). A character sitting on it stands at (x, y-72*s).
+function stump(x,y,s=1){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-58,0 Q-70,-4 -76,2 L76,2 Q70,-4 58,0 L52,-72 L-52,-72 Z" fill="#9C6B3F"/>
+  <path d="M-30,-10 Q-26,-40 -32,-62 M20,-8 Q26,-36 22,-60" stroke="#7E5230" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <ellipse cx="0" cy="-72" rx="52" ry="13" fill="#D9AE78"/>
+  <ellipse cx="0" cy="-72" rx="32" ry="7" fill="none" stroke="#B8875A" stroke-width="3"/></g>`;
+}

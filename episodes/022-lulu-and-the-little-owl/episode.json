@@ -1,0 +1,26 @@
+{
+  "number": 22,
+  "slug": "lulu-and-the-little-owl",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and the Little Owl | Bedtime Story for Kids",
+  "description": "The sun goes down and Lulu the little duck yawns. Hoo! Hoo! A little owl wakes up in the tree.\nOwl flies down, and together they look at the moon and the stars. Owl sings softly, and Lulu falls asleep.\nA gentle bedtime story for children aged 3 to 6.",
+  "duration": 45,
+  "seed": 22,
+  "lullaby_from": 37.5,
+  "sfx": [
+    {"t": 0.4, "type": "sparkle"},
+    {"t": 1.4, "type": "boing_high"},
+    {"t": 2.4, "type": "boing_high"},
+    {"t": 3.4, "type": "boing_high"},
+    {"t": 12.0, "type": "pop"},
+    {"t": 12.8, "type": "pop"},
+    {"t": 13.7, "type": "boing_high"},
+    {"t": 18.8, "type": "ding"},
+    {"t": 24.9, "type": "boing_low"},
+    {"t": 27.1, "type": "pop"},
+    {"t": 28.1, "type": "sparkle"},
+    {"t": 42.3, "type": "sparkle"}
+  ],
+  "check_times": [2.0, 8.0, 10.0, 13.0, 16.0, 19.5, 23.0, 26.0, 28.5, 30.0, 33.0, 36.0, 40.0, 43.0]
+}
