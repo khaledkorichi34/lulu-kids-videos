@@ -1,0 +1,148 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 21 - Did you know? Bee facts.  Title, fact 1 (honeybees live together in a hive),
+   lots of bees fly out, fact 2 (honeybees make honey from nectar), they keep it in a honeycomb,
+   fact 3 (bees carry pollen to other flowers), pollen helps flowers make seeds that grow,
+   recap (hive, honey, pollen), goodbye. */
+const SC=[0,5.5,12,18.5,25,31.5,38.5,45,51.5,57], DUR=57;
+const NAVY='#2D2A6E', PURPLE='#7B5CFF', GREEN='#1F7F37', ORANGE='#E76F2E', PINK='#E8467C', HONEY='#D9831A';
+const lulu=(x,lt,t,hops,h=20,s=.95,wave=false,flip=false)=>{
+  const j=jumps(lt,hops,.6,h), w=wave?20+20*Math.sin(lt*9):0;
+  return shadow(x,522,56*s/.95,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy,flip});
+};
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.4)):0;
+const flapAt=(t,k=0)=>.5+.5*Math.sin(t*40+k);
+// a bee at (x,y); the bee faces left, right=true turns it to face right
+const B=(x,y,t,s=.8,right=false,pollen=0,k=0)=>place(x,y+4*Math.sin(t*6+k),bee({flap:flapAt(t,k),pollen}),{s,flip:right});
+// a bee looping gently around (x,y)
+function looper(x,y,t,s,k=0,rx=40,ry=20,sp=1.4){
+  const a=t*sp+k, dx=Math.cos(a);
+  return B(x+rx*Math.sin(a),y+ry*Math.sin(2*a),t,s,dx>0,0,k);
+}
+let WIN=0;
+function closeWin(x,y,r,g,inner,bgc='#FFF4CC'){
+  if(g<=0)return '';
+  const id='w'+(WIN++);
+  return `<g transform="translate(${x},${y}) scale(${g})"><defs><clipPath id="${id}"><circle r="${r}"/></clipPath></defs>
+  <g clip-path="url(#${id})"><circle r="${r}" fill="${bgc}"/><circle cx="${-r*.5}" cy="${-r*.55}" r="${r*.5}" fill="#fff" opacity=".35"/>${inner}</g>
+  <circle r="${r}" fill="none" stroke="#fff" stroke-width="9"/></g>`;
+}
+function sparkles(x,y,lt,t0){
+  const u=prog(lt,t0,t0+1.2);if(u<=0||u>=1)return '';
+  let s='';for(let k=0;k<6;k++){const a=k*Math.PI/3+.4, d=40+u*90;s+=sparkle(x+Math.cos(a)*d,y+Math.sin(a)*d,1.1,1-u);}
+  return s;
+}
+// little pollen dots on a flower head
+const dots=(x,y,o)=>o>0?`<g opacity="${o}" fill="#FFB000"><circle cx="${x-8}" cy="${y-6}" r="5"/><circle cx="${x+9}" cy="${y-3}" r="5"/><circle cx="${x}" cy="${y+8}" r="5"/></g>`:'';
+// eight bees fly out of the hive door one after another (scene 2)
+const OUT=[[-1,330,350],[1,960,300],[-1,220,460],[1,880,470],[-1,450,250],[1,840,240],[-1,120,300],[1,1110,250]];
+
+function render(t){
+  WIN=0;
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={};
+  const sky=cloud(130+8*Math.sin(t*.3),105,.9,.95);
+  if(i===0){
+    props=flower(840,520,150,'#FF7FB0',t,0,1.1)+flower(990,520,120,'#B58CFF',t,1,1.0);
+    chars=lulu(330,lt,t,[1.3,2.3],30,1.1,true)+looper(640,330,t,.9,0,90,30,1.2);
+    pops=pop('Did you know?',620,165,100,PURPLE,lt,.3,-3);
+    cap=caption('Fun bee facts with Lulu',lt,1.8);
+  }else if(i===1){
+    o={noFlowers:true};
+    props=hive(780,520,1.05);
+    chars=lulu(250,lt,t,[],0,.95)+looper(780,330,t,.6,0,170,40,1.3)+looper(780,400,t,.55,2.5,200,30,1.1);
+    pops=pop('Fact 1',640,150,100,ORANGE,lt,.3);
+    cap=caption('Honeybees live together in a hive.',lt,1.2);
+  }else if(i===2){
+    o={noFlowers:true};
+    props=hive(640,520,1.05);
+    const door=[640,520-86*1.05];
+    OUT.forEach(([d,tx,ty],k)=>{
+      const u=prog(lt,.5+k*.45,2.0+k*.45);if(u<=0)return;
+      const e=eio(u), x=lerp(door[0],tx,e)+(u>=1?22*Math.sin(t*1.6+k):0), y=lerp(door[1],ty,e)-60*Math.sin(Math.PI*u)+(u>=1?12*Math.sin(t*2.2+k):0);
+      chars+=B(x,y,t,.55*lerp(.5,1,e),d>0,0,k);
+    });
+    chars+=lulu(1150,lt,t,[3.0],20,.8,false,true);
+    pops=pop('buzz, buzz!',640,160,90,HONEY,lt,1.5,-2);
+    cap=caption('Lots and lots of bees live there!',lt,.6);
+  }else if(i===3){
+    o={noFlowers:true};
+    const arrive=prog(lt,.3,2.0);
+    const hx=600, hy=520-150*1.3;
+    props=flower(hx,520,150,'#FF7FB0',t,0,1.3)+flower(800,520,100,'#B58CFF',t,1,1.0);
+    const bx=lerp(1080,hx+8,eio(arrive)), by=lerp(300,hy-34,eio(arrive))+(arrive<1?-40*Math.sin(Math.PI*arrive):3*Math.sin(t*5));
+    chars=B(bx,by,t,.75)+lulu(220,lt,t,[],0,.9);
+    pops=pop('Fact 2',640,150,100,ORANGE,lt,.3)+pop('sip, sip!',1010,420,60,PINK,lt,2.6,-3);
+    cap=caption('Honeybees make honey from nectar.',lt,1.0);
+  }else if(i===4){
+    o={noFlowers:true};
+    props=closeWin(640,380,165,grow(lt,.2),honeycomb(0,0,1.05,prog(lt,1.0,4.6)));
+    chars=lulu(230,lt,t,[4.9],22,.9,lt>4.9)+looper(930,320,t,.65,1,30,18,1.6);
+    pops=pop('honeycomb',640,160,84,HONEY,lt,2.0,-2);
+    cap=caption('They keep honey in a honeycomb.',lt,.8);
+  }else if(i===5){
+    o={noFlowers:true};
+    const f1=[380,520-150*1.2], f2=[880,520-150*1.2];
+    const pick=prog(lt,.9,1.9), fly=prog(lt,2.3,4.6), drop=prog(lt,4.8,5.6);
+    props=flower(f1[0],520,150,'#FF7FB0',t,0,1.2)+flower(f2[0],520,150,'#B58CFF',t,1,1.2);
+    props+=dots(f1[0],f1[1],1-.6*pick)+dots(f2[0],f2[1],drop);
+    let bx,by;
+    if(lt<2.3){const a=prog(lt,0,.8);bx=lerp(160,f1[0]+6,eio(a));by=lerp(290,f1[1]-34,eio(a));}
+    else{bx=lerp(f1[0]+6,f2[0]+6,eio(fly));by=lerp(f1[1]-34,f2[1]-34,eio(fly))-55*Math.sin(Math.PI*fly);}
+    chars=B(bx,by,t,.75,true,pick*(1-drop*.6))+lulu(1120,lt,t,[],0,.85,false,true);
+    pops=pop('Fact 3',640,150,100,ORANGE,lt,.3);
+    cap=caption('Bees carry pollen to other flowers.',lt,1.0);
+  }else if(i===6){
+    o={noFlowers:true};
+    const hy=520-150*1.25;
+    props=flower(640,520,150,'#B58CFF',t,1,1.25)+dots(640,hy,1-prog(lt,3.0,3.5));
+    const S=[[440,1.2],[840,1.5],[300,1.8]];
+    S.forEach(([sx,t0],k)=>{
+      const u=prog(lt,t0,t0+.9);
+      if(lt<3.6&&u>0) props+=seed(lerp(640,sx,u),lerp(hy+20,505,u)-60*Math.sin(Math.PI*u),.9);
+      const g=prog(lt,3.8+k*.3,5.0+k*.3);
+      if(g>0) props+=growFlower(sx,520,lerp(20,110,eout(g)),prog(lt,4.6+k*.3,5.4+k*.3),['#FF7FB0','#FFD23F','#FF9F6B'][k],t);
+    });
+    props+=sparkles(640,hy,lt,.3);
+    chars=looper(1000,300,t,.6,2,30,18,1.5);
+    pops=pop('grow, grow!',640,160,90,GREEN,lt,4.0,-2);
+    cap=lt<3.6?caption('Pollen helps flowers make seeds.',lt,.6):caption('Seeds grow into new flowers.',lt,3.6);
+  }else if(i===7){
+    o={noFlowers:true,noSun:true};
+    const b=k=>1+.05*Math.sin(t*4+k*2), X=[300,640,980], Y=390;
+    props=closeWin(X[0],Y,118,grow(lt,.4)*b(0),hive(0,92,.62),'#DFF6C8');
+    props+=closeWin(X[1],Y,118,grow(lt,1.4)*b(1),honeycomb(0,0,.72,1));
+    props+=closeWin(X[2],Y,118,grow(lt,2.4)*b(2),flower(-20,118,150,'#FF7FB0',t,0,.95)+dots(-20,118-142,1)+B(38,-58,t,.55,false,1),'#DFF6C8');
+    pops=pop('hive',X[0],230,54,HONEY,lt,.4)+pop('honey',X[1],230,54,ORANGE,lt,1.4)+pop('pollen',X[2],230,54,GREEN,lt,2.4);
+    cap=caption('Bees are busy helpers!',lt,3.6);
+  }else{
+    props=heart(570,330+6*Math.sin(t*3),1.4,'#FF7FB0',.85*prog(lt,2,2.5))+heart(630,280+6*Math.sin(t*3+1),1,'#FF9AA2',.85*prog(lt,2.3,2.8));
+    props+=hive(1000,520,.9);
+    chars=lulu(400,lt,t,[1.0,1.8],26,.95,true)+looper(800,320,t,.6,1,60,25,1.3)+looper(1000,330,t,.55,3,120,30,1.1);
+    pops=pop('Bye bye!',640,160,110,PURPLE,lt,.4,-2);
+    cap=caption('Bye bye, busy bees!',lt,1.6);
+  }
+  o.noClouds=true;
+  svg.innerHTML=bg(t,0,'',o)+(i===7?'':sky)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(1205,95,.75,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=hive(1050,690,1.15)+flower(640,690,140,'#FF7FB0',0,0,1.1);
+  s+=shadow(205,662,100)+place(200,658,duck({wing:22}),{s:1.45});
+  s+=place(800,470,bee({flap:.9}),{s:1.5,rot:-6});
+  s+=label('Did you know?',640,190,130,PURPLE,-3);
+  s+=label('Fun bee facts',640,315,90,HONEY,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

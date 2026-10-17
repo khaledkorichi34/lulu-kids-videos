@@ -89,7 +89,7 @@ function bee(o={}){
   <circle cx="-48" cy="-50" r="4.5" fill="#3a2a1a"/><circle cx="-30" cy="-58" r="4.5" fill="#3a2a1a"/>
   <circle cx="-26" cy="-6" r="6.5" fill="#2b1d12"/><circle cx="-24" cy="-8.5" r="2.3" fill="#fff"/>
   <path d="M-38,8 Q-30,17 -21,9" stroke="#3a2a1a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <circle cx="-13" cy="8" r="7" fill="#FF9AA2" opacity=".8"/>`;
+  <circle cx="-13" cy="8" r="7" fill="#FF9AA2" opacity=".8"/>${o.pollen?`<circle cx="-6" cy="36" r="${10*o.pollen}" fill="#FF8F00"/><circle cx="20" cy="34" r="${10*o.pollen}" fill="#FF8F00"/>`:''}`;
 }
 function butterfly(x,y,f){
   const w=.25+.75*f;
@@ -717,4 +717,32 @@ function orange(x,y,s=1){
   <circle cx="0" cy="-138" r="6" fill="#7A4B21"/>
   <ellipse cx="24" cy="-150" rx="24" ry="10" fill="#3FA34D" transform="rotate(-24 24 -150)"/>
   <path d="M6,-142 Q24,-152 42,-158" stroke="#2E8A3C" stroke-width="2.5" fill="none" stroke-linecap="round"/></g>`;
+}
+
+/* ---------- beehive and honeycomb (episode 21) ---------- */
+// bee({pollen: 0..1}) also draws two little yellow pollen balls under the bee (episode 21).
+// hive(x,y,s): round straw beehive (skep) sitting on a tree stump, origin at the foot of the stump
+// (about 230 wide and 260 tall at s=1). The dark door is at (x, y-86*s): bees fly in and out there.
+function hive(x,y,s=1){
+  let bands='';
+  const B=[[-80,108],[-118,104],[-154,94],[-188,78],[-218,56],[-240,30]];
+  B.forEach(([cy,rx],k)=>{bands+=`<ellipse cx="0" cy="${cy}" rx="${rx}" ry="${26-k*1.5}" fill="${k%2?'#F2B33D':'#F7C559'}"/>`;});
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-62,0 L-56,-62 L56,-62 L62,0 Z" fill="#9C6B3F"/><ellipse cx="0" cy="-62" rx="56" ry="12" fill="#C99A63"/>
+  <ellipse cx="0" cy="-62" rx="38" ry="7" fill="none" stroke="#9C6B3F" stroke-width="3"/>
+  <ellipse cx="0" cy="-70" rx="112" ry="14" fill="#D9982A"/>
+  ${bands}
+  <ellipse cx="-50" cy="-150" rx="10" ry="34" fill="#fff" opacity=".18" transform="rotate(25 -50 -150)"/>
+  <path d="M-24,-74 Q-24,-102 0,-102 Q24,-102 24,-74 Z" fill="#5a3418"/></g>`;
+}
+// honeycomb(x,y,s,fill,t): a little patch of seven wax cells centred at (x,y) (about 190 wide at s=1).
+// fill = 0..1 how full of honey the cells are (they fill one after another).
+function honeycomb(x,y,s=1,fill=1){
+  const r=34, hx=(cx,cy)=>{let d='';for(let k=0;k<6;k++){const a=Math.PI/3*k;d+=(k?'L':'M')+(cx+r*Math.cos(a)).toFixed(1)+','+(cy+r*Math.sin(a)).toFixed(1);}return d+'Z';};
+  const C=[[0,0],[0,-59],[51,-29.5],[51,29.5],[0,59],[-51,29.5],[-51,-29.5]];
+  let g='';
+  C.forEach(([cx,cy],k)=>{const u=clamp(fill*7-k);
+    g+=`<path d="${hx(cx,cy)}" fill="#FFE8A3" stroke="#E0A526" stroke-width="7" stroke-linejoin="round"/>`;
+    if(u>0)g+=`<g transform="translate(${cx},${cy}) scale(${.82*u})"><path d="${hx(0,0)}" fill="#F5A623"/><circle cx="-10" cy="-12" r="7" fill="#fff" opacity=".45"/></g>`;});
+  return `<g transform="translate(${x},${y}) scale(${s})">${g}</g>`;
 }
