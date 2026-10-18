@@ -1,0 +1,111 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script src="../../toolkit/rhymes.js"></script>
+<script>
+/* Episode 24 - Hot Cross Buns (sing-along). Lulu has three warm buns on a tray on her little
+   table. Verse 1: Lulu sings alone; on "One a penny" one bun hops, on "two a penny" two buns hop.
+   Verse 2: Bunny hops in and sings along. Verse 3: Pip the kitten joins too.
+   Ending: one bun floats to each friend - "Yum! Buns for everyone!" */
+const BPM=104, START=5.0;
+const LINES=rhymeTimes(RHYMES.hotcross,START,3,4,BPM);
+const END=rhymeEnd(LINES);                 // 37.31 s
+const DUR=43, SC=[0,DUR];
+const VS=[0,4,8].map(i=>LINES[i].t0);      // verse starts
+const LX=330, TX=640, TOP=428;             // Lulu, table centre, table top
+const BX=[560,640,720];                    // buns on the tray
+const FX=[950,1120];                       // Bunny, Pip
+const ENTER=[[VS[1]-2.7,VS[1]-.25],[VS[2]-2.7,VS[2]-.25]];
+const GIVE=[END+.5,END+.9,END+1.3];        // buns start floating to the friends
+const DEST=[[LX+34,494,.72],[FX[0],492,.72],[FX[1],494,.72]];
+
+function lineAt(t){const li=currentLine(LINES,t);return li>=0&&t<LINES[li].t1+.05?LINES[li]:null;}
+
+// which buns hop: bun 0 on "One", buns 1 and 2 on "two"
+function bunHop(t,i){
+  let y=0,sx=1,sy=1;
+  for(const L of LINES){if(L.index!==2)continue;
+    const w=i===0?L.words[0]:L.words[4];
+    const j=jump(t,w.t0,.42,46);if(j){y=j.y;sx=j.sx;sy=j.sy;}}
+  return {y,sx,sy};
+}
+
+function friendX(k,t){const [a,b]=ENTER[k];return lerp(1400,FX[k],eio(prog(t,a,b)));}
+
+function render(t){
+  const p=t>START-.2&&t<END+.4?beatPulse(LINES,t):0;
+  const L=lineAt(t), li=L?L.index:-1;
+  let props='',back='',chars='',front='',pops='',cap='';
+
+  props+=table(TX,520)+tray(TX,TOP,130);
+
+  // the buns: on the tray, bouncing a little with the music; at the end each floats to a friend
+  BX.forEach((x,i)=>{
+    const g=prog(t,GIVE[i],GIVE[i]+1.0);
+    if(g<=0){
+      const h=bunHop(t,i), bob=(li===0||li===1||li===3)?4*p:0;
+      props+=`<g transform="translate(${x},${TOP-2+h.y-bob}) scale(${h.sx},${h.sy})">${bun(0,0,1,1,t+i*.37)}</g>`;
+    }else{
+      const [dx,dy,ds]=DEST[i], u=eio(g);
+      const bx=lerp(x,dx,u), by=lerp(TOP-2,dy,u)-120*Math.sin(Math.PI*u), s=lerp(1,ds,u);
+      front+=bun(bx,by,s,1-u*.6,t+i*.37);
+      if(g>=1)back+=sparkle(dx+(i-1)*8,dy-70-((t-GIVE[i]-1)*30)%60,.8,.6);
+    }
+  });
+
+  // the numbers for "One a penny, two a penny"
+  for(const Lx of LINES){if(Lx.index!==2)continue;
+    const off=Lx.t0+4*(60/BPM)*2, o=1-prog(t,off+.1,off+.5);
+    if(o>0&&t>=Lx.t0-.05)pops+=`<g opacity="${o.toFixed(2)}">`+pop('1',BX[0],170,130,'#FF5D8F',t,Lx.words[0].t0)+pop('2',(BX[1]+BX[2])/2+40,170,130,'#19B8A6',t,Lx.words[4].t0)+`</g>`;
+  }
+
+  // a few soft hearts behind everyone at the end
+  if(t>END+2.4)for(let k=0;k<4;k++){const q=((t-END-2.4)*.35+k*.25)%1;
+    back+=heart(440+k*170,330-q*110,1.5,'#FF8FB1',Math.sin(Math.PI*q)*.8);}
+
+  // friends: Bunny hops in before verse 2, Pip trots in before verse 3
+  for(let k=0;k<2;k++){
+    const [a,b]=ENTER[k]; if(t<a)continue;
+    const x=friendX(k,t);let y=520,sx=1,sy=1;
+    if(t<b+.3){
+      if(k===0){const n=Math.floor((t-a)/.55);const j=jumps(t-a-n*.55,[0],.5,40);y+=j.y;sx=j.sx;sy=j.sy;}
+      else{y-=Math.abs(Math.sin((t-a)*9))*8;}
+    }else if(t<END+.4){y-=6*p;}
+    const inner=k===0?bunny({eye:blink(t,.7),ear:6*p}):kitten({eye:blink(t,1.6),tail:Math.sin(t*2.4)});
+    chars+=shadow(x,524,46,520-y)+place(x,y,inner,{s:.85,sx,sy});
+  }
+
+  // Lulu: flaps on "Hot cross buns!", leans towards the buns on "One a penny, two a penny"
+  let ly=520,lsx=1,lsy=1,rot=0,wing=0;
+  if(L){
+    if(li===2)rot=6*Math.sin(Math.PI*prog(t,L.t0,L.t1));
+    else wing=-30*p;
+    ly-=5*p;
+  }
+  chars+=shadow(LX,524,62,520-ly)+place(LX,ly,duck({eye:blink(t,0),wing}),{s:.9,rot,sx:lsx,sy:lsy});
+
+  // title card, then the words of the song, then the ending line
+  const to=1-prog(t,3.9,4.5);
+  if(to>0)pops+=`<g opacity="${to}">`+pop('Hot Cross',640,165,104,'#FF5D8F',t,.4,-2,'#fff')+pop('Buns!',640,285,116,'#FF9F1C',t,1.0,2,'#fff')+`</g>`;
+  cap=t<END+.6?karaoke(LINES,t,'#FF5D8F'):caption('Yum! Buns for everyone!',t-END,.7);
+
+  const cl=cloud(150+12*Math.sin(t*.3),100,.8,1);
+  svg.innerHTML=bg(t,0,'',{noClouds:true,noFlowers:true})+cl+back+props+chars+front+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,'',{noClouds:true,noFlowers:true})+cloud(150,100,.8,1);
+  s+=table(TX,520)+tray(TX,TOP,130);
+  BX.forEach((x,i)=>{s+=bun(x,TOP-2,1,1,.3+i*.37);});
+  s+=shadow(LX,524,62,0)+place(LX,520,duck({wing:-30}),{s:.9,rot:4});
+  s+=shadow(FX[0],524,46,0)+place(FX[0],520,bunny({ear:4}),{s:.85});
+  s+=shadow(FX[1],524,46,0)+place(FX[1],520,kitten({tail:.4}),{s:.85});
+  s+=label('Hot Cross',600,140,110,'#FF5D8F',-3,'#fff')+label('Buns!',600,268,124,'#FF9F1C',-2,'#fff');
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

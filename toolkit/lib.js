@@ -790,3 +790,32 @@ function stump(x,y,s=1){
   <ellipse cx="0" cy="-72" rx="52" ry="13" fill="#D9AE78"/>
   <ellipse cx="0" cy="-72" rx="32" ry="7" fill="none" stroke="#B8875A" stroke-width="3"/></g>`;
 }
+
+/* ---------- buns and a little table (episode 24) ---------- */
+// bun(x,y,s,steam): round golden bun with a white cross on top, origin at the middle of its base
+// (about 84 wide and 52 tall at s=1). steam 0..1 draws soft wavy steam above it (t-free: pass a phase in o.ph).
+function bun(x,y,s=1,steam=0,ph=0){
+  let st='';
+  if(steam>0)for(let k=0;k<2;k++){const q=((ph*.55+k*.5)%1), sx=(k?14:-14);
+    st+=`<path d="M${sx},${-60-q*40} q-8,-10 0,-20 q8,-10 0,-20" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round" opacity="${(steam*Math.sin(Math.PI*q)*.8).toFixed(2)}"/>`;}
+  return `<g transform="translate(${x},${y}) scale(${s})">${st}
+  <path d="M-42,0 Q-46,-50 0,-52 Q46,-50 42,0 Z" fill="#D9892E"/>
+  <path d="M-34,-6 Q-36,-44 0,-46 Q36,-44 34,-6 Z" fill="#E9A447"/>
+  <ellipse cx="-16" cy="-36" rx="12" ry="6" fill="#fff" opacity=".35" transform="rotate(-20 -16 -36)"/>
+  <path d="M-30,-30 Q0,-24 30,-30 M0,-50 Q4,-26 0,-4" stroke="#FFF6E0" stroke-width="8" fill="none" stroke-linecap="round"/></g>`;
+}
+// table(x,y,w): small wooden table standing on the ground at (x,y) with a pink checked cloth,
+// w = half width. The top surface is at y-92 (put things on it there).
+function table(x,y,w=170){
+  let checks='';for(let i=0;i<Math.floor(w/20);i++)checks+=`<rect x="${-w+12+i*40}" y="-86" width="20" height="40" fill="#FF8FB1"/>`;
+  return `<g transform="translate(${x},${y})">
+  <rect x="${-w+22}" y="-60" width="16" height="60" rx="5" fill="#9C6B3F"/><rect x="${w-38}" y="-60" width="16" height="60" rx="5" fill="#9C6B3F"/>
+  <rect x="${-w}" y="-96" width="${2*w}" height="14" rx="6" fill="#B8875A"/>
+  <path d="M${-w+4},-86 L${w-4},-86 L${w-12},-46 Q0,-38 ${-w+12},-46 Z" fill="#FFD1DF"/>
+  ${checks}
+  <path d="M${-w+4},-46 Q0,-38 ${w-4},-46" stroke="#FFD1DF" stroke-width="6" fill="none"/></g>`;
+}
+// tray(x,y,w): flat round-ended baking tray lying on a surface at (x,y), w = half width
+function tray(x,y,w=130){
+  return `<rect x="${x-w}" y="${y-10}" width="${2*w}" height="12" rx="6" fill="#B8C4CC"/><rect x="${x-w+8}" y="${y-12}" width="${2*w-16}" height="5" rx="2.5" fill="#DCE4EA"/>`;
+}

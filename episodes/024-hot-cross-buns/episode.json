@@ -1,0 +1,26 @@
+{
+  "number": 24,
+  "slug": "hot-cross-buns",
+  "format": "rhyme",
+  "ages": "2-6",
+  "title": "Hot Cross Buns with Lulu | Nursery Rhyme for Kids",
+  "description": "Sing along to Hot Cross Buns with Lulu the little duck! Three warm buns sit on Lulu's little table. One bun hops, then two buns hop, and Bunny and Pip the kitten come to sing too.\n\nA classic nursery rhyme (traditional, 1798) for children aged 2 to 6.",
+  "duration": 43,
+  "seed": 24,
+  "lullaby_from": null,
+  "rhyme": {"name": "hotcross", "bpm": 104, "start": 5.0, "repeat": 3, "gap": 4},
+  "sfx": [
+    {"t": 0.4, "type": "pop"},
+    {"t": 9.62, "type": "boing_high"},
+    {"t": 10.77, "type": "boing_high"},
+    {"t": 16.2, "type": "boing_low"},
+    {"t": 21.15, "type": "boing_high"},
+    {"t": 22.31, "type": "boing_high"},
+    {"t": 32.69, "type": "boing_high"},
+    {"t": 33.85, "type": "boing_high"},
+    {"t": 38.8, "type": "sparkle"},
+    {"t": 39.2, "type": "sparkle"},
+    {"t": 39.6, "type": "sparkle"}
+  ],
+  "check_times": [2.0, 4.6, 9.85, 11.0, 14.5, 17.0, 22.5, 26.5, 29.0, 34.0, 38.3, 39.5, 41.5]
+}
