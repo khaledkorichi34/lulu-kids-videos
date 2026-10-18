@@ -1,0 +1,112 @@
+{
+  "number": 23,
+  "slug": "count-with-lulu-6-to-10",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "Count with Lulu: 6 to 10 | Counting for Kids",
+  "description": "Count from 6 to 10 with Lulu the little duck!\n6 apples, 7 ladybirds, 8 balls, 9 butterflies and 10 flowers. Count out loud together as each one appears.\nA short, gentle counting video for children aged 3 to 6.",
+  "duration": 55.5,
+  "seed": 23,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 1.6,
+      "type": "pop"
+    },
+    {
+      "t": 1.9,
+      "type": "pop"
+    },
+    {
+      "t": 2.2,
+      "type": "pop"
+    },
+    {
+      "t": 2.5,
+      "type": "pop"
+    },
+    {
+      "t": 2.8,
+      "type": "pop"
+    },
+    {
+      "t": 9.2,
+      "type": "ding"
+    },
+    {
+      "t": 9.6,
+      "type": "boing_high"
+    },
+    {
+      "t": 17.3,
+      "type": "ding"
+    },
+    {
+      "t": 17.7,
+      "type": "boing_high"
+    },
+    {
+      "t": 26.0,
+      "type": "ding"
+    },
+    {
+      "t": 26.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 35.3,
+      "type": "ding"
+    },
+    {
+      "t": 35.7,
+      "type": "boing_high"
+    },
+    {
+      "t": 45.2,
+      "type": "ding"
+    },
+    {
+      "t": 45.6,
+      "type": "boing_high"
+    },
+    {
+      "t": 48.5,
+      "type": "pop"
+    },
+    {
+      "t": 49.0,
+      "type": "pop"
+    },
+    {
+      "t": 49.5,
+      "type": "pop"
+    },
+    {
+      "t": 50.0,
+      "type": "pop"
+    },
+    {
+      "t": 50.5,
+      "type": "pop"
+    },
+    {
+      "t": 51.2,
+      "type": "sparkle"
+    }
+  ],
+  "check_times": [
+    3.4,
+    9.87,
+    11.0,
+    17.97,
+    19.1,
+    26.67,
+    27.8,
+    35.97,
+    37.1,
+    45.87,
+    47.0,
+    52.0,
+    53.9
+  ]
+}
