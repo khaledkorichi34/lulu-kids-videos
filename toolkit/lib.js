@@ -819,3 +819,26 @@ function table(x,y,w=170){
 function tray(x,y,w=130){
   return `<rect x="${x-w}" y="${y-10}" width="${2*w}" height="12" rx="6" fill="#B8C4CC"/><rect x="${x-w+8}" y="${y-12}" width="${2*w-16}" height="5" rx="2.5" fill="#DCE4EA"/>`;
 }
+
+/* ---------- firefly (episode 25) ---------- */
+// firefly({glow, flap, eye}): friendly little firefly flying to the right, origin at the centre of its body
+// (about 90 wide and 60 tall at s=1, the glow halo reaches about 55 around the tail at (-24,8)).
+// glow = 0..1 how bright the tail shines, flap = 0..1 wing beat (use .5+.5*Math.sin(t*k)).
+// Draw fireflies AFTER nightTint() so their light is not dimmed (keep them away from text).
+function firefly(o={}){
+  const g=o.glow==null?1:o.glow, f=o.flap==null?.5:o.flap, e=o.eye==null?1:o.eye;
+  return `<circle cx="-24" cy="8" r="55" fill="#FFF27A" opacity="${(.14*g).toFixed(3)}"/>
+  <circle cx="-24" cy="8" r="36" fill="#FFF27A" opacity="${(.24*g).toFixed(3)}"/>
+  <circle cx="-24" cy="8" r="24" fill="#FFF7A8" opacity="${(.40*g).toFixed(3)}"/>
+  <path d="M8,14 l-4,12 M16,14 l2,12" stroke="#5B3A29" stroke-width="3" stroke-linecap="round"/>
+  <ellipse cx="-20" cy="6" rx="22" ry="15" fill="${mix('#C9B458','#FFF27A',g)}"/>
+  <ellipse cx="2" cy="0" rx="16" ry="15" fill="#6B4A3A"/>
+  <g transform="rotate(${-10-35*f} 0 -10)"><ellipse cx="-14" cy="-20" rx="20" ry="10" fill="#EAF6FF" opacity=".8"/></g>
+  <g transform="rotate(${5-25*f} 4 -10)"><ellipse cx="-8" cy="-18" rx="17" ry="8" fill="#FFFFFF" opacity=".75"/></g>
+  <path d="M28,-12 Q36,-30 44,-32 M24,-14 Q28,-32 34,-38" stroke="#5B3A29" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <circle cx="44" cy="-32" r="3" fill="#5B3A29"/><circle cx="34" cy="-38" r="3" fill="#5B3A29"/>
+  <circle cx="24" cy="0" r="16" fill="#F4A259"/>
+  <g transform="translate(29,-3) scale(1,${e})"><circle r="4.5" fill="#2b1d12"/><circle cx="1.5" cy="-1.6" r="1.6" fill="#fff"/></g>
+  <circle cx="24" cy="7" r="4.5" fill="#FF9AA2" opacity=".8"/>
+  <path d="M30,7 Q34,10 37,6" stroke="#2b1d12" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+}

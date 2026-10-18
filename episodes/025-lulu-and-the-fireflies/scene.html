@@ -1,0 +1,124 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 25 - Lulu and the Fireflies. The sun goes down and the stars come out. A little light
+   blinks in the bush: it is a firefly! Fireflies glow at night. Two more fireflies come (one, two,
+   three lights). They dance around Lulu, Lulu feels sleepy and falls asleep under their soft glow. */
+const DUR=45, SC=[0,5,11.5,18,24.5,31,37.5,45];
+const NAVY='#2D2A6E', PINK='#FF5D8F', GOLD='#FFE58A', PURPLE='#7B5CFF', LIME='#D9F27A';
+const LX=560, BX=1010;                 // Lulu, bush
+const lulu=(x,lt,t,o={})=>{
+  const j=jumps(lt,o.hops||[],.6,o.h||28), w=o.wave?20+20*Math.sin(lt*9):0;
+  return shadow(x,522,60,-j.y)+place(x,520+j.y,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),{s:1,sx:j.sx,sy:j.sy*(o.sy||1),flip:o.flip,rot:o.rot||0});
+};
+// one firefly: k = which one (own glow rhythm and bob), left = facing left
+const ff=(x,y,t,k,o={})=>{
+  const g=o.glow!=null?o.glow:.6+.4*Math.sin(t*2.6+k*2.1);
+  return place(x,y+8*Math.sin(t*2.2+k*1.7),firefly({glow:g,flap:.5+.5*Math.sin(t*26+k),eye:o.eye!=null?o.eye:blink(t,k*.9)}),{s:o.s||1.3,flip:o.left});
+};
+const sideClouds=(t,n)=>cloud(300+12*Math.sin(t*.3),290,.6,1-n*.85)+cloud(820+12*Math.sin(t*.25+1),240,.5,1-n*.85);
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',bugs='',pops='',cap='',o={},behind='';
+  switch(i){
+  case 0:{
+    // title: evening in the garden, Lulu hops
+    n=.12; o={noSun:true}; behind=sun(t,1150,170);
+    props=bush(BX,520,.8);
+    chars=lulu(400,lt,t,{hops:[1.4,2.4,3.4],h:30,wave:true});
+    pops=pop(LULU,760,150,140,PINK,lt,.4,-3)+pop('and the Fireflies',760,236,60,NAVY,lt,1.0);
+    break;}
+  case 1:{
+    // the sun goes down and the stars come out
+    n=lerp(.12,.6,eio(prog(lt,.3,6.3))); o={noSun:true};
+    behind=sun(t,1150,lerp(170,580,eio(prog(lt,.3,6))));
+    props=bush(BX,520,.8);
+    chars=lulu(LX,lt,t,{wave:lt>3.8&&lt<5.6});
+    cap=lt<3.4?caption('The sun goes down.',lt,.4):caption('The stars come out.',lt,3.4);
+    pops=pop('Ooh!',590,170,96,PURPLE,lt,3.9,-4);
+    break;}
+  case 2:{
+    // a little light blinks in the bush, then a firefly flies out
+    n=lerp(.6,.85,eio(prog(lt,0,6))); o={noSun:true};
+    props=bush(BX,520,.8);
+    chars=lulu(LX,lt,t,{hops:[2.6],h:24});
+    const blinkOn=(lt>1.0&&lt<1.6)||(lt>2.2&&lt<2.8);
+    if(lt<3.4&&blinkOn){const u=Math.sin(Math.PI*((lt>2.2?lt-2.2:lt-1.0)/.6));
+      bugs=`<circle cx="${BX-40}" cy="455" r="50" fill="#FFF27A" opacity="${.18*u}"/><circle cx="${BX-40}" cy="455" r="26" fill="#FFF7A8" opacity="${.55*u}"/>`;}
+    if(lt>=3.4){const q=eio(prog(lt,3.4,5.6));
+      bugs=ff(lerp(BX-40,820,q),lerp(455,330,q)-40*Math.sin(Math.PI*q),t,0,{left:true});}
+    cap=lt<3.6?caption('What is that light?',lt,.5):caption('A little firefly!',lt,3.6);
+    pops=pop('Blink!',780,170,84,GOLD,lt,1.0,-5,NAVY)+pop('Blink!',300,170,84,GOLD,lt,2.2,5,NAVY);
+    break;}
+  case 3:{
+    // hello: Lulu waves, the firefly glows
+    n=lerp(.85,1,eio(prog(lt,0,5))); o={noSun:true};
+    props=bush(BX,520,.8);
+    chars=lulu(LX,lt,t,{wave:lt>.6&&lt<3.0});
+    bugs=ff(820,330,t,0,{left:true,glow:lt>3.4?.75+.25*Math.sin(lt*5):undefined});
+    cap=lt<3.4?caption('Hello, little firefly!',lt,.4):caption('Fireflies glow at night.',lt,3.4);
+    pops=pop('Hello!',590,170,96,PINK,lt,.8,-4);
+    break;}
+  case 4:{
+    // two more fireflies come: one, two, three lights
+    n=1; o={noSun:true};
+    props=bush(BX,520,.8);
+    chars=lulu(LX,lt,t,{});
+    const a=eio(prog(lt,.2,1.8)), b=eio(prog(lt,.6,2.6)), c=eio(prog(lt,1.0,3.0));
+    bugs=ff(lerp(-80,300,b),lerp(380,300,b),t,1)
+        +ff(lerp(820,590,a),lerp(330,280,a),t,0,{left:lt<1.9})
+        +ff(lerp(1360,880,c),lerp(220,300,c),t,2,{left:true});
+    cap=lt<3.0?caption('More fireflies come!',lt,.4):caption('One, two, three lights!',lt,3.0);
+    pops=pop('1',300,170,110,LIME,lt,3.2,0,NAVY)+pop('2',590,170,110,LIME,lt,3.9,0,NAVY)+pop('3',880,170,110,LIME,lt,4.6,0,NAVY);
+    break;}
+  case 5:{
+    // the fireflies dance to and fro above Lulu
+    n=1; o={noSun:true};
+    props=bush(BX,520,.8);
+    const sway=Math.sin(lt*1.6);
+    chars=lulu(LX,lt,t,{eye:lt>3.6?.45:blink(t,0),rot:lt>3.6?2*sway:0,hops:[1.2],h:20});
+    for(let k=0;k<3;k++){const ph=lt*1.2+k*2.1, id=[1,0,2][k];
+      bugs+=ff([300,590,880][k]+60*Math.sin(ph),280+18*Math.sin(lt*2.4+k),t,id,{left:Math.cos(ph)<0});}
+    cap=lt<3.6?caption('They dance in the dark.',lt,.4):caption('Lulu feels sleepy.',lt,3.6);
+    pops=pop('Glow, glow!',590,155,84,GOLD,lt,1.0,-3,NAVY);
+    break;}
+  case 6:{
+    // Lulu sleeps under the soft glow of the fireflies
+    n=1; o={noSun:true};
+    props=bush(BX,520,.8);
+    const asleep=lt>1.2;
+    chars=shadow(LX,522,64)+place(LX,520,duck({asleep,eye:.45}),{s:1,sy:1+.025*Math.sin(lt*2.2),rot:asleep?-3:0});
+    const sg=k=>.45+.25*Math.sin(t*1.6+k*2);
+    bugs=ff(320,330,t,1,{glow:sg(1),eye:asleep?.25:undefined})+ff(820,300,t,0,{left:true,glow:sg(0),eye:asleep?.25:undefined})+ff(990,370,t,2,{left:true,glow:sg(2),eye:asleep?.25:undefined});
+    for(let k=0;k<3;k++){let q=lt-1.8-k*.9;if(q>0){q%=2.7;
+      pops+=`<text x="${LX+20-q*26+8*Math.sin(q*3)}" y="${350-q*36}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}
+    cap=caption('Good night, Lulu.',lt,.5);
+    pops+=pop('The End',640,160,112,GOLD,lt,3.8,-3,NAVY);
+    break;}
+  }
+  o.noClouds=true; o.noFlowers=true;
+  svg.innerHTML=bg(t,n,sideClouds(t,n)+behind,o)+props+chars+nightTint(n)+bugs+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#1E2366','#5B56B8')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  STARS.forEach(p=>{s+=`<circle cx="${p[0]}" cy="${p[1]}" r="${p[2]*1.2}" fill="#FFF8D6" opacity=".85"/>`;});
+  s+=moon(1150,110);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#3E7A5E"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#2F6A4F"/>`;
+  s+=bush(1120,660,.9);
+  s+=shadow(330,664,110)+place(330,660,duck({wing:22}),{s:1.7});
+  s+=place(600,420,firefly({glow:1,flap:.6}),{s:1.6,flip:true});
+  s+=place(860,520,firefly({glow:.9,flap:.2}),{s:1.2,flip:true});
+  s+=place(120,330,firefly({glow:.9,flap:.4}),{s:1.1});
+  s+=label(LULU,700,180,170,PINK,-3)+label('and the Fireflies',700,285,76,GOLD,0,NAVY);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

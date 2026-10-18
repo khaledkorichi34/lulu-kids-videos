@@ -1,0 +1,27 @@
+{
+  "number": 25,
+  "slug": "lulu-and-the-fireflies",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and the Fireflies | Bedtime Story for Kids",
+  "description": "The sun goes down and a little light blinks in the bush. It is a firefly!\nTwo more fireflies come, and they dance in the dark with Lulu the little duck. Lulu falls asleep under their soft glow.\nA gentle bedtime story for children aged 3 to 6.",
+  "duration": 45,
+  "seed": 25,
+  "lullaby_from": 37.5,
+  "sfx": [
+    {"t": 0.4, "type": "sparkle"},
+    {"t": 1.4, "type": "boing_high"},
+    {"t": 2.4, "type": "boing_high"},
+    {"t": 3.4, "type": "boing_high"},
+    {"t": 12.5, "type": "ding"},
+    {"t": 13.7, "type": "ding"},
+    {"t": 14.9, "type": "sparkle"},
+    {"t": 18.8, "type": "pop"},
+    {"t": 27.7, "type": "pop"},
+    {"t": 28.4, "type": "pop"},
+    {"t": 29.1, "type": "pop"},
+    {"t": 32.0, "type": "sparkle"},
+    {"t": 41.3, "type": "sparkle"}
+  ],
+  "check_times": [3.0, 9.5, 12.8, 16.0, 17.5, 20.0, 23.0, 26.0, 28.5, 30.0, 33.0, 35.5, 40.0, 43.0]
+}
