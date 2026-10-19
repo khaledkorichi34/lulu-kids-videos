@@ -1,0 +1,135 @@
+{
+  "number": 26,
+  "slug": "abc-with-lulu-p-to-t",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "ABC with Lulu: P to T | Learn Letters for Kids",
+  "description": "Learn the letters P, Q, R, S and T with Lulu the little duck!\nP is for pear, Q is for quack, R is for rainbow, S is for snail and T is for turtle.\nA short, gentle first-letters video for children aged 3 to 6.",
+  "duration": 51,
+  "seed": 26,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.7,
+      "type": "sparkle"
+    },
+    {
+      "t": 1.5,
+      "type": "pop"
+    },
+    {
+      "t": 5.0,
+      "type": "ding"
+    },
+    {
+      "t": 6.1,
+      "type": "pop"
+    },
+    {
+      "t": 9.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 13.0,
+      "type": "ding"
+    },
+    {
+      "t": 14.0,
+      "type": "boing_high"
+    },
+    {
+      "t": 14.1,
+      "type": "pop"
+    },
+    {
+      "t": 17.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 21.0,
+      "type": "ding"
+    },
+    {
+      "t": 22.1,
+      "type": "sparkle"
+    },
+    {
+      "t": 25.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 29.0,
+      "type": "ding"
+    },
+    {
+      "t": 30.1,
+      "type": "pop"
+    },
+    {
+      "t": 33.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 37.0,
+      "type": "ding"
+    },
+    {
+      "t": 38.1,
+      "type": "pop"
+    },
+    {
+      "t": 41.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 44.8,
+      "type": "sparkle"
+    },
+    {
+      "t": 48.3,
+      "type": "ding"
+    },
+    {
+      "t": 48.4,
+      "type": "boing_high"
+    }
+  ],
+  "check_times": [
+    1.2,
+    3.2,
+    5.5,
+    6.9,
+    7.9,
+    9.5,
+    9.9,
+    11.5,
+    13.5,
+    14.9,
+    15.9,
+    17.5,
+    17.9,
+    19.5,
+    21.5,
+    22.9,
+    23.9,
+    25.5,
+    25.9,
+    27.5,
+    29.5,
+    30.9,
+    31.9,
+    33.5,
+    33.9,
+    35.5,
+    37.5,
+    38.9,
+    39.9,
+    41.5,
+    41.9,
+    43.5,
+    45.5,
+    47.0,
+    48.7,
+    50.0
+  ]
+}

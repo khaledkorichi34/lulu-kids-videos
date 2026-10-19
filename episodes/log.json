@@ -406,5 +406,23 @@
     "videoId": "P8TYRkqJs1U",
     "published": "2026-10-18",
     "tiktokPostId": 399550792
+  },
+  {
+    "number": 26,
+    "slug": "abc-with-lulu-p-to-t",
+    "format": "learning",
+    "ages": "3-6",
+    "title": "ABC with Lulu: P to T | Learn Letters for Kids",
+    "topic": "Letters P to T with first words: P is for pear, Q is for quack (Lulu says Quack! in a speech bubble), R is for rainbow (grows across the sky), S is for snail (slides in), T is for turtle (walks in); all five together at the end",
+    "cast": [
+      "duck",
+      "pear",
+      "rainbow",
+      "snail",
+      "turtle"
+    ],
+    "videoId": "TQ5NAQwq4lI",
+    "published": "2026-10-19",
+    "tiktokPostId": 399696842
   }
 ]

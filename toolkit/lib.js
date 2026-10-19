@@ -842,3 +842,31 @@ function firefly(o={}){
   <circle cx="24" cy="7" r="4.5" fill="#FF9AA2" opacity=".8"/>
   <path d="M30,7 Q34,10 37,6" stroke="#2b1d12" stroke-width="2" fill="none" stroke-linecap="round"/>`;
 }
+
+// pear(x,y,s): green-yellow pear standing on the ground with a little stalk and leaf, origin at its bottom
+// (about 140 wide and 200 tall with the leaf at s=1)
+function pear(x,y,s=1){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M0,-176 C-26,-176 -34,-150 -38,-120 C-42,-92 -70,-78 -70,-44 C-70,-12 -40,0 0,0 C40,0 70,-12 70,-44 C70,-78 42,-92 38,-120 C34,-150 26,-176 0,-176 Z" fill="#B5D33D"/>
+  <path d="M12,-160 C30,-150 28,-118 34,-100 C46,-80 62,-66 60,-40 C58,-18 38,-8 14,-6 C40,-20 46,-50 30,-80 C18,-104 22,-140 12,-160 Z" fill="#9BBF2A" opacity=".6"/>
+  <ellipse cx="-36" cy="-56" rx="12" ry="22" fill="#fff" opacity=".35" transform="rotate(20 -36 -56)"/>
+  <path d="M0,-172 Q2,-188 10,-198" stroke="#7A4B21" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <ellipse cx="30" cy="-192" rx="22" ry="9" fill="#3FA34D" transform="rotate(-20 30 -192)"/></g>`;
+}
+// rainbow(x,y,r,u,o): soft rainbow arch standing on the ground at (x,y) with outer radius r (bands 18 wide),
+// u = 0..1 how much of the arch is drawn (it grows from the left foot over the top), o = opacity.
+// Draw it in bg()'s `behind` so its feet go behind the hills.
+function rainbow(x,y,r=260,u=1,o=1){
+  const C=['#FF5D5D','#FF9F1C','#FFD93B','#5CC85A','#3FA9F5','#7B5CFF'];let s='';
+  C.forEach((c,k)=>{const R=r-9-k*18, L=Math.PI*R;if(R<30)return;
+    s+=`<path d="M${x-R},${y} A${R},${R} 0 0 1 ${x+R},${y}" stroke="${c}" stroke-width="19" fill="none" stroke-dasharray="${L} ${L}" stroke-dashoffset="${L*(1-clamp(u))}"/>`;});
+  return `<g opacity="${o}">${s}</g>`;
+}
+// speech(x,y,w,h,tx,ty,txt,size,col): white round speech bubble centred at (x,y), w/h = half sizes,
+// with a small tail pointing to (tx,ty) and the text txt inside
+function speech(x,y,w,h,tx,ty,txt,size=60,col='#2D2A6E'){
+  const a=Math.atan2(ty-y,tx-x), bx=x+Math.cos(a)*w*.7, by=y+Math.sin(a)*h*.7, px=-Math.sin(a)*22, py=Math.cos(a)*22;
+  return `<path d="M${bx+px},${by+py} L${tx},${ty} L${bx-px},${by-py} Z" fill="#fff"/>
+  <ellipse cx="${x}" cy="${y}" rx="${w}" ry="${h}" fill="#fff"/>
+  <text x="${x}" y="${y+size*.35}" text-anchor="middle" font-size="${size}" fill="${col}">${txt}</text>`;
+}
