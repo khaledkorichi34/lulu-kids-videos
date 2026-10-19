@@ -13,7 +13,7 @@ When in doubt, make the simpler, calmer video.
 2. Pick the format for this time slot and a topic that is not in the log yet.
 3. Write `episodes/NNN-slug/scene.html` and `episode.json` (NNN = last number + 1).
 4. Build, look at every check sheet, fix what is wrong, rebuild.
-5. Publish through Make, record the result in the log, commit and push to `main`.
+5. Publish to YouTube through Make, then to TikTok through Metricool, record the result in the log, commit and push to `main`.
 
 ## Formats and ages
 
@@ -170,9 +170,28 @@ Settings and IDs are in `channel.json`.
 3. Only if `thumbnails_enabled` is true in `channel.json`: run `thumbnail_scenario_id` with
    `{"video_id", "thumbnail_url"}`. While it is false, skip this step (the channel is not
    verified yet and the call fails).
-4. Add the episode to `episodes/log.json` (number, slug, format, ages, title, topic, cast,
-   videoId, published date in Europe/Madrid), commit the episode folder and the log, and push
-   to `main`. Build output is ignored by git; do not commit videos to `main`.
+4. **TikTok, only after YouTube succeeded** (the owner asked: YouTube first, then TikTok).
+   Skip this step if the YouTube upload failed or no `videoId` was found.
+   a. `bash toolkit/publish_tiktok_media.sh episodes/NNN-slug` prints `TIKTOK_VIDEO_URL=`
+      (a vertical 1080 x 1920 copy).
+   b. Schedule it with the Metricool tool `createScheduledPost`: `blogId` = `tiktok.metricool_blog_id`,
+      `date` = now + 5 minutes (ISO 8601 with the Madrid offset), and `info` with
+      `providers [{"network":"tiktok"}]`, `media [TIKTOK_VIDEO_URL]`, `autoPublish true`,
+      `draft false`, `publicationDate {dateTime, timezone "Europe/Madrid"}`, and `tiktokData`
+      `{"privacyOption":"PUBLIC_TO_EVERYONE", "title":"<episode title before the |>",
+      "isAigc":true, "autoAddMusic":false}`. Text: the episode title before the `|`, an emoji,
+      one or two calm sentences on what happens, "For parents & little ones aged X–Y.", then
+      5 or 6 hashtags (for example #kidscartoon #toddlers #preschool #storytime #nurseryrhymes
+      #learningforkids #lulu, matching the format). Never ask viewers to like, follow or comment.
+   c. Run it **once**. If it errors, check `getScheduledPosts` for the same title today before
+      deciding anything; never create a second post for the same episode. A TikTok failure does
+      not undo the YouTube upload: record the episode anyway and report the TikTok error.
+   d. If the Metricool tools are not available in the session, skip TikTok and say so in the
+      final message.
+5. Add the episode to `episodes/log.json` (number, slug, format, ages, title, topic, cast,
+   videoId, `tiktokPostId` (the Metricool post id, or null), published date in Europe/Madrid),
+   commit the episode folder and the log, and push to `main`. Build output is ignored by git;
+   do not commit videos to `main`.
 
 If a needed tool is missing, an approval is refused, or a step fails and cannot be fixed, stop
 without publishing anything half-done and say clearly in the final message what failed.
