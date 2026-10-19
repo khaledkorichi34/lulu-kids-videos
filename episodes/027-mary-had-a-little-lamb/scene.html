@@ -1,0 +1,121 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script src="../../toolkit/rhymes.js"></script>
+<script>
+/* Episode 27 - Mary Had a Little Lamb (sing-along). Mary and her fluffy little lamb stand in a
+   sunny meadow. Mary waves on "Mary had a little lamb", the lamb hops on every "little lamb",
+   and soft snowflakes drift by on "white as snow" before the lamb says "Baa!".
+   Verse 2: Lulu waddles in and sings along. Verse 3: Bunny hops in and two butterflies come.
+   Ending: the lamb snuggles up to Mary - "Mary loves her little lamb!" */
+const BPM=108, START=5.0;
+const LINES=rhymeTimes(RHYMES.mary,START,3,4,BPM);
+const END=rhymeEnd(LINES);                 // 62.78 s
+const DUR=68, SC=[0,DUR];
+const VS=[0,4,8].map(i=>LINES[i].t0);      // verse starts
+const MX=400, LX0=620;                     // Mary, lamb
+const FX=[880,1100];                       // Lulu, Bunny
+const ENTER=[[VS[1]-2.6,VS[1]-.2],[VS[2]-2.6,VS[2]-.2]];
+
+function lineAt(t){const li=currentLine(LINES,t);return li>=0&&t<LINES[li].t1+.05?LINES[li]:null;}
+
+// the lamb hops on each "lamb," of line 2 (words 2 and 5)
+function lambHop(t){
+  for(const L of LINES){if(L.index!==1)continue;
+    for(const k of [2,5]){const j=jump(t,L.words[k].t0,.45,38);if(j)return j;}}
+  return {y:0,sx:1,sy:1};
+}
+// "white as snow": time of "snow" in each verse
+const SNOW=LINES.filter(L=>L.index===3).map(L=>L.words[5].t0);
+const WHITE=LINES.filter(L=>L.index===3).map(L=>L.words[3].t0);
+
+function snowfall(t){
+  let s='';
+  WHITE.forEach(w=>{const a=t-w+.2; if(a<0||a>5.2)return;
+    const op=Math.min(1,a*2)*(1-prog(a,4.2,5.2));
+    for(let k=0;k<14;k++){
+      const x=90+k*80+18*Math.sin(a*1.4+k);
+      const y=60+((k*53)%140)+a*45;
+      if((x>1030&&y<210)||(x<250&&y<150))continue;   // keep clear of the sun and the cloud
+      const fo=1-prog(y,250,320);                      // melt away above the heads
+      if(fo<=0)continue;
+      s+=snowflake(x,y,.8+.25*((k*7)%3),a*30+k*20,op*fo*.95);
+    }});
+  return s;
+}
+
+function friendX(k,t){const [a,b]=ENTER[k];return lerp(1420,FX[k],eio(prog(t,a,b)));}
+
+function render(t){
+  const p=t>START-.2&&t<END+.4?beatPulse(LINES,t):0;
+  const L=lineAt(t), li=L?L.index:-1;
+  let back='',chars='',pops='',cap='';
+
+  // snowflakes and (verse 3) butterflies, behind everyone
+  back+=snowfall(t);
+  if(t>VS[2]-1){const a=t-(VS[2]-1), o=Math.min(1,a)*(1-prog(t,DUR-1.5,DUR-.6));
+    back+=`<g opacity="${o}">`+butterfly(180+60*Math.sin(a*.5),230+30*Math.sin(a*1.1),.5+.5*Math.sin(t*11))
+      +butterfly(1020+70*Math.sin(a*.45+1),210+28*Math.sin(a*.9+2),.5+.5*Math.sin(t*12+1))+`</g>`;}
+  // soft hearts behind everyone at the end
+  if(t>END+1.9)for(let k=0;k<4;k++){const q=((t-END-1.9)*.35+k*.25)%1;
+    back+=heart(300+k*180,330-q*110,1.5,'#FF8FB1',Math.sin(Math.PI*q)*.8);}
+
+  // friends: Lulu waddles in before verse 2, Bunny hops in before verse 3
+  for(let k=0;k<2;k++){
+    const [a,b]=ENTER[k]; if(t<a)continue;
+    const x=friendX(k,t);let y=520,sx=1,sy=1,rot=0;
+    if(t<b+.3){
+      if(k===1){const n=Math.floor((t-a)/.55);const j=jumps(t-a-n*.55,[0],.5,36);y+=j.y;sx=j.sx;sy=j.sy;}
+      else{rot=6*Math.sin((t-a)*10);y-=Math.abs(Math.sin((t-a)*10))*6;}
+    }else if(t<END+.4){y-=6*p;}
+    const inner=k===0?duck({eye:blink(t,.7),wing:t>b&&L?-24*p:0}):bunny({eye:blink(t,1.6),ear:6*p});
+    chars+=shadow(x,524,k?46:56,520-y)+place(x,y,inner,{s:k?.82:.85,sx,sy,rot,flip:k===0});
+  }
+
+  // the lamb: bobs with the music, hops on "lamb", fluffs up on "snow"; at the end it snuggles to Mary
+  const lx=lerp(LX0,MX+150,eio(prog(t,END+.4,END+1.6)));
+  const h=lambHop(t);
+  let fluff=0;SNOW.forEach(s0=>{const a=t-s0;if(a>0&&a<1.2)fluff=Math.sin(a*Math.PI*4)*(1-a/1.2);});
+  const bob=(li===0||li===2)?5*p:0;
+  chars+=shadow(lx,524,70,-h.y)+place(lx,520+h.y-bob,lamb({eye:blink(t,2.3),fluff,ear:li>=0?14*p:0}),{s:1,sx:h.sx,sy:h.sy,flip:true});
+
+  // Mary: waves on "Mary had a little lamb", sways gently on the other lines
+  let wave=0,sway=0,my=520;
+  if(L){
+    if(li===0||li===2)wave=.55+.45*Math.sin(Math.PI*2*prog(t,L.t0,L.t1)*2);
+    else sway=5*Math.sin((t-L.t0)*3);
+    my-=4*p;
+  }
+  if(t>END+.4)sway=-8*eio(prog(t,END+.6,END+1.6));
+  chars+=shadow(MX,524,54,520-my)+place(MX,my,mary({eye:blink(t,0),wave,sway}),{s:1});
+
+  // "Baa!" from the lamb on "snow" (it stays through the short pause)
+  SNOW.forEach(s0=>{const a=t-s0;if(a<0||a>4.1)return;
+    const u=back_(prog(a,0,.35)), o=1-prog(a,3.7,4.1);
+    pops+=`<g opacity="${o}" transform="translate(${LX0+20},300) scale(${u}) translate(${-(LX0+20)},-300)">`+speech(LX0+20,300,95,52,LX0+30,372,'Baa!',58,'#FF5D8F')+`</g>`;});
+
+  // title card, then the words of the song, then the ending line
+  const to=1-prog(t,3.9,4.5);
+  if(to>0)pops+=`<g opacity="${to}">`+pop('Mary Had a',640,150,96,'#FF5D8F',t,.4,-2,'#fff')+pop('Little Lamb',640,262,104,'#19B8A6',t,1.0,2,'#fff')+`</g>`;
+  cap=t<END+.6?karaoke(LINES,t,'#FF5D8F'):caption('Mary loves her little lamb!',t-END,.7);
+
+  const cl=cloud(150+12*Math.sin(t*.3),100,.8,1);
+  svg.innerHTML=bg(t,0,'',{noClouds:true,noFlowers:true})+cl+back+chars+pops+cap+fades(t,SC,DUR);
+}
+const back_=u=>u<=0?0:back(u);
+
+function thumb(){
+  let s=bg(0,0,'',{noClouds:true,noFlowers:true})+cloud(150,100,.8,1);
+  s+=snowflake(130,330,1.1,10)+snowflake(1150,300,1,30)+snowflake(1060,420,.8,0);
+  s+=shadow(MX,524,54,0)+place(MX,520,mary({wave:.9}),{s:1.05});
+  s+=shadow(LX0+20,524,70,0)+place(LX0+20,520,lamb({}),{s:1.1,flip:true});
+  s+=shadow(930,524,56,0)+place(930,520,duck({wing:-30}),{s:.85,flip:true});
+  s+=label('Mary Had a',640,130,100,'#FF5D8F',-3,'#fff')+label('Little Lamb',640,250,110,'#19B8A6',-1,'#fff');
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

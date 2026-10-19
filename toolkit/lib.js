@@ -870,3 +870,64 @@ function speech(x,y,w,h,tx,ty,txt,size=60,col='#2D2A6E'){
   <ellipse cx="${x}" cy="${y}" rx="${w}" ry="${h}" fill="#fff"/>
   <text x="${x}" y="${y+size*.35}" text-anchor="middle" font-size="${size}" fill="${col}">${txt}</text>`;
 }
+
+/* ---------- Mary and her little lamb (episode 27) ---------- */
+// mary({eye, wave, sway, asleep}): little girl in a blue dress with brown pigtails, facing the viewer,
+// origin at her feet (about 210 tall, 110 wide). wave = 0..1 lifts her right arm (viewer's right) to wave,
+// sway = head tilt in degrees, asleep = closed eyes.
+function mary(o={}){
+  const e=o.eye==null?1:o.eye, wv=clamp(o.wave||0), sw=o.sway||0;
+  const SK='#FFD8B5', HR='#8B5A2B', DR='#5B8DEF', DD='#4673D6';
+  const eye=x=>o.asleep
+    ?`<path d="M${x-7},-152 Q${x},-145 ${x+7},-152" stroke="#3a2a1a" stroke-width="4" fill="none" stroke-linecap="round"/>`
+    :`<g transform="translate(${x},-153) scale(1,${e})"><circle r="6.5" fill="#2b1d12"/><circle cx="2.2" cy="-2.3" r="2.3" fill="#fff"/></g>`;
+  const armR=lerp(20,-130,wv);
+  return `
+  <rect x="-20" y="-44" width="11" height="40" rx="5" fill="${SK}"/><rect x="9" y="-44" width="11" height="40" rx="5" fill="${SK}"/>
+  <ellipse cx="-16" cy="-5" rx="15" ry="8" fill="#C2185B"/><ellipse cx="16" cy="-5" rx="15" ry="8" fill="#C2185B"/>
+  <g transform="rotate(-20 -26 -108)"><rect x="-33" y="-110" width="13" height="52" rx="6.5" fill="${SK}"/></g>
+  <g transform="rotate(${armR} 26 -108)"><rect x="20" y="-110" width="13" height="52" rx="6.5" fill="${SK}"/><circle cx="26.5" cy="-58" r="8" fill="${SK}"/></g>
+  <path d="M-24,-118 Q0,-126 24,-118 L50,-44 Q0,-30 -50,-44 Z" fill="${DR}"/>
+  <path d="M-48,-48 Q0,-36 48,-48 L50,-44 Q0,-30 -50,-44 Z" fill="${DD}"/>
+  <circle cx="-12" cy="-74" r="4" fill="#fff" opacity=".8"/><circle cx="14" cy="-62" r="4" fill="#fff" opacity=".8"/><circle cx="2" cy="-90" r="4" fill="#fff" opacity=".8"/>
+  <path d="M-16,-121 Q0,-108 16,-121 Q0,-112 -16,-121 Z" fill="#fff"/><ellipse cx="0" cy="-119" rx="18" ry="6" fill="#fff"/>
+  <g transform="rotate(${sw} 0 -125)">
+  <circle cx="-46" cy="-150" r="16" fill="${HR}"/><circle cx="46" cy="-150" r="16" fill="${HR}"/>
+  <circle cx="-36" cy="-164" r="7" fill="#FF7FB0"/><circle cx="36" cy="-164" r="7" fill="#FF7FB0"/>
+  <circle cx="0" cy="-158" r="42" fill="${SK}"/>
+  <path d="M-43,-160 Q-44,-206 0,-204 Q44,-206 43,-160 Q30,-186 8,-180 Q-2,-192 -10,-180 Q-30,-186 -43,-160 Z" fill="${HR}"/>
+  ${eye(-15)}${eye(15)}
+  <path d="M-9,-136 Q0,-128 9,-136" stroke="#B5523B" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <circle cx="-26" cy="-140" r="7.5" fill="#FF9AA2" opacity=".75"/><circle cx="26" cy="-140" r="7.5" fill="#FF9AA2" opacity=".75"/>
+  </g>`;
+}
+// lamb({eye, asleep, fluff, ear}): fluffy white lamb facing right, origin at its feet (about 150 tall,
+// 170 wide). fluff = 0..1 puffs the fleece out a little (use it for a happy shake), ear = ear flick in degrees.
+function lamb(o={}){
+  const e=o.eye==null?1:o.eye, f=1+.06*(o.fluff||0), er=o.ear||0;
+  const W='#FFFFFF', S='#EFE9E1', FC='#F4DCC8', LG='#7A6670';
+  const puff=[[-50,-70,24],[-26,-92,26],[4,-98,26],[32,-88,24],[48,-64,22],[30,-40,24],[0,-36,26],[-30,-40,24],[-56,-48,20],[-4,-66,34]];
+  let fl='';puff.forEach(([x,y,r])=>{fl+=`<circle cx="${x}" cy="${y}" r="${r+3}" fill="${S}"/>`;});
+  puff.forEach(([x,y,r])=>{fl+=`<circle cx="${x}" cy="${y-2}" r="${r}" fill="${W}"/>`;});
+  const eye=o.asleep
+    ?`<path d="M64,-116 Q71,-110 78,-116" stroke="#3a2a1a" stroke-width="4" fill="none" stroke-linecap="round"/>`
+    :`<g transform="translate(71,-117) scale(1,${e})"><circle r="6.5" fill="#2b1d12"/><circle cx="2.2" cy="-2.3" r="2.3" fill="#fff"/></g>`;
+  return `
+  <rect x="-40" y="-40" width="12" height="40" rx="6" fill="${LG}"/><rect x="-18" y="-40" width="12" height="40" rx="6" fill="${LG}"/>
+  <rect x="14" y="-40" width="12" height="40" rx="6" fill="${LG}"/><rect x="34" y="-40" width="12" height="40" rx="6" fill="${LG}"/>
+  <circle cx="-72" cy="-74" r="12" fill="${W}"/>
+  <g transform="translate(0,-66) scale(${f}) translate(0,66)">${fl}</g>
+  <g transform="rotate(${-er} 44 -112)"><ellipse cx="34" cy="-110" rx="22" ry="10" fill="${FC}" transform="rotate(25 34 -110)"/><ellipse cx="34" cy="-110" rx="13" ry="5" fill="#FFB3C7" transform="rotate(25 34 -110)"/></g>
+  <ellipse cx="70" cy="-108" rx="32" ry="30" fill="${FC}"/>
+  <circle cx="56" cy="-136" r="13" fill="${W}"/><circle cx="72" cy="-140" r="13" fill="${W}"/><circle cx="86" cy="-132" r="11" fill="${W}"/>
+  ${eye}
+  <ellipse cx="96" cy="-100" rx="5" ry="3.5" fill="#C98A8A"/>
+  <path d="M84,-90 Q90,-85 96,-91" stroke="#9a6a6a" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <circle cx="66" cy="-96" r="7" fill="#FF9AA2" opacity=".75"/>`;
+}
+// snowflake(x,y,s,rot,o): soft six-armed white snowflake centred at (x,y), about 36 wide at s=1
+function snowflake(x,y,s=1,rot=0,op=1){
+  let d='';for(let k=0;k<6;k++){const a=k*Math.PI/3,c=Math.cos(a),sn=Math.sin(a);
+    d+=`M0,0 L${(c*18).toFixed(1)},${(sn*18).toFixed(1)} M${(c*10-sn*5).toFixed(1)},${(sn*10+c*5).toFixed(1)} L${(c*12).toFixed(1)},${(sn*12).toFixed(1)} L${(c*10+sn*5).toFixed(1)},${(sn*10-c*5).toFixed(1)} `;}
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})" opacity="${op}"><path d="${d}" stroke="#8CCBF2" stroke-width="7" stroke-linecap="round" fill="none"/><circle r="6" fill="#8CCBF2"/><path d="${d}" stroke="#fff" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle r="4" fill="#fff"/></g>`;
+}

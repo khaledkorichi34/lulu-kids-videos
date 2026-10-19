@@ -424,5 +424,25 @@
     "videoId": "TQ5NAQwq4lI",
     "published": "2026-10-19",
     "tiktokPostId": 399696842
+  },
+  {
+    "number": 27,
+    "slug": "mary-had-a-little-lamb",
+    "format": "rhyme",
+    "ages": "2-6",
+    "title": "Mary Had a Little Lamb with Lulu | Nursery Rhyme for Kids",
+    "topic": "Sing-along: Mary Had a Little Lamb (3 verses) in a sunny meadow; Mary waves, the lamb hops on every 'little lamb', snowflakes drift on 'white as snow' and the lamb says 'Baa!'; Lulu waddles in (verse 2), Bunny hops in and butterflies come (verse 3); the lamb snuggles up to Mary, 'Mary loves her little lamb!'",
+    "rhyme": "mary",
+    "cast": [
+      "duck",
+      "mary",
+      "lamb",
+      "bunny",
+      "butterfly",
+      "snowflakes"
+    ],
+    "videoId": "bFS-tDyp9mU",
+    "published": "2026-10-19",
+    "tiktokPostId": 399953843
   }
 ]
