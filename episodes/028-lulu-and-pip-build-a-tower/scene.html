@@ -1,0 +1,126 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 28 - Lulu and Pip Build a Tower. Lulu has five toy blocks. Pip the kitten comes to play.
+   They build a tall tower (one, two, three, four, five). It wobbles and falls down (bump!), they giggle.
+   "That's okay. Let's try again!" They build a wide tower together and it stands strong. Hooray!
+   The sun goes down and the two friends fall asleep by their tower. */
+const DUR=46, SC=[0,5,11,19,25.5,32.5,38.5,46];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', GOLD='#FFE58A';
+const LX=280, PX=975, TX=640;
+// the five blocks: colour, place in the pile (bottom x,y), in the tall tower, after the fall, in the wide tower
+const COL=[BLOCKS[0],BLOCKS[4],BLOCKS[2],BLOCKS[3],BLOCKS[5]];
+const PILE=[[475,484],[860,548],[510,548],[790,548],[440,548]];
+const TALL=[0,1,2,3,4].map(k=>[TX,520-64*k]);
+const FALL=[[628,548,0],[700,548,90],[772,548,180],[556,548,-90],[846,548,270]];
+const WIDE=[[640,520],[704,520],[672,456],[576,520],[608,456]];  // where each block goes in the wide tower
+const ORDER2=[3,0,1,2,4];                                        // order the blocks are put back
+const FLY=.8;
+// a block flying from a to b (u 0..1) along a little arc
+const flyBlock=(k,a,b,u,h=140,r0=0,r1=0)=>{const q=eio(clamp(u));
+  return toyBlock(lerp(a[0],b[0],q),lerp(a[1],b[1],q)-h*Math.sin(Math.PI*q),COL[k],lerp(r0,r1,q));};
+
+const lulu=(lt,t,o={})=>{
+  const j=jumps(lt,o.hops||[],.6,o.h||28), w=o.wave?20+20*Math.sin(lt*9):0;
+  return shadow(o.x||LX,522,60,-j.y)+place(o.x||LX,520+j.y,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),{s:1,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0});
+};
+const pip=(lt,t,o={})=>{
+  const x=o.x!=null?o.x:PX, j=jumps(lt,o.hops||[],.6,o.h||28);
+  return shadow(x,522,56,-j.y)+place(x,520+j.y+(o.bob||0),kitten({eye:o.eye!=null?o.eye:blink(t,1.3),tail:Math.sin(t*2.2),asleep:o.asleep,tilt:o.tilt||0}),{s:.95,sx:j.sx,sy:j.sy*(o.sy||1)});
+};
+const sideClouds=(t,n)=>cloud(130+12*Math.sin(t*.3),262,.6,1-n*.85)+cloud(1010+12*Math.sin(t*.25+1),250,.5,1-n*.85);
+const pileAll=()=>PILE.map((p,k)=>toyBlock(p[0],p[1],COL[k])).join('');
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,blocks='',chars='',pops='',cap='',o={},behind='';
+  switch(i){
+  case 0:{
+    // title: Lulu by her pile of blocks
+    blocks=pileAll();
+    chars=lulu(lt,t,{hops:[1.4,2.4,3.4],h:30,wave:true});
+    pops=pop(LULU,700,150,140,PINK,lt,.4,-3)+pop('and Pip Build a Tower',700,236,60,NAVY,lt,1.0);
+    break;}
+  case 1:{
+    // Lulu has five blocks; Pip the kitten comes to play
+    blocks=pileAll();
+    const w=eio(prog(lt,2.8,4.8));
+    chars=lulu(lt,t,{wave:lt>4.6&&lt<5.8,hops:[.9],h:22})+pip(lt,t,{x:lerp(1400,PX,w),bob:w>0&&w<1?-8*Math.abs(Math.sin(lt*7)):0});
+    cap=lt<3.0?caption('Lulu has five blocks.',lt,.3):caption('Here comes Pip!',lt,3.0);
+    pops=pop('Hi, Lulu!',820,170,80,PURPLE,lt,4.9,3);
+    break;}
+  case 2:{
+    // they build a tall tower, one block at a time
+    const st=[.8,2.0,3.2,4.4,5.6];
+    for(let k=0;k<5;k++){const u=prog(lt,st[k],st[k]+FLY);
+      blocks+=u<=0?toyBlock(PILE[k][0],PILE[k][1],COL[k]):flyBlock(k,PILE[k],TALL[k],u);
+      pops+=pop(String(k+1),560,TALL[k][1]-10,64,COL[k],lt,st[k]+FLY);}
+    chars=lulu(lt,t,{hops:[.7,3.1,5.5],h:26})+pip(lt,t,{hops:[1.9,4.3],h:26});
+    cap=lt<4.2?caption('Let’s build a tower!',lt,.3):caption('One, two, three, four, five!',lt,4.2);
+    break;}
+  case 3:{
+    // the tower wobbles and falls down; the friends giggle
+    const wob=lt<2.6?3.5*Math.sin(lt*8)*prog(lt,.3,1.2):0;
+    for(let k=0;k<5;k++){const s0=2.6+(4-k)*.08, u=prog(lt,s0,s0+.9);
+      if(u<=0){const a=wob*Math.PI/180, h=32+64*k;
+        blocks+=toyBlock(TX+Math.sin(a)*h,520-Math.cos(a)*h+32,COL[k],wob);}
+      else blocks+=flyBlock(k,[TX+3*k,TALL[k][1]],[FALL[k][0],FALL[k][1]],u,40,0,FALL[k][2]);}
+    chars=lulu(lt,t,{hops:[4.5,5.2],h:18})+pip(lt,t,{hops:[4.8,5.5],h:18,tilt:lt>.6&&lt<2.6?8*Math.sin(lt*4):0});
+    cap=lt<3.0?caption('The tower wobbles…',lt,.3):caption('Oops! It fell down.',lt,3.0);
+    pops=pop('Wobble, wobble!',640,128,72,PURPLE,lt,.5,-3)+pop('Bump!',820,170,84,PINK,lt,3.4,4);
+    if(lt>2.6)pops=pop('Bump!',820,170,84,PINK,lt,3.4,4)+pop('Hee hee!',360,170,72,PURPLE,lt,4.5,-4);
+    break;}
+  case 4:{
+    // try again together: a wide tower
+    const st=[.6,1.5,2.4,3.3,4.2];
+    blocks='';  // draw the bottom row first, so the top row is in front
+    const draw=[3,0,1,4,2];
+    for(const k of draw){const j=ORDER2.indexOf(k), u=prog(lt,st[j],st[j]+FLY);
+      blocks+=u<=0?toyBlock(FALL[k][0],FALL[k][1],COL[k],FALL[k][2]):flyBlock(k,FALL[k],WIDE[k],u,130,FALL[k][2],Math.round(FALL[k][2]/360)*360);}
+    chars=lulu(lt,t,{hops:[.5,2.3,4.1],h:24})+pip(lt,t,{hops:[1.4,3.2],h:24});
+    cap=lt<3.6?caption('That’s okay. Let’s try again!',lt,.3):caption('A wide tower is strong.',lt,3.6);
+    break;}
+  case 5:{
+    // hooray! the sun starts to go down
+    n=lerp(0,.45,eio(prog(lt,1.5,6))); o={noSun:true,noMoon:true};
+    behind=sun(t,1150,lerp(100,560,eio(prog(lt,1.5,6.2))));
+    blocks=WIDE.map((p,k)=>toyBlock(p[0],p[1],COL[k])).join('');
+    chars=lulu(lt,t,{hops:[.5,1.2,1.9],h:40,wave:lt<3})+pip(lt,t,{hops:[.8,1.5,2.2],h:40});
+    cap=caption('We did it together!',lt,.4);
+    pops=pop('Hooray!',640,150,110,PINK,lt,.5,-3);
+    break;}
+  case 6:{
+    // night: the friends sleep by their tower
+    n=lerp(.45,1,eio(prog(lt,0,4))); o={noSun:true};
+    blocks=WIDE.map((p,k)=>toyBlock(p[0],p[1],COL[k])).join('');
+    const asleep=lt>1.6;
+    chars=shadow(LX,522,64)+place(LX,520,duck({asleep,eye:.45}),{s:1,sy:1+.025*Math.sin(lt*2.2),rot:asleep?-3:0})
+         +pip(lt,t,{asleep,eye:.45,sy:1+.025*Math.sin(lt*2.2+1)});
+    for(let k=0;k<3;k++){let q=lt-2.0-k*.9;if(q>0){q%=2.7;
+      pops+=`<text x="${LX+40-q*24+8*Math.sin(q*3)}" y="${350-q*34}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}
+    cap=caption('Good night, Lulu and Pip.',lt,.5);
+    pops+=pop('The End',640,160,112,GOLD,lt,4.0,-3,NAVY);
+    break;}
+  }
+  o.noClouds=true; o.noFlowers=true;
+  svg.innerHTML=bg(t,n,sideClouds(t,n)+behind,o)+blocks+chars+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#5EC2FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(230,110,.7,1)+cloud(1100,80,.6,1);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  [[0,0],[1,4],[2,2],[3,5]].forEach(([k,c])=>{s+=toyBlock(640,660-86*k,BLOCKS[c],k%2?4:-3,1.35);});
+  s+=shadow(300,664,110)+place(300,660,duck({wing:22}),{s:1.6});
+  s+=shadow(990,664,96)+place(990,660,kitten({tail:.5}),{s:1.45});
+  s+=label(LULU+' and Pip',640,135,120,PINK,-2)+label('Build a Tower',640,240,76,NAVY,0);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

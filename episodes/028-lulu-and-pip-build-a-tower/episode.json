@@ -1,0 +1,32 @@
+{
+  "number": 28,
+  "slug": "lulu-and-pip-build-a-tower",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and Pip Build a Tower | Bedtime Story for Kids",
+  "description": "Lulu the little duck and Pip the kitten build a tall tower with five toy blocks. It wobbles and falls down, so they try again together and make a wide, strong tower. Hooray!\nThen the sun goes down and the two friends fall asleep.\nA gentle story about trying again, for children aged 3 to 6.",
+  "duration": 46,
+  "seed": 28,
+  "lullaby_from": 38.5,
+  "sfx": [
+    {"t": 1.4, "type": "boing_high"},
+    {"t": 2.4, "type": "boing_high"},
+    {"t": 3.4, "type": "boing_high"},
+    {"t": 9.9, "type": "pop"},
+    {"t": 12.6, "type": "pop"},
+    {"t": 13.8, "type": "pop"},
+    {"t": 15.0, "type": "pop"},
+    {"t": 16.2, "type": "pop"},
+    {"t": 17.4, "type": "ding"},
+    {"t": 19.5, "type": "boing_low"},
+    {"t": 22.4, "type": "boing_low"},
+    {"t": 26.9, "type": "pop"},
+    {"t": 27.8, "type": "pop"},
+    {"t": 28.7, "type": "pop"},
+    {"t": 29.6, "type": "pop"},
+    {"t": 30.5, "type": "ding"},
+    {"t": 33.0, "type": "sparkle"},
+    {"t": 42.5, "type": "sparkle"}
+  ],
+  "check_times": [3.0, 8.5, 10.5, 13.0, 15.5, 17.2, 18.6, 20.5, 21.9, 22.3, 24.0, 27.0, 28.3, 30.2, 31.5, 33.3, 35.0, 37.5, 42.0, 45.0]
+}

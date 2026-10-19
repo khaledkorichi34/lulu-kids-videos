@@ -931,3 +931,16 @@ function snowflake(x,y,s=1,rot=0,op=1){
     d+=`M0,0 L${(c*18).toFixed(1)},${(sn*18).toFixed(1)} M${(c*10-sn*5).toFixed(1)},${(sn*10+c*5).toFixed(1)} L${(c*12).toFixed(1)},${(sn*12).toFixed(1)} L${(c*10+sn*5).toFixed(1)},${(sn*10-c*5).toFixed(1)} `;}
   return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})" opacity="${op}"><path d="${d}" stroke="#8CCBF2" stroke-width="7" stroke-linecap="round" fill="none"/><circle r="6" fill="#8CCBF2"/><path d="${d}" stroke="#fff" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle r="4" fill="#fff"/></g>`;
 }
+
+/* ---------- toy blocks (episode 28) ---------- */
+// toyBlock(x,y,col,rot,s): wooden toy block, 64 x 64 at s=1, origin at the middle of its bottom edge
+// (so a block standing on the ground has y=520). rot turns it around its own centre.
+// BLOCKS = six bright block colours.
+const BLOCKS=['#FF5D5D','#FF9F1C','#FFD93B','#5CC85A','#3FA9F5','#7B5CFF'];
+function toyBlock(x,y,col,rot=0,s=1){
+  return `<g transform="translate(${x},${y-32*s}) rotate(${rot}) scale(${s})">
+  <rect x="-32" y="-32" width="64" height="64" rx="10" fill="${mix(col,'#000000',.18)}"/>
+  <rect x="-32" y="-32" width="64" height="58" rx="10" fill="${col}"/>
+  <circle r="15" fill="#fff" opacity=".45"/><circle r="8" fill="#fff" opacity=".7"/>
+  <rect x="-24" y="-26" width="18" height="6" rx="3" fill="#fff" opacity=".45"/></g>`;
+}
