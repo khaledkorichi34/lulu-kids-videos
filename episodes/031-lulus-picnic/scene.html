@@ -1,0 +1,133 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 31 - Lulu's Picnic. Lulu has a picnic basket and lays out a checked blanket.
+   Bunny hops in with a carrot, Pip the kitten comes with a pear, and Lulu brings grapes from her basket.
+   They share and eat together (munch, munch). The sun goes down and the three friends fall asleep on the blanket. */
+const DUR=47, SC=[0,5,11,18,25,32,39,47];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', GOLD='#FFE58A', TEAL='#19B8A6';
+const LX=300, BX=640, PX=970, BY=588;          // character x positions, blanket front edge
+const BASKET0=[480,520], BASKET=[200,566];     // basket on the grass, then at the back-left corner of the blanket
+const SPOT={grapes:[505,582], carrot:[778,582], pear:[862,582]};
+const arc=(a,b,u,h=120)=>{const q=eio(clamp(u));return [lerp(a[0],b[0],q),lerp(a[1],b[1],q)-h*Math.sin(Math.PI*q)];};
+
+const lulu=(lt,t,o={})=>{
+  const x=o.x!=null?o.x:LX, j=jumps(lt,o.hops||[],.6,o.h||28), w=o.wave?20+20*Math.sin(lt*9):0;
+  return shadow(x,522,60,-j.y)+place(x,520+j.y,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),{s:1,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0});
+};
+const bunnyAt=(lt,t,o={})=>{
+  const x=o.x!=null?o.x:BX, j=jumps(lt,o.hops||[],.5,o.h||26);
+  return shadow(x,522,52,-j.y)+place(x,520+j.y,bunny({eye:o.eye!=null?o.eye:blink(t,.8),ear:o.ear||0}),{s:1,sx:j.sx,sy:j.sy*(o.sy||1)});
+};
+const pip=(lt,t,o={})=>{
+  const x=o.x!=null?o.x:PX, j=jumps(lt,o.hops||[],.6,o.h||26);
+  return shadow(x,522,56,-j.y)+place(x,520+j.y+(o.bob||0),kitten({eye:o.eye!=null?o.eye:blink(t,1.3),tail:Math.sin(t*2.2),asleep:o.asleep,tilt:o.tilt||0}),{s:.95,sx:j.sx,sy:j.sy*(o.sy||1)});
+};
+// the food on the blanket; k = how much is left (1 = whole, 0 = eaten)
+const food={
+  grapes:(p,k=1)=>k>0?grapes(p[0],p[1],.5*k):'',
+  carrot:(p,k=1)=>k>0?carrot(p[0],p[1],.75*k):'',
+  pear:(p,k=1)=>k>0?pear(p[0],p[1],.52*k):''
+};
+const sideClouds=(t,n)=>cloud(130+12*Math.sin(t*.3),262,.6,1-n*.85)+cloud(1010+12*Math.sin(t*.25+1),250,.5,1-n*.85);
+// a hopping walk: a list of hop times between a and b
+const hopList=(a,b,step)=>{const r=[];for(let s=a;s<b-.01;s+=step)r.push(s);return r;};
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',pops='',cap='',o={},behind='';
+  switch(i){
+  case 0:{
+    // title: Lulu with her picnic basket
+    props=picnicBasket(BASKET0[0],BASKET0[1],1);
+    chars=lulu(lt,t,{hops:[1.4,2.4,3.4],h:30,wave:true});
+    pops=pop(`${LULU}<tspan fill="${NAVY}">’s Picnic</tspan>`,640,170,120,PINK,lt,.4,-3);
+    break;}
+  case 1:{
+    // the blanket unfolds and the basket goes on it
+    props=picnicBlanket(640,BY,eout(prog(lt,2.4,3.4)));
+    const u=prog(lt,3.9,4.7);
+    props+=u<=0?picnicBasket(BASKET0[0],BASKET0[1],1):(()=>{const p=arc(BASKET0,BASKET,u,110);return picnicBasket(p[0],p[1],lerp(1,.8,u));})();
+    chars=lulu(lt,t,{hops:[2.5,5.0],h:24});
+    cap=lt<2.8?caption('Lulu has a picnic basket.',lt,.3):caption('Let’s have a picnic!',lt,2.8);
+    break;}
+  case 2:{
+    // Bunny hops in with a carrot
+    props=picnicBlanket(640,BY)+picnicBasket(BASKET[0],BASKET[1],.8);
+    const w=eio(prog(lt,.4,2.8)), bx=lerp(1420,BX,w);
+    const cu=prog(lt,3.9,4.6);
+    const cp=cu<=0?[bx+62,500]:arc([BX+62,500],SPOT.carrot,cu,90);
+    chars=lulu(lt,t,{wave:lt>2.8&&lt<4.2,hops:[5.4],h:22})+bunnyAt(lt,t,{x:bx,hops:w<1?hopList(.4,2.8,.5):[5.4],h:24});
+    props+=food.carrot(cp);
+    cap=lt<3.6?caption('Here comes Bunny!',lt,.3):caption('Bunny brings a carrot.',lt,3.6);
+    pops=pop('Hello, Bunny!',640,160,80,PURPLE,lt,2.9,-3);
+    break;}
+  case 3:{
+    // Pip the kitten comes with a pear
+    props=picnicBlanket(640,BY)+picnicBasket(BASKET[0],BASKET[1],.8)+food.carrot(SPOT.carrot);
+    const w=eio(prog(lt,.4,2.8)), px=lerp(1440,PX,w);
+    const pu=prog(lt,3.9,4.6);
+    const pp=pu<=0?[px-78,505]:arc([PX-78,505],SPOT.pear,pu,90);
+    chars=lulu(lt,t,{hops:[5.4],h:22})+bunnyAt(lt,t,{hops:[3.0],h:22})+pip(lt,t,{x:px,bob:w>0&&w<1?-8*Math.abs(Math.sin(lt*7)):0,hops:[5.6],h:22});
+    props+=food.pear(pp);
+    cap=lt<3.6?caption('Here comes Pip!',lt,.3):caption('Pip brings a pear.',lt,3.6);
+    pops=pop('Hello, Pip!',640,160,80,PURPLE,lt,2.9,3);
+    break;}
+  case 4:{
+    // Lulu opens her basket: grapes! Let's share.
+    const lid=eout(prog(lt,.6,1.2))*(1-eio(prog(lt,2.4,2.9)));
+    const gu=prog(lt,1.1,1.9);
+    props=picnicBlanket(640,BY)+food.carrot(SPOT.carrot)+food.pear(SPOT.pear);
+    props+=gu>0?food.grapes(arc([BASKET[0],BASKET[1]-30],SPOT.grapes,gu,300),lerp(.5,1,gu)):'';
+    props+=picnicBasket(BASKET[0],BASKET[1],.8,lid);
+    chars=lulu(lt,t,{hops:[2.0,4.6],h:24,wave:lt>4&&lt<5.6})+bunnyAt(lt,t,{hops:[4.8],h:24})+pip(lt,t,{hops:[5.0],h:24});
+    cap=lt<3.4?caption('Lulu brings grapes.',lt,.3):caption('Let’s share!',lt,3.4);
+    break;}
+  case 5:{
+    // they eat together; the sun starts to go down
+    n=lerp(0,.45,eio(prog(lt,3,7))); o={noSun:true,noMoon:true};
+    behind=sun(t,1150,lerp(100,560,eio(prog(lt,3,7.2))));
+    const k=nm=>1-eio(prog(lt,{grapes:.8,carrot:1.4,pear:2.0}[nm],{grapes:2.6,carrot:3.2,pear:3.8}[nm]));
+    props=picnicBlanket(640,BY)+picnicBasket(BASKET[0],BASKET[1],.8)
+      +food.grapes(SPOT.grapes,k('grapes'))+food.carrot(SPOT.carrot,k('carrot'))+food.pear(SPOT.pear,k('pear'));
+    const nib=lt>.8&&lt<3.8?3*Math.sin(lt*14):0;
+    chars=lulu(lt,t,{rot:nib,hops:[4.4,5.0],h:30})+bunnyAt(lt,t,{ear:nib*2,hops:[4.6,5.2],h:30})+pip(lt,t,{tilt:nib*2,hops:[4.8,5.4],h:30});
+    cap=lt<3.6?caption('Munch, munch, munch!',lt,.3):caption('What a happy picnic!',lt,3.6);
+    pops=pop('Yum, yum!',640,160,100,PINK,lt,1.0,-3);
+    break;}
+  case 6:{
+    // night: the three friends sleep on the blanket
+    n=lerp(.45,1,eio(prog(lt,0,4))); o={noSun:true};
+    props=picnicBlanket(640,BY)+picnicBasket(BASKET[0],BASKET[1],.8);
+    const asleep=lt>1.6, br=k=>1+.025*Math.sin(lt*2.2+k);
+    chars=shadow(LX,522,64)+place(LX,520,duck({asleep,eye:.45}),{s:1,sy:br(0),rot:asleep?-3:0})
+         +shadow(BX,522,52)+place(BX,520,bunny({eye:asleep?.12:.45}),{s:1,sy:br(2)})
+         +pip(lt,t,{asleep,eye:.45,sy:br(1)});
+    for(let k=0;k<3;k++){let q=lt-2.0-k*.9;if(q>0){q%=2.7;
+      pops+=`<text x="${BX+40-q*24+8*Math.sin(q*3)}" y="${300-q*30}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}
+    cap=caption('Good night, friends.',lt,.5);
+    pops+=pop('The End',640,150,112,GOLD,lt,4.2,-3,NAVY);
+    break;}
+  }
+  o.noClouds=true;
+  svg.innerHTML=bg(t,n,sideClouds(t,n)+behind,o)+props+chars+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#5EC2FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(150,270,.7,1)+cloud(1140,250,.6,1);
+  s+=`<path d="M0,440 Q300,360 640,420 T1280,410 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,520 Q380,470 760,505 T1280,490 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=picnicBlanket(640,700,1.2);
+  s+=place(250,640,duck({wing:22}),{s:1.25})+place(640,640,bunny({}),{s:1.15})+place(1030,640,kitten({tail:.5}),{s:1.15});
+  s+=picnicBasket(440,700,.9)+grapes(800,700,.55)+pear(880,700,.5);
+  s+=label(`${LULU}<tspan fill="${NAVY}">’s Picnic</tspan>`,640,140,130,PINK,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

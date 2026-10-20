@@ -1057,3 +1057,31 @@ function zebra(o={}){
   <path d="M124,-148 Q132,-144 140,-149" stroke="#2b1d12" stroke-width="3" fill="none" stroke-linecap="round"/>
   ${eye}<circle cx="104" cy="-160" r="7" fill="#FF9AA2" opacity=".75"/></g>`;
 }
+
+/* ---------- picnic (episode 31) ---------- */
+// picnicBlanket(x,y,u): red and white checked blanket lying on the grass, seen in perspective.
+// (x,y) = middle of its front edge; back edge 100 higher. About 960 wide at the front, 840 at the back.
+// u = 0..1 unfolds it sideways from the middle (1 = fully open). Characters stand on it at y=520.
+function picnicBlanket(x,y,u=1){
+  if(u<=0)return '';
+  const R=4,C=10,fw=480*u,bw=420*u,h=100;let s='';
+  const pt=(c,r)=>{const v=r/R, hw=lerp(bw,fw,v);return [x-hw+2*hw*c/C, y-h+h*v];};
+  s+=`<path d="M${x-fw},${y} L${x-bw},${y-h} L${x+bw},${y-h} L${x+fw},${y} Z" fill="#FFF6EC"/>`;
+  for(let r=0;r<R;r++)for(let c=0;c<C;c++){if((r+c)%2)continue;
+    const a=pt(c,r),b=pt(c+1,r),d=pt(c+1,r+1),e=pt(c,r+1);
+    s+=`<path d="M${a[0]},${a[1]} L${b[0]},${b[1]} L${d[0]},${d[1]} L${e[0]},${e[1]} Z" fill="#F0535E"/>`;}
+  s+=`<path d="M${x-fw},${y} L${x+fw},${y} L${x+fw-4},${y+10} L${x-fw+4},${y+10} Z" fill="#C93C4A"/>`;
+  return s;
+}
+// picnicBasket(x,y,s,lid): woven picnic basket with a handle, origin at the middle of its bottom
+// (about 150 wide and 140 tall with the handle at s=1). lid = 0..1 how far the lid is lifted open.
+function picnicBasket(x,y,s=1,lid=0){
+  let weave='';for(let k=0;k<4;k++)weave+=`<path d="M-66,${-16-k*16} L66,${-16-k*16}" stroke="#B9783A" stroke-width="4"/>`;
+  for(let k=-2;k<=2;k++)weave+=`<path d="M${k*26},-4 L${k*28},-68" stroke="#B9783A" stroke-width="3" opacity=".7"/>`;
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-52,-72 Q0,-150 52,-72" stroke="#A86A30" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M-74,-72 L74,-72 L62,-4 Q60,0 54,0 L-54,0 Q-60,0 -62,-4 Z" fill="#D9984F"/>
+  ${weave}
+  <g transform="rotate(${-40*lid} -76 -72)"><rect x="-78" y="-84" width="156" height="16" rx="7" fill="#C2803F"/>
+  <path d="M-60,-84 L-30,-84 L-30,-68 L-60,-68 Z M0,-84 L30,-84 L30,-68 L0,-68 Z" fill="#F0535E"/></g></g>`;
+}
