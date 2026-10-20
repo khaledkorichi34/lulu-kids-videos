@@ -1020,9 +1020,15 @@ function yogurt(x,y,s=1){
   <circle cx="-22" cy="-60" r="7" fill="#fff"/><circle cx="0" cy="-60" r="7" fill="#fff"/><circle cx="22" cy="-60" r="7" fill="#fff"/>
   <rect x="-44" y="-118" width="10" height="34" rx="5" fill="#EDE7F0"/></g>`;
 }
-// zebra({eye, step, tail, nod}): friendly little zebra facing right, origin at its feet (about 210 tall
+// stripe patterns for zebra({v}): every zebra has its own stripes, so pass a different v for each zebra on screen
+const ZEBRA_STRIPES=[
+  '<path d="M-70,-160 Q-80,-120 -64,-74"/><path d="M-40,-160 Q-50,-120 -36,-86"/><path d="M-10,-160 Q-20,-124 -8,-92"/><path d="M20,-160 Q12,-126 22,-96"/><path d="M48,-160 Q40,-130 50,-104"/>',
+  '<path d="M-74,-160 Q-62,-118 -76,-76"/><path d="M-46,-160 Q-34,-124 -48,-88"/><path d="M-16,-162 Q-6,-130 -20,-104"/><path d="M-4,-70 Q4,-84 -2,-96"/><path d="M26,-160 Q36,-130 24,-100"/><path d="M54,-158 Q60,-136 52,-112"/>',
+  '<path d="M-66,-160 Q-84,-124 -60,-78"/><path d="M-30,-160 Q-44,-124 -28,-84"/><path d="M4,-162 Q-10,-128 6,-90"/><path d="M36,-160 Q28,-134 40,-106"/><path d="M-50,-74 Q-46,-90 -52,-100"/>'
+];
+// zebra({eye, step, tail, nod, v}): friendly little zebra facing right, origin at its feet (about 210 tall
 // to the ears and 200 wide at s=1). step = walking phase in radians (legs swing), tail = -1..1 tail swish,
-// nod = head nod in degrees.
+// nod = head nod in degrees, v = stripe pattern (0, 1 or 2).
 function zebra(o={}){
   const e=o.eye==null?1:o.eye, st=o.step||0, tl=o.tail||0, nd=o.nod||0;
   const W='#FFFFFF', K='#2D2A3A';
@@ -1037,9 +1043,7 @@ function zebra(o={}){
   <ellipse cx="-104" cy="-58" rx="9" ry="15" fill="${K}"/></g>
   <clipPath id="zbody"><ellipse cx="-8" cy="-110" rx="84" ry="46"/></clipPath>
   <ellipse cx="-8" cy="-110" rx="84" ry="46" fill="${W}"/>
-  <g clip-path="url(#zbody)" stroke="${K}" stroke-width="11" fill="none" stroke-linecap="round">
-  <path d="M-70,-160 Q-80,-120 -64,-74"/><path d="M-40,-160 Q-50,-120 -36,-86"/><path d="M-10,-160 Q-20,-124 -8,-92"/>
-  <path d="M20,-160 Q12,-126 22,-96"/><path d="M48,-160 Q40,-130 50,-104"/></g>
+  <g clip-path="url(#zbody)" stroke="${K}" stroke-width="11" fill="none" stroke-linecap="round">${ZEBRA_STRIPES[(o.v||0)%ZEBRA_STRIPES.length]}</g>
   ${leg(-34,0)}${leg(52,Math.PI)}
   <g transform="rotate(${nd} 54 -130)">
   <path d="M40,-140 Q50,-196 82,-196 L96,-160 Q74,-136 70,-110 Z" fill="${W}"/>
