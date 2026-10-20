@@ -944,3 +944,112 @@ function toyBlock(x,y,col,rot=0,s=1){
   <circle r="15" fill="#fff" opacity=".45"/><circle r="8" fill="#fff" opacity=".7"/>
   <rect x="-24" y="-26" width="18" height="6" rx="3" fill="#fff" opacity=".45"/></g>`;
 }
+
+/* ---------- letters U to Z (episode 29) ---------- */
+// umbrella(x,y,s,open,rot): red and white striped umbrella, origin at the bottom of its curved handle
+// (about 250 wide and 250 tall at s=1, open 1). The canopy top is at y-250*s, its rim at about y-170*s.
+// open = 0..1 how far the canopy is spread. rot tilts it in degrees about the handle.
+// Held by Lulu (scale .85 at x): umbrella(x+30, 520-62, .95, 1) puts the canopy just over her head.
+function umbrella(x,y,s=1,op=1,rot=0){
+  const w=lerp(30,125,clamp(op)), cy=-170, top=-250, q=w/2;
+  let D=`M${-w},${cy} Q${-w},${top} 0,${top} Q${w},${top} ${w},${cy}`;
+  for(let k=0;k<4;k++){const x0=w-k*q;D+=` Q${x0-q/2},${cy-18} ${x0-q},${cy}`;}
+  D+=' Z';
+  const wedge=(a,b)=>`<path d="M0,${top-10} L${a},${cy+10} L${b},${cy+10} Z" fill="#fff"/>`;
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})">
+  <path d="M0,${cy} L0,-14 Q0,0 -14,0 Q-26,0 -26,-12" stroke="#7A4B21" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <clipPath id="umbclip"><path d="${D}"/></clipPath>
+  <path d="${D}" fill="#E63946"/>
+  <g clip-path="url(#umbclip)">${wedge(-w,-q)}${wedge(0,q)}</g>
+  <circle cx="0" cy="${top-6}" r="8" fill="#FFD23F"/>
+  <ellipse cx="${-w*.5}" cy="${top+36}" rx="${w*.1+2}" ry="7" fill="#fff" opacity=".35" transform="rotate(-35 ${-w*.5} ${top+36})"/></g>`;
+}
+// vase(x,y,s,t): round blue vase with three flowers in it, standing on the ground, origin at its bottom
+// (about 140 wide and 270 tall with the flowers at s=1; the vase alone is 130 tall)
+function vase(x,y,s=1,t=0){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  ${flower(-26,-110,120,'#FF7FB0',t,0,.8)}${flower(28,-110,130,'#FFD23F',t,1,.8,'#FF8C1A')}${flower(0,-116,165,'#B58CFF',t,2,.8)}
+  <path d="M-28,-130 L28,-130 L24,-104 Q66,-80 64,-42 Q60,0 0,0 Q-60,0 -64,-42 Q-66,-80 -24,-104 Z" fill="#5B8DEF"/>
+  <ellipse cx="0" cy="-130" rx="32" ry="8" fill="#4673D6"/>
+  <path d="M-58,-54 Q0,-36 58,-54" stroke="#FFD23F" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <ellipse cx="-36" cy="-74" rx="9" ry="20" fill="#fff" opacity=".35" transform="rotate(25 -36 -74)"/></g>`;
+}
+// watermelon(x,y,s): big half-moon slice of watermelon standing on its flat edge, origin at the middle of
+// the flat edge (about 260 wide and 135 tall at s=1). Dark seeds, green rind.
+function watermelon(x,y,s=1){
+  const seeds=[[-62,-40],[-30,-70],[0,-48],[30,-70],[62,-40],[-14,-92],[16,-92]];
+  let sd='';seeds.forEach(([a,b])=>{sd+=`<ellipse cx="${a}" cy="${b}" rx="5" ry="9" fill="#2b1d12" transform="rotate(${a*.5} ${a} ${b})"/>`;});
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-130,0 A130,130 0 0 1 130,0 Z" fill="#3FA34D"/>
+  <path d="M-118,0 A118,118 0 0 1 118,0 Z" fill="#E8F5C8"/>
+  <path d="M-108,0 A108,108 0 0 1 108,0 Z" fill="#FF5D6C"/>
+  <rect x="-130" y="-8" width="260" height="8" fill="#E04A5A"/>
+  ${sd}<ellipse cx="-56" cy="-76" rx="10" ry="22" fill="#fff" opacity=".3" transform="rotate(-40 -56 -76)"/></g>`;
+}
+// xylophone(x,y,s,hit,t): toy xylophone with six rainbow bars on a wooden frame, standing on the ground,
+// origin at the middle of its bottom (about 330 wide and 110 tall at s=1). hit = index of the bar
+// that is bouncing (or -1), t = time since it was hit (seconds). The bar centres are at
+// x + (-125 + k*50)*s, y - 72*s. xyloMallet(x,y,s,rot) draws a little mallet whose head is at (x,y).
+function xylophone(x,y,s=1,hit=-1,ht=0){
+  let b='';
+  BLOCKS.forEach((c,k)=>{const h=110-k*12, bx=-125+k*50, d=k===hit?-10*Math.exp(-ht*7)*Math.cos(ht*30):0;
+    b+=`<g transform="translate(0,${d})"><rect x="${bx-20}" y="${-72-h/2}" width="40" height="${h}" rx="10" fill="${c}"/>
+    <circle cx="${bx}" cy="${-72-h/2+12}" r="4.5" fill="#fff" opacity=".8"/><circle cx="${bx}" cy="${-72+h/2-12}" r="4.5" fill="#fff" opacity=".8"/>
+    <rect x="${bx-13}" y="${-72-h/2+22}" width="7" height="${h-44}" rx="3.5" fill="#fff" opacity=".35"/></g>`;});
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <rect x="-155" y="-28" width="16" height="28" rx="6" fill="#A8672E"/><rect x="139" y="-28" width="16" height="28" rx="6" fill="#A8672E"/>
+  <path d="M-160,-100 L160,-86 L160,-74 L-160,-86 Z" fill="#C98545"/>
+  <path d="M-160,-58 L160,-64 L160,-52 L-160,-46 Z" fill="#C98545"/>
+  <rect x="-165" y="-40" width="330" height="16" rx="8" fill="#A8672E"/>
+  ${b}</g>`;
+}
+function xyloMallet(x,y,s=1,rot=0){
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})"><rect x="-5" y="0" width="10" height="110" rx="5" fill="#C98545"/><circle cx="0" cy="0" r="16" fill="#FF5D8F"/><circle cx="-5" cy="-5" r="5" fill="#fff" opacity=".5"/></g>`;
+}
+// yogurt(x,y,s): pot of pink strawberry yogurt with a spoon and a strawberry on top, standing on the
+// ground, origin at the bottom of the pot (about 150 wide and 220 tall with the spoon at s=1)
+function yogurt(x,y,s=1){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M20,-120 L52,-214" stroke="#B8C4D6" stroke-width="10" stroke-linecap="round"/><ellipse cx="56" cy="-222" rx="13" ry="18" fill="#B8C4D6" transform="rotate(20 56 -222)"/>
+  <path d="M-62,-130 Q-64,-160 -30,-162 Q0,-178 30,-162 Q64,-160 62,-130 Z" fill="#FFC2D4"/>
+  <path d="M-12,-166 Q-24,-150 -4,-140 Q16,-150 6,-166 Z" fill="#E63946"/><path d="M-12,-166 Q-4,-176 6,-166 Q-2,-170 -12,-166Z" fill="#3FA34D"/>
+  <circle cx="-6" cy="-156" r="1.8" fill="#FFE785"/><circle cx="2" cy="-150" r="1.8" fill="#FFE785"/>
+  <path d="M-66,-132 L66,-132 L52,-6 Q51,0 44,0 L-44,0 Q-51,0 -52,-6 Z" fill="#fff"/>
+  <path d="M-70,-140 L70,-140 L68,-126 L-68,-126 Z" fill="#FF7FB0"/>
+  <path d="M-60,-76 L60,-76 L57,-44 L-57,-44 Z" fill="#FF7FB0"/>
+  <circle cx="-22" cy="-60" r="7" fill="#fff"/><circle cx="0" cy="-60" r="7" fill="#fff"/><circle cx="22" cy="-60" r="7" fill="#fff"/>
+  <rect x="-44" y="-118" width="10" height="34" rx="5" fill="#EDE7F0"/></g>`;
+}
+// zebra({eye, step, tail, nod}): friendly little zebra facing right, origin at its feet (about 210 tall
+// to the ears and 200 wide at s=1). step = walking phase in radians (legs swing), tail = -1..1 tail swish,
+// nod = head nod in degrees.
+function zebra(o={}){
+  const e=o.eye==null?1:o.eye, st=o.step||0, tl=o.tail||0, nd=o.nod||0;
+  const W='#FFFFFF', K='#2D2A3A';
+  const leg=(lx,ph)=>{const a=st?10*Math.sin(st+ph):0;
+    return `<g transform="rotate(${a} ${lx} -78)"><rect x="${lx-9}" y="-84" width="18" height="78" rx="8" fill="${W}"/>
+    <rect x="${lx-9}" y="-50" width="18" height="7" fill="${K}"/><rect x="${lx-9}" y="-30" width="18" height="6" fill="${K}"/>
+    <rect x="${lx-10}" y="-14" width="20" height="14" rx="5" fill="${K}"/></g>`;};
+  const eye=`<g transform="translate(104,-176) scale(1,${e})"><circle r="7" fill="#2b1d12"/><circle cx="2.4" cy="-2.5" r="2.5" fill="#fff"/></g>`;
+  return `
+  ${leg(-52,Math.PI)}${leg(34,0)}
+  <g transform="rotate(${tl*14} -82 -112)"><path d="M-82,-112 Q-104,-96 -104,-66" stroke="${W}" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <ellipse cx="-104" cy="-58" rx="9" ry="15" fill="${K}"/></g>
+  <clipPath id="zbody"><ellipse cx="-8" cy="-110" rx="84" ry="46"/></clipPath>
+  <ellipse cx="-8" cy="-110" rx="84" ry="46" fill="${W}"/>
+  <g clip-path="url(#zbody)" stroke="${K}" stroke-width="11" fill="none" stroke-linecap="round">
+  <path d="M-70,-160 Q-80,-120 -64,-74"/><path d="M-40,-160 Q-50,-120 -36,-86"/><path d="M-10,-160 Q-20,-124 -8,-92"/>
+  <path d="M20,-160 Q12,-126 22,-96"/><path d="M48,-160 Q40,-130 50,-104"/></g>
+  ${leg(-34,0)}${leg(52,Math.PI)}
+  <g transform="rotate(${nd} 54 -130)">
+  <path d="M40,-140 Q50,-196 82,-196 L96,-160 Q74,-136 70,-110 Z" fill="${W}"/>
+  <path d="M52,-150 L66,-156 M50,-132 L66,-136 M58,-170 L72,-172" stroke="${K}" stroke-width="9" stroke-linecap="round"/>
+  <path d="M44,-150 Q40,-196 76,-210 Q66,-190 64,-176 Q56,-166 52,-140 Z" fill="${K}"/>
+  <ellipse cx="78" cy="-222" rx="8" ry="18" fill="${W}" transform="rotate(-20 78 -222)"/><ellipse cx="78" cy="-221" rx="3.5" ry="10" fill="#FFB3C7" transform="rotate(-20 78 -221)"/>
+  <ellipse cx="104" cy="-178" rx="34" ry="30" fill="${W}"/>
+  <path d="M86,-202 Q96,-196 98,-186 M110,-206 Q114,-200 114,-192" stroke="${K}" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <ellipse cx="134" cy="-160" rx="22" ry="18" fill="#7A6E86"/>
+  <ellipse cx="142" cy="-164" rx="3.5" ry="2.5" fill="#2b1d12"/>
+  <path d="M124,-148 Q132,-144 140,-149" stroke="#2b1d12" stroke-width="3" fill="none" stroke-linecap="round"/>
+  ${eye}<circle cx="104" cy="-160" r="7" fill="#FF9AA2" opacity=".75"/></g>`;
+}

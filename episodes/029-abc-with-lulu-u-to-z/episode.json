@@ -1,0 +1,159 @@
+{
+  "number": 29,
+  "slug": "abc-with-lulu-u-to-z",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "ABC with Lulu: U to Z | Learn Letters for Kids",
+  "description": "Learn the letters U, V, W, X, Y and Z with Lulu the little duck!\nU is for umbrella, V is for vase, W is for watermelon, X is for xylophone, Y is for yogurt and Z is for zebra.\nA short, gentle first-letters video for children aged 3 to 6.",
+  "duration": 60,
+  "seed": 29,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.7,
+      "type": "sparkle"
+    },
+    {
+      "t": 1.5,
+      "type": "pop"
+    },
+    {
+      "t": 5.0,
+      "type": "ding"
+    },
+    {
+      "t": 6.1,
+      "type": "pop"
+    },
+    {
+      "t": 9.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 13.0,
+      "type": "ding"
+    },
+    {
+      "t": 14.1,
+      "type": "pop"
+    },
+    {
+      "t": 17.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 21.0,
+      "type": "ding"
+    },
+    {
+      "t": 22.1,
+      "type": "pop"
+    },
+    {
+      "t": 25.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 29.0,
+      "type": "ding"
+    },
+    {
+      "t": 30.8,
+      "type": "ding"
+    },
+    {
+      "t": 31.15,
+      "type": "ding"
+    },
+    {
+      "t": 31.5,
+      "type": "ding"
+    },
+    {
+      "t": 31.85,
+      "type": "ding"
+    },
+    {
+      "t": 32.2,
+      "type": "ding"
+    },
+    {
+      "t": 32.55,
+      "type": "ding"
+    },
+    {
+      "t": 33.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 37.0,
+      "type": "ding"
+    },
+    {
+      "t": 38.1,
+      "type": "pop"
+    },
+    {
+      "t": 41.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 45.0,
+      "type": "ding"
+    },
+    {
+      "t": 49.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 56.6,
+      "type": "sparkle"
+    }
+  ],
+  "check_times": [
+    1.2,
+    3.2,
+    4.2,
+    5.5,
+    7.0,
+    8.1,
+    9.5,
+    10.0,
+    11.5,
+    13.5,
+    15.0,
+    16.1,
+    17.5,
+    18.0,
+    19.5,
+    21.5,
+    23.0,
+    24.1,
+    25.5,
+    26.0,
+    27.5,
+    29.5,
+    31.0,
+    32.1,
+    33.5,
+    34.0,
+    35.5,
+    37.5,
+    39.0,
+    40.1,
+    41.5,
+    42.0,
+    43.5,
+    45.5,
+    47.0,
+    48.1,
+    49.5,
+    50.0,
+    51.5,
+    53.5,
+    55.0,
+    56.7,
+    58.0,
+    59.0
+  ]
+}
