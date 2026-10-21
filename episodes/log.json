@@ -549,5 +549,24 @@
     "videoId": "dd2xOMTtDJs",
     "tiktokPostId": 402064161,
     "published": "2026-10-21"
+  },
+  {
+    "number": 34,
+    "slug": "lulu-and-the-bubbles",
+    "format": "story",
+    "ages": "3-6",
+    "title": "Lulu and the Bubbles | Bedtime Story for Kids",
+    "topic": "Bubbles: Lulu blows bubbles with a bubble wand (whoosh!); Pip the kitten hops and pops them (pop, pop, pop); Lulu blows slowly and makes a big, big bubble; it floats to Bunny and pops on her nose (hee hee!); sunset, bye-bye bubbles; the friends sleep while one last bubble floats up into the night sky",
+    "cast": [
+      "duck",
+      "kitten",
+      "bunny",
+      "soap bubbles",
+      "bubble wand"
+    ],
+    "videoId": "8TD2Dt8ut-U",
+    "tiktokPostId": null,
+    "published": "2026-10-21",
+    "note": "First Make run timed out downloading the video (nothing uploaded). Owner asked to retry: uploadVideo returned 403 and a new video appeared on the channel as 'unknown' (8TD2Dt8ut-U). Title and description must be set by hand in YouTube Studio. TikTok not posted: the vertical media push was blocked in this session."
   }
 ]
