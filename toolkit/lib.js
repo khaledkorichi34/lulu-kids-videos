@@ -1085,3 +1085,32 @@ function picnicBasket(x,y,s=1,lid=0){
   <g transform="rotate(${-40*lid} -76 -72)"><rect x="-78" y="-84" width="156" height="16" rx="7" fill="#C2803F"/>
   <path d="M-60,-84 L-30,-84 L-30,-68 L-60,-68 Z M0,-84 L30,-84 L30,-68 L0,-68 Z" fill="#F0535E"/></g></g>`;
 }
+
+/* ---------- more opposites (episode 32) ---------- */
+// glass(x,y,s,f): clear drinking glass, origin at the middle of its bottom (about 105 wide and 170 tall at s=1).
+// f = 0..1 how full of orange juice it is (0 = empty, 1 = full).
+function glass(x,y,s=1,f=1){
+  const top=-4-126*clamp(f), hw=yy=>lerp(42,51,-yy/170);
+  const juiceD=f>0?`<path d="M${-hw(top)},${top} L${hw(top)},${top} L42,-6 Q41,-2 36,-2 L-36,-2 Q-41,-2 -42,-6 Z" fill="#FFA62B"/>
+  <path d="M${-hw(top)},${top} L${hw(top)},${top} L${hw(top+10)},${top+10} L${-hw(top+10)},${top+10} Z" fill="#FFC15E"/>`:'';
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-52,-170 L52,-170 L42,-4 Q41,0 36,0 L-36,0 Q-41,0 -42,-4 Z" fill="#DFF4FF" opacity=".8"/>
+  ${juiceD}
+  <ellipse cx="0" cy="-170" rx="52" ry="7" fill="none" stroke="#fff" stroke-width="4" opacity=".9"/>
+  <path d="M-36,-150 L-28,-20" stroke="#fff" stroke-width="8" stroke-linecap="round" opacity=".5"/></g>`;
+}
+// boxBack(x,y,s) and boxFront(x,y,s): open cardboard box, origin at the middle of its bottom
+// (about 230 wide and 130 tall at s=1, flaps reach about 40 higher). Draw boxBack, then a character
+// standing in it at the same (x,y), then boxFront: the front hides the character's lower 120*s.
+function boxBack(x,y,s=1){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-96,-150 L96,-150 L84,-170 L-84,-170 Z" fill="#B98250"/>
+  <path d="M-100,-128 L100,-128 L96,-150 L-96,-150 Z" fill="#8A5A30"/></g>`;
+}
+function boxFront(x,y,s=1){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-100,-128 L-140,-160 L-128,-100 Z" fill="#C99360"/><path d="M100,-128 L140,-160 L128,-100 Z" fill="#C99360"/>
+  <rect x="-104" y="-128" width="208" height="128" rx="6" fill="#D9A26A"/>
+  <rect x="-104" y="-128" width="208" height="14" fill="#C99360"/>
+  <rect x="-18" y="-114" width="36" height="114" fill="#E8C08A" opacity=".7"/></g>`;
+}

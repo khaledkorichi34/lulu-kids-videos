@@ -1,0 +1,116 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 32 - More Opposites with Lulu: open/closed, full/empty, in/out, day/night. Title, one scene per pair, finale. */
+const SC=[0,4.5,14,23.5,33,42.5,49];
+const DUR=SC[SC.length-1];
+const CA='#FF5D8F', CB='#19B8A6', INK='#2D2A6E';
+const XL=320, XR=960, WY=160;
+const T1=.5, C1=.8, T2=3.6, C2=3.9, C3=6.7;
+const PAIRS=[['open','closed','The umbrella is open','The umbrella is closed'],
+             ['full','empty','The glass is full','The glass is empty'],
+             ['in','out','Pip is in the box','Pip is out!'],
+             ['day','night','It is day','It is night']];
+const cap1=s=>s[0].toUpperCase()+s.slice(1);
+
+function hearts(lt,t0){
+  let s='';
+  for(let k=0;k<9;k++){const q=lt-(t0+k*.4);if(q>0){const y=610-q*120,x=110+k*132+25*Math.sin(q*2+k),o=clamp((y-50)/140)*clamp(q*3)*.9;
+    if(y>40)s+=heart(x,y,1+(k%3)*.25,['#FF5D8F','#FF9F1C','#FFFFFF'][k%3],o);}}
+  return s;
+}
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.4)):0;
+function words(p,lt){
+  const pl=lt>C3?1+.06*Math.sin((lt-C3)*6):1;
+  const w=(txt,x,col,t0,rot)=>{const s=pop(txt,x,WY,130,col,lt,t0,rot);return s&&pl!==1?`<g transform="translate(${x},${WY-45}) scale(${pl}) translate(${-x},${-(WY-45)})">${s}</g>`:s;};
+  return w(p[0],XL,CA,T1,-4)+w(p[1],XR,CB,T2,4);
+}
+function caps(p,lt){
+  if(lt>=C3)return caption(`${cap1(p[0])} and ${p[1]}!`,lt,C3);
+  const c2=p[0]==='in'?3.1:C2;   // Pip is out of the box while still in the air
+  if(lt>=c2)return caption(p[3],lt,c2);
+  return caption(p[2],lt,C1);
+}
+function zzz(x,y,lt,t0){
+  let s='';
+  for(let k=0;k<3;k++){const q=((lt-t0-k*.8)%2.4+2.4)%2.4;if(lt<t0+k*.8)continue;
+    const o=clamp(q*2)*clamp((2.4-q)*1.5);
+    s+=`<text x="${x+q*22+k*6}" y="${y-q*34}" font-size="${30+k*8}" fill="#B58CFF" opacity="${o}" stroke="#fff" stroke-width="5" paint-order="stroke">z</text>`;}
+  return s;
+}
+const bob=(lt,t0,k)=>lt>t0?jumps(lt,[t0+k*.25],.5,22):{y:0,sx:1,sy:1};
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={noSun:true,noClouds:true},night=0,behind='';
+  if(i===0){
+    o={noSun:true};
+    const j=jumps(lt,[1.4,2.4],.6,30);
+    props=umbrella(330,520,1.1,.5+.5*Math.sin(lt*2.2),-6)+umbrella(950,520,1.1,0,6);
+    chars=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:20+20*Math.sin(lt*9),eye:blink(t,0)}),{s:1.1,sx:j.sx,sy:j.sy});
+    pops=pop('More opposites with',640,128,80,INK,lt,.3)+pop(LULU,640,262,140,'#FF5D8F',lt,.7,-3);
+  }else if(i<=4){
+    const p=PAIRS[i-1];
+    if(i===1){ // an open umbrella and a closed umbrella, Lulu in the middle looks at each one
+      const gA=grow(lt,T1), gB=grow(lt,T2), jA=bob(lt,C3+.2,0), jB=bob(lt,C3+.2,1);
+      if(gA>0)chars+=shadow(XL,524,70*gA)+umbrella(XL,520+jA.y,1.2*gA,clamp(prog(lt,T1+.3,T1+1.3)*1.0+.0),3*Math.sin(lt*2));
+      if(gB>0)chars+=shadow(XR,524,30*gB)+umbrella(XR,520+jB.y,1.2*gB,0,3*Math.sin(lt*2+1));
+      chars+=shadow(640,522,52)+place(640,520,duck({eye:blink(t,.3),wing:lt>C3?24*Math.abs(Math.sin(lt*9)):0}),{s:.85,flip:lt<T2});
+    }else if(i===2){ // a full glass and an empty glass
+      const gA=grow(lt,T1), gB=grow(lt,T2), jA=bob(lt,C3+.2,0), jB=bob(lt,C3+.2,1);
+      if(gA>0)chars+=shadow(XL,524,50*gA,-jA.y)+glass(XL,520+jA.y,1.15*gA,1);
+      if(gB>0)chars+=shadow(XR,524,50*gB,-jB.y)+glass(XR,520+jB.y,1.15*gB,0);
+      chars+=shadow(640,522,52)+place(640,520,duck({eye:blink(t,.6),wing:lt>C3?24*Math.abs(Math.sin(lt*9)):0}),{s:.85,flip:lt<T2});
+    }else if(i===3){ // Pip the kitten is in the box, then jumps out
+      const J0=2.7, JD=.9, u=prog(lt,J0,J0+JD);
+      const rise=eout(prog(lt,T1-.2,T1+.3));           // Pip pops up inside the box
+      let kx=XL, ky=460+180*(1-rise), front=true, sq={sx:1,sy:1};
+      if(lt>J0){kx=lerp(XL,XR,u);ky=lerp(460,520,u)-600*u*(1-u);front=ky>392&&u<.5;}
+      if(lt>J0+JD){const j=jumps(lt,[J0+JD-.01,C3+.25],.5,30);ky=520+j.y;sq=j;}
+      const kit=place(kx,ky,kitten({eye:blink(t,.5),tail:Math.sin(lt*3)}),{s:.9,sx:sq.sx,sy:sq.sy});
+      chars+=shadow(XL,524,110)+boxBack(XL,520);
+      if(lt>J0+.3)chars+=shadow(kx,522,46,520-ky);
+      if(front)chars+=kit+boxFront(XL,520);else chars+=boxFront(XL,520)+kit;
+      chars+=shadow(1160,522,48)+place(1160,520,duck({eye:blink(t,.2),wing:lt>C3?24*Math.abs(Math.sin(lt*9)):0}),{s:.75,flip:true});
+    }else{ // the sun goes down, the moon comes up, Lulu falls asleep
+      night=eio(prog(lt,2.4,4.2));
+      o={noSun:true,noMoon:true,noClouds:true};
+      behind=sun(t,640,lerp(110,640,eio(prog(lt,2.4,3.5))))+moon(640,lerp(660,110,eio(prog(lt,3.1,4.2))));   // the sun is down before the moon comes up
+      const asleep=lt>4.2, br=asleep?1+.02*Math.sin(lt*2.2):1;
+      const j=jumps(lt,[1.2,2.0],.55,22);
+      chars+=shadow(920,522,56,-j.y)+place(920,520+j.y,duck({eye:blink(t,0),asleep,wing:asleep?0:16*Math.sin(lt*8)}),{s:.9,sx:j.sx*br,sy:j.sy*br,flip:true});
+      if(asleep)chars+=nightTint(night*.5)+zzz(845,385,lt,4.6);else chars+=nightTint(night*.5);
+    }
+    pops=words(p,lt);
+    cap=caps(p,lt);
+  }else{
+    o={noClouds:true};
+    const j=jumps(lt,[2.6,3.7,4.8],.6,35), jb=jumps(lt,[2.9,4.0,5.1],.55,30);
+    props=hearts(lt,2.4);
+    chars=shadow(300,522,46,-jb.y)+place(300,520+jb.y,bunny({eye:blink(t,.4)}),{s:.85,sx:jb.sx,sy:jb.sy});
+    chars+=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:25+25*Math.sin(lt*10),eye:blink(t,0)}),{s:1.05,sx:j.sx,sy:j.sy});
+    chars+=shadow(960,522,46,-jb.y)+place(960,520+jb.y,kitten({eye:blink(t,1.1),tail:Math.sin(t*2)}),{s:.9,sx:jb.sx,sy:jb.sy});
+    pops=pop('Well done!',640,170,120,'#FF9F1C',lt,.4,-3);
+    cap=caption('Opposites are fun!',lt,1.6);
+  }
+  svg.innerHTML=bg(t,night,behind,o)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(250,664,80)+umbrella(250,660,1.25,1,-6);
+  s+=shadow(1050,664,40)+umbrella(1050,660,1.25,0,6);
+  s+=shadow(640,662,130)+place(640,658,duck({wing:22}),{s:1.75});
+  s+=label('open',250,250,120,CA,-5)+label('closed',1050,250,110,CB,4);
+  s+=label('Opposites',640,110,96,INK)+label(LULU,640,215,90,'#FF5D8F',-3);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
