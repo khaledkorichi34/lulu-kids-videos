@@ -530,5 +530,24 @@
     "videoId": "2GI-NQZD-mM",
     "tiktokPostId": 401839155,
     "published": "2026-10-21"
+  },
+  {
+    "number": 33,
+    "slug": "london-bridge",
+    "format": "rhyme",
+    "ages": "2-6",
+    "title": "London Bridge Is Falling Down with Lulu | Nursery Rhyme for Kids",
+    "topic": "Sing-along of London Bridge Is Falling Down: Lulu's toy-block bridge tumbles softly on 'my fair lady' and is built up again three times; Pip and Bunny join, then a bird as evening comes",
+    "rhyme": "london",
+    "cast": [
+      "duck",
+      "kitten",
+      "bunny",
+      "bird",
+      "toy blocks"
+    ],
+    "videoId": "dd2xOMTtDJs",
+    "tiktokPostId": 402064161,
+    "published": "2026-10-21"
   }
 ]

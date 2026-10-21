@@ -1,0 +1,101 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script src="../../toolkit/rhymes.js"></script>
+<script>
+/* Episode 33 - London Bridge Is Falling Down (sing-along). Lulu builds a little bridge of toy blocks
+   in the garden. On "my fair lady" the top blocks tumble softly onto the grass, and they hop back up
+   again in the gap. Verse 2: Pip the kitten and Bunny join. Verse 3: evening comes and a bird joins.
+   Ending: the bridge is built once more and everyone cheers. */
+const BPM=112, START=5.0;
+const LINES=rhymeTimes(RHYMES.london,START,3,4,BPM);
+const END=rhymeEnd(LINES);                 // about 60.7 s
+const DUR=66, SC=[0,DUR];
+const SPB=60/BPM;
+const V2=LINES[4].t0, V3=LINES[8].t0;
+
+// the bridge: two pillars of two blocks, a top of four blocks
+const PIL=[[544,520,BLOCKS[4]],[544,456,BLOCKS[3]],[736,520,BLOCKS[4]],[736,456,BLOCKS[3]]];
+const TOP=[[544,BLOCKS[0]],[608,BLOCKS[1]],[672,BLOCKS[2]],[736,BLOCKS[5]]];
+const LAND=[[450,-14],[640,10],[810,-8],[880,16]];   // where the top blocks land, and their tilt
+// fall times: on "dy!" of each "my fair lady!"
+const FALL=[3,7,11].map(i=>LINES[i].words[3].t0);
+// hop back up: in the gap after verses 1 and 2, and after the last verse
+const BUILD=[FALL[0]+1.6,FALL[1]+1.6,END+.3];
+
+function topBlock(t,k){
+  const [x0,col]=TOP[k], y0=392, [x1,r1]=LAND[k];
+  let x=x0,y=y0,r=0;
+  for(let v=0;v<3;v++){
+    const tf=FALL[v]+k*.08, tb=BUILD[v]+k*.3;
+    if(t>=tf&&t<tb){
+      const u=prog(t,tf,tf+.55);
+      x=lerp(x0,x1,eout(u)); y=lerp(y0,520,u*u)-30*Math.sin(Math.PI*u); r=r1*u;
+      const q=t-(tf+.55); if(q>0)y-=14*Math.abs(Math.sin(q*9))*Math.exp(-q*6);
+    }else if(t>=tb&&t<tb+.5){
+      const u=eio(prog(t,tb,tb+.5));
+      x=lerp(x1,x0,u); y=lerp(520,y0,u)-60*Math.sin(Math.PI*u); r=r1*(1-u);
+    }
+  }
+  return toyBlock(x.toFixed(1),y.toFixed(1),col,r);
+}
+
+function render(t){
+  const n=t<V3-2.2?0:lerp(0,.45,eio(prog(t,V3-2.2,V3)));
+  const p=t<END+.5?beatPulse(LINES,t):0;
+  const sway=t>START-.5&&t<END+.4?Math.sin(2*Math.PI*(t-START)/(2*SPB)):0;
+  let props='',chars='',pops='',cap='';
+
+  // garden flowers at the edges
+  props+=flower(40,600,90,'#FF7FB0',t,0,.5)+flower(1245,595,90,'#FFD23F',t,2,.5,'#FF8C1A');
+
+  // the bridge (wobbles a little with the music while it stands)
+  const standing=!FALL.some((f,v)=>t>=f&&t<BUILD[v]+1.4);
+  const wob=standing?1.6*sway:0;
+  let br='';
+  PIL.forEach(([x,y,c])=>br+=toyBlock(x,y,c));
+  props+=shadow(544,524,70)+shadow(736,524,70)+`<g transform="rotate(${wob.toFixed(2)} 640 520)">${br}`;
+  for(let k=0;k<4;k++)props+=topBlock(t,k);
+  props+='</g>';
+
+  // Lulu on the left, friends on the right (they face Lulu)
+  const hop=v=>{const q=t-FALL[v];return q>0&&q<.6?40*Math.sin(Math.PI*q/.6):0;};
+  const h=hop(0)+hop(1)+hop(2);
+  const cheer=t>END+2.0?Math.abs(Math.sin((t-END-2.0)*4.5))*24*(1-prog(t,DUR-2.6,DUR-1.6)):0;
+  chars+=shadow(290,522,62)+place(290,520-7*p-h-cheer,duck({eye:blink(t,0),wing:14+12*sway}),{s:.95,rot:4*sway});
+  const g2=t>V2-2.0?back(prog(t,V2-2.0,V2-1.4)):0;
+  if(g2>0){
+    chars+=shadow(1040,522,56)+place(1040,520-6*p-h*.8-cheer,kitten({eye:blink(t,.8),tail:sway}),{s:.9*g2,flip:true,rot:-4*sway});
+    chars+=shadow(1170,522,50)+place(1170,520-6*p-h*.6-cheer,bunny({eye:blink(t,1.6),ear:6*sway}),{s:.9*g2,flip:true,rot:4*sway});
+  }
+  const g3=t>V3-2.0?back(prog(t,V3-2.0,V3-1.4)):0;
+  if(g3>0)chars+=shadow(130,522,48)+place(130,520-6*p-h*.7-cheer,bird({eye:blink(t,2.3),wing:-10+14*sway}),{s:.8*g3,rot:-3*sway});
+
+  // little sparkles when the bridge is built again
+  BUILD.forEach(b=>{const q=t-(b+1.5);if(q>0&&q<1.2){const o=1-q/1.2;
+    pops+=sparkle(500,330-30*q,1.1,o)+sparkle(780,320-30*q,1,o)+sparkle(640,290-30*q,.8,o);}});
+
+  // title, the words of the song, "Build it up!" in the gaps, then the ending
+  const to=1-prog(t,3.7,4.3);
+  if(to>0)pops+=`<g opacity="${to}">`+pop('London Bridge',640,150,92,'#FF5D8F',t,.4,-2,'#fff')+pop('Is Falling Down',640,262,78,'#3FA9F5',t,1.0,2,'#fff')+`</g>`;
+  [0,1].forEach(v=>{const a=FALL[v]+1.2,o=1-prog(t,a+2.6,a+3.0);if(t>a&&o>0)pops+=`<g opacity="${o}">`+pop('Build it up!',640,165,84,'#5CC85A',t-a,0,-2)+`</g>`;});
+  cap=t<END+1.2?karaoke(LINES,t,'#FF5D8F'):caption('We built it again!',t-END,2.0);
+  if(t>END+2.2)pops+=pop('Hooray!',640,165,96,'#FF9F1C',t-END,2.2,-3);
+
+  svg.innerHTML=bg(t,n,(n<.15?`<g opacity="${(1-n/.15).toFixed(2)}">`+sun(t,1150,100+n*900)+'</g>':'')+(n>.25?`<g opacity="${clamp((n-.25)/.2).toFixed(2)}">`+moon(1150,120)+'</g>':'')+cloud(170+12*Math.sin(t*.3),95,.9,1-n*.75)+cloud(1010+12*Math.sin(t*.25+1),250,.7,1-n*.75),{noFlowers:true,noSun:true,noMoon:true,noClouds:true})+props+chars+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,'',{noFlowers:true,noSun:true});
+  let br='';PIL.forEach(([x,y,c])=>br+=toyBlock(x,y,c));TOP.forEach(([x,c])=>br+=toyBlock(x,392,c));
+  s+=shadow(700,662,90)+shadow(940,662,90)+`<g transform="translate(820,660) scale(1.25) translate(-640,-520)">${br}</g>`;
+  s+=shadow(250,662,140)+place(240,658,duck({wing:20}),{s:1.9});
+  s+=label('London Bridge',640,150,118,'#FF5D8F',-3)+label('Is Falling Down',820,262,84,'#3FA9F5',-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

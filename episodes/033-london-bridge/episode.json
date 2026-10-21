@@ -1,0 +1,26 @@
+{
+  "number": 33,
+  "slug": "london-bridge",
+  "format": "rhyme",
+  "ages": "2-6",
+  "title": "London Bridge Is Falling Down with Lulu | Nursery Rhyme for Kids",
+  "description": "Sing along to London Bridge Is Falling Down with Lulu the little duck! Lulu builds a bridge of toy blocks. The top blocks tumble softly onto the grass, and Lulu and her friends build it up again.\nThe words light up with the music, for children aged 2 to 6.\nA classic nursery rhyme (traditional, 1744).",
+  "duration": 66,
+  "seed": 33,
+  "lullaby_from": null,
+  "rhyme": {"name": "london", "bpm": 112, "start": 5.0, "repeat": 3, "gap": 4},
+  "sfx": [
+    {"t": 0.4, "type": "pop"},
+    {"t": 20.9, "type": "boing_low"},
+    {"t": 22.4, "type": "pop"},
+    {"t": 23.6, "type": "sparkle"},
+    {"t": 40.2, "type": "boing_low"},
+    {"t": 41.7, "type": "pop"},
+    {"t": 42.9, "type": "sparkle"},
+    {"t": 59.5, "type": "boing_low"},
+    {"t": 61.0, "type": "pop"},
+    {"t": 62.5, "type": "sparkle"},
+    {"t": 62.9, "type": "ding"}
+  ],
+  "check_times": [2.0, 4.6, 8.0, 20.7, 21.4, 22.6, 23.2, 24.0, 26.0, 33.0, 40.0, 42.5, 45.0, 50.0, 59.4, 61.4, 62.8, 64.0, 65.0]
+}
