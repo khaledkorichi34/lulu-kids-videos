@@ -1,0 +1,27 @@
+{
+  "number": 34,
+  "slug": "lulu-and-the-bubbles",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and the Bubbles | Bedtime Story for Kids",
+  "description": "Lulu the little duck blows bubbles with her bubble wand. Pip the kitten hops and pops them, and a big, big bubble floats over to Bunny.\nThen the sun goes down and the three friends fall asleep while one last little bubble floats up into the night sky.\nA gentle, playful story for children aged 3 to 6.",
+  "duration": 48,
+  "seed": 34,
+  "lullaby_from": 40.0,
+  "sfx": [
+    {"t": 0.4, "type": "boing_high"},
+    {"t": 1.3, "type": "sparkle"},
+    {"t": 8.1, "type": "sparkle"},
+    {"t": 15.6, "type": "pop"},
+    {"t": 16.5, "type": "pop"},
+    {"t": 17.4, "type": "pop"},
+    {"t": 22.0, "type": "sparkle"},
+    {"t": 26.3, "type": "boing_high"},
+    {"t": 26.8, "type": "boing_high"},
+    {"t": 27.3, "type": "boing_high"},
+    {"t": 27.8, "type": "boing_high"},
+    {"t": 29.8, "type": "pop"},
+    {"t": 44.2, "type": "sparkle"}
+  ],
+  "check_times": [2.5, 27.0, 27.6, 43.5, 46.5, 8.5, 10.5, 14.5, 15.6, 16.5, 17.4, 21.0, 23.5, 25.5, 28.5, 29.9, 31.0, 35.0, 38.0, 42.0, 45.0]
+}

@@ -1114,3 +1114,40 @@ function boxFront(x,y,s=1){
   <rect x="-104" y="-128" width="208" height="14" fill="#C99360"/>
   <rect x="-18" y="-114" width="36" height="114" fill="#E8C08A" opacity=".7"/></g>`;
 }
+
+/* ---------- soap bubbles (episode 34) ---------- */
+// soapBubble(x,y,r,o,h): shiny soap bubble centred at (x,y), radius r, with a soft pink / blue / yellow
+// shimmer on its rim. o = opacity, h = shimmer phase (pass t plus a different offset per bubble so they swirl).
+function soapBubble(x,y,r,o=1,h=0){
+  const rr=r*.82, a0=h*35;
+  const arcP=(a,b)=>{const A=(a0+a)*Math.PI/180,B=(a0+b)*Math.PI/180;
+    return `M${(rr*Math.cos(A)).toFixed(1)},${(rr*Math.sin(A)).toFixed(1)} A${rr},${rr} 0 0 1 ${(rr*Math.cos(B)).toFixed(1)},${(rr*Math.sin(B)).toFixed(1)}`;};
+  const sw=Math.max(2,r*.1);
+  return `<g transform="translate(${x.toFixed(1)},${y.toFixed(1)})" opacity="${o}">
+  <circle r="${r}" fill="#CFEFFF" opacity=".4"/>
+  <circle r="${r+1}" fill="none" stroke="#7CC4EE" stroke-width="${Math.max(1.5,r*.05)}" opacity=".8"/>
+  <path d="${arcP(20,110)}" stroke="#FF8FD0" stroke-width="${sw}" fill="none" stroke-linecap="round" opacity=".75"/>
+  <path d="${arcP(140,215)}" stroke="#6CC8FF" stroke-width="${sw}" fill="none" stroke-linecap="round" opacity=".75"/>
+  <path d="${arcP(250,320)}" stroke="#FFD95A" stroke-width="${sw}" fill="none" stroke-linecap="round" opacity=".8"/>
+  <circle r="${r}" fill="none" stroke="#fff" stroke-width="${Math.max(2,r*.06)}" opacity=".95"/>
+  <ellipse cx="${-r*.4}" cy="${-r*.42}" rx="${r*.22}" ry="${r*.12}" transform="rotate(-40 ${-r*.4} ${-r*.42})" fill="#fff"/>
+  <circle cx="${r*.45}" cy="${r*.42}" r="${r*.07}" fill="#fff" opacity=".8"/></g>`;
+}
+// bubblePop(x,y,r,u): a bubble of radius r bursting at (x,y); u = 0..1 time since the pop (draw nothing after 1).
+// Eight tiny drops fly out and fade, with a soft ring.
+function bubblePop(x,y,r,u){
+  if(u<=0||u>=1)return '';
+  const q=eout(u), o=1-u;let s=`<circle cx="${x}" cy="${y}" r="${r*(1+.5*q)}" fill="none" stroke="#fff" stroke-width="3" opacity="${o*.7}"/>`;
+  for(let k=0;k<8;k++){const a=k*Math.PI/4+.3, d=r*(.9+.9*q);
+    s+=`<circle cx="${(x+Math.cos(a)*d).toFixed(1)}" cy="${(y+Math.sin(a)*d).toFixed(1)}" r="${(5*(1-.5*u)).toFixed(1)}" fill="${['#FF8FD0','#6CC8FF','#FFD95A','#fff'][k%4]}" opacity="${o}"/>`;}
+  return s;
+}
+// bubbleWand(x,y,s,rot): toy bubble wand, origin at the centre of its ring (ring radius 28 at s=1),
+// a purple handle about 120 long hangs below it. rot turns it about the ring centre (positive = clockwise).
+function bubbleWand(x,y,s=1,rot=0){
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})">
+  <rect x="-5" y="26" width="10" height="122" rx="5" fill="#7B5CFF"/>
+  <rect x="-7" y="112" width="14" height="40" rx="7" fill="#5B3FD9"/>
+  <circle r="20" fill="#EAF8FF" opacity=".45"/>
+  <circle r="24" fill="none" stroke="#FF5D8F" stroke-width="8"/></g>`;
+}
