@@ -1,0 +1,122 @@
+{
+  "number": 35,
+  "slug": "more-shapes-with-lulu",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "More Shapes with Lulu | Learn Shapes for Kids",
+  "description": "Learn four more shapes with Lulu the little duck!\n\nA rectangle, an oval, a heart and a diamond. Count the sides, then see the shapes make a kite.\n\nA short, gentle shapes video for children aged 3 to 6.",
+  "duration": 47,
+  "seed": 35,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.7,
+      "type": "sparkle"
+    },
+    {
+      "t": 4.9,
+      "type": "pop"
+    },
+    {
+      "t": 7.2,
+      "type": "ding"
+    },
+    {
+      "t": 7.7,
+      "type": "ding"
+    },
+    {
+      "t": 8.2,
+      "type": "ding"
+    },
+    {
+      "t": 8.7,
+      "type": "ding"
+    },
+    {
+      "t": 10.45,
+      "type": "boing_high"
+    },
+    {
+      "t": 11.9,
+      "type": "pop"
+    },
+    {
+      "t": 15.55,
+      "type": "boing_high"
+    },
+    {
+      "t": 18.4,
+      "type": "pop"
+    },
+    {
+      "t": 21.4,
+      "type": "sparkle"
+    },
+    {
+      "t": 22.05,
+      "type": "boing_high"
+    },
+    {
+      "t": 24.9,
+      "type": "pop"
+    },
+    {
+      "t": 27.2,
+      "type": "ding"
+    },
+    {
+      "t": 27.7,
+      "type": "ding"
+    },
+    {
+      "t": 28.2,
+      "type": "ding"
+    },
+    {
+      "t": 28.7,
+      "type": "ding"
+    },
+    {
+      "t": 30.45,
+      "type": "boing_high"
+    },
+    {
+      "t": 34.4,
+      "type": "pop"
+    },
+    {
+      "t": 37.6,
+      "type": "boing_high"
+    },
+    {
+      "t": 40.0,
+      "type": "pop"
+    },
+    {
+      "t": 44.1,
+      "type": "boing_high"
+    },
+    {
+      "t": 45.6,
+      "type": "sparkle"
+    }
+  ],
+  "check_times": [
+    3.0,
+    8.9,
+    10.6,
+    14.9,
+    15.7,
+    21.9,
+    22.2,
+    29.0,
+    30.6,
+    34.0,
+    35.5,
+    37.8,
+    41.6,
+    44.3,
+    46.0
+  ]
+}

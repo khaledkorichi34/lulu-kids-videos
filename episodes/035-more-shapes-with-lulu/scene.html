@@ -1,0 +1,124 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 35 - More Shapes with Lulu.  Title, rectangle (4 sides), oval (like an egg), heart,
+   diamond (4 sides), shapes make a kite, finale. */
+const SC=[0,4.5,11.5,18,24.5,32,39.5,47], DUR=47;
+const NAVY='#2D2A6E';
+const KIND=['rectangle','oval','heart','diamond'];
+const WORD=['Rectangle','Oval','Heart','Diamond'];
+const COL=['#FF8C1A','#9B7BFF','#FF4D6D','#22C3B0'];
+const DARK=['#D96A00','#6A4BD8','#D62848','#13917F'];
+const CAP=['A rectangle has 4 sides','Oval, like an egg!','A heart means love','A diamond has 4 sides'];
+const CX=800, CY=395;
+
+// outline path of a shape centred at (x,y); r = half the size
+function spath(k,x,y,r){
+  if(k==='rectangle'){const w=r*1.35,h=r*.85;return `M${x-w},${y-h} H${x+w} V${y+h} H${x-w} Z`;}
+  if(k==='oval'){const a=r*.78,b=r*1.05;return `M${x},${y-b} A${a},${b} 0 1 1 ${x},${y+b} A${a},${b} 0 1 1 ${x},${y-b} Z`;}
+  if(k==='heart')return `M${x},${y-r*.45} C${x+r*.75},${y-r*1.3} ${x+r*1.65},${y-r*.15} ${x},${y+r*1.0} C${x-r*1.65},${y-r*.15} ${x-r*.75},${y-r*1.3} ${x},${y-r*.45} Z`;
+  return `M${x},${y-r*1.15} L${x+r*.85},${y} L${x},${y+r*1.15} L${x-r*.85},${y} Z`;
+}
+function face(x,y,s,e){
+  const eye=dx=>`<g transform="translate(${x+dx*s},${y}) scale(${s},${s*e})"><circle r="8" fill="#2b1d12"/><circle cx="2.6" cy="-2.8" r="2.8" fill="#fff"/></g>`;
+  return eye(-20)+eye(20)+`<path d="M${x-13*s},${y+16*s} Q${x},${y+29*s} ${x+13*s},${y+16*s}" stroke="#2b1d12" stroke-width="${4.5*s}" fill="none" stroke-linecap="round"/>`+
+    `<circle cx="${x-34*s}" cy="${y+12*s}" r="${8*s}" fill="#FFB3C1" opacity=".85"/><circle cx="${x+34*s}" cy="${y+12*s}" r="${8*s}" fill="#FFB3C1" opacity=".85"/>`;
+}
+function shape(k,x,y,r,d,f,e,fs){
+  if(d<=0)return '';
+  const i=KIND.indexOf(k), fy=k==='heart'?y-r*.05:y;
+  let s=`<path d="${spath(k,x,y,r)}" fill="${COL[i]}" fill-opacity="${f}" stroke="${DARK[i]}" stroke-width="${Math.max(6,r*.07)}" stroke-linejoin="round" pathLength="1" stroke-dasharray="1.02" stroke-dashoffset="${1-d}"/>`;
+  if(f>.5&&fs>0)s+=`<g opacity="${(f-.5)*2}">${face(x,fy,fs,e)}</g>`;
+  return s;
+}
+function badge(n,x,y,col,lt,t0){
+  const u=prog(lt,t0,t0+.35);if(u<=0)return '';
+  return `<g transform="translate(${x},${y}) scale(${back(u)})"><circle r="30" fill="#fff" stroke="${col}" stroke-width="7"/><text y="14" text-anchor="middle" font-size="40" fill="${NAVY}">${n}</text></g>`;
+}
+function spots(k,r){
+  if(k==='rectangle'){const w=r*1.35,h=r*.85;return [[0,-h],[w,0],[0,h],[-w,0]];}
+  if(k==='diamond'){const mx=r*.425,my=r*.575,o=40,nx=.8,ny=.6;return [[mx+nx*o,-my-ny*o],[mx+nx*o,my+ny*o],[-mx-nx*o,my+ny*o],[-mx-nx*o,-my-ny*o]];}
+  return [];
+}
+const MEAS=document.createElementNS('http://www.w3.org/2000/svg','path');
+function onPath(d,u){MEAS.setAttribute('d',d);const L=MEAS.getTotalLength();return MEAS.getPointAtLength(u*L);}
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.35)):0;
+const sideClouds=t=>cloud(125+10*Math.sin(t*.3),96,.9,.95)+cloud(1150+12*Math.sin(t*.25+1),122,1,.95);
+const lulu=(x,lt,t,hop,s=.95)=>{
+  const j=jumps(lt,[hop],.55,14), w=lt>hop?30*Math.abs(Math.sin(lt*10)):0;
+  return shadow(x,522,56*s/.95,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy});
+};
+const NUM_T=[2.7,3.2,3.7,4.2];
+const CAP_T=[4.7,2.8,2.8,4.7];
+// little heart bow for the kite tail
+const bow=(x,y,s,c)=>`<g transform="translate(${x},${y}) scale(${s})"><path d="${spath('heart',0,0,20)}" fill="${c}"/></g>`;
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',sky='',o={noSun:true,noFlowers:true,noClouds:true};
+  if(i===0){
+    o={noClouds:true};
+    const j=jumps(lt,[1.4,2.4],.6,30);
+    sky=cloud(150+10*Math.sin(t*.3),104,1,.95);
+    chars=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:20+20*Math.sin(lt*9),eye:blink(t,0)}),{s:1.1,sx:j.sx,sy:j.sy});
+    pops=pop('More Shapes with',640,128,80,NAVY,lt,.3)+pop(LULU,640,262,140,'#FF5D8F',lt,.7,-3);
+    for(let k=0;k<4;k++){const g=grow(lt,1.6+k*.3);if(g>0)pops+=`<g transform="translate(${460+k*120},652) scale(${g})">${shape(KIND[k],0,0,30,1,1,1,0)}</g>`;}
+  }else if(i<=4){
+    const N=i-1, k=KIND[N], r=N===3?102:(N===2?104:112);
+    sky=sideClouds(t);
+    pops=pop(WORD[N],640,150,130,DARK[N],lt,.4);
+    const d=eio(prog(lt,1.0,2.2)), f=prog(lt,2.2,2.6);
+    const hop=CAP_T[N]+1.1, sj=jumps(lt,[hop+.15],.6,22);
+    props=(f>0?shadow(CX,524,r*.8*f,-sj.y):'')+`<g transform="translate(0,${sj.y})">${shape(k,CX,CY,r,d,f,blink(t,.7),1.1)}</g>`;
+    if(d>0&&d<1){const q=onPath(spath(k,CX,CY,r),d);props+=`<circle cx="${q.x}" cy="${q.y}" r="13" fill="#fff" stroke="${DARK[N]}" stroke-width="5"/>`;}
+    if(k==='oval'){const g=grow(lt,3.4);if(g>0)props+=`<g transform="translate(1060,522) scale(${g})"><g transform="translate(-1060,-522)">${egg(1060,522,.8)}</g></g>`;}
+    if(k==='heart'){for(let h=0;h<3;h++){const u=prog(lt,3.4+h*.35,5.6+h*.35);if(u>0&&u<1)props+=heart(1010+h*60,470-u*170,1,'#FF7FA0',1-u);}}
+    chars=lulu(230,lt,t,hop);
+    spots(k,r).forEach((p,n)=>{pops+=badge(n+1,CX+p[0],CY+p[1],DARK[N],lt,NUM_T[n]);});
+    cap=caption(CAP[N],lt,CAP_T[N]);
+  }else if(i===5){
+    // a kite: diamond kite, a tail with little hearts, Lulu holds the string
+    sky=sideClouds(t);
+    const rise=eout(prog(lt,.3,2.0)), kx=800+14*Math.sin(lt*1.6), ky=lerp(470,250,rise)+8*Math.sin(lt*2.3), kr=72;
+    const tail=[];for(let n=0;n<=12;n++){const u=n/12;tail.push([kx+u*150+18*Math.sin(lt*4-u*6),ky+kr*1.15+u*120]);}
+    props+=`<path d="M276,468 Q${(276+kx)/2},${(468+ky)/2+60} ${kx},${ky+kr*.4}" stroke="#fff" stroke-width="4" fill="none"/>`;
+    props+=`<path d="M${tail.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' L')}" stroke="#2D2A6E" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+    [4,8,12].forEach((n,m)=>{const g=grow(lt,2.4+m*.35);if(g>0)props+=bow(tail[n][0],tail[n][1],g,['#FF4D6D','#FF8C1A','#9B7BFF'][m]);});
+    props+=`<g transform="rotate(${4*Math.sin(lt*1.6)},${kx},${ky})">${shape('diamond',kx,ky,kr,1,1,blink(t,.4),.8)}<path d="M${kx},${ky-kr*1.15} V${ky+kr*1.15} M${kx-kr*.85},${ky} H${kx+kr*.85}" stroke="#13917F" stroke-width="4" opacity=".5"/></g>`;
+    chars=lulu(230,lt,t,5.6);
+    pops=pop('diamond',1030,215,52,DARK[3],lt,1.6)+pop('hearts',1150,470,52,DARK[2],lt,3.0);
+    cap=caption('Shapes make a kite!',lt,3.8);
+  }else{
+    const X=[190,450,700,950];
+    for(let k=0;k<4;k++){
+      const t0=.5+k*.5, g=grow(lt,t0), j=jumps(lt,[4.6+k*.12],.6,26), r=k===0?62:(k===3?60:64);
+      if(g<=0)continue;
+      props+=shadow(X[k],380,58,-j.y)+`<g transform="translate(${X[k]},${300+j.y}) scale(${g})">${shape(KIND[k],0,0,r,1,1,blink(t,k*.6),.7)}</g>`;
+      pops+=pop(WORD[k],X[k],470,48,NAVY,lt,t0+.15);
+    }
+    chars=lulu(1150,lt,t,4.6+.5,.85);
+    cap=caption('So many shapes!',lt,3.4);
+  }
+  svg.innerHTML=bg(t,0,'',o)+sky+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  const L=['S','h','a','p','e','s'], LC=['#FF8C1A','#9B7BFF','#FF4D6D','#22C3B0','#2979E8','#FFB000'];
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(130,110,1.3,.95)+cloud(1150,90,1.1,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(330,662,150)+place(322,658,duck({wing:22}),{s:2.15});
+  s+=label('More',815,190,92,NAVY);
+  s+=label(L.map((c,k)=>`<tspan fill="${LC[k]}">${c}</tspan>`).join(''),815,345,150,'#E63946',-3);
+  s+=label('with',815,452,62,NAVY)+label(LULU,815,585,140,'#FF5D8F',-2);
+  for(let k=0;k<4;k++)s+=`<g transform="translate(${640+k*115},664)">${shape(KIND[k],0,0,32,1,1,1,0)}</g>`;
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

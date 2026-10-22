@@ -568,5 +568,25 @@
     "tiktokPostId": null,
     "published": "2026-10-21",
     "note": "First Make run timed out downloading the video (nothing uploaded). Owner asked to retry: uploadVideo returned 403 and a new video appeared on the channel as 'unknown' (8TD2Dt8ut-U). Title and description must be set by hand in YouTube Studio. TikTok not posted: the vertical media push was blocked in this session."
+  },
+  {
+    "number": 35,
+    "slug": "more-shapes-with-lulu",
+    "format": "learning",
+    "ages": "3-6",
+    "title": "More Shapes with Lulu | Learn Shapes for Kids",
+    "topic": "Four more shapes: rectangle (count 4 sides), oval (like an egg in a nest), heart (means love, little hearts float up), diamond (count 4 sides); a diamond kite with a tail of little hearts that Lulu flies; all four together",
+    "cast": [
+      "duck",
+      "rectangle",
+      "oval",
+      "heart",
+      "diamond",
+      "egg",
+      "kite"
+    ],
+    "videoId": "Q1VZpZb0yh0",
+    "tiktokPostId": 402850541,
+    "published": "2026-10-22"
   }
 ]
