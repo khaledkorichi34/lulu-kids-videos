@@ -1151,3 +1151,54 @@ function bubbleWand(x,y,s=1,rot=0){
   <circle r="20" fill="#EAF8FF" opacity=".45"/>
   <circle r="24" fill="none" stroke="#FF5D8F" stroke-width="8"/></g>`;
 }
+
+/* ---------- ladybird from above, aphid and plant stem (episode 36) ---------- */
+// ladybirdTop({eye, open, flap, walk}): friendly ladybird seen from above, head at the top, origin at the
+// centre of its body (about 230 wide with legs, 230 tall with antennae at s=1). Shows all six legs.
+// open = 0..1 the two halves of the hard red shell swing up and thin see-through wings unfold;
+// flap = 0..1 wing beat (use .5+.5*Math.sin(t*k)); walk = leg wiggle (-1..1, use Math.sin(t*k)).
+// leg points [hip x, hip y, knee x, knee y, foot x, foot y] for the left side (mirrored on the right); feet at y -78, 14, 92
+const LADYBIRD_LEGS=[[38,-32,80,-48,96,-78],[44,4,88,0,106,14],[40,38,78,60,90,92]];
+function ladybirdTop(o={}){
+  const e=o.eye==null?1:o.eye, op=o.open||0, fl=o.flap==null?1:o.flap, wk=o.walk||0, D='#2b2b3a';
+  let legs='';
+  LADYBIRD_LEGS.forEach((L,k)=>{const d=(k%2?-1:1)*wk*7;
+    [-1,1].forEach(s=>{const q=s<0?d:-d;
+      legs+=`<path d="M${s*L[0]},${L[1]} L${s*L[2]},${L[3]+q} L${s*L[4]},${L[5]+q}" stroke="${D}" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;});});
+  let wings='';
+  if(op>0){const L=op*(.75+.25*fl);
+    const w=s=>`<g transform="rotate(${-s*(14*fl-6)} ${s*10} -30) scale(${L})"><path d="M${s*10},-30 C${s*90},-60 ${s*170},-10 ${s*160},60 C${s*150},116 ${s*60},96 ${s*10},-30Z" fill="#CFE6FA" opacity=".92"/><path d="M${s*14},-24 Q${s*100},-6 ${s*148},56 M${s*14},-24 Q${s*70},30 ${s*84},92" stroke="#8DB6D9" stroke-width="3.5" fill="none" stroke-linecap="round"/></g>`;
+    wings=w(-1)+w(1);}
+  const half=s=>{const sp=s<0?[[-30,-14,11],[-34,34,10],[-14,56,8]]:[[30,-14,11],[34,34,10],[14,56,8]];
+    return `<g transform="rotate(${-s*op*40} 0 -42)"><path d="M0,-50 C${s*84},-54 ${s*84},78 0,78 Z" fill="#E63946"/>
+    ${sp.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="${p[2]}" fill="${D}"/>`).join('')}
+    ${s<0?'<ellipse cx="-34" cy="-28" rx="14" ry="7" fill="#fff" opacity=".35" transform="rotate(-50 -34 -28)"/>':''}</g>`;};
+  const eye=x=>`<g transform="translate(${x},-80) scale(1,${e})"><circle r="8" fill="#fff"/><circle cx="1" cy="1" r="5" fill="#14141f"/><circle cx="2.6" cy="-1" r="1.8" fill="#fff"/></g>`;
+  return `${legs}${wings}
+  <ellipse cx="0" cy="16" rx="50" ry="58" fill="${D}"/>
+  ${half(-1)}${half(1)}
+  ${op<.05?`<path d="M0,-48 V76" stroke="${D}" stroke-width="4"/>`:''}
+  <path d="M-12,-98 Q-20,-118 -32,-126 M12,-98 Q20,-118 32,-126" stroke="${D}" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <circle cx="-32" cy="-126" r="6" fill="${D}"/><circle cx="32" cy="-126" r="6" fill="${D}"/>
+  <ellipse cx="0" cy="-58" rx="40" ry="20" fill="${D}"/><ellipse cx="-24" cy="-56" rx="9" ry="6" fill="#fff"/><ellipse cx="24" cy="-56" rx="9" ry="6" fill="#fff"/>
+  <circle cx="0" cy="-80" r="26" fill="${D}"/>
+  ${eye(-11)}${eye(11)}
+  <circle cx="-17" cy="-67" r="4.5" fill="#FF9AA2" opacity=".9"/><circle cx="17" cy="-67" r="4.5" fill="#FF9AA2" opacity=".9"/>
+  <path d="M-7,-68 Q0,-62 7,-68" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+}
+// aphid(x,y,s,o): tiny pale green bug sitting on a stem, facing right, origin at its feet (about 30 wide, 20 tall at s=1)
+function aphid(x,y,s=1,o=1){
+  if(o<=0)return '';
+  return `<g transform="translate(${x},${y}) scale(${s})" opacity="${o}">
+  <path d="M-8,-3 L-11,1 M0,-3 L0,1 M8,-3 L11,1" stroke="#5E9B3A" stroke-width="2" stroke-linecap="round"/>
+  <ellipse cx="-2" cy="-10" rx="13" ry="9" fill="#A6E36B"/><circle cx="11" cy="-11" r="6" fill="#A6E36B"/>
+  <circle cx="13" cy="-12" r="2" fill="#1f2d1f"/><ellipse cx="-6" cy="-14" rx="5" ry="2.5" fill="#E2F8C8" opacity=".8"/></g>`;
+}
+// plantStem(x0,x1,y,t): long green stem that grows up from the ground at x1 and bends over to the left at height y,
+// ending at x0, with leaves that sway a little (the top of the stem is at about y-8)
+function plantStem(x0,x1,y,t=0){
+  let s=`<path d="M${x0},${y} Q${(x0+x1)/2},${y-14} ${x1-60},${y} Q${x1},${y} ${x1},${y+60} L${x1},522" stroke="#4CA64C" stroke-width="16" fill="none" stroke-linecap="round"/>`;
+  for(let k=0;k<4;k++){const x=x0+(x1-x0)*(.12+.25*k), up=k%2?1:-1, r=up*(30+4*Math.sin(t*1.5+k));
+    s+=`<ellipse cx="${x}" cy="${y+up*24}" rx="34" ry="13" fill="#5CC85A" transform="rotate(${r} ${x} ${y+up*6})"/>`;}
+  return s;
+}

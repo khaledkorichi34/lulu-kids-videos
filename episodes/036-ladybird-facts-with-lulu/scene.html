@@ -1,0 +1,130 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 36 - Did you know? Ladybird facts.  Title, fact 1 (a ladybird is a little beetle),
+   count its six legs, fact 2 (its hard red shell opens and thin wings come out to fly),
+   it flies over the garden and lands on a flower, fact 3 (ladybirds eat tiny bugs called aphids),
+   recap (beetle, wings, aphids), goodbye. */
+const SC=[0,5.5,12,18.5,25,31.5,38.5,45,52], DUR=52;
+const NAVY='#2D2A6E', PURPLE='#7B5CFF', GREEN='#1F7F37', ORANGE='#E76F2E', PINK='#E8467C', RED='#D62839';
+const lulu=(x,lt,t,hops,h=20,s=.95,wave=false,flip=false)=>{
+  const j=jumps(lt,hops,.6,h), w=wave?20+20*Math.sin(lt*9):0;
+  return shadow(x,522,56*s/.95,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy,flip});
+};
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.4)):0;
+// side-view ladybird walking on the ground (faces right; flip=true faces left)
+const LB=(x,y,t,s=.8,flip=false,walking=true)=>place(x,y+(walking?-2*Math.abs(Math.sin(t*8)):0),ladybird({eye:blink(t,1.3),wiggle:Math.sin(t*3)}),{s,flip});
+// ladybird from above at (x,y)
+const LT=(x,y,t,s,o={})=>place(x,y,ladybirdTop(Object.assign({eye:blink(t,.7)},o)),{s,rot:o.rot||0});
+let WIN=0;
+function closeWin(x,y,r,g,inner,bgc='#FFF4CC'){
+  if(g<=0)return '';
+  const id='w'+(WIN++);
+  return `<g transform="translate(${x},${y}) scale(${g})"><defs><clipPath id="${id}"><circle r="${r}"/></clipPath></defs>
+  <g clip-path="url(#${id})"><circle r="${r}" fill="${bgc}"/><circle cx="${-r*.5}" cy="${-r*.55}" r="${r*.5}" fill="#fff" opacity=".35"/>${inner}</g>
+  <circle r="${r}" fill="none" stroke="#fff" stroke-width="9"/></g>`;
+}
+function sparkles(x,y,lt,t0){
+  const u=prog(lt,t0,t0+1.2);if(u<=0||u>=1)return '';
+  let s='';for(let k=0;k<6;k++){const a=k*Math.PI/3+.4, d=60+u*110;s+=sparkle(x+Math.cos(a)*d,y+Math.sin(a)*d,1.1,1-u);}
+  return s;
+}
+// flight path in scene 5 (lt 0.6 .. 5.2), ends on the flower top at (930,358)
+function flyPos(u){
+  const x=lerp(560,930,u)+170*Math.sin(Math.PI*2*u)*(1-u);
+  const y=lerp(430,330,u)-90*Math.sin(Math.PI*u)+40*Math.sin(Math.PI*3*u)*(1-u);
+  return [x,y];
+}
+const APH=[560,620,690,750,820,880,950];
+
+function render(t){
+  WIN=0;
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={};
+  const sky=cloud(130+8*Math.sin(t*.3),105,.9,.95);
+  if(i===0){
+    props=flower(1000,520,150,'#FF7FB0',t,0,1.1)+flower(1110,520,120,'#B58CFF',t,1,1.0);
+    const wx=lerp(1300,820,eout(prog(lt,.2,3.2)));
+    chars=lulu(330,lt,t,[1.3,2.3],30,1.1,true)+LB(wx,520,t,.9,true,lt<3.2);
+    pops=pop('Did you know?',620,165,100,PURPLE,lt,.3,-3);
+    cap=caption('Fun ladybird facts with Lulu',lt,1.8);
+  }else if(i===1){
+    o={noFlowers:true};
+    props=leaf(720,440,1.0,-4);
+    const x=lerp(560,800,eio(prog(lt,.5,4.5)));
+    chars=lulu(200,lt,t,[5.2],20,.9)+LT(x,445,t,.62,{rot:90,walk:lt>.5&&lt<4.5?Math.sin(t*10):0});
+    pops=pop('Fact 1',640,150,100,ORANGE,lt,.3);
+    cap=caption('A ladybird is a little beetle.',lt,1.0);
+  }else if(i===2){
+    o={noFlowers:true,noSun:true};
+    const X=640,Y=390,S=1.2;
+    chars=LT(X,Y,t,S,{walk:.25*Math.sin(t*3)})+lulu(170,lt,t,[4.6],22,.8,lt>4.6);
+    for(let k=0;k<6;k++){
+      const L=LADYBIRD_LEGS[k%3], left=k<3, y=Y+L[5]*S+20;
+      pops+=pop(String(k+1),left?X-L[4]*S-42:X+L[4]*S+42,y,64,k%2?PINK:PURPLE,lt,.9+k*.6);
+    }
+    cap=lt<4.6?caption('Count its legs with Lulu!',lt,.3):caption('It has six legs!',lt,4.6);
+  }else if(i===3){
+    o={noFlowers:true,noSun:true};
+    const op=eio(prog(lt,2.0,3.4)), fl=.5+.5*Math.sin(t*(lt>3.4?18:4));
+    props=sparkles(640,380,lt,2.0);
+    chars=LT(640,380,t,1.12,{open:op,flap:fl})+lulu(170,lt,t,[3.6],22,.8,lt>3.6);
+    pops=pop('Fact 2',640,150,100,ORANGE,lt,.3);
+    cap=lt<3.6?caption('Its hard red shell opens up.',lt,.8):caption('Thin wings come out to fly.',lt,3.6);
+  }else if(i===4){
+    props=flower(930,520,150,'#FF7FB0',t,0,1.1)+flower(1080,520,110,'#FFD23F',t,2,.9);
+    const u=prog(lt,.6,5.2);
+    const [x,y]=flyPos(eio(u)), [x2,y2]=flyPos(eio(clamp(u+.01)));
+    const ang=u<1?Math.atan2(y2-y,x2-x)*180/Math.PI+90:0;
+    const op=u<1?1:1-prog(lt,5.2,5.8);
+    chars=lulu(230,lt,t,[1.2,2.4],24,.9,true)+LT(x,y+(u<1?0:2*Math.sin(t*2)),t,.42,{open:op,flap:.5+.5*Math.sin(t*30),rot:ang});
+    pops=pop('Up, up and away!',640,160,80,GREEN,lt,.8,-2);
+    cap=caption('Off it flies to a flower!',lt,1.0);
+  }else if(i===5){
+    o={noFlowers:true};
+    props=plantStem(270,1130,400,t);
+    const x=lerp(330,1000,prog(lt,.8,6.0)), head=x+66*.8;
+    APH.forEach((ax,k)=>{const g=prog(head,ax-6,ax+20);props+=aphid(ax,393,1.15,1-g)+(g>0&&g<1?sparkle(ax,375,.6,1-g):'');});
+    chars=LB(x,393,t,.8,false,lt>.8&&lt<6.0)+lulu(120,lt,t,[],0,.8);
+    pops=pop('Fact 3',640,150,100,ORANGE,lt,.3)+(lt<3.6?pop('aphids',760,300,54,GREEN,lt,1.6):'')+pop('munch, munch!',760,270,66,PINK,lt,3.8,-2);
+    cap=caption('They eat tiny bugs called aphids.',lt,1.0);
+  }else if(i===6){
+    o={noFlowers:true,noSun:true};
+    const b=k=>1+.05*Math.sin(t*4+k*2), X=[300,640,980], Y=390;
+    props=closeWin(X[0],Y,118,grow(lt,.4)*b(0),LT(0,10,t,.62,{}),'#DFF6C8');
+    props+=closeWin(X[1],Y,118,grow(lt,1.4)*b(1),LT(0,10,t,.5,{open:1,flap:.5+.5*Math.sin(t*16)}),'#E3F2FF');
+    props+=closeWin(X[2],Y,118,grow(lt,2.4)*b(2),`<path d="M-130,40 Q0,28 130,40" stroke="#4CA64C" stroke-width="16" fill="none"/>`+aphid(-45,34,2.6)+aphid(45,34,2.2),'#FFF4CC');
+    pops=pop('beetle',X[0],230,54,RED,lt,.4)+pop('wings',X[1],230,54,PURPLE,lt,1.4)+pop('aphids',X[2],230,54,GREEN,lt,2.4);
+    cap=caption('Ladybirds help the garden!',lt,3.6);
+  }else{
+    props=heart(470,330+6*Math.sin(t*3),1.4,'#FF7FB0',.85*prog(lt,2,2.5))+heart(530,280+6*Math.sin(t*3+1),1,'#FF9AA2',.85*prog(lt,2.3,2.8));
+    props+=flower(820,520,150,'#FF7FB0',t,0,1.1);
+    const u=prog(lt,2.4,6.2);
+    const x=lerp(820,1380,eio(u)), y=lerp(355,340,eio(u))-50*Math.sin(Math.PI*u);
+    const op=prog(lt,1.6,2.4);
+    chars=lulu(330,lt,t,[1.0,1.8],26,.95,true)+LT(x,y,t,.42,{open:op,flap:.5+.5*Math.sin(t*30),rot:u>0?70:0});
+    pops=pop('Bye bye!',640,160,110,PURPLE,lt,.4,-2);
+    cap=caption('Bye bye, little ladybird!',lt,1.6);
+  }
+  o.noClouds=true;
+  svg.innerHTML=bg(t,0,'',o)+(i===2||i===3||i===6?'':sky)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=flower(1180,690,140,'#FF7FB0',0,0,1.1);
+  s+=shadow(205,662,100)+place(200,658,duck({wing:22}),{s:1.45});
+  s+=place(900,545,ladybirdTop({}),{s:1.25,rot:-12});
+  s+=label('Did you know?',640,190,130,PURPLE,-3);
+  s+=label('Fun ladybird facts',640,315,90,RED,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
