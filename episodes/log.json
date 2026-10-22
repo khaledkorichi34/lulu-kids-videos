@@ -607,5 +607,23 @@
     "videoId": "pLwxt_SPk8c",
     "tiktokPostId": 403080215,
     "published": "2026-10-22"
+  },
+  {
+    "number": 37,
+    "slug": "lulus-big-pumpkin",
+    "format": "story",
+    "ages": "3-6",
+    "title": "Lulu's Big Pumpkin | Bedtime Story for Kids",
+    "topic": "Teamwork: Lulu finds a big pumpkin and pushes, but it does not move; Bunny helps (a little wobble); Pip the kitten joins and all together they push it (it moves!); hooray, we did it together; sunset; the three friends sleep by the pumpkin",
+    "cast": [
+      "duck",
+      "bunny",
+      "kitten",
+      "pumpkin"
+    ],
+    "videoId": "NEEGp_Uq1vo",
+    "tiktokPostId": 403368796,
+    "published": "2026-10-22",
+    "note": "uploadVideo returned 403; a new 'unknown' video (NEEGp_Uq1vo, not in the log before) appeared on the channel and is taken to be this episode. Title and description must be set by hand in YouTube Studio; please confirm it is this 48-second video."
   }
 ]

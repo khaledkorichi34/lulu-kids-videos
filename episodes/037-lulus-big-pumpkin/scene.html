@@ -1,0 +1,123 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 37 - Lulu's Big Pumpkin. Lulu finds a big, round pumpkin and wants to move it.
+   She pushes, but it does not move. Bunny comes and they push together: a little wobble.
+   Pip the kitten comes too: all together, push! It moves. Hooray, we did it together!
+   The sun goes down and the three friends sleep by the big pumpkin. */
+const DUR=48, SC=[0,5,12,19,26,33,40,48];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', ORANGE='#F27A12', GOLD='#FFE58A';
+const P0=640, P1=900;                // pumpkin before and after the big push
+const GAP=[185,340,480];             // Lulu / Bunny / Pip distance to the left of the pumpkin while pushing
+
+const lulu=(lt,t,o={})=>{
+  const x=o.x, j=jumps(lt,o.hops||[],.6,o.h||26), w=o.wave?20+20*Math.sin(lt*9):(o.wing||0);
+  return shadow(x,522,60,-j.y)+place(x,520+j.y+(o.bob||0),duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),{s:1,sx:j.sx*(o.sx||1),sy:j.sy*(o.sy||1),rot:o.rot||0});
+};
+const bunnyAt=(lt,t,o={})=>{
+  const x=o.x, j=jumps(lt,o.hops||[],.5,o.h||26);
+  return shadow(x,522,52,-j.y)+place(x,520+j.y+(o.bob||0),bunny({eye:o.eye!=null?o.eye:blink(t,.8),ear:o.ear||0}),{s:1,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0});
+};
+const pip=(lt,t,o={})=>{
+  const x=o.x, j=jumps(lt,o.hops||[],.6,o.h||26);
+  return shadow(x,522,56,-j.y)+place(x,520+j.y+(o.bob||0),kitten({eye:o.eye!=null?o.eye:blink(t,1.3),tail:Math.sin(t*2.2),asleep:o.asleep,tilt:o.tilt||0}),{s:.95,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0});
+};
+const hopList=(a,b,step)=>{const r=[];for(let s=a;s<b-.01;s+=step)r.push(s);return r;};
+const walkBob=(w,lt)=>w>0&&w<1?-8*Math.abs(Math.sin(lt*7)):0;
+// a push: a little squash forward each time (1 at the push, fading)
+const pushPulse=(lt,times)=>{let p=0;for(const s of times)if(lt>=s)p=Math.max(p,Math.exp(-(lt-s)*5));return p;};
+const pk=(x,rot)=>shadow(x,522,110)+pumpkin(x,520,1,rot||0);
+const sideClouds=(t,n)=>cloud(130+12*Math.sin(t*.3),262,.6,1-n*.85);
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',pops='',cap='',o={},behind='';
+  switch(i){
+  case 0:{
+    // title
+    props=pk(P0+80,0);
+    chars=lulu(lt,t,{x:330,hops:[.4,2.6],h:20});
+    pops=pop(`${LULU}<tspan fill="${NAVY}">’s Big Pumpkin</tspan>`,570,165,84,PINK,lt,.4,-3);
+    break;}
+  case 1:{
+    // Lulu finds a pumpkin. It is big and round!
+    const w=eio(prog(lt,.2,2.2));
+    props=pk(P0,0);
+    chars=lulu(lt,t,{x:lerp(-140,330,w),bob:walkBob(w,lt),hops:[3.8,4.3],h:24});
+    cap=lt<3.6?caption('Lulu finds a pumpkin.',lt,.3):caption('It is big and round!',lt,3.6);
+    pops=pop('Wow!',640,165,100,ORANGE,lt,3.8,-4);
+    break;}
+  case 2:{
+    // Lulu pushes. It does not move.
+    const w=eio(prog(lt,.2,1.4)), PU=[1.8,2.8,3.8,4.8], pp=pushPulse(lt,PU);
+    props=pk(P0,0);
+    chars=lulu(lt,t,{x:lerp(330,P0-GAP[0],w)+6*pp,rot:w*8+4*pp,bob:walkBob(w,lt),eye:pp>.5?.15:null});
+    cap=lt<3.4?caption('Lulu pushes. Push!',lt,.3):caption('It does not move.',lt,3.4);
+    pops=pop('Puff, puff!',640,165,92,PURPLE,lt,3.8,-3);
+    break;}
+  case 3:{
+    // Bunny comes; they push together: a little wobble
+    const w=eio(prog(lt,.3,2.4)), PU=[3.0,3.8,4.6,5.4], pp=pushPulse(lt,PU);
+    const rock=lt>3?5*Math.sin((lt-3)*7)*Math.exp(-(lt-3)*.25):0;
+    props=pk(P0,rock);
+    chars=bunnyAt(lt,t,{x:w<1?lerp(-120,P0-GAP[1],w):P0-GAP[1]+5*pp,hops:w<1?hopList(.3,2.4,.5):[],h:24,rot:w>=1?6+3*pp:0})
+      +lulu(lt,t,{x:P0-GAP[0]+6*pp,rot:8+4*pp,eye:pp>.5?.15:null});
+    cap=lt<3.0?caption('Here comes Bunny!',lt,.3):caption('Push, push! A little wobble.',lt,3.0);
+    pops=pop('Wobble!',640,165,96,ORANGE,lt,3.4,-3);
+    break;}
+  case 4:{
+    // Pip comes; all together: push! It moves.
+    const w=eio(prog(lt,.3,2.2)), mv=eio(prog(lt,3.0,6.4)), dx=(P1-P0)*mv;
+    const moving=mv>0&&mv<1, rock=moving?6*Math.sin(lt*9):0, bob=moving?-5*Math.abs(Math.sin(lt*9)):0;
+    props=pk(P0+dx,rock);
+    chars=pip(lt,t,{x:w<1?lerp(-150,P0-GAP[2],w):P0-GAP[2]+dx,bob:w<1?walkBob(w,lt):bob,rot:w>=1&&lt<6.4?6:0,hops:[6.5],h:22})
+      +bunnyAt(lt,t,{x:P0-GAP[1]+dx,rot:lt<6.4?6:0,bob,hops:[6.6],h:22})
+      +lulu(lt,t,{x:P0-GAP[0]+dx,rot:lt<6.4?8:0,bob});
+    cap=lt<2.6?caption('Here comes Pip!',lt,.3):caption('All together: push!',lt,2.6);
+    pops=pop('It moves!',640,165,96,PINK,lt,4.0,-3);
+    break;}
+  case 5:{
+    // We did it together! Hooray! The sun goes down.
+    n=lerp(0,.45,eio(prog(lt,3,7))); o={noSun:true,noMoon:true};
+    behind=sun(t,1150,lerp(100,560,eio(prog(lt,3,7))));
+    props=pk(P1,0);
+    chars=pip(lt,t,{x:290,hops:[.8,1.6],h:30})+lulu(lt,t,{x:480,hops:[1.0,1.8],h:30,wave:lt>.8&&lt<3})+bunnyAt(lt,t,{x:660,hops:[1.2,2.0],h:30});
+    cap=lt<3.6?caption('We did it together!',lt,.3):caption('The sun goes down.',lt,3.6);
+    pops=pop('Hooray!',640,165,104,PINK,lt,.8,-3);
+    break;}
+  case 6:{
+    // night: the friends sleep by the big pumpkin
+    n=lerp(.45,1,eio(prog(lt,0,4))); o={noSun:true};
+    props=pk(P1,0);
+    const asleep=lt>1.6, br=k=>1+.025*Math.sin(lt*2.2+k);
+    chars=pip(lt,t,{x:290,asleep,eye:.45,sy:br(1)})
+         +shadow(480,522,60)+place(480,520,duck({asleep,eye:.45}),{s:1,sy:br(0),rot:asleep?-3:0})
+         +shadow(660,522,52)+place(660,520,bunny({eye:asleep?.12:.45}),{s:1,sy:br(2)});
+    for(let k=0;k<3;k++){let q=lt-2.0-k*.9;if(q>0){q%=2.7;
+      pops+=`<text x="${520-q*24+8*Math.sin(q*3)}" y="${300-q*30}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}
+    cap=caption('Good night, friends.',lt,.5);
+    pops+=pop('The End',640,150,112,GOLD,lt,4.2,-3,NAVY);
+    break;}
+  }
+  o.noClouds=true;
+  svg.innerHTML=bg(t,n,sideClouds(t,n)+behind,o)+props+chars+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#5EC2FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(150,270,.7,1);
+  s+=`<path d="M0,440 Q300,360 640,420 T1280,410 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,520 Q380,470 760,505 T1280,490 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=pumpkin(700,640,1.45,0);
+  s+=place(330,650,duck({wing:22}),{s:1.2});
+  s+=place(1060,650,bunny({}),{s:1.1});
+  s+=label(`${LULU}<tspan fill="${NAVY}">’s Big Pumpkin</tspan>`,640,150,112,PINK,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

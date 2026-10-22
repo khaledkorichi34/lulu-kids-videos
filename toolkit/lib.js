@@ -1202,3 +1202,21 @@ function plantStem(x0,x1,y,t=0){
     s+=`<ellipse cx="${x}" cy="${y+up*24}" rx="34" ry="13" fill="#5CC85A" transform="rotate(${r} ${x} ${y+up*6})"/>`;}
   return s;
 }
+// pumpkin(x,y,s,rot): big round orange pumpkin (no face) with a green stem, a curly vine and a leaf,
+// origin at the middle of its bottom (about 230 wide and 165 tall, 200 with the stem at s=1).
+// rot = rocking angle in degrees about the bottom point (use it for a wobble while it is pushed).
+function pumpkin(x,y,s=1,rot=0){
+  const O='#FF9A2E', D='#EE7A12', L='#FFB95C';
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})">
+  <ellipse cx="0" cy="-2" rx="104" ry="12" fill="#C9600A" opacity=".35"/>
+  <ellipse cx="-62" cy="-80" rx="54" ry="78" fill="${D}"/><ellipse cx="62" cy="-80" rx="54" ry="78" fill="${D}"/>
+  <ellipse cx="-34" cy="-82" rx="54" ry="82" fill="${O}"/><ellipse cx="34" cy="-82" rx="54" ry="82" fill="${O}"/>
+  <ellipse cx="0" cy="-83" rx="46" ry="83" fill="${L}"/>
+  <ellipse cx="-4" cy="-84" rx="16" ry="66" fill="#FFCB7E" opacity=".7"/>
+  <path d="M-34,-160 Q-60,-82 -34,-4 M34,-160 Q60,-82 34,-4" stroke="${D}" stroke-width="4" fill="none" opacity=".55"/>
+  <path d="M-5,-158 Q-8,-182 4,-198 L16,-194 Q6,-178 9,-158 Z" fill="#5E8C2E"/>
+  <path d="M10,-166 Q34,-186 46,-170 Q56,-156 70,-170" stroke="#4CA64C" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M-8,-170 Q-42,-196 -66,-176 Q-44,-160 -8,-170 Z" fill="#5CC85A"/>
+  <path d="M-12,-171 Q-38,-178 -58,-176" stroke="#3F9A44" stroke-width="2.5" fill="none"/>
+  </g>`;
+}
