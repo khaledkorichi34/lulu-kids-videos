@@ -600,11 +600,11 @@ function turtle(o={}){
 /* ---------- letters F to J (episode 17) ---------- */
 // grapes(x,y,s): purple bunch of grapes resting on the ground, origin at its bottom tip
 // (about 130 wide and 200 tall with stalk and leaf at s=1)
-function grapes(x,y,s=1){
+function grapes(x,y,s=1,c1='#7B5CFF',c2='#6A4BE0'){   // c1/c2: optional grape colours (episode 38 passes purple)
   const rows=[[0],[-22,22],[-44,0,44],[-60,-20,20,60]];   // bottom row first
   let g='';
   for(let k=rows.length-1;k>=0;k--)rows[k].forEach((cx,m)=>{   // top rows first, so lower grapes sit in front
-    g+=`<circle cx="${cx}" cy="${-24-k*30}" r="24" fill="${(k+m)%2?'#6A4BE0':'#7B5CFF'}"/><circle cx="${cx-8}" cy="${-32-k*30}" r="6" fill="#fff" opacity=".4"/>`;});
+    g+=`<circle cx="${cx}" cy="${-24-k*30}" r="24" fill="${(k+m)%2?c2:c1}"/><circle cx="${cx-8}" cy="${-32-k*30}" r="6" fill="#fff" opacity=".4"/>`;});
   return `<g transform="translate(${x},${y}) scale(${s})">
   <path d="M4,-128 Q6,-160 20,-176" stroke="#7A4B21" stroke-width="9" fill="none" stroke-linecap="round"/>
   <ellipse cx="46" cy="-160" rx="32" ry="15" fill="#3FA34D" transform="rotate(-24 46 -160)"/>
@@ -1219,4 +1219,33 @@ function pumpkin(x,y,s=1,rot=0){
   <path d="M-8,-170 Q-42,-196 -66,-176 Q-44,-160 -8,-170 Z" fill="#5CC85A"/>
   <path d="M-12,-171 Q-38,-178 -58,-176" stroke="#3F9A44" stroke-width="2.5" fill="none"/>
   </g>`;
+}
+
+/* ---------- puppy (episode 38) ---------- */
+// puppy(o): little brown puppy standing on four legs, facing right, origin at its feet
+// (about 200 wide and 170 tall at s=1). o.eye blink, o.tail -1..1 wag, o.ear 0..1 lifts the floppy ear,
+// o.asleep closed eye.
+function puppy(o={}){
+  const e=o.eye==null?1:o.eye, tl=o.tail||0, er=o.ear||0;
+  const B='#A86B3C', D='#7A4A26', L='#E8C49A';
+  const eye=o.asleep
+    ?`<path d="M58,-128 Q66,-121 74,-128" stroke="#2b1d12" stroke-width="4.5" fill="none" stroke-linecap="round"/>`
+    :`<g transform="translate(66,-128) scale(1,${e})"><circle r="8" fill="#2b1d12"/><circle cx="2.6" cy="-2.8" r="2.8" fill="#fff"/></g>`;
+  return `
+  <g transform="rotate(${tl*18} -56 -78)"><path d="M-56,-78 Q-86,-92 -84,-128" stroke="${B}" stroke-width="15" fill="none" stroke-linecap="round"/>
+  <circle cx="-84" cy="-130" r="8" fill="${L}"/></g>
+  <rect x="-48" y="-44" width="18" height="44" rx="9" fill="${D}"/><rect x="18" y="-44" width="18" height="44" rx="9" fill="${D}"/>
+  <path d="M40,-150 Q30,-176 50,-168 Z" fill="${D}"/>
+  <ellipse cx="-6" cy="-64" rx="62" ry="42" fill="${B}"/>
+  <ellipse cx="-30" cy="-80" rx="20" ry="14" fill="${D}" opacity=".55"/>
+  <ellipse cx="6" cy="-46" rx="38" ry="20" fill="${L}"/>
+  <rect x="-30" y="-40" width="18" height="40" rx="9" fill="${B}"/><rect x="34" y="-40" width="18" height="40" rx="9" fill="${B}"/>
+  <ellipse cx="-21" cy="-4" rx="13" ry="7" fill="${L}"/><ellipse cx="43" cy="-4" rx="13" ry="7" fill="${L}"/>
+  <circle cx="54" cy="-120" r="40" fill="${B}"/>
+  <ellipse cx="82" cy="-104" rx="25" ry="18" fill="${L}"/>
+  <ellipse cx="102" cy="-112" rx="9" ry="7" fill="#2b1d12"/><circle cx="99" cy="-114.5" r="2.2" fill="#fff" opacity=".7"/>
+  <path d="M100,-104 Q96,-94 86,-96 M100,-104 Q102,-95 110,-97" stroke="#5a3418" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <circle cx="54" cy="-102" r="8" fill="#FF9AA2" opacity=".75"/>
+  ${eye}
+  <g transform="rotate(${-er*25} 34 -146)"><path d="M34,-152 Q8,-150 10,-112 Q14,-90 30,-96 Q40,-120 46,-146 Z" fill="${D}"/></g>`;
 }

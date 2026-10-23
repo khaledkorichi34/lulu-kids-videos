@@ -625,5 +625,23 @@
     "tiktokPostId": 403368796,
     "published": "2026-10-22",
     "note": "uploadVideo returned 403; a new 'unknown' video (NEEGp_Uq1vo, not in the log before) appeared on the channel and is taken to be this episode. Title and description must be set by hand in YouTube Studio; please confirm it is this 48-second video."
+  },
+  {
+    "number": 38,
+    "slug": "more-colours-with-lulu",
+    "format": "learning",
+    "ages": "3-6",
+    "title": "More Colours with Lulu | Learn Colours for Kids",
+    "topic": "Four more colours: purple grapes, pink flower, brown puppy, white lamb; all four together at the end",
+    "cast": [
+      "duck",
+      "puppy",
+      "lamb",
+      "grapes",
+      "flower"
+    ],
+    "videoId": "cJKvKRL5ubA",
+    "tiktokPostId": 403864331,
+    "published": "2026-10-23"
   }
 ]

@@ -1,0 +1,21 @@
+{
+  "number": 38,
+  "slug": "more-colours-with-lulu",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "More Colours with Lulu | Learn Colours for Kids",
+  "description": "Learn four more colours with Lulu the little duck!\n\nPurple grapes, a pink flower, a brown puppy and a white lamb. Say each colour out loud together.\n\nA short, gentle colours video for children aged 3 to 6.",
+  "duration": 41,
+  "seed": 38,
+  "lullaby_from": null,
+  "sfx": [
+    {"t": 1.4, "type": "boing_high"}, {"t": 2.4, "type": "boing_high"}, {"t": 1.6, "type": "sparkle"},
+    {"t": 5.4, "type": "pop"}, {"t": 6.6, "type": "pop"}, {"t": 9.2, "type": "boing_high"},
+    {"t": 12.4, "type": "pop"}, {"t": 13.6, "type": "pop"}, {"t": 16.2, "type": "sparkle"},
+    {"t": 19.4, "type": "pop"}, {"t": 20.6, "type": "pop"}, {"t": 23.2, "type": "boing_low"},
+    {"t": 26.4, "type": "pop"}, {"t": 27.6, "type": "pop"}, {"t": 30.2, "type": "boing_high"},
+    {"t": 33.5, "type": "ding"}, {"t": 34.1, "type": "ding"}, {"t": 34.7, "type": "ding"}, {"t": 35.3, "type": "ding"},
+    {"t": 37.6, "type": "boing_high"}, {"t": 38.2, "type": "boing_high"}
+  ],
+  "check_times": [3.5, 9.5, 11.5, 16.5, 18.5, 23.5, 25.5, 30.5, 32.5, 37.9, 39.5]
+}
