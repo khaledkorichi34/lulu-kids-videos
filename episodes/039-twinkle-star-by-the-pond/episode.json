@@ -1,0 +1,19 @@
+{
+  "number": 39,
+  "slug": "twinkle-star-by-the-pond",
+  "format": "rhyme",
+  "ages": "2-6",
+  "title": "Twinkle, Twinkle, Little Star with Lulu and Owl | Nursery Rhyme",
+  "description": "Sing along to Twinkle, Twinkle, Little Star with Lulu the little duck by a quiet pond at night! The star twinkles in the water, Owl flaps on every \"twinkle\", and a little turtle comes to listen.\nThe words light up with the music, for children aged 2 to 6.\nA classic nursery rhyme (words by Jane Taylor, 1806; traditional French tune, 1761).",
+  "duration": 76,
+  "seed": 39,
+  "lullaby_from": null,
+  "rhyme": {"name": "twinkle", "bpm": 92, "start": 5.0, "repeat": 2, "gap": 4},
+  "sfx": [
+    {"t": 0.4, "type": "pop"},
+    {"t": 4.3, "type": "sparkle"},
+    {"t": 38.1, "type": "pop"},
+    {"t": 72.0, "type": "ding"}
+  ],
+  "check_times": [1.0, 2.0, 4.6, 7.0, 10.5, 15.0, 18.5, 22.5, 28.0, 33.0, 35.5, 37.0, 38.5, 42.0, 47.0, 53.0, 57.0, 62.0, 67.0, 70.5, 72.5, 74.5]
+}
