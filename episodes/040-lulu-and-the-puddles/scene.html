@@ -1,0 +1,132 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 40 - Lulu and the Puddles. A little rain cloud comes and Lulu opens her umbrella (drip, drop).
+   The rain stops, the sun comes out, and there is a puddle. Lulu jumps in: splash, splash, splash!
+   Frog hops in and they splash together. A rainbow; the sun goes down; Lulu and Frog sleep by the puddle. */
+const DUR=48, SC=[0,5,12,19,26,33,40,48];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', BLUE='#2979E8', GREEN='#2FA37A', GOLD='#FFE58A';
+const PX=680, PY=528, PW=175;          // the puddle
+const LX=380;                          // Lulu's spot while it rains
+
+const lulu=(lt,t,o={})=>{
+  const x=o.x, j=jumps(lt,o.hops||[],o.d||.6,o.h||26), w=o.wave?20+20*Math.sin(lt*9):(o.wing||0);
+  return shadow(x,522,60,-j.y)+place(x,520+j.y+(o.bob||0),duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),{s:1,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0});
+};
+const frogAt=(lt,t,o={})=>{
+  const x=o.x, j=jumps(lt,o.hops||[],o.d||.5,o.h||26);
+  return shadow(x,522,56,-j.y)+place(x,520+j.y,frog({eye:o.eye!=null?o.eye:blink(t,.9)}),{s:1,sx:j.sx,sy:j.sy*(o.sy||1)});
+};
+const hopList=(a,b,step)=>{const r=[];for(let s=a;s<b-.01;s+=step)r.push(s);return r;};
+const walkBob=(w,lt)=>w>0&&w<1?-8*Math.abs(Math.sin(lt*7)):0;
+// Lulu's umbrella over her head (open 0..1)
+const umb=(x,op,rot=0)=>op>0?umbrella(x+30,458,1.05,op,rot):'';
+// gentle rain from a cloud at cx onto Lulu's umbrella (canopy centre ux) or onto the ground
+function rain(cx,ux,lt,t0,t1,onUmb){
+  let s='';if(lt<t0)return s;
+  for(let m=0;m<9;m++){const dx=[-80,-40,0,40,80,-60,-20,20,60][m], ph=m*.23, x=cx+dx;
+    const st=t0+ph; if(lt<st)continue;
+    const q=((lt-st)%0.9)/0.9, born=lt-((lt-st)%0.9); if(born>t1)continue;
+    const off=(x-(ux+30))/131, under=onUmb&&Math.abs(off)<1;
+    const yEnd=under?458-1.05*(170+80*(1-off*off)):PY-4;
+    s+=raindrop(x,lerp(160,yEnd,q),.9,clamp((1-q)*4));}
+  return s;}
+// splashes at landing times (jump duration d)
+const splashes=(lt,x,times,d,s=1,half=80)=>times.map(a=>splash(x,PY-6,(lt-a-d)/.7,s,half)).join('');
+const rippleAt=(lt,times,d)=>{let r=-1;for(const a of times){const u=(lt-a-d)/1.1;if(u>=0&&u<1)r=u;}return r;};
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',front='',pops='',cap='',o={},behind='';
+  switch(i){
+  case 0:{
+    // title
+    props=puddle(PX+60,PY,PW,0,(lt%2.2)/2.2);
+    chars=lulu(lt,t,{x:360,hops:[.5,2.4],h:22});
+    pops=pop(`${LULU}<tspan fill="${NAVY}"> and the Puddles</tspan>`,630,165,72,PINK,lt,.4,-3);
+    break;}
+  case 1:{
+    // a little rain cloud comes; Lulu opens her umbrella; drip, drop
+    o.noSun=true;
+    const w=eio(prog(lt,.2,2.0)), cx=lerp(-160,LX+30,eio(prog(lt,.4,2.6))), op=eout(prog(lt,3.2,3.9));
+    props=puddle(PX,PY,PW,0,-1,eio(prog(lt,4.0,6.8)))+rainCloud(cx,105,.9,blink(t,.4));
+    chars=umb(LX,op)+lulu(lt,t,{x:lerp(-140,LX,w),bob:walkBob(w,lt)});
+    front=rain(cx,LX,lt,2.4,7.2,op>.9);
+    cap=lt<3.4?caption('Here comes a little rain.',lt,.3):caption('Lulu opens her umbrella.',lt,3.4);
+    pops=pop('Drip, drop!',930,190,88,BLUE,lt,1.4,-3);
+    break;}
+  case 2:{
+    // the rain stops, the cloud floats away, the sun comes out: a puddle!
+    o.noSun=true;
+    behind=sun(t,1150,lerp(430,100,eio(prog(lt,1.2,3.4))));
+    const cx=lerp(LX+30,-220,eio(prog(lt,.6,3.0))), op=1-eio(prog(lt,2.6,3.3));
+    props=puddle(PX,PY,PW,0,(lt%2.4)/2.4)+rainCloud(cx,105,.9,blink(t,.4));
+    chars=umb(LX,op)+lulu(lt,t,{x:LX,hops:[4.6],h:24});
+    cap=lt<3.4?caption('The rain stops.',lt,.3):caption('Look! A puddle!',lt,3.4);
+    pops=pop('Ooh!',PX,170,104,PURPLE,lt,3.8,-4);
+    break;}
+  case 3:{
+    // Lulu jumps in: splash, splash, splash!
+    const w=eio(prog(lt,.2,1.3)), J=[1.7,3.3,4.7], d=.6;
+    const x=lt<1.7?lerp(LX,PX-110,w):lerp(PX-110,PX,eio(prog(lt,1.7,2.3)));
+    props=puddle(PX,PY,PW,0,rippleAt(lt,J,d));
+    chars=lulu(lt,t,{x,bob:walkBob(w,lt),hops:J,h:50,d,wave:lt>5.6});
+    front=splashes(lt,PX,J,d);
+    cap=lt<3.3?caption('Lulu jumps in. Splash!',lt,.3):caption('Splash, splash, splash!',lt,3.3);
+    pops=pop('Splash!',640,165,104,BLUE,lt,2.3,-3);
+    break;}
+  case 4:{
+    // Frog hops in; they splash together
+    const FH=hopList(.3,2.3,.5), FX=lerp(-120,PX-90,eio(prog(lt,.3,2.3))), J=[3.4,4.6,5.8], d=.55;
+    props=puddle(PX,PY,PW,0,rippleAt(lt,J,d));
+    chars=frogAt(lt,t,{x:lt<2.3?FX:PX-90,hops:lt<2.3?FH:J,h:lt<2.3?24:44,d:lt<2.3?.5:d})
+         +lulu(lt,t,{x:lerp(PX,PX+85,eio(prog(lt,.2,1.0))),hops:J,h:44,d});
+    front=splashes(lt,PX-90,J,d,.6,75)+splashes(lt,PX+85,J,d,.6,80);
+    cap=lt<3.0?caption('Here comes Frog!',lt,.3):caption('Splash together!',lt,3.0);
+    pops=pop('Hee hee!',640,165,100,GREEN,lt,4.0,-3);
+    break;}
+  case 5:{
+    // a rainbow; then the sun goes down
+    n=lerp(0,.45,eio(prog(lt,3.4,7))); o={noSun:true,noMoon:true};
+    behind=rainbow(PX,470,205,eio(prog(lt,.3,2.3)),1-eio(prog(lt,3.6,6.4)))+sun(t,1150,lerp(100,560,eio(prog(lt,3.4,7))));
+    props=puddle(PX,PY,PW,n,-1);
+    chars=frogAt(lt,t,{x:PX-245,hops:[1.2,2.0],h:28})+lulu(lt,t,{x:PX+245,hops:[1.4,2.2],h:28,wave:lt>2.6&&lt<4});
+    cap=lt<3.6?caption('Look! A rainbow!',lt,.3):caption('The sun goes down.',lt,3.6);
+    pops=pop('Hooray!',640,140,96,PINK,lt,1.0,-3);
+    break;}
+  case 6:{
+    // night: Lulu and Frog sleep by the puddle; the moon shines in the water
+    n=lerp(.45,1,eio(prog(lt,0,4))); o={noSun:true};
+    props=puddle(PX,PY,PW,n,-1)+`<ellipse cx="${PX+50}" cy="${PY-1}" rx="20" ry="5" fill="#FFF4C2" opacity="${n*.8}"/>`;
+    const asleep=lt>1.6, br=k=>1+.025*Math.sin(lt*2.2+k);
+    chars=shadow(PX-245,522,56)+place(PX-245,520,frog({eye:asleep?.12:.45}),{s:1,sy:br(1)})
+         +shadow(PX+245,522,60)+place(PX+245,520,duck({asleep,eye:.45}),{s:1,sy:br(0),rot:asleep?-3:0});
+    for(let k=0;k<3;k++){let q=lt-2.0-k*.9;if(q>0){q%=2.7;
+      pops+=`<text x="${PX+285-q*24+8*Math.sin(q*3)}" y="${320-q*30}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}
+    cap=caption('Good night, friends.',lt,.5);
+    pops+=pop('The End',640,150,112,GOLD,lt,4.2,-3,NAVY);
+    break;}
+  }
+  o.noClouds=true;
+  svg.innerHTML=bg(t,n,cloud(130+12*Math.sin(t*.3),262,.6,1-n*.85)+behind,o)+props+chars+front+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#5EC2FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=rainbow(640,470,285,1,.9);
+  s+=`<path d="M0,440 Q300,360 640,420 T1280,410 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,520 Q380,470 760,505 T1280,490 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=puddle(620,650,260,0,.45);
+  s+=place(560,620,duck({wing:24}),{s:1.25});
+  s+=splash(560,640,.45,1.3,105);
+  s+=place(1040,655,frog({}),{s:1.15});
+  s+=label(`${LULU}<tspan fill="${NAVY}"> and the Puddles</tspan>`,640,150,100,PINK,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

@@ -1,0 +1,25 @@
+{
+  "number": 40,
+  "slug": "lulu-and-the-puddles",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and the Puddles | Bedtime Story for Kids",
+  "description": "A little rain cloud comes and Lulu the little duck opens her umbrella. Drip, drop!\nThe rain stops, the sun comes out, and Lulu finds a puddle. Splash, splash, splash! Frog hops in to splash too.\nThen a rainbow, the sun goes down, and Lulu and Frog sleep by the puddle.\nA happy rainy-day story for children aged 3 to 6.",
+  "duration": 48,
+  "seed": 40,
+  "lullaby_from": 40.0,
+  "sfx": [
+    {"t": 0.5, "type": "boing_high"},
+    {"t": 8.2, "type": "pop"},
+    {"t": 15.8, "type": "ding"},
+    {"t": 21.3, "type": "boing_low"},
+    {"t": 22.9, "type": "boing_low"},
+    {"t": 24.3, "type": "boing_low"},
+    {"t": 29.95, "type": "boing_low"},
+    {"t": 31.15, "type": "boing_low"},
+    {"t": 32.35, "type": "boing_low"},
+    {"t": 33.3, "type": "sparkle"},
+    {"t": 44.2, "type": "sparkle"}
+  ],
+  "check_times": [3.0, 7.0, 9.5, 11.5, 14.0, 16.5, 21.0, 21.6, 22.6, 24.0, 28.5, 29.7, 30.3, 32.1, 35.5, 38.5, 44.0, 46.5]
+}

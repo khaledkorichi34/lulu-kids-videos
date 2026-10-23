@@ -1249,3 +1249,26 @@ function puppy(o={}){
   ${eye}
   <g transform="rotate(${-er*25} 34 -146)"><path d="M34,-152 Q8,-150 10,-112 Q14,-90 30,-96 Q40,-120 46,-146 Z" fill="${D}"/></g>`;
 }
+
+/* ---------- puddle and splash (episode 40) ---------- */
+// puddle(x,y,w,n,rip,size): flat rain puddle lying on the ground, centred at (x,y), half width w (half height w*.16).
+// n = night 0..1 (darkens the water), rip = 0..1 an expanding ripple ring (pass -1 for none),
+// size = 0..1 how big it is (it can grow while it rains). Draw it before the characters so their feet stand in it.
+function puddle(x,y,w=170,n=0,rip=-1,size=1){
+  const W=w*clamp(size);if(W<2)return '';
+  let s=`<ellipse cx="${x}" cy="${y+3}" rx="${W}" ry="${W*.16}" fill="${mix('#4F9BD9','#22406A',n)}"/>
+  <ellipse cx="${x-W*.04}" cy="${y}" rx="${W*.9}" ry="${W*.12}" fill="${mix('#86CDF7','#3B5F92',n)}"/>
+  <ellipse cx="${x-W*.4}" cy="${y-W*.03}" rx="${W*.18}" ry="${W*.025}" fill="#fff" opacity=".55"/>`;
+  if(rip>=0&&rip<1)s+=`<ellipse cx="${x}" cy="${y}" rx="${W*.15+W*.7*rip}" ry="${(W*.15+W*.7*rip)*.14}" fill="none" stroke="#fff" stroke-width="4" opacity="${(1-rip)*.8}"/>`;
+  return s;
+}
+// splash(x,y,u,s,half): water drops flying out sideways from a puddle landing at (x,y), u = 0..1 time of the splash.
+// Drops start `half` px left and right of x (use the character's half width so drops stay off its body and face)
+// and fly out about 100*s px and up 40 to 75*s px. Draw it after the character that lands.
+function splash(x,y,u,s=1,half=80){
+  if(u<=0||u>=1)return '';let r='';
+  const D=[[-1,.15,.75],[-1,.55,1],[-1,1,.6],[1,.15,.7],[1,.55,1],[1,1,.55]];
+  D.forEach(([d,f,h],k)=>{const px=x+d*(half+100*s*f*eout(u)+10*s), py=y-Math.sin(Math.PI*u)*75*s*h, op=clamp((1-u)*2.5);
+    r+=`<circle cx="${px}" cy="${py}" r="${(12-5*u)*s}" fill="#5BB8F5" opacity="${op}"/><circle cx="${px-3*s}" cy="${py-3*s}" r="${3.5*s}" fill="#fff" opacity="${op}"/>`;});
+  return r;
+}
