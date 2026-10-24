@@ -682,5 +682,23 @@
     "videoId": "TjRfgh2Azq4",
     "tiktokPostId": 404376000,
     "published": "2026-10-23"
+  },
+  {
+    "number": 41,
+    "slug": "animal-sounds-with-lulu",
+    "format": "learning",
+    "ages": "3-6",
+    "title": "Animal Sounds with Lulu | Learn First Words for Kids",
+    "topic": "First words, animal sounds: the duck (Lulu) says quack, the kitten says meow, the puppy says woof, the lamb says baa, the frog says ribbit (speech bubbles); all five together at the end",
+    "cast": [
+      "duck",
+      "kitten",
+      "puppy",
+      "lamb",
+      "frog"
+    ],
+    "videoId": "kUn95suAehY",
+    "tiktokPostId": 404811510,
+    "published": "2026-10-24"
   }
 ]

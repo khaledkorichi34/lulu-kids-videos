@@ -1,0 +1,93 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 41 - Animal Sounds with Lulu (learning, first words).
+   Title, one scene per animal (duck, kitten, puppy, lamb, frog): name, the animal says its sound
+   in a speech bubble, caption "The kitten says meow!", then all five together. */
+const SC=[0,5,12,19,26,33,40,47], DUR=47;
+const NAVY='#2D2A6E';
+const NAME=['Duck','Kitten','Puppy','Lamb','Frog'];
+const COL=['#F5A300','#FF8C1A','#8B5A2B','#7B5CFF','#2FA84A'];
+const SOUND=['Quack!','Meow!','Woof!','Baa!','Ribbit!'];
+const CAP=['The duck says quack!','The kitten says meow!','The puppy says woof!','The lamb says baa!','The frog says ribbit!'];
+// mouth point of each animal (inside its own drawing, origin at the feet)
+const MOUTH=[[100,-104],[34,-108],[104,-112],[86,-100],[52,-74]];
+const TW=.4, TA=.9, TS=2.0, TC=3.0, TS2=4.6;   // name, animal, sound, caption, sound again (inside a scene)
+
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.35)):0;
+const sideClouds=t=>cloud(125+10*Math.sin(t*.3),96,.9,.95)+cloud(1160+12*Math.sin(t*.25+1),112,.9,.95);
+
+function animal(k,lt,t,j){
+  const e=blink(t,k*.7);
+  if(k===0)return duck({eye:e,wing:j.y<0?30*Math.abs(Math.sin(lt*10)):0});
+  if(k===1)return kitten({eye:e,tail:Math.sin(lt*2.2)});
+  if(k===2)return puppy({eye:e,tail:Math.sin(lt*12),ear:clamp(-j.y/30)});
+  if(k===3)return lamb({eye:e,ear:clamp(-j.y/30)*20,fluff:clamp(-j.y/30)});
+  return frog({eye:e});
+}
+// bubble that pops in at t0 and gives a little bounce again at t1
+function says(k,x,y,w,h,tx,ty,size,lt,t0,t1){
+  if(lt<t0)return '';
+  const g=back(prog(lt,t0,t0+.35))*(1+.12*Math.exp(-Math.max(0,lt-t1)*5)*(lt>t1?1:0));
+  return `<g transform="translate(${x},${y}) scale(${g}) translate(${-x},${-y})">${speech(x,y,w,h,tx,ty,SOUND[k],size,COL[k])}</g>`;
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let chars='',pops='',cap='',sky=sideClouds(t),talk='';
+  const o={noSun:true,noClouds:true};
+  if(i===0){
+    const j=jumps(lt,[1.4,2.4],.6,30);
+    chars=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:20+20*Math.sin(lt*9),eye:blink(t,0)}),{s:1.1,sx:j.sx,sy:j.sy});
+    pops=pop('Animal Sounds with',640,128,74,NAVY,lt,.3)+pop(LULU,640,262,140,'#FF5D8F',lt,.7,-3);
+  }else if(i<=5){
+    const k=i-1;
+    const g=grow(lt,TA), j=jumps(lt,[TS,TS2],.55,26);
+    const S=[1.25,1.15,1.2,1.3,1.5][k], X=k===0?600:760;
+    if(k>0){
+      const lj=jumps(lt,[TS2+.15],.55,12), w=lt>TS2?30*Math.abs(Math.sin(lt*10)):0;
+      chars+=shadow(220,522,52,-lj.y)+place(220,520+lj.y,duck({eye:blink(t,0),wing:w}),{s:.9,sx:lj.sx,sy:lj.sy});
+    }
+    if(g>0){
+      const sw=[64,50,72,72,60][k];
+      chars+=shadow(X+(k===2||k===3?10*S:0),522,sw*S,-j.y)+place(X,520+j.y,animal(k,lt,t,j),{s:S*g,sx:j.sx,sy:j.sy});
+    }
+    const mx=X+MOUTH[k][0]*S, my=520+MOUTH[k][1]*S+j.y;
+    talk=says(k,1030,300,150,72,mx+18,my-6,64,lt,TS,TS2);
+    pops=pop(NAME[k],640,160,130,COL[k],lt,TW);
+    cap=caption(CAP[k],lt,TC);
+  }else{
+    const X=[150,395,640,885,1130], S=[.8,.8,.82,.85,1];
+    for(let k=0;k<5;k++){
+      const t0=.4+k*.25, g=grow(lt,t0), ts=1.6+k*.7, j=jumps(lt,[ts],.5,22);
+      if(g>0){
+        const sw=[64,50,72,72,60][k], x=X[k]-(k===2||k===3?30:0)-(k===0?20:0);
+        chars+=shadow(x,522,sw*S[k],-j.y)+place(x,520+j.y,animal(k,lt,t,j),{s:S[k]*g,sx:j.sx,sy:j.sy});
+      }
+      talk+=says(k,X[k],300,98,44,X[k],350,38,lt,ts,99);
+    }
+    pops=pop('All together!',640,160,96,NAVY,lt,.3);
+    cap=caption('Quack, meow, woof, baa, ribbit!',lt,5.2);
+  }
+  svg.innerHTML=bg(t,0,'',o)+sky+chars+talk+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(130,110,1.3,.95)+cloud(1160,90,1.1,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(300,662,140)+place(290,658,duck({wing:22}),{s:2.05});
+  s+=speech(330,150,165,78,470,400,'Quack!',76,'#F5A300');
+  s+=label('Animal',880,200,120,'#FF8C1A',-3);
+  s+=label('Sounds',880,345,120,'#2FA84A',-3);
+  s+=label('with',880,450,62,NAVY)+label(LULU,880,590,140,'#FF5D8F',-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
