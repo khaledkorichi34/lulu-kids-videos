@@ -1,0 +1,139 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 42 - Who am I? A big animal riddle.  Title, three clues (big floppy ears, a long nose called a
+   trunk (it peeks over the bush), the biggest animal on land), "Who am I?", the reveal (an elephant walks
+   out), fact 1 (it drinks with its trunk and sprays water like a shower), fact 2 (a baby elephant is
+   called a calf), goodbye. */
+const SC=[0,5.5,12.5,19.5,26.5,32.5,39.5,46.5,53.5,60], DUR=60;
+const NAVY='#2D2A6E', PURPLE='#7B5CFF', GREEN='#1F7F37', ORANGE='#E76F2E', GREY='#56637C', BLUE='#1C7FC4';
+const BX=740, BS=1.5;                                  // bush centre and scale
+const lulu=(x,lt,t,hops,h=20,s=.95,wave=false,flip=false)=>{
+  const j=jumps(lt,hops,.6,h), w=wave?20+20*Math.sin(lt*9):0;
+  return shadow(x,522,56*s/.95,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy,flip});
+};
+const qmark=(t)=>label('?',BX,470+4*Math.sin(t*3),110,'#fff',0,GREEN,.12);
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.4)):0;
+const E=(x,t,o={},s=1,flip=false,y=520)=>place(x,y,elephant(Object.assign({eye:blink(t,.5),tail:Math.sin(t*2.2),ear:Math.sin(t*1.6)},o)),{s,flip});
+function icon(x,y,g,inner){
+  if(g<=0)return '';
+  return `<g transform="translate(${x},${y}) scale(${g})"><defs><clipPath id="ic"><circle r="88"/></clipPath></defs>
+  <circle r="92" fill="#fff" stroke="#FFD23F" stroke-width="7"/><g clip-path="url(#ic)">${inner}</g></g>`;
+}
+function earIcon(t){
+  const r=10*Math.sin(t*4);
+  return `<rect x="-100" y="-100" width="200" height="200" fill="#E3F2FF"/>
+  <g transform="rotate(${r} 20 -50)"><ellipse cx="0" cy="0" rx="54" ry="70" fill="#8B9AB3"/><ellipse cx="-2" cy="2" rx="37" ry="51" fill="#F7B6C8"/></g>`;
+}
+function footIcon(){
+  return `<rect x="-100" y="-100" width="200" height="200" fill="#F6E7C6"/>
+  <ellipse cx="0" cy="10" rx="62" ry="56" fill="#A3B1C8"/>
+  <ellipse cx="-34" cy="-38" rx="13" ry="10" fill="#F1EBDD"/><ellipse cx="0" cy="-48" rx="13" ry="10" fill="#F1EBDD"/><ellipse cx="34" cy="-38" rx="13" ry="10" fill="#F1EBDD"/>
+  <circle cx="-56" cy="70" r="6" fill="#D8C49A"/><circle cx="60" cy="74" r="5" fill="#D8C49A"/>`;
+}
+function sparkles(x,y,lt,t0){
+  const u=prog(lt,t0,t0+1.2);if(u<=0||u>=1)return '';
+  let s='';for(let k=0;k<6;k++){const a=k*Math.PI/3+.4, d=40+u*110;s+=sparkle(x+Math.cos(a)*d,y+Math.sin(a)*d*.7,1.3,1-u);}
+  return s;
+}
+// water drops spraying from the trunk tip (x0,y0) over the elephant's back (x1,y1)
+function spray(x0,y0,x1,y1,lt,a,b){
+  if(lt<a||lt>b)return '';
+  let s='';const fade=1-prog(lt,b-.5,b);
+  for(let k=0;k<14;k++){
+    const u=((lt-a)*1.1+k/14)%1, x=lerp(x0,x1,u), y=lerp(y0,y1,u)-110*Math.sin(Math.PI*u);
+    const op=fade*clamp(u*6)*clamp((1-u)*4);
+    s+=`<circle cx="${x+6*Math.sin(k*2.3)}" cy="${y+5*Math.cos(k*1.7)}" r="${8+3*Math.sin(k)}" fill="#5BB8F5" opacity="${op}"/><circle cx="${x-2}" cy="${y-3}" r="3" fill="#fff" opacity="${op}"/>`;
+  }
+  return s;
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={noClouds:true};
+  const sky=cloud(130+10*Math.sin(t*.3),100,.9,.95)+(i>=6&&i<=7?'':cloud(430+8*Math.sin(t*.25+1),255,.75,.9));
+  if(i===0){
+    chars=lulu(330,lt,t,[1.3,2.3],30,1.1,true);
+    props=bush(BX+170,520,1.1);
+    pops=pop('Who am I?',640,165,120,PURPLE,lt,.3,-3);
+    cap=caption('A riddle with '+LULU,lt,1.8,'A riddle with Lulu');
+  }else if(i>=1&&i<=3){
+    const N=i;
+    if(N===2){ // the trunk rises over the bush and waves
+      const up=prog(lt,1.4,2.4)-prog(lt,5.2,6.2);
+      props+=E(BX-60,t,{trunk:up*(.9+.1*Math.sin(lt*4)),ear:0,reach:75});
+    }
+    const shake=N===1?14*Math.sin(lt*14)*prog(lt,2.6,2.9)*(1-prog(lt,3.8,4.2)):0;
+    props+=bush(BX+shake,520,BS)+qmark(t);
+    if(N===1)props+=icon(1110,370,grow(lt,2.4),earIcon(t));
+    if(N===3)props+=icon(1110,370,grow(lt,2.4),footIcon());
+    chars=lulu(230,lt,t,[3.2]);
+    pops=pop('Clue '+N,640,150,100,ORANGE,lt,.3);
+    cap=caption(['','I have big, floppy ears.','I have a long nose called a trunk.','I am the biggest animal on land.'][N],lt,1.2);
+  }else if(i===4){
+    props=bush(BX+18*Math.sin(lt*14)*prog(lt,4.2,4.5)*(1-prog(lt,5.6,6)),520,BS)+qmark(t);
+    chars=lulu(230,lt,t,[]);
+    pops=pop('ears',360,160,64,PURPLE,lt,.3)+pop('trunk',640,160,64,ORANGE,lt,.9)+pop('biggest',920,160,64,GREY,lt,1.5);
+    cap=caption('Who am I? Can you guess?',lt,2.2);
+  }else if(i===5){
+    const u=eio(prog(lt,.5,3.5)), ex=lerp(BX-80,930,u), walking=u>0&&u<1;
+    const tr=lt>3.6?.85*prog(lt,3.6,4.2):0;
+    props=shadow(ex,522,150)+E(ex,t,{step:walking?lt*8:0,trunk:tr*(.92+.08*Math.sin(lt*5))});
+    props+=bush(BX-200,520,1.2);
+    props+=sparkles(ex,380,lt,3.6);
+    chars=lulu(230,lt,t,[3.9,4.6],30,.95,lt>3.8);
+    pops=pop('An elephant!',600,165,110,ORANGE,lt,3.6,-3);
+    cap=caption('I am an elephant!',lt,4.1);
+  }else if(i===6){
+    o={noFlowers:true,noClouds:true};
+    const EX=440, S=1.15;
+    // trunk: down in the water (sipping), then up for the shower
+    const tr=eio(prog(lt,3.4,4.2));
+    const [tx,ty]=trunkTip(tr);
+    const rip=lt>1.0&&lt<3.4?((lt-1.0)*.7)%1:-1;
+    props=puddle(730,507,175,0,rip)+shadow(EX,522,170)+E(EX,t,{trunk:tr,ear:.5*Math.sin(t*2)},S);
+    props+=spray(EX+tx*S,520+ty*S,EX-40,400,lt,4.2,6.8);
+    chars=lulu(140,lt,t,[],0,.8);
+    pops=pop('Fact 1',640,150,100,BLUE,lt,.3);
+    if(lt>4.4)pops+=pop('Shower time!',930,300,66,BLUE,lt,4.4,-4);
+    cap=lt<3.6?caption('An elephant drinks with its trunk.',lt,1.0):caption('It can spray water like a shower!',lt,3.6);
+  }else if(i===7){
+    o={noFlowers:true,noClouds:true};
+    const MX=520, cx=lerp(1180,900,eio(prog(lt,.3,2.4)));
+    props=heart(735,320+6*Math.sin(t*3),1.2,'#FF7FB0',.85*prog(lt,4.6,5.1));
+    props+=shadow(MX,522,160)+E(MX,t,{ear:.5*Math.sin(t*1.5),trunk:.15+.1*Math.sin(lt*1.5)},1.1);
+    props+=shadow(cx,522,85)+E(cx,t,{step:lt<2.4?lt*10:0,ear:Math.sin(t*3),trunk:lt>2.6?.3+.2*Math.sin(lt*3):0},.55,true);
+    chars=lulu(140,lt,t,[],0,.8);
+    pops=pop('Fact 2',640,150,100,BLUE,lt,.3);
+    const a2=prog(lt,2.4,2.8);
+    if(a2>0)pops+=`<path d="M1060,300 Q1060,350 990,385" stroke="${NAVY}" stroke-width="7" fill="none" stroke-linecap="round" opacity="${a2}"/>`+pop('calf',1090,285,62,ORANGE,lt,2.4);
+    cap=lt<4.4?caption('A baby elephant is called a calf.',lt,1.0):caption('Mum takes good care of her calf.',lt,4.4);
+  }else{
+    props=heart(600,300+6*Math.sin(t*3),1.4,'#FF7FB0',.85*prog(lt,2,2.5))+heart(560,245+6*Math.sin(t*3+1),1,'#FF9AA2',.85*prog(lt,2.3,2.8));
+    props+=shadow(860,522,130)+E(860,t,{trunk:.5+.4*Math.sin(lt*2.4)},.9,true);
+    props+=shadow(1110,522,70)+E(1110,t,{trunk:.5+.4*Math.sin(lt*2.4+1),ear:Math.sin(t*3)},.5,true);
+    chars=lulu(380,lt,t,[1.0,1.8],26,.95,true);
+    pops=pop('Bye bye!',640,160,110,PURPLE,lt,.4,-2);
+    cap=caption('Bye bye, elephants!',lt,1.6);
+  }
+  svg.innerHTML=bg(t,0,'',o)+sky+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(140,110,1.2,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(175,662,100)+place(170,658,duck({wing:22}),{s:1.5});
+  s+=place(1030,662,elephant({trunk:.95,reach:30}),{s:.9})+bush(1030,665,1.35)+label('?',1030,590,170,'#fff',0,GREEN,.12);
+  s+=label('Who',640,190,150,'#FF5D8F',-3)+label('am I?',660,350,150,PURPLE,-3);
+  s+=label('A riddle with '+LULU,600,465,60,NAVY);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

@@ -1272,3 +1272,39 @@ function splash(x,y,u,s=1,half=80){
     r+=`<circle cx="${px}" cy="${py}" r="${(12-5*u)*s}" fill="#5BB8F5" opacity="${op}"/><circle cx="${px-3*s}" cy="${py-3*s}" r="${3.5*s}" fill="#fff" opacity="${op}"/>`;});
   return r;
 }
+
+/* ---------- elephant (episode 42) ---------- */
+// elephant({eye, trunk, ear, step, tail, reach}): friendly grey elephant facing right, origin at its feet
+// (about 210 tall to the top of the head and 300 wide at s=1; the body spans x -130..140).
+// trunk = 0 hangs down (tip near the ground at x~160), 1 raised up and curled (tip at about (150,-245)).
+// ear = -1..1 ear flap, step = walking phase in radians, tail = -1..1 swish.
+// reach = extra trunk length in px when raised (to peek over a bush). The trunk tip is trunkTip(trunk, reach).
+function trunkTip(u,r=0){
+  return [lerp(162,150,u),lerp(-30,-246-r,u)];
+}
+function elephant(o={}){
+  const e=o.eye==null?1:o.eye, u=clamp(o.trunk||0), er=o.ear||0, st=o.step||0, tl=o.tail||0;
+  const G='#A3B1C8', D='#8B9AB3', L='#BFCADB', P='#F7B6C8', N='#F1EBDD';
+  const leg=(lx,ph,c)=>{const a=st?9*Math.sin(st+ph):0;
+    return `<g transform="rotate(${a} ${lx} -80)"><rect x="${lx-19}" y="-86" width="38" height="86" rx="16" fill="${c}"/>
+    <ellipse cx="${lx-9}" cy="-5" rx="5" ry="4" fill="${N}"/><ellipse cx="${lx+3}" cy="-5" rx="5" ry="4" fill="${N}"/><ellipse cx="${lx+14}" cy="-5" rx="4" ry="3.5" fill="${N}"/></g>`;};
+  const [tx,ty]=trunkTip(u,o.reach||0);
+  const c1x=lerp(158,182,u), c1y=lerp(-96,-150-(o.reach||0)*.5,u);
+  const tip=`M${tx},${ty} q${lerp(14,-14,u)},${lerp(4,-6,u)} ${lerp(14,-20,u)},${lerp(-10,14,u)}`;
+  const eye=`<g transform="translate(106,-166) scale(1,${e})"><circle r="8" fill="#2b1d12"/><circle cx="2.6" cy="-2.8" r="2.8" fill="#fff"/></g>`;
+  return `
+  ${leg(-80,Math.PI,D)}${leg(30,0,D)}
+  <g transform="rotate(${tl*16} -118 -118)"><path d="M-118,-118 Q-138,-100 -134,-70" stroke="${D}" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <ellipse cx="-134" cy="-64" rx="7" ry="11" fill="#6E7C95"/></g>
+  <ellipse cx="-20" cy="-112" rx="104" ry="70" fill="${G}"/>
+  <ellipse cx="-12" cy="-74" rx="72" ry="24" fill="${L}" opacity=".7"/>
+  ${leg(-52,0,G)}${leg(58,Math.PI,G)}
+  <circle cx="88" cy="-150" r="58" fill="${G}"/>
+  <path d="M106,-104 Q114,-96 122,-104" stroke="#5d6a80" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <path d="M128,-132 Q${c1x},${c1y} ${tx},${ty}" stroke="${G}" stroke-width="30" fill="none" stroke-linecap="round"/>
+  <path d="${tip}" stroke="${G}" stroke-width="20" fill="none" stroke-linecap="round"/>
+  <path d="M138,-118 l10,3 M142,-100 l11,2" stroke="${D}" stroke-width="3" stroke-linecap="round" opacity="${1-u}"/>
+  <circle cx="110" cy="-138" r="8" fill="#FF9AA2" opacity=".75"/>
+  ${eye}
+  <g transform="rotate(${er*12} 70 -186)"><ellipse cx="46" cy="-146" rx="44" ry="58" fill="${D}"/><ellipse cx="44" cy="-144" rx="30" ry="42" fill="${P}"/></g>`;
+}
