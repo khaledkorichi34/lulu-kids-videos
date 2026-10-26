@@ -1,0 +1,25 @@
+{
+  "number": 45,
+  "slug": "lulu-and-the-little-nest",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and the Little Nest | Bedtime Story for Kids",
+  "description": "Little Bird needs a nest, so Lulu the little duck helps. One, two, three twigs!\nLittle Bird carries them up to the branch, one by one, and makes a cosy nest. Tweet, tweet!\nThen the sun goes down, and Little Bird and Lulu fall asleep under the tree.\nA gentle story about helping friends, for children aged 3 to 6.",
+  "duration": 48,
+  "seed": 45,
+  "lullaby_from": 40.0,
+  "sfx": [
+    {"t": 0.5, "type": "boing_high"},
+    {"t": 7.4, "type": "boing_low"},
+    {"t": 7.6, "type": "ding"},
+    {"t": 14.6, "type": "pop"},
+    {"t": 15.6, "type": "pop"},
+    {"t": 16.6, "type": "pop"},
+    {"t": 20.6, "type": "sparkle"},
+    {"t": 22.6, "type": "sparkle"},
+    {"t": 24.6, "type": "sparkle"},
+    {"t": 27.0, "type": "ding"},
+    {"t": 44.2, "type": "sparkle"}
+  ],
+  "check_times": [2.5, 6.5, 8.0, 10.5, 14.0, 15.0, 17.0, 19.6, 20.2, 21.0, 22.0, 23.2, 24.6, 25.8, 27.5, 30.5, 33.5, 37.5, 41.0, 45.5]
+}

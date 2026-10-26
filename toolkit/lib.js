@@ -1334,3 +1334,13 @@ function snowman(o={}){
   <path d="M-11,-203 Q0,-196 11,-203" stroke="#2b2b3a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
   <circle cx="-22" cy="-210" r="6" fill="#FF9AA2" opacity=".75"/><circle cx="22" cy="-210" r="6" fill="#FF9AA2" opacity=".75"/>`;
 }
+
+/* ---------- little stick for nest building (episode 45) ---------- */
+// stick(x,y,s,rot): small brown twig with a little fork and one leaf, centred at (x,y),
+// about 80 wide and 26 tall at s=1. rot turns it about its centre. Lying on the ground: y = 514.
+function stick(x,y,s=1,rot=0){
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})">
+  <path d="M-40,4 Q0,-6 40,2" stroke="#8B5A2B" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <path d="M8,-1 L24,-16" stroke="#8B5A2B" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <ellipse cx="30" cy="-19" rx="10" ry="5" fill="#4CB85A" transform="rotate(-30 30 -19)"/></g>`;
+}
