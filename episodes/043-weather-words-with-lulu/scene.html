@@ -1,0 +1,133 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 43 - Weather Words with Lulu (learning, first words).
+   Title, then one scene per weather word: sunny (sun hat), rainy (umbrella), cloudy (grey clouds),
+   windy (kite and blowing leaves), snowy (a little snowman), then all five together. */
+const SC=[0,5,12,19,26,33,40,48], DUR=48;
+const NAVY='#2D2A6E';
+const WORD=['Sunny','Rainy','Cloudy','Windy','Snowy'];
+const COL=['#F5A300','#2979E8','#7A8AA6','#19B8A6','#5BA8E0'];
+const CAP=['It is sunny!','It is rainy!','It is cloudy!','It is windy!','It is snowy!'];
+const TW=.4, TC=2.6;
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.35)):0;
+const GREY=`<rect width="1280" height="720" fill="#9AA8B8" opacity=".38"/>`;
+const SNOWHILLS=`<path d="M0,440 Q300,330 640,410 T1280,400 L1280,720 L0,720Z" fill="#EAF3FA"/><path d="M0,500 Q380,440 760,490 T1280,470 L1280,720 L0,720Z" fill="#FFFFFF"/>`;
+const lulu=(x,lt,t,o={})=>{
+  const j=jumps(lt,o.hops||[],.55,o.h||24), s=o.s||1;
+  const w=o.wing!=null?o.wing:(j.y<0?30*Math.abs(Math.sin(lt*10)):0);
+  return shadow(x,522,62*s,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w})+(o.extra||''),{s,sx:j.sx,sy:j.sy,flip:o.flip});
+};
+// rain from a cloud centred at cx; drops stop at yEnd(x)
+function rain(cx,lt,t0,yEnd,n=9,spread=90){
+  let s='';if(lt<t0)return s;
+  for(let m=0;m<n;m++){const x=cx-spread+2*spread*m/(n-1), ph=((m*7)%n)*.11, st=t0+ph; if(lt<st)continue;
+    const q=((lt-st)%0.8)/0.8, y1=yEnd(x);
+    s+=raindrop(x,lerp(170,y1,q),.9,clamp((1-q)*5));}
+  return s;}
+// gentle swirl of wind (white curl) moving right
+function windLine(x,y,s,o){
+  return `<g transform="translate(${x},${y}) scale(${s})" opacity="${o}"><path d="M-120,0 Q-40,-14 30,0 Q80,10 80,-22 Q78,-46 54,-40" stroke="#fff" stroke-width="9" fill="none" stroke-linecap="round"/></g>`;
+}
+function flyingKite(x,y,s,lt,hx,hy){
+  const kx=x+14*Math.sin(lt*1.6), ky=y+14*Math.sin(lt*2.1), r=10*Math.sin(lt*1.4);
+  const bx=kx-Math.sin(r*Math.PI/180)*85*s, by=ky+Math.cos(r*Math.PI/180)*85*s;
+  return `<path d="M${hx},${hy} Q${(hx+bx)/2},${Math.max(hy,by)+30} ${bx},${by}" stroke="#fff" stroke-width="3" fill="none" opacity=".9"/>`+kite(kx,ky,s,r,Math.sin(lt*3.2));
+}
+function snowfall(t,o=1){
+  let s='';for(let k=0;k<26;k++){const x0=(k*97+30)%1280, sp=40+(k%5)*9, y=((t*sp+k*61)%640)-30, x=x0+18*Math.sin(t*.9+k);
+    s+=snowflake(x,y,.55+(k%3)*.2,t*20+k*30,o*.95);}
+  return s;}
+// small icons for the last scene, centred at (0,0)
+function icon(k,t){
+  if(k===0)return `<g transform="scale(.72)">${sun(t,0,0)}</g>`;
+  if(k===1)return rainCloud(0,-18,.62)+[-34,0,34].map((dx,m)=>raindrop(dx,30+((t*60+m*14)%26),.8,1)).join('');
+  if(k===2)return cloud(-22,8,.9,1,'#C9D2DC')+cloud(24,-10,.75,1,'#E4E9EF');
+  if(k===3)return windLine(10,-6,.7,1)+windLine(-6,28,.55,1)+autumnLeaf(50+6*Math.sin(t*3),34,1.2,20*Math.sin(t*2),'#F28C28');
+  return snowflake(-6,-6,1.6,t*15,1)+snowflake(40,26,.9,-t*20,1)+snowflake(-42,30,.8,t*25+20,1);
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let back_='',props='',chars='',pops='',cap='',top='';
+  if(i===0){
+    back_=bg(t,0,'',{noClouds:true})+cloud(140,100,.9,.95);
+    const j=jumps(lt,[1.4,2.4],.6,30);
+    chars=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:20+20*Math.sin(lt*9),eye:blink(t,0)}),{s:1.1,sx:j.sx,sy:j.sy});
+    pops=pop('Weather Words with',640,128,74,NAVY,lt,.3)+pop(LULU,640,262,140,'#FF5D8F',lt,.7,-3);
+  }else if(i===1){ // sunny: the sun shines and Lulu puts on her sun hat
+    back_=bg(t,0,'',{noClouds:true})+cloud(140,100,.9,.95);
+    const hy=lerp(-330,-136,eout(prog(lt,1.3,2.0)));
+    const hatOn=lt>1.3?hat(42,hy,.72):'';
+    props=butterfly(960+60*Math.sin(lt*1.2),380+20*Math.sin(lt*2.3),.5+.5*Math.sin(lt*14));
+    chars=lulu(560,lt,t,{s:1.1,hops:[3.6,4.6],extra:hatOn});
+    pops=pop(WORD[0],640,160,130,COL[0],lt,TW);
+    cap=caption(CAP[0],lt,TC);
+  }else if(i===2){ // rainy: rain clouds, Lulu opens her umbrella, rain falls into a puddle
+    back_=bg(t,0,GREY,{noSun:true,noClouds:true});
+    const X=930, op=prog(lt,.9,1.5), ux=X+30;
+    props=puddle(290,545,150,0,((lt-1)%1.3)/1.3,1);
+    props+=rain(290,lt,.5,()=>540,12,100);
+    props+=rain(ux,lt,.5,x=>{const off=(x-ux)/(125*.95);return op>.9&&Math.abs(off)<1?458-.95*(170+80*(1-off*off)):520;},9,100);
+    props+=rainCloud(290,110,1,blink(t,.4))+rainCloud(ux,110,1,blink(t,1.3));
+    chars=lulu(X,lt,t,{s:.85,hops:[4.2],h:14})+(op>0?umbrella(ux,458,.95,op):'');
+    pops=pop(WORD[1],640,160,130,COL[1],lt,TW);
+    cap=caption(CAP[1],lt,TC);
+  }else if(i===3){ // cloudy: big grey clouds cover the sky
+    back_=bg(t,0,GREY,{noSun:true,noClouds:true});
+    const d=k=>18*Math.sin(lt*.5+k);
+    props=cloud(150+d(0),120,1.4,1,'#D3DAE2')+cloud(1120+d(1),110,1.5,1,'#C9D2DC')
+         +cloud(330+d(2)*lerp(0,1,prog(lt,.5,1.5)),285,1.2,grow(lt,.6)>0?1:0,'#E4E9EF')+cloud(960+d(3),280,1.3,grow(lt,1.1)>0?1:0,'#D9DFE6');
+    chars=lulu(640,lt,t,{hops:[3.8,4.8]});
+    pops=pop(WORD[2],640,160,130,COL[2],lt,TW);
+    cap=caption(CAP[2],lt,TC);
+  }else if(i===4){ // windy: leaves blow by and Lulu flies her kite
+    back_=bg(t,0,'',{noClouds:true});
+    for(let k=0;k<7;k++){const per=3.2, u=((lt+k*per/7)%per)/per, x=lerp(-60,1340,u), y=250+(k*53)%220+30*Math.sin(u*9+k);
+      props+=autumnLeaf(x,y,1.3,u*720+k*40,AUTUMN[k%3]);}
+    for(let k=0;k<3;k++){const u=((lt*.5+k/3)%1), x=lerp(-150,1400,u);
+      props+=windLine(x,[300,380,450][k],1,Math.sin(u*Math.PI)*.85);}
+    chars=lulu(400,lt,t,{wing:-25+6*Math.sin(lt*3),hops:[4.4],h:14});
+    const kh=prog(lt,.6,2.0);
+    props+=flyingKite(lerp(560,940,eout(kh)),lerp(440,300,eout(kh)),1,lt,400+42,520-74);
+    pops=pop(WORD[3],640,160,130,COL[3],lt,TW);
+    cap=caption(CAP[3],lt,TC);
+  }else if(i===5){ // snowy: snow falls and Lulu meets a little snowman
+    back_=bg(t,0,`<rect width="1280" height="720" fill="#C8D8E8" opacity=".45"/>`,{noSun:true,noClouds:true,noFlowers:true})+SNOWHILLS;
+    const g=grow(lt,.9);
+    props=g>0?`<ellipse cx="860" cy="522" rx="${80*g}" ry="${14*g}" fill="#9FB4C8" opacity=".35"/>`+place(860,520,snowman({eye:blink(t,.8),arm:lt>2.2?.5+.5*Math.sin(lt*5):0}),{s:.95*g}):'';
+    props=snowfall(t)+props;
+    chars=lulu(450,lt,t,{hops:[3.6,4.6]});
+    pops=pop(WORD[4],640,160,130,COL[4],lt,TW);
+    cap=caption(CAP[4],lt,TC);
+  }else{ // all together
+    back_=bg(t,0,'',{noSun:true,noClouds:true});
+    const X=[160,400,640,880,1120];
+    for(let k=0;k<5;k++){const t0=.4+k*.6, g=grow(lt,t0);
+      if(g>0)props+=place(X[k],150,icon(k,t),{s:g})+label(WORD[k],X[k],285,52,COL[k]);}
+    chars=lulu(640,lt,t,{hops:[4.2,5.2,6.2],h:20});
+    cap=caption('Sunny, rainy, cloudy, windy, snowy!',lt,3.8);
+  }
+  svg.innerHTML=back_+props+chars+top+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=`<g transform="translate(130,120) scale(.9)">${sun(0,0,0)}</g>`;
+  s+=rainCloud(500,110,.9)+[460,500,540].map((x,m)=>raindrop(x,190+m%2*18,1)).join('');
+  s+=snowflake(570,290,1.3,10)+snowflake(610,350,.8,30)+snowflake(110,300,1,30);
+  s+=shadow(310,662,140)+place(300,658,duck({wing:22})+hat(42,-136,.72),{s:2.0});
+  s+=label('Weather',900,200,120,'#2979E8',-3);
+  s+=label('Words',900,345,120,'#F5A300',-3);
+  s+=label('with',900,450,62,NAVY)+label(LULU,900,590,140,'#FF5D8F',-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

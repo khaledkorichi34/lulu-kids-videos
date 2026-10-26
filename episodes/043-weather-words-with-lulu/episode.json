@@ -1,0 +1,21 @@
+{
+  "number": 43,
+  "slug": "weather-words-with-lulu",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "Weather Words with Lulu | Learn First Words for Kids",
+  "description": "Sunny, rainy, cloudy, windy or snowy? Lulu the little duck shows five weather words.\n\nShe wears her sun hat, opens her umbrella, flies her kite and meets a little snowman. Say each word out loud together.\n\nA short, gentle first-words video for children aged 3 to 6.",
+  "duration": 48,
+  "seed": 43,
+  "lullaby_from": null,
+  "sfx": [
+    {"t": 1.4, "type": "boing_high"}, {"t": 2.4, "type": "boing_high"},
+    {"t": 5.4, "type": "pop"}, {"t": 6.9, "type": "sparkle"}, {"t": 7.6, "type": "pop"}, {"t": 9.15, "type": "boing_high"}, {"t": 10.15, "type": "boing_high"},
+    {"t": 12.4, "type": "pop"}, {"t": 13.4, "type": "pop"}, {"t": 14.6, "type": "pop"},
+    {"t": 19.4, "type": "pop"}, {"t": 21.6, "type": "pop"}, {"t": 23.35, "type": "boing_low"},
+    {"t": 26.4, "type": "pop"}, {"t": 28.6, "type": "pop"},
+    {"t": 33.4, "type": "pop"}, {"t": 33.9, "type": "sparkle"}, {"t": 35.6, "type": "pop"}, {"t": 37.15, "type": "boing_high"},
+    {"t": 40.4, "type": "ding"}, {"t": 41.0, "type": "ding"}, {"t": 41.6, "type": "ding"}, {"t": 42.2, "type": "ding"}, {"t": 42.8, "type": "ding"}
+  ],
+  "check_times": [3.3, 7.0, 9.4, 13.8, 16.5, 17.6, 22.0, 23.6, 28.0, 30.5, 34.5, 37.4, 44.0, 46.4]
+}

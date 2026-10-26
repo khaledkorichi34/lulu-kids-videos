@@ -158,8 +158,9 @@ function moon(x,y){
   <path d="M-24,-2 Q-16,6 -8,-2 M8,-2 Q16,6 24,-2" stroke="#8a7430" stroke-width="4" fill="none" stroke-linecap="round"/>
   <path d="M-10,16 Q0,24 10,16" stroke="#8a7430" stroke-width="4" fill="none" stroke-linecap="round"/></g>`;
 }
-function cloud(x,y,s,o){
-  return `<g transform="translate(${x},${y}) scale(${s})" opacity="${o}" fill="#fff"><ellipse cx="0" cy="10" rx="70" ry="24"/><circle cx="-30" cy="-2" r="26"/><circle cx="6" cy="-16" r="34"/><circle cx="40" cy="0" r="24"/></g>`;
+// cloud(x,y,s,opacity,col): col = optional fill colour (default white; episode 43 uses greys for a cloudy sky)
+function cloud(x,y,s,o,col='#fff'){
+  return `<g transform="translate(${x},${y}) scale(${s})" opacity="${o}" fill="${col}"><ellipse cx="0" cy="10" rx="70" ry="24"/><circle cx="-30" cy="-2" r="26"/><circle cx="6" cy="-16" r="34"/><circle cx="40" cy="0" r="24"/></g>`;
 }
 // bg(t, night 0..1, extra drawn behind the hills, {noSun, noFlowers, noClouds, noMoon})
 function bg(t,n,behind='',o={}){
@@ -1307,4 +1308,29 @@ function elephant(o={}){
   <circle cx="110" cy="-138" r="8" fill="#FF9AA2" opacity=".75"/>
   ${eye}
   <g transform="rotate(${er*12} 70 -186)"><ellipse cx="46" cy="-146" rx="44" ry="58" fill="${D}"/><ellipse cx="44" cy="-144" rx="30" ry="42" fill="${P}"/></g>`;
+}
+
+/* ---------- snowman (episode 43) ---------- */
+// snowman({eye, arm, asleep}): friendly little snowman facing the viewer, origin at the bottom of the snow
+// (about 250 tall and 210 wide with the stick arms at s=1). arm = 0..1 lifts the right stick arm (viewer's right)
+// to wave; eye = blink. Red scarf, orange carrot nose pointing right, three dark buttons.
+function snowman(o={}){
+  const e=o.eye==null?1:o.eye, a=-(o.arm||0)*40;
+  const eye=x=>o.asleep
+    ?`<path d="M${x-7},-224 Q${x},-217 ${x+7},-224" stroke="#2b2b3a" stroke-width="4" fill="none" stroke-linecap="round"/>`
+    :`<g transform="translate(${x},-224) scale(1,${e})"><circle r="6.5" fill="#2b2b3a"/><circle cx="2" cy="-2.4" r="2.2" fill="#fff"/></g>`;
+  return `
+  <ellipse cx="0" cy="-4" rx="70" ry="10" fill="#DCE8F2"/>
+  <path d="M-40,-148 L-100,-180 M-78,-168 L-92,-190" stroke="#7A4B21" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <g transform="rotate(${a} 40 -148)"><path d="M40,-148 L100,-180 M78,-168 L92,-190" stroke="#7A4B21" stroke-width="7" fill="none" stroke-linecap="round"/></g>
+  <circle cx="0" cy="-62" r="62" fill="#fff"/><ellipse cx="-18" cy="-80" rx="30" ry="22" fill="#F4F9FF"/>
+  <circle cx="0" cy="-152" r="45" fill="#fff"/>
+  <circle cx="0" cy="-222" r="34" fill="#fff"/>
+  <path d="M-34,-196 Q0,-182 34,-196 L34,-184 Q0,-170 -34,-184 Z" fill="#E63946"/>
+  <path d="M14,-186 L30,-140 L44,-146 L26,-186 Z" fill="#E63946"/><path d="M20,-170 L40,-170" stroke="#FFD23F" stroke-width="4"/>
+  <circle cx="0" cy="-150" r="5.5" fill="#2b2b3a"/><circle cx="0" cy="-128" r="5.5" fill="#2b2b3a"/><circle cx="0" cy="-80" r="6" fill="#2b2b3a"/><circle cx="0" cy="-54" r="6" fill="#2b2b3a"/>
+  ${eye(-12)}${eye(12)}
+  <path d="M-2,-216 L28,-211 L-2,-206 Z" fill="#FF8C1A"/>
+  <path d="M-11,-203 Q0,-196 11,-203" stroke="#2b2b3a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <circle cx="-22" cy="-210" r="6" fill="#FF9AA2" opacity=".75"/><circle cx="22" cy="-210" r="6" fill="#FF9AA2" opacity=".75"/>`;
 }
