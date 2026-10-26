@@ -1,0 +1,106 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script src="../../toolkit/rhymes.js"></script>
+<script>
+/* Episode 44 - Row, Row, Row Your Boat on an autumn lake (sing-along).
+   Verse 1: Lulu rows with Pip the kitten past autumn trees; a coloured leaf falls on every "merrily".
+   Verse 2: a little turtle swims up beside the boat and keeps them company.
+   Verse 3: the sun goes down and the sky turns golden. Ending: "Bye-bye, little boat!" */
+const BPM=96, START=5.0;
+const LINES=rhymeTimes(RHYMES.row,START,3,4,BPM);
+const END=rhymeEnd(LINES);                 // 55.0 s
+const DUR=61, SC=[0,DUR];
+const SPB=60/BPM;
+const V2=LINES[4].t0, V3=LINES[8].t0;      // 22.5 s, 40.0 s
+const WATER=500, BX=600;
+const TURT_IN=V2-3.2, TURT_X=1010;
+const LEAF_X=[150,300,860,930], LEAF_C=['#E63946','#F28C28','#F6C026','#E8742A'];
+
+function dusk(t){ return eio(prog(t,V3-1,END+2)); }   // 0 day .. 1 golden sunset
+
+function render(t){
+  const d=dusk(t);
+  const li=currentLine(LINES,t);
+  const singing=t>START-.4&&t<END+.3;
+  const p=t<END+.5?beatPulse(LINES,t):0;
+  const flow=singing?1:(t<START?prog(t,1,START-.4):1-.7*prog(t,END,END+2));
+  const by=585+4*Math.sin(t*2.1);
+  let far='',chars='',front='',sky='',pops='',cap='';
+
+  // autumn trees and reeds on the far bank drift past
+  const sx=t*30*(t<END?1:.6);
+  for(let k=0;k<5;k++){const x=((k*330+160-sx)%1650+1650)%1650-160;far+=autumnTree(x,WATER+8,.5+(k%2)*.08);}
+  for(let k=0;k<6;k++){const x=((k*275+20-t*38)%1650+1650)%1650-120;far+=reed(x,WATER+8,95+(k%3)*20,t,k);}
+
+  // a leaf twirls down on every "merrily", lands on the water and floats away
+  for(const Lx of LINES)if(Lx.index===2){
+    [0,3,6,9].forEach((wi,k)=>{const w=Lx.words[wi], u=t-w.t0;if(u<0||u>6)return;
+      const fall=prog(u,0,2.2), x0=LEAF_X[k]+(Lx===LINES[2]?0:(Lx===LINES[6]?40:-30));
+      const x=x0+40*Math.sin(u*3)*(1-fall)-(u>2.2?(u-2.2)*30:0), y=lerp(-20,WATER+30+((k*13)%30),eio(fall));
+      const o=1-prog(u,4.8,6), rot=fall<1?60*Math.sin(u*4):10;
+      far+=`<g opacity="${o.toFixed(2)}">${autumnLeaf(x.toFixed(1),y.toFixed(1),2,rot,LEAF_C[k])}</g>`;
+      if(u>2.1&&u<2.7){const q=(u-2.1)/.6;far+=`<ellipse cx="${x.toFixed(1)}" cy="${(y+6).toFixed(1)}" rx="${20+40*q}" ry="${5+8*q}" fill="none" stroke="#fff" stroke-width="3" opacity="${(1-q).toFixed(2)}"/>`;}
+    });
+  }
+
+  // the turtle swims up for verse 2 and stays beside the boat
+  if(t>TURT_IN){
+    const u=eout(prog(t,TURT_IN,TURT_IN+2.6)), tx=lerp(1400,TURT_X,u), ty=WATER+92+3*Math.sin(t*2.4)-6*p;
+    const step=t*6*(1-.6*u);
+    chars+=`<clipPath id="tw"><rect x="0" y="0" width="1280" height="${(WATER+80).toFixed(0)}"/></clipPath>`;
+    chars+=`<g clip-path="url(#tw)">${place(tx,ty,turtle({eye:blink(t,1.7),step}),{s:.8})}</g>`;
+    chars+=`<ellipse cx="${(tx-4).toFixed(1)}" cy="${WATER+80}" rx="${70+6*Math.sin(t*3)}" ry="9" fill="none" stroke="#fff" stroke-width="4" opacity=".6"/>`;
+  }
+
+  // Lulu rows, one stroke every one and a half beats; Pip sits at the back and sways
+  const ph=singing?2*Math.PI*(t-START)/(3*SPB):0;
+  const row=Math.sin(ph)*flow;
+  const oa=38+16*row;
+  const wave=t>END+.6?Math.sin((t-END)*6)*28*prog(t,END+.6,END+1):0;
+  chars+=boatBack(BX,by);
+  chars+=place(BX-140,by-60-4*p,kitten({eye:blink(t,2.2),tail:Math.sin(t*2)}),{s:.8,rot:2*Math.sin(t*1.6)});
+  chars+=place(BX+10,by-58-5*p,duck({eye:blink(t,0),wing:t>END+.6?-60+wave:-10-22*row}),{s:.95,rot:3*row});
+  front+=boatFront(BX,by)+oar(BX+138,by-66,oa);
+  const bladeX=BX+138+100*Math.sin(oa*Math.PI/180);
+  front+=`<ellipse cx="${bladeX.toFixed(1)}" cy="${by+14}" rx="${30+10*row}" ry="7" fill="#fff" opacity="${(.5*flow).toFixed(2)}"/>`;
+  for(let k=0;k<3;k++){const q=((t*.9+k/3)%1);front+=`<path d="M${BX-220-q*140},${by-4+q*10} q-20,-6 -40,0" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity="${((1-q)*.6*flow).toFixed(2)}"/>`;}
+
+  // a dream bubble on "Life is but a dream": a cosy pile of autumn leaves
+  for(const Lx of LINES)if(Lx.index===3&&t>=Lx.t0-.2&&t<Lx.t1+.7){
+    const o=prog(t,Lx.t0-.2,Lx.t0+.3)*(1-prog(t,Lx.t1+.1,Lx.t1+.7));
+    sky+=`<g opacity="${o.toFixed(2)}"><circle cx="560" cy="372" r="9" fill="#fff"/><circle cx="530" cy="338" r="14" fill="#fff"/>
+      <ellipse cx="420" cy="250" rx="112" ry="78" fill="#fff"/><ellipse cx="420" cy="250" rx="98" ry="64" fill="#FFF1D6"/>
+      ${leafPile(420,292,1,.5)}${autumnLeaf(372,214,1,30*Math.sin(t*3),'#E63946')}${autumnLeaf(470,206,1,-30*Math.sin(t*3),'#F6C026')}${sparkle(420,212,.8)}</g>`;
+  }
+
+  // title card, then the words of the song, then goodbye
+  const to=1-prog(t,3.9,4.5);
+  if(to>0)pops=`<g opacity="${to}">`+pop('Row, Row, Row',640,165,96,'#FF5D8F',t,.4,-2,'#fff')+pop('Your Boat',640,285,112,'#E8742A',t,1.0,2,'#fff')+`</g>`;
+  cap=t<END+.6?karaoke(LINES,t,'#E8742A'):caption('Bye-bye, little boat!',t-END,.6);
+
+  // sky: the sun sinks behind the hills, everything turns golden
+  const cl=cloud(170+12*Math.sin(t*.3),96,.8,1)+cloud(700+10*Math.sin(t*.25),70,.6,.9);
+  const warm=d>0?`<defs><linearGradient id="warm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FB4F2"/><stop offset=".45" stop-color="#FFB27A"/><stop offset="1" stop-color="#FFE29A"/></linearGradient></defs><rect width="1280" height="720" fill="url(#warm)" opacity="${(.85*d).toFixed(3)}"/>`:'';
+  const sn=warm+sun(t,1150,100+d*260);
+  const glow=d>0?`<rect width="1280" height="720" fill="#FFB347" opacity="${(.1*d).toFixed(3)}"/>`:'';
+  svg.innerHTML=bg(t,0,sn,{noSun:true,noFlowers:true,noClouds:true})+cl+stream(t,WATER,0,38*flow+6)+far+chars+front+glow+sky+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,'',{noFlowers:true,noClouds:true})+stream(0,WATER,0,0);
+  for(let k=0;k<4;k++)s+=autumnTree(140+k*330,WATER+8,.5+(k%2)*.08);
+  const by=590;
+  s+=autumnLeaf(1060,380,2,30,'#E63946')+autumnLeaf(180,420,2,-20,'#F6C026');
+  s+=`<g clip-path="url(#twt)"><clipPath id="twt"><rect width="1280" height="${WATER+80}"/></clipPath>${place(1010,WATER+92,turtle({}),{s:.8})}</g>`;
+  s+=boatBack(BX,by)+place(BX-140,by-60,kitten({}),{s:.8})+place(BX+10,by-58,duck({wing:-20}),{s:.95});
+  s+=boatFront(BX,by)+oar(BX+138,by-66,40);
+  s+=label('Row, Row, Row',590,170,110,'#FF5D8F',-3,'#fff')+label('Your Boat',590,305,128,'#E8742A',-2,'#fff');
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

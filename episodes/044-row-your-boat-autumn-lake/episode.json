@@ -1,0 +1,17 @@
+{
+  "number": 44,
+  "slug": "row-your-boat-autumn-lake",
+  "format": "rhyme",
+  "ages": "2-6",
+  "title": "Row, Row, Row Your Boat with Lulu and Pip | Nursery Rhyme",
+  "description": "Sing along to Row, Row, Row Your Boat with Lulu the little duck and Pip the kitten on an autumn lake! Coloured leaves twirl down on every \"merrily\", a little turtle swims beside the boat, and the sky turns golden at sunset.\nThe words light up with the music, for children aged 2 to 6.\nA classic nursery rhyme (traditional, 1852).",
+  "duration": 61,
+  "seed": 44,
+  "lullaby_from": null,
+  "rhyme": {"name": "row", "bpm": 96, "start": 5.0, "repeat": 3, "gap": 4},
+  "sfx": [
+    {"t": 0.4, "type": "sparkle"},
+    {"t": 55.6, "type": "sparkle"}
+  ],
+  "check_times": [2.0, 9.0, 12.0, 16.0, 21.5, 26.0, 30.0, 44.0, 48.0, 54.0, 58.5]
+}
