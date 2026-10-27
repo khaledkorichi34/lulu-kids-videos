@@ -752,8 +752,11 @@ function honeycomb(x,y,s=1,fill=1){
 // owl({eye, wing, asleep, tilt}): little brown owl facing the viewer, origin at its feet (about 175 tall,
 // 110 wide, 150 wide with the wings open). wing = 0..60 degrees each wing lifts outwards (flap with
 // 30+30*Math.sin(t*k)), tilt = head tilt in degrees, asleep = closed eyes.
+// turn = -1..1 turns the head on the still body (episode 47): the face slides to the side and narrows,
+// at +-1 only the back of the head shows (the owl looks behind itself). Positive = to the viewer's right.
 function owl(o={}){
-  const e=o.eye==null?1:o.eye, w=o.wing||0, tilt=o.tilt||0;
+  const e=o.eye==null?1:o.eye, w=o.wing||0, tilt=o.tilt||0, tn=clamp(o.turn||0,-1,1);
+  const fx=Math.sin(tn*Math.PI/2)*30, fs=Math.max(.001,Math.cos(tn*Math.PI/2)), back=Math.pow(Math.abs(Math.sin(tn*Math.PI/2)),6);
   const C='#A9784F', D='#86593A', L='#F3DDB5', F='#FBEFD6';
   const eye=x=>o.asleep
     ?`<path d="M${x-9},-132 Q${x},-124 ${x+9},-132" stroke="#3a2a1a" stroke-width="4.5" fill="none" stroke-linecap="round"/>`
@@ -766,13 +769,16 @@ function owl(o={}){
   <ellipse cx="0" cy="-46" rx="33" ry="38" fill="${L}"/>
   <path d="M-14,-62 l7,7 l7,-7 M0,-62 l7,7 l7,-7 M-7,-44 l7,7 l7,-7 M-21,-44 l7,7 l7,-7 M7,-44 l7,7 l7,-7" stroke="#D9BC8C" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
   <g transform="rotate(${tilt} 0 -110)">
-  <path d="M-42,-150 L-40,-186 L-14,-164 Z" fill="${C}"/><path d="M42,-150 L40,-186 L14,-164 Z" fill="${C}"/>
+  <g transform="translate(${fx*.25},0)"><path d="M-42,-150 L-40,-186 L-14,-164 Z" fill="${C}"/><path d="M42,-150 L40,-186 L14,-164 Z" fill="${C}"/></g>
   <ellipse cx="0" cy="-128" rx="50" ry="44" fill="${C}"/>
+  ${back>.01?`<g opacity="${back}" stroke="${D}" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M-9,-154 l9,9 l9,-9 M-9,-136 l9,9 l9,-9 M-9,-118 l9,9 l9,-9"/></g>`:''}
+  <g transform="translate(${fx},-128) scale(${fs},1) translate(0,128)">
   <circle cx="-20" cy="-130" r="20" fill="${F}"/><circle cx="20" cy="-130" r="20" fill="${F}"/>
   ${eye(-20)}${eye(20)}
   <path d="M-7,-118 L7,-118 L0,-104 Z" fill="#FF9F1C"/>
   <circle cx="-38" cy="-108" r="7.5" fill="#FF9AA2" opacity=".8"/><circle cx="38" cy="-108" r="7.5" fill="#FF9AA2" opacity=".8"/>
-  </g>`;
+  </g></g>
+  `;
 }
 // branch(x0,y0,x1,y1): thick brown branch from (x0,y0) (put it inside a tree canopy) to (x1,y1),
 // with two small leaves near the tip. A character sitting on it stands at about (x, y-6).
@@ -1343,4 +1349,14 @@ function stick(x,y,s=1,rot=0){
   <path d="M-40,4 Q0,-6 40,2" stroke="#8B5A2B" stroke-width="7" fill="none" stroke-linecap="round"/>
   <path d="M8,-1 L24,-16" stroke="#8B5A2B" stroke-width="5" fill="none" stroke-linecap="round"/>
   <ellipse cx="30" cy="-19" rx="10" ry="5" fill="#4CB85A" transform="rotate(-30 30 -19)"/></g>`;
+}
+
+/* ---------- feather (episode 47) ---------- */
+// feather(x,y,s,rot,col): soft owl feather centred at (x,y), about 120 long and 46 wide at s=1, quill
+// pointing down-left at rot 0. Use it drifting down slowly (rot swinging) to show soft feathers.
+function feather(x,y,s=1,rot=0,col='#C49A6C'){
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})">
+  <path d="M-60,22 Q-30,-6 10,-22 Q46,-34 60,-26 Q52,-6 22,10 Q-14,26 -44,24 Z" fill="${col}"/>
+  <path d="M-8,-4 l-8,-10 M10,-10 l-6,-12 M28,-16 l-4,-11 M4,6 l4,10 M22,0 l6,10" stroke="#fff" stroke-width="3" opacity=".45" stroke-linecap="round"/>
+  <path d="M-70,30 Q-20,6 56,-24" stroke="#8A5A33" stroke-width="3.5" fill="none" stroke-linecap="round"/></g>`;
 }

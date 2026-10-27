@@ -1,0 +1,126 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 47 - Did you know? Owl facts.  Title (owl asleep in the tree), fact 1 (most owls sleep in
+   the daytime), night falls and the owl wakes up (big eyes see in the dark), fact 2 (an owl can turn
+   its head very far: it looks behind), its eyes cannot move so it turns its head (left to a firefly,
+   right to Lulu), fact 3 (owls fly very quietly), soft feathers make almost no sound, recap
+   (night, turn, quiet), good night. */
+const SC=[0,5.5,12.5,19,25.5,32,38.5,45,51.5,57], DUR=57;
+const NAVY='#2D2A6E', PURPLE='#7B5CFF', ORANGE='#E76F2E', PINK='#E8467C', GOLD='#FFE58A', GREEN='#1F7F37';
+const TX=200, OX=410, OY=316, OS=.85, LX=860;   // tree, owl on the branch, Lulu
+const lulu=(x,lt,t,o={})=>{
+  const j=jumps(lt,o.hops||[],.6,o.h||24), w=o.wave?20+20*Math.sin(lt*9):0, s=o.s||.9;
+  return shadow(x,522,56*s/.95,-j.y)+place(x,520+j.y,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),{s,sx:j.sx,sy:j.sy,flip:o.flip});
+};
+const owlAt=(x,y,o={},s=OS)=>place(x,y,owl(Object.assign({eye:o.asleep?1:blink(o.t||0,.7)},o)),{s});
+const scenery=()=>tree(TX,520,1)+branch(TX+10,334,OX+40,OY+2);
+const flap=(lt,k=14)=>30+30*Math.sin(lt*k);
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.4)):0;
+let WIN=0;
+function closeWin(x,y,r,g,inner,bgc){
+  if(g<=0)return '';
+  const id='w'+(WIN++);
+  return `<g transform="translate(${x},${y}) scale(${g})"><defs><clipPath id="${id}"><circle r="${r}"/></clipPath></defs>
+  <g clip-path="url(#${id})"><circle r="${r}" fill="${bgc}"/>${inner}</g>
+  <circle r="${r}" fill="none" stroke="#fff" stroke-width="9"/></g>`;
+}
+function zzz(x,y,lt,t0){
+  let s='';for(let k=0;k<3;k++){let q=lt-t0-k*.9;if(q>0){q%=2.7;
+    s+=`<text x="${x+q*24+6*Math.sin(q*3)}" y="${y-q*30}" font-size="${24+q*10}" fill="${NAVY}" opacity="${Math.sin(Math.PI*q/2.7)*.85}">z</text>`;}}
+  return s;
+}
+// head turn: 0 -> v between a and b, back to 0 between c and d
+const turnAt=(lt,a,b,c,d,v)=>v*(eio(prog(lt,a,b))-eio(prog(lt,c,d)));
+
+function render(t){
+  WIN=0;
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',glow='',pops='',cap='',o={noSun:true};
+  if(i===0){
+    props=scenery();
+    chars=owlAt(OX,OY,{asleep:true})+lulu(LX,lt,t,{hops:[1.4,2.4],h:28,wave:true,flip:true});
+    pops=pop('Did you know?',850,165,96,PURPLE,lt,.3,-3);
+    cap=caption('Fun owl facts with Lulu',lt,1.8);
+  }else if(i===1){
+    props=scenery();
+    chars=owlAt(OX,OY,{asleep:true,tilt:4*Math.sin(lt*1.5)})+lulu(LX,lt,t,{flip:true,eye:lt>3.8?.45:blink(t,0)});
+    pops=zzz(OX+40,OY-150,lt,.6)+pop('Fact 1',820,160,100,ORANGE,lt,.3);
+    cap=lt<3.6?caption('Most owls sleep in the daytime.',lt,.8):caption('Lulu is quiet so Owl can sleep.',lt,3.6);
+  }else if(i===2){
+    n=eio(prog(lt,.2,3.0));
+    props=scenery();
+    const awake=lt>2.8, e=awake?Math.min(1,(lt-2.8)*4)*blink(t,.7):1;
+    chars=owlAt(OX,OY,{asleep:!awake,eye:e,wing:lt>3.2&&lt<4.4?flap(lt):0})+lulu(LX,lt,t,{flip:true,hops:[3.4],h:22});
+    pops=pop('Hoo! Hoo!',800,165,90,GOLD,lt,3.0,-3,NAVY);
+    cap=lt<3.4?caption('At night, owls wake up!',lt,.5):caption('Big eyes help them see in the dark.',lt,3.6);
+  }else if(i===3){
+    n=1;
+    props=stump(640,520,1);
+    const tn=turnAt(lt,1.0,2.2,3.9,5.0,1);
+    chars=owlAt(640,448,{t,turn:tn},1.3)+lulu(980,lt,t,{flip:true,s:.8,hops:[2.6],h:20});
+    pops=pop('Fact 2',640,150,100,ORANGE,lt,.3)+(lt>2.3&&lt<4.2?pop('Look behind!',290,330,64,GOLD,lt,2.3,-4,NAVY):'');
+    cap=caption('An owl can turn its head very far.',lt,.6);
+  }else if(i===4){
+    n=1;
+    props=stump(640,520,1);
+    const tn=turnAt(lt,.6,1.4,2.6,3.2,-.42)+turnAt(lt,3.6,4.3,5.6,6.3,.42);
+    chars=owlAt(640,448,{t,turn:tn},1.3)+lulu(980,lt,t,{flip:true,s:.8,wave:lt>3.8&&lt<5.6});
+    const fx=lerp(80,420,eio(prog(lt,0,3.0))), fy=320+20*Math.sin(lt*2);
+    glow=place(fx,fy,firefly({glow:.75+.25*Math.sin(t*4),flap:.5+.5*Math.sin(t*30),eye:blink(t,.3)}),{s:.9,flip:false});
+    cap=lt<3.4?caption('Owl eyes cannot move around.',lt,.4):caption('So the owl turns its head instead.',lt,3.4);
+  }else if(i===5){
+    n=1;
+    const u=prog(lt,.6,6.2), x=lerp(-120,1400,u), y=360-20*Math.sin(Math.PI*u)+5*Math.sin(lt*3);
+    chars=lulu(1150,lt,t,{eye:blink(t,0),flip:true,s:.8});
+    chars+=owlAt(x,y,{t,wing:20+40*(.5+.5*Math.sin(lt*5))},.75);
+    pops=pop('Fact 3',400,155,100,ORANGE,lt,.3)+pop('Shhh...',860,160,90,GOLD,lt,2.6,3,NAVY);
+    cap=caption('Owls fly very, very quietly.',lt,.8);
+  }else if(i===6){
+    n=1;
+    props=scenery();
+    chars=owlAt(OX,OY,{t,wing:lt>.4&&lt<1.6?flap(lt,12):0})+lulu(LX,lt,t,{flip:true});
+    const u=prog(lt,.9,6.0), fx=lerp(470,640,u)+60*Math.sin(u*Math.PI*2.5), fy=lerp(260,470,u);
+    props+='';
+    glow=feather(fx,fy,1.4,18*Math.sin(u*Math.PI*2.5));
+    pops=pop('So soft!',820,165,90,GOLD,lt,2.8,-3,NAVY);
+    cap=caption('Soft feathers make almost no sound.',lt,.8);
+  }else if(i===7){
+    n=1;
+    const b=k=>1+.05*Math.sin(t*4+k*2), X=[300,640,980], Y=390;
+    props=closeWin(X[0],Y,118,grow(lt,.4)*b(0),`<g transform="translate(-48,-52) scale(.6)">${moon(0,0)}</g>`+place(30,70,owl({eye:blink(t,.2)}),{s:.62}),'#2B2F7A');
+    props+=closeWin(X[1],Y,118,grow(lt,1.4)*b(1),place(0,85,owl({turn:1}),{s:.75}),'#3A3F8F');
+    props+=closeWin(X[2],Y,118,grow(lt,2.4)*b(2),place(0,62,owl({eye:blink(t,.9),wing:20+40*(.5+.5*Math.sin(t*5))}),{s:.6})+feather(-60,70,.5,10),'#2B2F7A');
+    pops=pop('night',X[0],230,54,GOLD,lt,.4,0,NAVY)+pop('turn',X[1],230,54,GOLD,lt,1.4,0,NAVY)+pop('quiet',X[2],230,54,GOLD,lt,2.4,0,NAVY);
+    cap=caption('Owls are amazing night birds!',lt,3.6);
+  }else{
+    n=1;
+    props=scenery();
+    chars=owlAt(OX,OY,{t,wing:lt>1.4?flap(lt,10)*.6:0})+lulu(LX,lt,t,{flip:true,wave:lt>1.0,hops:[1.0],h:22});
+    pops=pop('Bye bye!',820,165,100,GOLD,lt,.4,-3,NAVY);
+    cap=caption('Good night, little owl!',lt,1.4);
+  }
+  o.noClouds=true; o.noFlowers=n>0||i===7;
+  const sky=n<1?cloud(640+8*Math.sin(t*.3),300,.6,1-n)+cloud(1120+8*Math.sin(t*.25+1),260,.6,1-n):'';
+  svg.innerHTML=bg(t,n,sky,o)+props+chars+nightTint(n)+glow+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#2B2F7A','#7A6FD0')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  STARS.forEach(p=>{s+=`<circle cx="${p[0]}" cy="${p[1]}" r="${p[2]*1.2}" fill="#FFF8D6" opacity=".85"/>`;});
+  s+=moon(1150,110);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#5E9E6A"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#4C8C55"/>`;
+  s+=stump(980,690,1.1)+place(980,610,owl({wing:30}),{s:1.55});
+  s+=shadow(255,662,100)+place(250,658,duck({wing:22}),{s:1.45});
+  s+=label('Did you know?',560,175,120,GOLD,-3,NAVY);
+  s+=label('Fun owl facts',540,285,90,'#fff',-2,PURPLE);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

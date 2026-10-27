@@ -1,0 +1,31 @@
+{
+  "number": 47,
+  "slug": "owl-facts-with-lulu",
+  "format": "curious",
+  "ages": "6-10",
+  "title": "Did You Know? Fun Owl Facts with Lulu | Facts for Kids",
+  "description": "Lulu the little duck shares three fun facts about owls!\nMost owls sleep in the day and wake up at night.\nAn owl can turn its head very far, and soft feathers help it fly very quietly.\nA gentle nature video for children aged 6 to 10.",
+  "duration": 57,
+  "seed": 47,
+  "lullaby_from": null,
+  "sfx": [
+    {"t": 0.3, "type": "sparkle"},
+    {"t": 1.4, "type": "boing_high"},
+    {"t": 2.4, "type": "boing_high"},
+    {"t": 5.8, "type": "pop"},
+    {"t": 15.5, "type": "pop"},
+    {"t": 16.6, "type": "boing_high"},
+    {"t": 19.3, "type": "pop"},
+    {"t": 21.3, "type": "pop"},
+    {"t": 21.6, "type": "boing_high"},
+    {"t": 32.3, "type": "pop"},
+    {"t": 34.6, "type": "sparkle"},
+    {"t": 41.3, "type": "pop"},
+    {"t": 45.4, "type": "pop"},
+    {"t": 46.4, "type": "pop"},
+    {"t": 47.4, "type": "pop"},
+    {"t": 51.9, "type": "pop"},
+    {"t": 52.5, "type": "boing_high"}
+  ],
+  "check_times": [3.5, 8.0, 16.0, 21.5, 23.5, 26.5, 30.0, 35.0, 37.0, 41.5, 49.0, 54.0]
+}
