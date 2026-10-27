@@ -1,0 +1,24 @@
+{
+  "number": 46,
+  "slug": "where-is-pip",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "Where Is Pip? On, Under, Behind, Next To | Position Words for Kids",
+  "description": "Where is Pip the kitten? Lulu the little duck watches as Pip goes on a box, under an umbrella, behind a bush and next to Lulu.\n\nLearn four little position words: on, under, behind and next to.\n\nA short, gentle first-words video for children aged 3 to 6.",
+  "duration": 45,
+  "seed": 46,
+  "lullaby_from": null,
+  "sfx": [
+    {"t": 0.7, "type": "sparkle"},
+    {"t": 6.1, "type": "boing_high"},
+    {"t": 7.3, "type": "pop"},
+    {"t": 15.3, "type": "pop"},
+    {"t": 23.3, "type": "pop"},
+    {"t": 29.9, "type": "boing_high"},
+    {"t": 31.3, "type": "pop"},
+    {"t": 38.9, "type": "sparkle"},
+    {"t": 39.1, "type": "boing_high"},
+    {"t": 40.2, "type": "boing_high"}
+  ],
+  "check_times": [1.5, 3.3, 5.3, 6.4, 6.6, 7.0, 8.0, 11.5, 14.2, 16.0, 19.5, 22.0, 23.0, 24.0, 27.5, 30.2, 30.5, 32.0, 35.5, 38.0, 39.4, 41.5, 43.5]
+}

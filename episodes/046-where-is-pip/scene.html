@@ -1,0 +1,100 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 46 - Where Is Pip? Position words: on, under, behind, next to. Title, one scene per word, finale. */
+const SC=[0,4.5,12.5,20.5,28.5,36.5,45];
+const DUR=SC[SC.length-1];
+const INK='#2D2A6E', COLS=['#FF5D8F','#19B8A6','#7B5CFF','#FF9F1C'];
+const PX=560;              // where the box / umbrella / bush stands
+const Q=.5, J0=1.4, JD=.9, W0=2.8, A0=3.0;   // question caption, Pip moves, word pops, answer caption
+const WORDS=[['on','Pip is on the box'],['under','Pip is under the umbrella'],['behind','Pip is behind the bush'],['next to','Pip is next to Lulu']];
+
+const pip=(x,y,t,o={})=>place(x,y,kitten({eye:blink(t,.5),tail:Math.sin(t*3),tilt:o.tilt||0}),{s:o.s||.8,sx:o.sx||1,sy:o.sy||1});
+const lulu=(x,t,lt,o={})=>{const j=o.j||{y:0,sx:1,sy:1};return shadow(x,522,52,-j.y)+place(x,520+j.y,duck({eye:blink(t,.2),wing:o.wing||0}),{s:o.s||.85,flip:o.flip,sx:j.sx,sy:j.sy});};
+const happy=(lt)=>lt>A0+.3?20*Math.abs(Math.sin((lt-A0)*8))*clamp((A0+1.6-lt)*2):0;   // Lulu flaps a little when the answer comes
+// a jump from (x0,y0) to (x1,y1) between a and a+d, arc height h
+function arc(lt,a,d,x0,y0,x1,y1,h){const u=eio(prog(lt,a,a+d));return {x:lerp(x0,x1,u),y:lerp(y0,y1,u)-h*4*u*(1-u),u};}
+// little walking hops from x0 to x1
+function walk(lt,a,d,x0,x1){const u=prog(lt,a,a+d), n=4;const ph=u*n;const hop=(u>0&&u<1)?Math.abs(Math.sin(ph*Math.PI))*18:0;return {x:lerp(x0,x1,u),y:-hop};}
+
+function hearts(lt,t0){
+  let s='';
+  for(let k=0;k<9;k++){const q=lt-(t0+k*.4);if(q>0){const y=610-q*120,x=110+k*132+25*Math.sin(q*2+k),o=clamp((y-240)/120)*clamp(q*3)*.9;
+    if(y>240)s+=heart(x,y,1+(k%3)*.25,['#FF5D8F','#FF9F1C','#FFFFFF'][k%3],o);}}
+  return s;
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={noSun:true,noClouds:true},front='';
+  if(i===0){
+    o={noSun:true,noClouds:true};
+    const j=jumps(lt,[1.6,2.6],.6,26), jp=jumps(lt,[1.9,2.9],.55,26);
+    chars=lulu(470,t,lt,{s:1,j,wing:18+18*Math.sin(lt*9)});
+    chars+=shadow(810,522,44,-jp.y)+pip(810,520+jp.y,t,{s:.9,sx:jp.sx,sy:jp.sy});
+    pops=pop('Where is Pip?',640,170,120,INK,lt,.3,-2);
+    cap=caption("Let's find Pip!",lt,1.2);
+  }else if(i<=4){
+    const [w,ans]=WORDS[i-1];
+    if(i===1){ // Pip jumps up onto the box
+      // a closed cardboard box (taped lid) for Pip to sit on
+      props=shadow(PX,524,120)+`<g transform="translate(${PX},520)"><rect x="-100" y="-118" width="200" height="118" rx="6" fill="#D9A26A"/>
+      <rect x="-106" y="-124" width="212" height="22" rx="6" fill="#C99360"/><rect x="-16" y="-124" width="32" height="124" fill="#E8C08A" opacity=".75"/></g>`;
+      const top=520-124;
+      let p={x:260,y:520,u:0};
+      if(lt>J0)p=arc(lt,J0,JD,260,520,PX,top,110);
+      const land=lt>J0+JD?jumps(lt,[J0+JD-.01],.4,0):{y:0,sx:1,sy:1};
+      chars+=(p.u<1?shadow(p.x,522,40,520-p.y):'')+pip(p.x,p.y,t,{sx:land.sx,sy:land.sy,tilt:lt>A0?6*Math.sin(lt*2):0});
+      chars+=lulu(1010,t,lt,{flip:true,wing:happy(lt)});
+    }else if(i===2){ // Pip walks under the umbrella
+      props=shadow(PX,524,150)+umbrella(PX,520,1.15,1,0);
+      const p=walk(lt,J0,1.3,240,PX+40);
+      chars+=shadow(p.x,522,40,-p.y)+pip(p.x,520+p.y,t,{s:.72,tilt:lt>A0?6*Math.sin(lt*2):0});
+      chars+=lulu(1010,t,lt,{flip:true,wing:happy(lt)});
+    }else if(i===3){ // Pip walks behind the bush, then peeks out over it
+      const p=walk(lt,J0-.3,1.2,240,PX);
+      const peek=eout(prog(lt,2.3,2.8))*(lt<6.6?1:1-eio(prog(lt,6.6,7.3))*.6);
+      const y=520+p.y-80*peek;
+      chars+=(p.x<PX-170?shadow(p.x,522,40,-p.y):'')+pip(p.x,y,t,{s:.85,tilt:peek>.9?8*Math.sin(lt*2.4):0});
+      props=''; front=bush(PX,520,1.1);
+      chars=chars+front;
+      chars+=lulu(1010,t,lt,{flip:true,wing:happy(lt)});
+    }else{ // Pip hops over to stand next to Lulu
+      chars+=lulu(PX,t,lt,{flip:false,wing:happy(lt)});
+      let p={x:1120,y:520,u:0};
+      if(lt>J0)p=arc(lt,J0,JD,1120,520,PX+190,520,90);
+      const land=lt>J0+JD?jumps(lt,[J0+JD-.01],.4,0):{y:0,sx:1,sy:1};
+      chars+=shadow(p.x,522,40,520-p.y)+pip(p.x,p.y,t,{sx:land.sx,sy:land.sy,tilt:lt>A0?-6*Math.sin(lt*2):0});
+      if(lt>A0+.6)props+=heart(PX+95,300-Math.min(40,(lt-A0-.6)*12),1.1,'#FF5D8F',clamp((lt-A0-.6)*2)*.9);
+    }
+    pops=pop(w,640,165,140,COLS[i-1],lt,W0,i%2?-3:3);
+    cap=lt<A0?caption('Where will Pip go?',lt,Q):caption(ans,lt,A0);
+  }else{
+    o={noClouds:true};
+    const j=jumps(lt,[2.6,3.7,4.8],.6,35), jp=jumps(lt,[2.9,4.0,5.1],.55,30);
+    props=hearts(lt,2.4);
+    chars=lulu(480,t,lt,{s:1.05,j,wing:25+25*Math.sin(lt*10)});
+    chars+=shadow(800,522,44,-jp.y)+pip(800,520+jp.y,t,{s:.9,sx:jp.sx,sy:jp.sy});
+    pops=pop('Well done!',640,170,120,'#FF9F1C',lt,.4,-3);
+    cap=lt<4.2?caption('We found Pip!',lt,1.4):caption('On, under, behind, next to!',lt,4.2);
+  }
+  svg.innerHTML=bg(t,0,'',o)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=place(780,590,kitten({}),{s:1.25})+bush(780,668,1.45);
+  s+=shadow(330,664,110)+place(330,660,duck({wing:22}),{s:1.6});
+  s+=label('Where is Pip?',640,150,120,INK,-2);
+  s+=label('behind',1030,300,80,'#7B5CFF',5);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
