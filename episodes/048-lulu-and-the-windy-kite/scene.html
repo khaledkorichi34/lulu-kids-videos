@@ -1,0 +1,177 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 48 - Lulu and the Windy Kite. A windy day: Lulu flies her kite (whoosh!), Bunny comes to play.
+   The wind stops and the kite floats down into the tree. Little Bird flies up and wiggles it free,
+   and it floats back down to Lulu. Thank you, Little Bird! The kite flies again. The sun goes down,
+   and Lulu and Bunny sleep on the grass by the kite while Little Bird sleeps on her branch. */
+const DUR=53, SC=[0,5,12,19,26,33,40,46,53];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', BLUE='#2979E8', GREEN='#2FA37A', GOLD='#FFE58A', ORANGE='#FF9F1C', TEAL='#19B8A6';
+const TX=210;                 // the tree (canopy about x 60..360, y 110..330)
+const LX=760;                 // Lulu (faces left, towards the tree)
+const HX=LX-42, HY=446;       // Lulu's wing, where she holds the string
+const BUX=1040;               // Bunny's spot
+const BS=.55;                 // Little Bird's size
+const PERCH=[TX-150,316];     // Little Bird's branch tip (she stands here)
+const STUCK=[300,262];        // the kite caught in the leaves
+const FLY=[470,330];          // where the kite flies in the wind
+
+const scenery=(br=true)=>tree(TX,520,1)+(br?branch(TX-40,330,PERCH[0],PERCH[1]+6):'');
+const lulu=(lt,t,o={})=>{
+  const x=o.x!=null?o.x:LX, j=jumps(lt,o.hops||[],o.d||.6,o.h||22), w=o.wave?20+20*Math.sin(lt*9):(o.wing!=null?o.wing:-25+6*Math.sin(lt*3));
+  return shadow(x,522,60,-j.y)+place(x,520+j.y,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),{s:1,sx:j.sx,sy:j.sy,flip:o.flip!==false,rot:o.rot||0});
+};
+const handY=(lt,o={})=>HY+jumps(lt,o.hops||[],o.d||.6,o.h||22).y;
+const bunAt=(lt,t,o={})=>{const j=jumps(lt,o.hops||[],.5,o.h||30), x=o.x!=null?o.x:BUX;
+  return shadow(x,522,52,-j.y)+place(x,520+j.y,bunny({eye:o.eye!=null?o.eye:blink(t,1.3),ear:o.ear||6*Math.sin(t*2)}),{s:.9,sx:j.sx,sy:j.sy});};
+const birdAt=(x,y,t,o={})=>{
+  const w=o.fly?-35+30*Math.sin(t*26):(o.wing||0);
+  return (o.noShadow?'':shadow(x,522,32,520-y))+place(x,y,bird({eye:o.eye!=null?o.eye:blink(t,.7),wing:w}),{s:BS,flip:o.flip,sx:o.sx||1,sy:o.sy||1});
+};
+const arc=(a,b,u,h)=>[lerp(a[0],b[0],u),lerp(a[1],b[1],u)-h*Math.sin(Math.PI*u)];
+// kite at (kx,ky) with rotation r; string from Lulu's wing (hx,hy) to the bottom of the kite
+function kiteOn(kx,ky,s,r,sway,hx,hy,sag=40){
+  const bx=kx-Math.sin(r*Math.PI/180)*85*s, by=ky+Math.cos(r*Math.PI/180)*85*s;
+  const str=hx==null?'':`<path d="M${hx},${hy} Q${(hx+bx)/2},${Math.max(hy,by)+sag} ${bx},${by}" stroke="#fff" stroke-width="3" fill="none" opacity=".9"/>`;
+  return str+kite(kx,ky,s,r,sway);
+}
+// the kite flying in the wind around (x,y)
+const flying=(x,y,s,lt,hy)=>kiteOn(x+14*Math.sin(lt*1.6),y+12*Math.sin(lt*2.1),s,-10+9*Math.sin(lt*1.4),Math.sin(lt*3.2),HX,hy);
+// soft white curl of wind moving left
+function windLine(x,y,s,o){
+  return `<g transform="translate(${x},${y}) scale(${-s},${s})" opacity="${o}"><path d="M-120,0 Q-40,-14 30,0 Q80,10 80,-22 Q78,-46 54,-40" stroke="#fff" stroke-width="9" fill="none" stroke-linecap="round"/></g>`;
+}
+function windy(lt,o=1){
+  let s='';
+  for(let k=0;k<3;k++){const u=((lt*.5+k/3)%1), x=lerp(1400,-150,u);s+=windLine(x,[380,300,450][k],1,Math.sin(u*Math.PI)*.8*o);}
+  for(let k=0;k<5;k++){const per=3.4, u=((lt+k*per/5)%per)/per, x=lerp(1340,-60,u), y=360+(k*47)%130+26*Math.sin(u*9+k);
+    s+=autumnLeaf(x,y,1.2,-u*720-k*40,AUTUMN[k%3]);}
+  return s;
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',front='',pops='',cap='',o={},behind='';
+  switch(i){
+  case 0:{
+    // title: Lulu flies her kite
+    o.noSun=true;
+    chars=lulu(lt,t,{x:860,hops:[2.6],h:16});
+    front=flying(560,340,.9,lt,handY(lt,{hops:[2.6],h:16})).replace(`M${HX},`,`M${860-42},`);
+    props=windy(lt,.7);
+    pops=pop(`${LULU}<tspan fill="${NAVY}"> and the Windy Kite</tspan>`,640,165,72,PINK,lt,.4,-3);
+    break;}
+  case 1:{
+    // a windy day; Lulu has a kite and it goes up
+    o.noSun=true;
+    props=scenery()+windy(lt);
+    const u=eout(prog(lt,2.4,4.6)), h=[2.2];
+    const kx=lerp(560,FLY[0],u), ky=lerp(470,FLY[1],u);
+    front=lt<2.4?kiteOn(560,474,.8,-70,0,HX,handY(lt,{hops:h}),6):flying(kx,ky,lerp(.8,.95,u),lt,handY(lt,{hops:h}));
+    chars=lulu(lt,t,{hops:h});
+    cap=lt<3.4?caption('It is a windy day.',lt,.3):caption('Up goes the kite!',lt,3.4);
+    pops=pop('Whoosh!',840,165,96,TEAL,lt,2.6,-4);
+    break;}
+  case 2:{
+    // the kite flies high; Bunny hops in to play
+    o.noSun=true;
+    props=scenery()+windy(lt);
+    const bx=lerp(1400,BUX,eio(prog(lt,2.2,3.6)));
+    front=flying(FLY[0],FLY[1],.95,lt,handY(lt,{hops:[4.6]}));
+    chars=lulu(lt,t,{hops:[4.6]})+bunAt(lt,t,{x:bx,hops:lt<3.8?[2.3,2.8,3.3]:[4.4,5.6]});
+    cap=lt<3.4?caption('Fly, kite, fly!',lt,.3):caption('Bunny comes to play.',lt,3.4);
+    pops=pop('Hello, Bunny!',860,165,80,PINK,lt,4.0,-3);
+    break;}
+  case 3:{
+    // the wind stops; the kite floats down into the tree
+    o.noSun=true;
+    props=scenery()+windy(lt,1-prog(lt,0,1.2));
+    const u=eio(prog(lt,.8,3.0));
+    const p=arc(FLY,STUCK,u,40);
+    const r=lt<.8?-10:lerp(-10,-28,u)+(u<1?10*Math.sin(lt*4):3*Math.sin(lt*2));
+    front=kiteOn(p[0],p[1],lerp(.95,.85,u),r,Math.sin(lt*2)*(1-u*.7),HX,handY(lt,{hops:[4.6,5.4]}),lerp(40,120,u));
+    chars=lulu(lt,t,{hops:[4.6,5.4],h:14,wing:-30})+bunAt(lt,t,{hops:[5.0]});
+    cap=lt<3.4?caption('Oh! The wind stops.',lt,.3):caption('The kite is in the tree.',lt,3.4);
+    pops=pop('Oh!',900,165,110,ORANGE,lt,3.2,-4);
+    break;}
+  case 4:{
+    // Little Bird flies up and wiggles the kite free; it floats down to Lulu
+    o.noSun=true;
+    props=scenery();
+    const ua=eio(prog(lt,.3,2.0));
+    const ON=[STUCK[0]+10,STUCK[1]-74];              // Little Bird stands on top of the kite
+    let bx,by,fly=true,flip=true;
+    if(lt<2.0){const p=arc([1380,150],ON,ua,-40);bx=p[0];by=p[1];}
+    else if(lt<3.6){bx=ON[0];by=ON[1]+jumps(lt,[2.3,2.9],.35,10).y;fly=false;}
+    else{const p=arc(ON,[PERCH[0],PERCH[1]],eio(prog(lt,3.6,4.6)),40);bx=p[0];by=p[1];fly=lt<4.55;flip=lt>=4.6?false:false;}
+    // the kite: wiggles while the bird tugs, then floats down in front of Lulu
+    const wig=lt>2.1&&lt<3.6?8*Math.sin((lt-2.1)*16):0;
+    const ud=eio(prog(lt,3.6,5.8));
+    const kp=arc(STUCK,[560,400],ud,-30);
+    const kr=lt<3.6?-28+wig:lerp(-28,-12,ud)+8*Math.sin(lt*3)*(1-ud);
+    front=kiteOn(kp[0],kp[1],.85,kr,Math.sin(lt*2.4),HX,handY(lt,{hops:[6.0]}),lerp(120,30,ud));
+    front+=birdAt(bx,by,t,{fly,flip,noShadow:true});
+    chars=lulu(lt,t,{hops:[6.0],wing:-30})+bunAt(lt,t,{hops:[6.2]});
+    cap=lt<3.4?caption('Little Bird comes to help.',lt,.3):caption('Wiggle, wiggle. Down it comes!',lt,3.4);
+    pops=pop('Tweet!',900,170,96,BLUE,lt,2.2,-4);
+    break;}
+  case 5:{
+    // thank you, Little Bird! the wind comes back and the kite flies again
+    o.noSun=true;
+    for(let k=0;k<3;k++){let q=lt-.6-k*.6;if(q>0&&q<2.4)props+=heart(PERCH[0]+50+k*36+10*Math.sin(q*3),PERCH[1]-110-q*40,.5,PINK,Math.sin(Math.PI*q/2.4));}
+    props=scenery()+props+birdAt(PERCH[0],PERCH[1]+jumps(lt,[1.0,1.6],.4,10).y,t,{noShadow:true,wing:lt>.8&&lt<2.4?-20*Math.abs(Math.sin(lt*8)):0})+windy(lt,prog(lt,3.0,4.0));
+    const u=eout(prog(lt,3.6,5.8));
+    front=lt<3.6?kiteOn(560+6*Math.sin(lt*1.5),400,.85,-12+5*Math.sin(lt*2),Math.sin(lt*2),HX,handY(lt,{hops:[1.2,2.0]}),30)
+                :flying(lerp(560,FLY[0],u),lerp(400,FLY[1],u),.95,lt,handY(lt,{hops:[1.2,2.0]}));
+    chars=lulu(lt,t,{hops:[1.2,2.0],h:26})+bunAt(lt,t,{hops:[1.4,2.2,5.2]});
+    cap=lt<3.4?caption('Thank you, Little Bird!',lt,.3):caption('Up, up it goes again!',lt,3.4);
+    pops=pop('Hooray!',880,165,96,PURPLE,lt,1.0,-3);
+    break;}
+  case 6:{
+    // the sun goes down; the kite comes down to rest on the grass
+    n=lerp(0,.45,eio(prog(lt,.3,5.6))); o={noSun:true,noMoon:true};
+    behind=sun(t,1150,lerp(100,560,eio(prog(lt,.3,5.6))));
+    props=scenery()+birdAt(PERCH[0],PERCH[1],t,{noShadow:true,eye:lt>3.4?.45:undefined});
+    const u=eio(prog(lt,.4,2.8));
+    front=kiteOn(lerp(FLY[0],520,u)+8*Math.sin(lt*1.4)*(1-u),lerp(FLY[1],478,u),.85,lerp(-10,78,u),Math.sin(lt*2)*(1-u),lt<2.6?HX:null,handY(lt),lerp(40,8,u));
+    chars=lulu(lt,t,{eye:lt>3.4?.5:undefined,wing:lerp(-25,0,prog(lt,2.6,3.2))})+bunAt(lt,t,{eye:lt>3.6?.5:undefined});
+    cap=lt<3.0?caption('The sun goes down.',lt,.3):caption('Bye-bye, windy day!',lt,3.0);
+    pops=pop('Yawn!',920,170,96,PURPLE,lt,3.6,-3);
+    break;}
+  case 7:{
+    // night: Lulu and Bunny sleep by the kite, Little Bird sleeps on her branch
+    n=lerp(.45,1,eio(prog(lt,0,4))); o={noSun:true};
+    const asleep=lt>1.4, br=k=>1+.025*Math.sin(lt*2.2+k);
+    props=scenery()+birdAt(PERCH[0],PERCH[1],t,{noShadow:true,eye:asleep?.1:.45,sy:br(2)});
+    front=kiteOn(520,478,.85,78,0,null,null);
+    chars=shadow(LX,522,60)+place(LX,520,duck({asleep,eye:.45}),{s:1,sy:br(0),flip:true,rot:asleep?3:0})
+         +shadow(BUX-40,522,52)+place(BUX-40,520,bunny({eye:asleep?.12:.5}),{s:.9,sy:br(1),rot:asleep?-3:0});
+    for(let k=0;k<3;k++){let q=lt-2.0-k*.9;if(q>0){q%=2.7;
+      pops+=`<text x="${LX+30+q*24+8*Math.sin(q*3)}" y="${330-q*30}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}
+    cap=caption('Good night, friends.',lt,.5);
+    pops+=pop('The End',640,150,112,GOLD,lt,4.2,-3,NAVY);
+    break;}
+  }
+  o.noClouds=true;
+  svg.innerHTML=bg(t,n,cloud(980+12*Math.sin(t*.3),262,.6,1-n*.85)+behind,o)+props+chars+front+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#5EC2FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=`<path d="M0,440 Q300,360 640,420 T1280,410 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,520 Q380,470 760,505 T1280,490 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=tree(240,700,1.15)+branch(200,500,80,480)+place(80,474,bird({wing:-20}),{s:.6});
+  s+=windLine(1060,330,1,.8)+autumnLeaf(520,520,1.6,-30,AUTUMN[0])+autumnLeaf(1120,600,1.6,20,AUTUMN[2]);
+  s+=`<path d="M${930-50},${660-92} Q${(880+560)/2},${560} 560,${370+100}" stroke="#fff" stroke-width="4" fill="none"/>`;
+  s+=kite(560,370,1.2,-12,.5);
+  s+=place(930,660,duck({wing:-25}),{s:1.25,flip:true});
+  s+=label(`${LULU}<tspan fill="${NAVY}"> and the Windy Kite</tspan>`,640,150,92,PINK,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

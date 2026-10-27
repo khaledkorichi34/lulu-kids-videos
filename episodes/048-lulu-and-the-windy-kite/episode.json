@@ -1,0 +1,97 @@
+{
+  "number": 48,
+  "slug": "lulu-and-the-windy-kite",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and the Windy Kite | Bedtime Story for Kids",
+  "description": "It is a windy day, and Lulu the little duck flies her kite with Bunny. Whoosh!\nThe wind stops and the kite floats into a tree, so Little Bird comes to help. Wiggle, wiggle!\nThe kite flies again, the sun goes down, and the friends fall asleep on the grass.\nA gentle story about helping friends, for children aged 3 to 6.",
+  "duration": 53,
+  "seed": 48,
+  "lullaby_from": 40.0,
+  "sfx": [
+    {
+      "t": 0.4,
+      "type": "pop"
+    },
+    {
+      "t": 7.2,
+      "type": "boing_low"
+    },
+    {
+      "t": 7.6,
+      "type": "pop"
+    },
+    {
+      "t": 14.3,
+      "type": "boing_high"
+    },
+    {
+      "t": 14.8,
+      "type": "boing_high"
+    },
+    {
+      "t": 15.3,
+      "type": "boing_high"
+    },
+    {
+      "t": 16.0,
+      "type": "ding"
+    },
+    {
+      "t": 22.2,
+      "type": "pop"
+    },
+    {
+      "t": 28.2,
+      "type": "ding"
+    },
+    {
+      "t": 29.6,
+      "type": "sparkle"
+    },
+    {
+      "t": 34.0,
+      "type": "ding"
+    },
+    {
+      "t": 36.6,
+      "type": "sparkle"
+    },
+    {
+      "t": 42.8,
+      "type": "pop"
+    },
+    {
+      "t": 50.2,
+      "type": "sparkle"
+    }
+  ],
+  "check_times": [
+    2.5,
+    6,
+    8,
+    10.5,
+    13,
+    14.8,
+    16.5,
+    18,
+    20,
+    22,
+    23.5,
+    25,
+    27,
+    28.5,
+    30,
+    31.5,
+    33.5,
+    35,
+    37,
+    38.5,
+    41,
+    43,
+    44.5,
+    47,
+    50.5,
+    52
+  ]
+}
