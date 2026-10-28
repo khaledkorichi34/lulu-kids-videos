@@ -1,0 +1,21 @@
+{
+  "number": 50,
+  "slug": "are-you-sleeping-on-the-farm",
+  "format": "rhyme",
+  "ages": "2-6",
+  "title": "Are You Sleeping? on the Farm with Lulu | Nursery Rhyme for Kids",
+  "description": "Sing along to Are You Sleeping? with Lulu the little duck on the farm! It is early morning by the wooden fence, the golden bells go ding, dang, dong, and Lulu gently wakes up the puppy, the lamb and the little turtle.\nThe words light up with the music, for children aged 2 to 6.\nA classic nursery rhyme (traditional, 18th century; English words 19th century).",
+  "duration": 70,
+  "seed": 50,
+  "lullaby_from": null,
+  "rhyme": {"name": "brotherjohn", "bpm": 104, "start": 5.0, "repeat": 3, "gap": 4},
+  "sfx": [
+    {"t": 0.4, "type": "pop"},
+    {"t": 4.5, "type": "ding"},
+    {"t": 22.31, "type": "sparkle"},
+    {"t": 43.08, "type": "sparkle"},
+    {"t": 63.85, "type": "sparkle"},
+    {"t": 65.8, "type": "boing_high"}
+  ],
+  "check_times": [2.0, 4.6, 15.0, 22.5, 23.0, 24.6, 36.0, 43.4, 45.2, 57.0, 64.1, 66.0, 67.0]
+}

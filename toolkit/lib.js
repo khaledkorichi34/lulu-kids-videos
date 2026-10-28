@@ -1360,3 +1360,19 @@ function feather(x,y,s=1,rot=0,col='#C49A6C'){
   <path d="M-8,-4 l-8,-10 M10,-10 l-6,-12 M28,-16 l-4,-11 M4,6 l4,10 M22,0 l6,10" stroke="#fff" stroke-width="3" opacity=".45" stroke-linecap="round"/>
   <path d="M-70,30 Q-20,6 56,-24" stroke="#8A5A33" stroke-width="3.5" fill="none" stroke-linecap="round"/></g>`;
 }
+
+/* ---------- farm fence and bell beam (episode 50) ---------- */
+// fence(x0,x1,y,gap): low wooden farm fence standing on the ground line y (posts about 86 tall,
+// two rails), from x0 to x1 with a post every `gap` px. Draw it after bg() and before the characters.
+function fence(x0,x1,y=505,gap=120){
+  let s=`<rect x="${x0}" y="${y-66}" width="${x1-x0}" height="14" rx="7" fill="#C68B59"/><rect x="${x0}" y="${y-34}" width="${x1-x0}" height="14" rx="7" fill="#C68B59"/>`;
+  for(let x=x0+gap/2;x<x1;x+=gap)s+=`<path d="M${x-11},${y} L${x-11},${y-80} L${x},${y-90} L${x+11},${y-80} L${x+11},${y} Z" fill="#A86F42"/><rect x="${x-5}" y="${y-76}" width="4" height="70" rx="2" fill="#fff" opacity=".18"/>`;
+  return s;
+}
+// bellBeam(x0,x1,top,bottom): two wooden posts and a beam on top (at y=top), for hanging bell()s
+// from the beam (hang them at y = top + 8). The posts stand on y=bottom.
+function bellBeam(x0,x1,top=50,bottom=505){
+  return `<rect x="${x0-9}" y="${top}" width="18" height="${bottom-top}" rx="6" fill="#A86F42"/><rect x="${x1-9}" y="${top}" width="18" height="${bottom-top}" rx="6" fill="#A86F42"/>
+  <rect x="${x0-30}" y="${top-12}" width="${x1-x0+60}" height="22" rx="11" fill="#C68B59"/>
+  <circle cx="${x0}" cy="${top-1}" r="5" fill="#8B5A2B"/><circle cx="${x1}" cy="${top-1}" r="5" fill="#8B5A2B"/>`;
+}

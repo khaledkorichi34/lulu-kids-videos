@@ -1,0 +1,132 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script src="../../toolkit/rhymes.js"></script>
+<script>
+/* Episode 50 - Are You Sleeping? on the farm (sing-along). Early morning by a wooden farm fence:
+   three friends are still asleep in a row. Verse 1: Lulu sings to the puppy, who wakes on the last
+   "Dong!". Verse 2: Lulu hops over to the lamb. Verse 3: to the little turtle, who peeks out of her shell.
+   Three golden bells hang on a wooden beam and swing on "Morning bells are ringing" and "Ding, dang, dong!".
+   The sun rises; everyone hops "Good morning, friends!". */
+const BPM=104, START=5.0;
+const LINES=rhymeTimes(RHYMES.brotherjohn,START,3,4,BPM);
+const END=rhymeEnd(LINES);                 // 65.0 s
+const DUR=70, SC=[0,DUR];
+const SPB=60/BPM;
+const VS=[0,8,16].map(i=>LINES[i].t0);
+const WAKE=[7,15,23].map(i=>LINES[i].words[2].t0);  // the last "Dong!" of each verse
+const VEND=[7,15,23].map(i=>LINES[i].t1);
+const LX=[190,540,880];                    // where Lulu stands for each verse
+const FX=[400,740,1125];                   // the three friends (they face left, towards Lulu)
+const BELLS=[540,640,740], BY=58;
+
+function luluX(t){
+  let x=LX[0];
+  for(let k=0;k<2;k++){const u=prog(t,VEND[k]+.15,VS[k+1]-.15);if(u>0)x=lerp(LX[k],LX[k+1],eio(u));}
+  return x;
+}
+function lineAt(t){const li=currentLine(LINES,t);return li>=0&&t<LINES[li].t1+.05?LINES[li]:null;}
+
+function bellSwing(t,k){
+  const L=lineAt(t);
+  if(!L)return 3*Math.sin(t*1.6+k);
+  if(L.index===4||L.index===5){const u=t-L.t0;return 18*Math.sin(2*Math.PI*u/(2*SPB)+k*.6)*prog(u,0,.25);}
+  if(L.index===6||L.index===7){let wi=-1;L.words.forEach((w,i)=>{if(t>=w.t0)wi=i;});
+    if(wi<0)return 3*Math.sin(t*1.6+k);
+    const w=L.words[wi], q=t-w.t0;return (wi%2?-1:1)*22*Math.exp(-q*3)*Math.cos(q*9);}
+  return 3*Math.sin(t*1.6+k);
+}
+
+function friend(k,t,awake,p){
+  const e=blink(t,k*.9+.4);
+  if(k===0)return puppy({eye:e,asleep:!awake,tail:awake?Math.sin(t*5):.15*Math.sin(t*.8),ear:awake?.6*p:0});
+  if(k===1)return lamb({eye:e,asleep:!awake,fluff:awake?p:0,ear:awake?14*p:0});
+  const h=awake?.55*(1-eout(prog(t,WAKE[2],WAKE[2]+.5))):.55;
+  return turtle({eye:e,asleep:!awake,hide:h});
+}
+const FS=[.85,.9,.95], FH=[176,150,110];   // scale and height (at s=1) of each friend
+const HX=[-70,-64,-80];                     // head position (at s=1, already flipped) for the z's
+
+function zzz(x,y,t,k){
+  let s='';
+  for(let j=0;j<3;j++){let q=t-j*.9-k*.4;if(q<0)continue;q%=2.7;
+    s+=`<text x="${(x+q*20).toFixed(1)}" y="${(y-q*36).toFixed(1)}" font-size="${(22+q*9).toFixed(1)}" fill="#7B5CFF" stroke="#fff" stroke-width="4" paint-order="stroke" opacity="${(Math.sin(Math.PI*q/2.7)*.95).toFixed(2)}">z</text>`;}
+  return s;
+}
+
+function scenery(t){
+  return fence(-40,1320,505,128)+bellBeam(296,984,50,505);
+}
+
+function render(t){
+  const p=t>START-.2&&t<END+.4?beatPulse(LINES,t):0;
+  const L=lineAt(t), li=L?L.index:-1;
+  let props='',chars='',fx='',pops='',cap='';
+
+  // sunrise: the sun comes up from behind the hills during the title and the first verse
+  const sy=lerp(470,100,eio(prog(t,.3,8)));
+  const dawn=.22*(1-prog(t,2,VS[1]));
+
+  props+=scenery(t);
+  // three bells swing in under the beam after the title
+  const bd=back(prog(t,4.1,4.9));
+  if(bd>0){
+    BELLS.forEach((x,k)=>{props+=bell(x,BY,.8*clamp(bd,0,1.2),bellSwing(t,k),k===1?'#FFD23F':'#FFC928');});
+    if(L&&li>=4){for(let k=0;k<3;k++){const q=((t*1.4+k*.33)%1);
+      props+=sparkle(BELLS[k]+(k-1)*30+44*Math.sin(k*2+q*3),BY+140-q*40,.7,(1-q)*.9);}}
+  }
+
+  // the friends: asleep until their "Dong!", then awake and bouncing to the music
+  for(let k=0;k<3;k++){
+    const awake=t>=WAKE[k];
+    let y=520,sx=1,sy=1;
+    if(!awake){sy=1+.025*Math.sin(t*2.2+k*1.7);sx=1-.012*Math.sin(t*2.2+k*1.7);}
+    else{const j=jumps(t,[WAKE[k]],.6,60);y+=j.y-((t>WAKE[k]+.9&&t<END+.4)?6*p:0);sx=j.sx;sy=j.sy;}
+    if(t>END+.4){const j=jumps(t,[END+.8+k*.3,END+2.4+k*.3],.55,50);y=520+j.y;sx=j.sx;sy=j.sy;}
+    chars+=shadow(FX[k],524,(k===2?70:52)*FS[k],520-y)+place(FX[k],y,friend(k,t,awake,p),{s:FS[k],sx,sy,flip:true});
+    if(!awake&&t>4.4)fx+=zzz(FX[k]+HX[k]*FS[k],520-FH[k]*FS[k]-6,t,k);
+    if(awake&&t<WAKE[k]+1.2){const q=prog(t,WAKE[k],WAKE[k]+1.2);
+      for(let m=0;m<4;m++){const a=m*Math.PI/2+.6;fx+=sparkle(FX[k]+Math.cos(a)*(70+50*q),520-FH[k]*FS[k]*.6+Math.sin(a)*(50+40*q),1,1-q);}}
+  }
+
+  // Lulu: leans in on "Are you sleeping", waves on "Brother John", flaps on "Ding, dang, dong"
+  const lx=luluX(t);
+  let ly=520,lsx=1,lsy=1,rot=0,wing=0;
+  const walking=[0,1].some(k=>t>VEND[k]+.15&&t<VS[k+1]-.15);
+  if(walking){const j=jumps(t%0.5,[0],.45,22);ly+=j.y;lsx=j.sx;lsy=j.sy;wing=-15;}
+  else if(t>END+.4){const j=jumps(t,[END+.6,END+2.2],.55,50);ly+=j.y;lsx=j.sx;lsy=j.sy;wing=-30*Math.abs(Math.sin(t*6));}
+  else if(L){
+    if(li<=1)rot=7*Math.sin(Math.PI*prog(t,L.t0,L.t1));
+    else if(li<=3)wing=-35*Math.abs(Math.sin((t-L.t0)*7));
+    else if(li>=6)wing=-28*p;
+    ly-=5*p;
+  }
+  // while she walks to the next friend she passes behind the others
+  const lu=shadow(lx,524,62,520-ly)+place(lx,ly,duck({eye:blink(t,0),wing}),{s:.9,rot,sx:lsx,sy:lsy});
+  chars=walking?lu+chars:chars+lu;
+
+  // title card, then the words of the song, then good morning
+  const to=1-prog(t,3.9,4.5);
+  if(to>0)pops=`<g opacity="${to}">`+pop('Are You',640,190,100,'#FF5D8F',t,.4,-2,'#fff')+pop('Sleeping?',640,310,112,'#19B8A6',t,1.0,2,'#fff')+`</g>`;
+  cap=t<END+.5?karaoke(LINES,t,'#FF5D8F'):caption('Good morning, friends!',t-END,.6);
+
+  const sunG=sun(t,1150,sy);
+  const cl=cloud(150+12*Math.sin(t*.3),100,.8,1);
+  const tint=dawn>0?`<rect width="1280" height="720" fill="#FF9F6B" opacity="${dawn.toFixed(3)}"/>`:'';
+  svg.innerHTML=bg(t,0,sunG,{noSun:true,noFlowers:true,noClouds:true})+cl+props+chars+tint+fx+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,sun(0,1150,100),{noSun:true,noClouds:true,noFlowers:true})+cloud(140,96,.8,1)+scenery(0);
+  for(let k=0;k<3;k++)s+=shadow(FX[k],524,(k===2?70:52)*FS[k],0)+place(FX[k],520,friend(k,0,false,0),{s:FS[k],flip:true});
+  s+=zzz(FX[0]+HX[0]*FS[0],520-FH[0]*FS[0]-6,2.2,0)+zzz(FX[2]+HX[2]*FS[2],520-FH[2]*FS[2]-6,1.4,1);
+  s+=shadow(LX[0],524,62,0)+place(LX[0],520,duck({wing:-30}),{s:.9,rot:5});
+  s+=label('Are You',640,170,110,'#FF5D8F',-3,'#fff')+label('Sleeping?',640,298,120,'#19B8A6',-2,'#fff');
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
