@@ -1,0 +1,32 @@
+{
+  "number": 51,
+  "slug": "lulu-and-the-first-snow",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and the First Snow | Bedtime Story for Kids",
+  "description": "The first snow falls, and a little snowflake lands on Lulu the duck. Hee hee, it tickles!\nLulu and Pip the kitten roll big snowballs and build a friendly snowman together.\nThe sun goes down, and the friends fall asleep in the soft snow.\nA gentle winter story, for children aged 3 to 6.",
+  "duration": 54,
+  "seed": 51,
+  "lullaby_from": 38.0,
+  "sfx": [
+    {"t": 0.4, "type": "pop"},
+    {"t": 6.4, "type": "sparkle"},
+    {"t": 6.6, "type": "boing_high"},
+    {"t": 7.2, "type": "boing_high"},
+    {"t": 13.8, "type": "ding"},
+    {"t": 14.6, "type": "pop"},
+    {"t": 17.5, "type": "boing_high"},
+    {"t": 18.5, "type": "boing_high"},
+    {"t": 19.6, "type": "boing_high"},
+    {"t": 25.0, "type": "pop"},
+    {"t": 25.6, "type": "pop"},
+    {"t": 26.2, "type": "pop"},
+    {"t": 32.6, "type": "boing_low"},
+    {"t": 33.9, "type": "boing_low"},
+    {"t": 34.1, "type": "sparkle"},
+    {"t": 34.8, "type": "ding"},
+    {"t": 42.2, "type": "pop"},
+    {"t": 50.2, "type": "sparkle"}
+  ],
+  "check_times": [2.5, 6.5, 7.0, 9, 12.5, 14, 15.2, 18.5, 20, 22, 25, 27, 29.5, 31.8, 32.2, 33.3, 34.0, 35.2, 36.5, 40, 43, 45, 48, 51, 53]
+}

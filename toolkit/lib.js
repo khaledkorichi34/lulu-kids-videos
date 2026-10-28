@@ -1376,3 +1376,14 @@ function bellBeam(x0,x1,top=50,bottom=505){
   <rect x="${x0-30}" y="${top-12}" width="${x1-x0+60}" height="22" rx="11" fill="#C68B59"/>
   <circle cx="${x0}" cy="${top-1}" r="5" fill="#8B5A2B"/><circle cx="${x1}" cy="${top-1}" r="5" fill="#8B5A2B"/>`;
 }
+
+/* ---------- snowball (episode 51) ---------- */
+// snowball(x,y,r,rot,n): round rolling snowball resting on the ground at (x,y) (centre at y-r), radius r.
+// rot = rolling angle in degrees (little grey-blue flecks turn with it), n = night 0..1 tints it blue.
+// Stack: bottom r 62, middle r 45 at y-152+45, head r 34: the same sizes as snowman() at s=1.
+function snowball(x,y,r,rot=0,n=0){
+  const c=mix('#FFFFFF','#C9D3F0',n*.6), sh=mix('#E3EEF8','#AEB9DE',n*.6);
+  let f='';for(let k=0;k<4;k++){const a=(rot+k*90+20)*Math.PI/180, d=r*(.35+.18*(k%2));
+    f+=`<circle cx="${(Math.cos(a)*d).toFixed(1)}" cy="${(Math.sin(a)*d).toFixed(1)}" r="${(r*.07+1).toFixed(1)}" fill="#B9CCE0" opacity=".8"/>`;}
+  return `<g transform="translate(${x},${y-r})"><circle r="${r}" fill="${c}"/><ellipse cx="${r*.18}" cy="${r*.3}" rx="${r*.75}" ry="${r*.55}" fill="${sh}" opacity=".7"/><ellipse cx="${-r*.32}" cy="${-r*.35}" rx="${r*.3}" ry="${r*.2}" fill="#fff"/>${f}</g>`;
+}
