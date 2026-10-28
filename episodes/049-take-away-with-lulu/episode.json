@@ -1,0 +1,135 @@
+{
+  "number": 49,
+  "slug": "take-away-with-lulu",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "Take Away with Lulu: Little Sums | Subtraction for Kids",
+  "description": "Take away with Lulu the little duck!\n\nCount birds, bunnies, kittens, balls and frogs. Some go home, then count the ones that stay: 3 take away 1 is 2, all the way to 5 take away 2 is 3.\n\nA short, gentle first take-away video for children aged 3 to 6.",
+  "duration": 48.5,
+  "seed": 49,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.7,
+      "type": "sparkle"
+    },
+    {
+      "t": 6.75,
+      "type": "pop"
+    },
+    {
+      "t": 8.3,
+      "type": "ding"
+    },
+    {
+      "t": 8.6,
+      "type": "ding"
+    },
+    {
+      "t": 8.95,
+      "type": "sparkle"
+    },
+    {
+      "t": 14.0,
+      "type": "pop"
+    },
+    {
+      "t": 15.55,
+      "type": "ding"
+    },
+    {
+      "t": 15.85,
+      "type": "ding"
+    },
+    {
+      "t": 16.2,
+      "type": "sparkle"
+    },
+    {
+      "t": 21.75,
+      "type": "pop"
+    },
+    {
+      "t": 23.3,
+      "type": "ding"
+    },
+    {
+      "t": 23.6,
+      "type": "ding"
+    },
+    {
+      "t": 23.9,
+      "type": "ding"
+    },
+    {
+      "t": 24.2,
+      "type": "ding"
+    },
+    {
+      "t": 24.55,
+      "type": "sparkle"
+    },
+    {
+      "t": 29.5,
+      "type": "pop"
+    },
+    {
+      "t": 31.05,
+      "type": "ding"
+    },
+    {
+      "t": 31.4,
+      "type": "sparkle"
+    },
+    {
+      "t": 36.75,
+      "type": "pop"
+    },
+    {
+      "t": 38.3,
+      "type": "ding"
+    },
+    {
+      "t": 38.6,
+      "type": "ding"
+    },
+    {
+      "t": 38.9,
+      "type": "ding"
+    },
+    {
+      "t": 39.25,
+      "type": "sparkle"
+    },
+    {
+      "t": 42.45,
+      "type": "pop"
+    }
+  ],
+  "check_times": [
+    1.2,
+    3.2,
+    6.4,
+    7.35,
+    9.4,
+    9.5,
+    13.65,
+    14.6,
+    16.65,
+    16.75,
+    21.4,
+    22.35,
+    25.0,
+    25.1,
+    29.15,
+    30.1,
+    31.85,
+    31.95,
+    36.4,
+    37.35,
+    39.7,
+    39.8,
+    45.0,
+    46.0
+  ]
+}

@@ -1,0 +1,119 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 49 - Take Away with Lulu: five little take-away sums.
+   Friends appear and are counted, some go home (fly, hop, walk or roll away to the left),
+   then the ones that stay are counted.  Title, one scene per sum, finale. */
+// TIMING-START
+const SUMS=[[3,1,'birds'],[4,2,'bunnies'],[5,1,'kittens'],[4,3,'balls'],[5,2,'frogs']];
+const OBJ=.25, BADGE=.3, GO=1.3;
+function plan(a,b){
+  const p={a,b,N:a-b};
+  p.tA=k=>.5+k*OBJ; p.tAn=.5+a*OBJ+.05; p.tMinus=p.tAn+.6;
+  p.tGo=p.tAn+.9; p.tBn=p.tGo+.1;
+  p.tc=k=>p.tGo+GO+.2+k*BADGE; p.tr=p.tGo+GO+.2+p.N*BADGE+.1;
+  p.len=Math.round((p.tr+2.6)*2)/2;
+  return p;
+}
+const PLANS=SUMS.map(s=>plan(s[0],s[1]));
+const SC=[0,4.5];PLANS.forEach(p=>SC.push(SC[SC.length-1]+p.len));SC.push(SC[SC.length-1]+6.5);
+const DUR=SC[SC.length-1];
+// TIMING-END
+const CA='#FF5D8F', CB='#19B8A6', CR='#7B5CFF', INK='#2D2A6E', MINUS='−';
+const XA=300, XM=445, XB=590, XEQ=735, XR=890, EY=170, XC=560, LX=1100;
+
+function badge(x,y,k,lt,t0){
+  const u=prog(lt,t0,t0+.3);if(u<=0)return '';
+  return `<g transform="translate(${x},${y}) scale(${back(u)})"><circle r="25" fill="#fff" stroke="${CR}" stroke-width="5"/><text y="12" text-anchor="middle" font-size="34" fill="${INK}">${k+1}</text></g>`;
+}
+function hearts(lt,t0){
+  let s='';
+  for(let k=0;k<9;k++){const q=lt-(t0+k*.4);if(q>0){const y=610-q*120,x=110+k*132+25*Math.sin(q*2+k),o=clamp((y-50)/140)*clamp(q*3)*.9;
+    if(y>40)s+=heart(x,y,1+(k%3)*.25,['#FF5D8F','#FF9F1C','#FFFFFF'][k%3],o);}}
+  return s;
+}
+// one friend of kind `kind`: feet at (x, 520+dy), grown by g, squash j, flip = facing left, u = leaving progress
+function thing(kind,x,dy,g,j,t,k,flip,u){
+  const y=520+dy+j.y, sh=shadow(x,522,44,-(dy+j.y));
+  if(kind==='birds')return sh+place(x,y,bird({eye:blink(t,k*.8),wing:u>0?-35*Math.abs(Math.sin(t*14)):-j.y*.6}),{s:.78*g,sx:j.sx,sy:j.sy,flip});
+  if(kind==='bunnies')return sh+place(x,y,bunny({eye:blink(t,k*1.1),ear:Math.sin(t*3+k)*.5}),{s:.75*g,sx:j.sx,sy:j.sy,flip});
+  if(kind==='kittens')return sh+place(x,y,kitten({eye:blink(t,k*1.3),tail:Math.sin(t*2+k)}),{s:.72*g,sx:j.sx,sy:j.sy,flip});
+  if(kind==='balls')return shadow(x,522,36,-(dy+j.y))+ball(x,y,46*g,u>0?-u*900:0);
+  return sh+place(x,y,frog({eye:blink(t,k*.9)}),{s:.75*g,sx:j.sx,sy:j.sy,flip});
+}
+const SPACE={birds:150,bunnies:145,kittens:145,balls:130,frogs:145};
+const xs=(n,c,sp)=>Array.from({length:n},(_,k)=>c+(k-(n-1)/2)*sp);
+const GOING={birds:'fly',bunnies:'hop',kittens:'walk',balls:'roll',frogs:'hop'};
+const BYE={birds:'Fly home, bye bye!',bunnies:'Hop hop, bye bye!',kittens:'Bye bye, kitten!',balls:'Roll away, ball!',frogs:'Hop hop, bye bye!'};
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={};
+  if(i===0){
+    o={noClouds:true};
+    const j=jumps(lt,[1.4,2.4],.6,30);
+    chars=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:20+20*Math.sin(lt*9),eye:blink(t,0)}),{s:1.1,sx:j.sx,sy:j.sy});
+    pops=pop('Take Away with',640,128,84,INK,lt,.3)+pop(LULU,640,262,140,'#FF5D8F',lt,.7,-3);
+    ['3',MINUS,'1','=','2'].forEach((c,k)=>{pops+=pop(c,440+k*100,680,92,[CA,INK,CB,INK,CR][k],lt,1.5+k*.3);});
+  }else if(i<=SUMS.length){
+    const [a,b,kind]=SUMS[i-1], p=PLANS[i-1], N=a-b;
+    o={noSun:true,noFlowers:true,noClouds:true};
+    const X=xs(a,XC,SPACE[kind]);
+    X.forEach((x0,k)=>{
+      const t0=p.tA(k);
+      const g=lt>t0?back(prog(lt,t0,t0+.35)):0;if(g<=0)return;
+      const leaving=k<b;
+      if(leaving){
+        // goes home to the left, one after another
+        const u=prog(lt,p.tGo+k*.15,p.tGo+GO+k*.15);
+        if(u>=1)return;
+        const x=lerp(x0,-160,eio(u));
+        let dy=0;
+        if(GOING[kind]==='fly')dy=-150*eio(u);
+        else if(GOING[kind]==='hop')dy=-38*Math.abs(Math.sin(Math.PI*3*u));
+        chars+=thing(kind,x,dy,g,{y:0,sx:1,sy:1},t,k,u>0,u);
+      }else{
+        const r=k-b;
+        const j=jumps(lt,[p.tr+.25+r*.08],.55,28);
+        chars+=thing(kind,x0,0,g,j,t,k,false,0);
+        pops+=badge(x0,563,r,lt,p.tc(r));
+      }
+    });
+    // Lulu watches from the right, waves goodbye, and cheers when the answer appears
+    const lj=jumps(lt,[p.tr+.2],.55,18);
+    const waving=lt>p.tGo&&lt<p.tGo+GO;
+    chars+=shadow(LX,522,52,-lj.y)+place(LX,520+lj.y,duck({eye:blink(t,.5),wing:(lt>p.tr||waving)?28*Math.abs(Math.sin(lt*10)):0}),{s:.85,sx:lj.sx,sy:lj.sy,flip:true});
+    pops+=pop(String(a),XA,EY,150,CA,lt,p.tAn)+pop(MINUS,XM,EY,130,INK,lt,p.tMinus)+pop(String(b),XB,EY,150,CB,lt,p.tBn)
+         +pop('=',XEQ,EY,130,INK,lt,p.tr-.15)+pop(String(N),XR,EY,170,CR,lt,p.tr,-4);
+    cap=lt<p.tr+.1?caption(BYE[kind],lt,p.tGo+.1):caption(`${a} take away ${b} is ${N}`,lt,p.tr+.1);
+  }else{
+    const j=jumps(lt,[2.6,3.7,4.8],.6,35), jb=jumps(lt,[2.9,4.0,5.1],.55,30);
+    props=hearts(lt,2.4);o={noClouds:true};
+    chars=shadow(330,522,46,-jb.y)+place(330,520+jb.y,bunny({eye:blink(t,.4),ear:Math.sin(lt*3)*.5}),{s:.9,sx:jb.sx,sy:jb.sy});
+    chars+=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:25+25*Math.sin(lt*10),eye:blink(t,0)}),{s:1.1,sx:j.sx,sy:j.sy});
+    chars+=shadow(940,522,50,-jb.y)+place(940,520+jb.y,frog({eye:blink(t,1.1)}),{s:.95,sx:jb.sx,sy:jb.sy,flip:true});
+    pops=pop('Well done!',640,170,120,'#FF9F1C',lt,.4,-3);
+    cap=caption('Great counting!',lt,1.6);
+  }
+  svg.innerHTML=bg(t,0,'',o)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(110,90,1.0,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(250,662,140)+place(232,658,duck({wing:22}),{s:2.0});
+  s+=label('3',540,250,190,CA,-5)+label(MINUS,665,240,150,INK)+label('1',790,250,190,CB,4)+label('=',915,240,150,INK)+label('2',1060,255,210,CR,-4);
+  s+=shadow(700,662,44)+place(700,658,bird({}),{s:.8})+shadow(850,662,44)+place(850,658,bird({}),{s:.8});
+  s+=place(1070,630,bird({wing:-30}),{s:.7,flip:true});
+  s+=label('Take Away with',820,385,64,INK)+label(LULU,820,478,90,'#FF5D8F',-3);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
