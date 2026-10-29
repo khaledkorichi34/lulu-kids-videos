@@ -1,0 +1,92 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 52 - Big, Bigger, Biggest with Lulu: comparing sizes.
+   Title, three scenes where three things appear from smallest to biggest (balls, apples, bunnies)
+   with the words big / bigger / biggest, a question scene (which pumpkin is the biggest?), finale. */
+const SC=[0,4.5,12,19.5,27,34.5,41];
+const DUR=SC[SC.length-1];
+const INK='#2D2A6E', COLS=['#19B8A6','#7B5CFF','#FF5D8F'], WORDS=['big','bigger','biggest'];
+const XS=[230,520,860], WY=170, WS=72, LX=1120;
+const T0=k=>.9+k*1.1;            // when thing k appears (its word pops .2 s later)
+const ANS=4.4;                   // second caption
+const KINDS=[
+  {name:'balls', s:[48,68,92], cap:'Look at the balls!'},
+  {name:'apples', s:[.6,.9,1.25], cap:'Yummy red apples!'},
+  {name:'bunnies', s:[.55,.8,1.05], cap:'Hello, little bunnies!'},
+];
+
+function lulu(x,t,lt,o={}){const j=o.j||{y:0,sx:1,sy:1};return shadow(x,522,48,-j.y)+place(x,520+j.y,duck({eye:blink(t,.3),wing:o.wing||0}),{s:o.s||.8,sx:j.sx,sy:j.sy,flip:o.flip});}
+// thing of a kind with size index k, grown by g, bounce j
+function thing(kind,x,k,g,j,t,lt){
+  const sz=kind.s[k];
+  if(kind.name==='balls')return shadow(x,522,sz*.9,-j.y)+ball(x,520+j.y,sz*g,0);
+  if(kind.name==='apples')return shadow(x,522,95*sz,-j.y)+`<g transform="translate(${x},${520+j.y}) scale(${g*j.sx},${g*j.sy}) translate(${-x},-520)">${apple(x,520,sz)}</g>`;
+  return shadow(x,522,46*sz,-j.y)+place(x,520+j.y,bunny({eye:blink(t,k*.9),ear:Math.sin(lt*3+k)*.5}),{s:sz*g,sx:j.sx,sy:j.sy});
+}
+function hearts(lt,t0){
+  let s='';
+  for(let k=0;k<9;k++){const q=lt-(t0+k*.4);if(q>0){const y=610-q*120,x=110+k*132+25*Math.sin(q*2+k),o=clamp((y-240)/120)*clamp(q*3)*.9;
+    if(y>240)s+=heart(x,y,1+(k%3)*.25,['#FF5D8F','#FF9F1C','#FFFFFF'][k%3],o);}}
+  return s;
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={noClouds:true};
+  if(i===0){
+    const j=jumps(lt,[2.4,3.4],.6,22);
+    chars=lulu(640,t,lt,{s:.9,j,wing:18+18*Math.sin(lt*9)});
+    pops=pop('Big,',640,100,64,COLS[0],lt,.3)+pop('Bigger,',640,195,88,COLS[1],lt,.8,-2)+pop('Biggest!',640,305,112,COLS[2],lt,1.3,2);
+    cap=caption("Let's look at sizes!",lt,1.9);
+  }else if(i<=3){
+    const kind=KINDS[i-1];
+    XS.forEach((x,k)=>{
+      const a=T0(k);if(lt<a)return;
+      const g=back(prog(lt,a,a+.35));
+      const j=jumps(lt,[a+.4,ANS+.2+k*.15],.5,22);
+      chars+=thing(kind,x,k,g,j,t,lt);
+      pops+=pop(WORDS[k],x,WY,WS,COLS[k],lt,a+.2,k===1?-3:3);
+    });
+    chars+=lulu(LX,t,lt,{flip:true,wing:lt>ANS?24*Math.abs(Math.sin(lt*9)):0});
+    cap=lt<ANS?caption(kind.cap,lt,.3):caption('Big, bigger, biggest!',lt,ANS);
+  }else if(i===4){
+    // which pumpkin is the biggest? sizes out of order; the biggest wiggles
+    const S=[.75,1.15,.5];
+    XS.forEach((x,k)=>{
+      const a=.5+k*.25, g=back(prog(lt,a,a+.35));
+      const rot=(k===1&&lt>3.4)?6*Math.sin((lt-3.4)*9)*Math.exp(-(lt-3.4)*1.2):0;
+      if(g>0)chars+=shadow(x,524,100*S[k])+`<g transform="translate(${x},520) scale(${g}) translate(${-x},-520)">${pumpkin(x,520,S[k],rot)}</g>`;
+    });
+    if(lt>3.4)for(let k=0;k<4;k++){const q=lt-3.4-k*.2;chars+=sparkle(XS[1]+[-175,175,-160,165][k],[320,340,440,430][k],1.8,clamp(q*3)*(.6+.4*Math.sin(lt*6+k)));}
+    chars+=lulu(LX,t,lt,{flip:true,wing:lt>3.6?24*Math.abs(Math.sin(lt*9)):0});
+    pops=pop('biggest',XS[1],WY,WS+10,COLS[2],lt,3.4,-3);
+    cap=lt<3.4?caption('Which is the biggest?',lt,.6):caption('This one is the biggest!',lt,3.6);
+  }else{
+    const j=jumps(lt,[2.4,3.5,4.6],.6,30);
+    props=hearts(lt,2.2);
+    [.42,.62,.86].forEach((s,k)=>{chars+=shadow(130+k*120+k*k*12,522,90*s)+apple(130+k*120+k*k*12,520,s);});
+    [30,46,64].forEach((r,k)=>{chars+=shadow(870+k*120+k*k*8,522,r*.9)+ball(870+k*120+k*k*8,520,r,0);});
+    chars+=lulu(640,t,lt,{s:1.05,j,wing:25+25*Math.sin(lt*10)});
+    pops=pop('Well done!',640,170,120,'#FF9F1C',lt,.4,-3);
+    cap=caption('Big, bigger, biggest!',lt,1.4);
+  }
+  svg.innerHTML=bg(t,0,'',o)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(210,662,110)+place(210,658,duck({wing:22}),{s:1.55});
+  s+=shadow(560,662,40)+ball(560,658,44,0)+shadow(760,662,64)+ball(760,658,70,0)+shadow(1040,662,96)+ball(1040,658,104,0);
+  s+=label('Big,',470,150,72,COLS[0],-3)+label('Bigger,',800,170,96,COLS[1],-2)+label('Biggest!',880,330,124,COLS[2],2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

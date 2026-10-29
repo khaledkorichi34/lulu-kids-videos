@@ -1,0 +1,99 @@
+{
+  "number": 52,
+  "slug": "big-bigger-biggest",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "Big, Bigger, Biggest with Lulu | Sizes for Kids",
+  "description": "Big, bigger, biggest with Lulu the little duck!\n\nBalls, apples and bunnies line up from the smallest to the biggest, then we find the biggest pumpkin.\n\nA short, gentle first video about sizes for children aged 3 to 6.",
+  "duration": 41,
+  "seed": 52,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.9,
+      "type": "sparkle"
+    },
+    {
+      "t": 5.4,
+      "type": "pop"
+    },
+    {
+      "t": 6.5,
+      "type": "pop"
+    },
+    {
+      "t": 7.6,
+      "type": "pop"
+    },
+    {
+      "t": 8.9,
+      "type": "ding"
+    },
+    {
+      "t": 12.9,
+      "type": "pop"
+    },
+    {
+      "t": 14.0,
+      "type": "pop"
+    },
+    {
+      "t": 15.1,
+      "type": "pop"
+    },
+    {
+      "t": 16.4,
+      "type": "ding"
+    },
+    {
+      "t": 20.4,
+      "type": "pop"
+    },
+    {
+      "t": 21.5,
+      "type": "pop"
+    },
+    {
+      "t": 22.6,
+      "type": "pop"
+    },
+    {
+      "t": 23.9,
+      "type": "ding"
+    },
+    {
+      "t": 27.5,
+      "type": "pop"
+    },
+    {
+      "t": 27.75,
+      "type": "pop"
+    },
+    {
+      "t": 28.0,
+      "type": "pop"
+    },
+    {
+      "t": 30.4,
+      "type": "sparkle"
+    },
+    {
+      "t": 34.9,
+      "type": "sparkle"
+    }
+  ],
+  "check_times": [
+    3.0,
+    8.5,
+    10.5,
+    15.5,
+    18.5,
+    23.5,
+    26.0,
+    29.0,
+    31.5,
+    33.5,
+    38.0,
+    40.0
+  ]
+}
