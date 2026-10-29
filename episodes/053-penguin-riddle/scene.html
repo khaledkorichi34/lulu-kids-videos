@@ -1,0 +1,138 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 53 - Who am I? A snowy riddle.  Title, three clues (I am a bird, but I cannot fly (a flipper
+   waves from behind the snow drift); I swim very well in the sea; I am black and white), "Who am I?",
+   the reveal (a penguin waddles out), fact 1 (penguins swim with their wings, which work like
+   flippers), fact 2 (penguins slide on their tummies on the ice and snow), goodbye. */
+const SC=[0,5.5,12.5,19.5,26.5,32.5,39.5,46.5,53.5,59], DUR=59;
+const NAVY='#2D2A6E', PURPLE='#7B5CFF', ORANGE='#E76F2E', BLUE='#1C7FC4', TEAL='#19B8A6', PINK='#FF5D8F';
+const BX=760, BS=1.1;                                   // snow drift centre and scale
+const shade=(x,w,lift=0)=>`<ellipse cx="${x}" cy="522" rx="${w*(1-clamp(-lift/260)*.5)}" ry="${w*.18}" fill="#7F93B0" opacity=".25"/>`;
+const lulu=(x,lt,t,hops,h=20,s=.95,wave=false,y=520)=>{
+  const j=jumps(lt,hops,.6,h), w=wave?20+20*Math.sin(lt*9):0;
+  return (y===520?shade(x,56*s/.95,j.y):'')+place(x,y+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy});
+};
+const P=(x,y,t,o={},s=1,rot=0,flip=false)=>place(x,y,penguin(Object.assign({eye:blink(t,.6)},o)),{s,rot,flip});
+const qmark=t=>label('?',BX,455+4*Math.sin(t*3),110,'#fff',0,BLUE,.12);
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.4)):0;
+function icon(x,y,g,inner){
+  if(g<=0)return '';
+  return `<g transform="translate(${x},${y}) scale(${g})"><defs><clipPath id="ic"><circle r="88"/></clipPath></defs>
+  <circle r="92" fill="#fff" stroke="#FFD23F" stroke-width="7"/><g clip-path="url(#ic)">${inner}</g></g>`;
+}
+// the sea with a little round fish
+function seaIcon(t){
+  const w=(y,k)=>`<path d="M-100,${y} Q-75,${y-12+4*Math.sin(t*2+k)} -50,${y} T0,${y} T50,${y} T100,${y} L100,100 L-100,100Z" fill="${['#7FD0F7','#4DB8F0','#2D9BE0'][k]}"/>`;
+  return `<rect x="-100" y="-100" width="200" height="200" fill="#E3F5FF"/>${w(-30,0)}${w(10,1)}${w(50,2)}`+
+    `<g transform="translate(${10*Math.sin(t*1.5)},40) scale(.45)">${fish({eye:blink(t,.2),col:'#FF9F1C',tail:Math.sin(t*6)})}</g>`;
+}
+// black back and white tummy
+function tummyIcon(){
+  return `<rect x="-100" y="-100" width="200" height="200" fill="#E3F2FF"/>
+  <ellipse cx="0" cy="40" rx="78" ry="110" fill="#2E3550"/><ellipse cx="8" cy="52" rx="54" ry="86" fill="#fff"/>`;
+}
+// a flipper waving from behind the right side of the snow drift
+function peekFlipper(lt,a,b){
+  const u=prog(lt,a,a+.5)-prog(lt,b-.5,b);if(u<=0)return '';
+  const r=-20-25*(.5+.5*Math.sin((lt-a)*9));
+  return `<g transform="translate(${BX+185*BS-40+40*u},380) rotate(${r}) scale(1.35)"><path d="M0,0 Q36,22 46,80 Q28,72 8,40 Z" fill="#232940"/></g>`;
+}
+function sparkles(x,y,lt,t0){
+  const u=prog(lt,t0,t0+1.2);if(u<=0||u>=1)return '';
+  let s='';for(let k=0;k<6;k++){const a=k*Math.PI/3+.4, d=40+u*110;s+=sparkle(x+Math.cos(a)*d,y+Math.sin(a)*d*.7,1.3,1-u);}
+  return s;
+}
+// the sea for fact 1: water from the horizon down, an ice floe on the left for Lulu
+function sea(t){
+  let s=`<rect x="0" y="330" width="1280" height="390" fill="#7FD0F7"/><rect x="0" y="372" width="1280" height="348" fill="#4DB8F0"/>
+  <rect x="0" y="470" width="1280" height="250" fill="#2D9BE0" opacity=".55"/>`;
+  for(let k=0;k<6;k++){const x=((k*230+t*30)%1400)-60;s+=`<path d="M${x},${360+(k%2)*6} q20,-8 40,0" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity=".6"/>`;}
+  s+=`<path d="M-10,365 L300,365 Q320,372 300,385 L250,420 L-10,420Z" fill="#FFFFFF"/><path d="M-10,385 L300,385 L250,420 L-10,420Z" fill="#CDE6F7"/>`;
+  return s;
+}
+function trail(x,y,lt,a){ // bubbles left behind by the swimming penguin
+  let s='';for(let k=0;k<6;k++){const q=((lt-a)*1.6+k/6)%1, bx=x-60-q*120-k*8, by=y-20-q*60;
+    if(lt>a)s+=bubble(bx,by,6+k%3*3,(1-q)*.9);}
+  return s;
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let back_='',props='',chars='',pops='',cap='',o={noClouds:true,noFlowers:true};
+  const sky=cloud(130+10*Math.sin(t*.3),100,.9,.95)+cloud(470+8*Math.sin(t*.25+1),60,.6,.9);
+  back_=bg(t,0,sky,o)+snowHills(1);
+  if(i===0){
+    props=snowDrift(960,520,.9);
+    chars=lulu(330,lt,t,[1.3,2.3],30,1.1,true);
+    pops=pop('Who am I?',640,165,120,PURPLE,lt,.3,-3);
+    cap=caption('A snowy riddle with '+LULU,lt,1.8,'A snowy riddle with Lulu');
+  }else if(i>=1&&i<=3){
+    const N=i;
+    if(N===1)props+=peekFlipper(lt,2.2,6.4);
+    const shake=N===3?14*Math.sin(lt*14)*prog(lt,2.6,2.9)*(1-prog(lt,3.8,4.2)):0;
+    props+=snowDrift(BX+shake,520,BS)+qmark(t);
+    if(N===2)props+=icon(1110,370,grow(lt,2.4),seaIcon(t));
+    if(N===3)props+=icon(1110,370,grow(lt,2.4),tummyIcon());
+    chars=lulu(230,lt,t,[3.2]);
+    pops=pop('Clue '+N,640,150,100,ORANGE,lt,.3);
+    cap=caption(['','I am a bird, but I cannot fly.','I swim very well in the sea.','I am black and white.'][N],lt,1.2);
+  }else if(i===4){
+    props=snowDrift(BX+18*Math.sin(lt*14)*prog(lt,4.2,4.5)*(1-prog(lt,5.6,6)),520,BS)+qmark(t);
+    chars=lulu(230,lt,t,[]);
+    pops=pop('cannot fly',250,165,52,PURPLE,lt,.3)+pop('swims',560,165,52,BLUE,lt,.9)+pop('black &amp; white',855,165,52,NAVY,lt,1.5);
+    cap=caption('Who am I? Can you guess?',lt,2.2);
+  }else if(i===5){
+    const u=eio(prog(lt,.5,3.3)), px=lerp(BX,1080,u), walking=u>0&&u<1;
+    props=P(px,520,t,{flap:walking?.3+.3*Math.sin(lt*12):(lt>3.6?.5+.5*Math.sin(lt*8):0)},1,walking?7*Math.sin(lt*12):0);
+    props=(u>.6?shade(px,62):'')+props+snowDrift(BX,520,BS);
+    props+=sparkles(px,400,lt,3.5);
+    chars=lulu(230,lt,t,[3.9,4.6],30,.95,lt>3.8);
+    pops=pop('A penguin!',620,165,110,ORANGE,lt,3.5,-3);
+    cap=caption('I am a penguin!',lt,4.0);
+  }else if(i===6){
+    back_=bg(t,0,sky,o)+sea(t);
+    const u=prog(lt,.6,6.4), px=lerp(330,1420,u), py=505+22*Math.sin(u*Math.PI*3);
+    props=trail(px,py,lt,.8)+P(px,py,t,{flap:Math.sin(lt*10)},.85,90+8*Math.cos(u*Math.PI*3));
+    chars=lulu(150,lt,t,[],0,.72,false,367);
+    pops=pop('Fact 1',640,150,100,BLUE,lt,.3)+(lt>4.0?pop('Swish!',900,290,66,TEAL,lt,4.0,-4):'');
+    cap=lt<3.6?caption('Penguins swim with their wings.',lt,1.0):caption('Their wings work like flippers.',lt,3.6);
+  }else if(i===7){
+    // stand, lie down on the tummy, slide, stand up again
+    const down=eio(prog(lt,1.0,1.4))-eio(prog(lt,4.4,4.8)), sl=eout(prog(lt,1.4,4.2)), S=.9;
+    const px=lerp(400,1000,sl), lift=60*S*down;
+    props=shade(px+60*down,62)+P(px,520-lift,t,{flap:lt>4.9?.5+.5*Math.sin(lt*8):(down>.5?-.6:0)},S,90*down);
+    if(lt>1.4&&lt<4.2)for(let k=0;k<5;k++){const q=((lt*2+k/5)%1);props+=`<circle cx="${px-70-q*90}" cy="${512-q*30+k%2*8}" r="${7-q*4}" fill="#fff" opacity="${(1-q)*.9}"/>`;}
+    chars=lulu(170,lt,t,[2.0],22,.85,lt>4.9);
+    pops=pop('Fact 2',640,150,100,BLUE,lt,.3)+(lt>1.6&&lt<4.4?pop('Wheee!',880,300,70,PINK,lt,1.6,-4):'');
+    cap=lt<3.8?caption('Penguins slide on their tummies.',lt,1.0):caption('They slide on the ice and snow.',lt,3.8);
+  }else{
+    props=heart(600,300+6*Math.sin(t*3),1.4,'#FF7FB0',.85*prog(lt,2,2.5))+heart(560,245+6*Math.sin(t*3+1),1,'#FF9AA2',.85*prog(lt,2.3,2.8));
+    const j=jumps(lt,[1.2,2.1],.6,24);
+    props+=shade(860,62,j.y)+place(860,520+j.y,penguin({eye:blink(t,.6),flap:.5+.5*Math.sin(lt*8)}),{s:1,sx:j.sx,sy:j.sy,flip:true});
+    chars=lulu(380,lt,t,[1.0,1.8],26,.95,true);
+    pops=pop('Bye bye!',640,160,110,PURPLE,lt,.4,-2);
+    cap=caption('Bye bye, little penguin!',lt,1.6);
+  }
+  svg.innerHTML=back_+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(140,110,1.2,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#EAF3FA"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#FFFFFF"/>`;
+  s+=shadow(165,702,85)+place(160,698,duck({wing:22}),{s:1.25});
+  s+=`<g transform="translate(1180,470) rotate(-35)"><path d="M0,0 Q36,22 46,80 Q28,72 8,40 Z" fill="#232940" transform="scale(1.5)"/></g>`;
+  s+=snowDrift(1010,665,1.25)+label('?',1010,590,170,'#fff',0,BLUE,.12);
+  s+=label('Who',640,190,150,'#FF5D8F',-3)+label('am I?',660,350,150,PURPLE,-3);
+  s+=label('A snowy riddle with '+LULU,640,440,60,NAVY);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

@@ -1387,3 +1387,38 @@ function snowball(x,y,r,rot=0,n=0){
     f+=`<circle cx="${(Math.cos(a)*d).toFixed(1)}" cy="${(Math.sin(a)*d).toFixed(1)}" r="${(r*.07+1).toFixed(1)}" fill="#B9CCE0" opacity=".8"/>`;}
   return `<g transform="translate(${x},${y-r})"><circle r="${r}" fill="${c}"/><ellipse cx="${r*.18}" cy="${r*.3}" rx="${r*.75}" ry="${r*.55}" fill="${sh}" opacity=".7"/><ellipse cx="${-r*.32}" cy="${-r*.35}" rx="${r*.3}" ry="${r*.2}" fill="#fff"/>${f}</g>`;
 }
+
+/* ---------- penguin, snow drift and snowy hills (episode 53) ---------- */
+// penguin({eye, flap, asleep}): little penguin facing right, origin at its feet (about 182 tall and 130 wide at s=1).
+// flap = -1..1 swings its flipper (0 = hanging down). Swimming: place(...,{rot:90}) turns it head-right
+// with the tummy down; sliding on its tummy: rot 90 and lift it 60*s so the tummy touches the ground.
+function penguin(o={}){
+  const e=o.eye==null?1:o.eye, f=(o.flap||0)*38;
+  const eye=(x,r)=>o.asleep
+    ?`<path d="M${x-r},-139 Q${x},${-133} ${x+r},-139" stroke="#1d2433" stroke-width="3.5" fill="none" stroke-linecap="round"/>`
+    :`<g transform="translate(${x},-139) scale(1,${e})"><circle r="${r}" fill="#1d2433"/><circle cx="2" cy="-2.4" r="${r*.36}" fill="#fff"/></g>`;
+  return `
+  <ellipse cx="-20" cy="-5" rx="21" ry="8" fill="#FF9F1C"/><ellipse cx="24" cy="-5" rx="21" ry="8" fill="#FF9F1C"/>
+  <ellipse cx="0" cy="-92" rx="62" ry="90" fill="#2E3550"/>
+  <ellipse cx="14" cy="-70" rx="43" ry="64" fill="#FFFFFF"/>
+  <ellipse cx="24" cy="-134" rx="31" ry="25" fill="#FFFFFF"/>
+  <ellipse cx="-18" cy="-150" rx="16" ry="10" fill="#4A5578" opacity=".7"/>
+  <g transform="rotate(${-f} -36 -114)"><path d="M-36,-118 Q-62,-90 -60,-40 Q-44,-52 -28,-96 Z" fill="#232940"/></g>
+  ${eye(14,6.5)}${eye(40,7.5)}
+  <path d="M44,-129 L72,-122 L44,-114 Z" fill="#FF9F1C"/>
+  <circle cx="6" cy="-120" r="7" fill="#FF9AA2" opacity=".75"/><circle cx="44" cy="-108" r="6" fill="#FF9AA2" opacity=".75"/>`;
+}
+// snowDrift(x,y,s): big round snow mound standing on the ground at (x,y), about 380 wide and 220 tall at s=1
+// (spans x-190..x+190, y-220..y). A penguin (s .95) hides fully behind it.
+function snowDrift(x,y,s=1){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-195,4 Q-200,-120 -90,-180 Q10,-236 110,-180 Q200,-120 195,4 Z" fill="#FFFFFF"/>
+  <path d="M60,-190 Q170,-130 190,0 L120,4 Q140,-110 60,-190 Z" fill="#DCE9F5"/>
+  <ellipse cx="-70" cy="-150" rx="50" ry="22" fill="#F4F9FF"/>
+  <ellipse cx="0" cy="2" rx="200" ry="12" fill="#C9DCEE" opacity=".6"/></g>`;
+}
+// snowHills(u,n): the hills of bg() covered in snow; u = 0..1 how much snow, n = night 0..1. Draw right after bg().
+function snowHills(u=1,n=0){
+  if(u<=0)return '';
+  return `<g opacity="${u}"><path d="M0,440 Q300,330 640,410 T1280,400 L1280,720 L0,720Z" fill="${mix('#EAF3FA','#8E9CC9',n)}"/><path d="M0,500 Q380,440 760,490 T1280,470 L1280,720 L0,720Z" fill="${mix('#FFFFFF','#A7B4DD',n)}"/></g>`;
+}

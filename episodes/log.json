@@ -909,5 +909,23 @@
     "videoId": "BMTAwOHFCsM",
     "tiktokPostId": 409775927,
     "published": "2026-10-29"
+  },
+  {
+    "number": 53,
+    "slug": "penguin-riddle",
+    "format": "curious",
+    "ages": "6-10",
+    "title": "Who Am I? A Snowy Animal Riddle with Lulu | Riddle for Kids",
+    "topic": "'Who am I?' riddle: penguin (clues: a bird that cannot fly (a flipper waves from behind a snow drift), swims very well in the sea, black and white); facts: penguins swim with their wings, which work like flippers; penguins slide on their tummies on the ice and snow",
+    "cast": [
+      "duck",
+      "penguin",
+      "snow drift",
+      "fish"
+    ],
+    "videoId": "_cwisC4vCSo",
+    "tiktokPostId": 410072319,
+    "published": "2026-10-29",
+    "note": "uploadVideo returned 403; a new 'unknown' video (_cwisC4vCSo, not in the log before) appeared on the channel and is taken to be this episode. Title and description must be set by hand in YouTube Studio; please confirm it is this 59-second video."
   }
 ]
