@@ -1,0 +1,152 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 54 - Lulu's Surprise for Bunny. It is Bunny's birthday. Lulu makes a cake with a big
+   strawberry, Pip the kitten brings three balloons. Shh! They hide behind the bush. Bunny hops in:
+   Surprise! Happy birthday, Bunny! They share the cake (yum, yum, yum), the sun goes down and the
+   three friends sleep by the party table. */
+const DUR=57, SC=[0,5,12,19,26,33,41,49,57];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', ORANGE='#F27A12', TEAL='#19B8A6', GOLD='#FFE58A';
+const TX=600, TY=520-96;             // party table centre and its top
+const BX=1160, BS=1.3;               // the bush they hide behind
+const LX=300, LH=1060, LF=900;       // Lulu: by the table, hiding, at the party
+const PH=1190, PF=1060;              // Pip: hiding, at the party
+const BUN=300;                       // Bunny at the party
+const BAL=[[-58,-180,'#FF5D8F'],[0,-205,'#FFD23F'],[58,-178,'#4DA3FF']];  // balloon offsets from the knot
+const KNOT=[TX+150,TY+10];
+
+const lulu=(lt,t,o={})=>{
+  const x=o.x, j=jumps(lt,o.hops||[],.6,o.h||26), w=o.wave?20+20*Math.sin(lt*9):(o.wing||0);
+  return shadow(x,522,60,-j.y)+place(x,520+j.y+(o.bob||0),duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),{s:1,sx:j.sx*(o.sx||1),sy:j.sy*(o.sy||1),rot:o.rot||0,flip:o.flip});
+};
+const bunnyAt=(lt,t,o={})=>{
+  const x=o.x, j=jumps(lt,o.hops||[],.5,o.h||26);
+  return shadow(x,522,52,-j.y)+place(x,520+j.y+(o.bob||0),bunny({eye:o.eye!=null?o.eye:blink(t,.8),ear:o.ear||0}),{s:1,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0});
+};
+const pip=(lt,t,o={})=>{
+  const x=o.x, j=jumps(lt,o.hops||[],.6,o.h||26);
+  return shadow(x,522,56,-j.y)+place(x,520+j.y+(o.bob||0),kitten({eye:o.eye!=null?o.eye:blink(t,1.3),tail:Math.sin(t*2.2),asleep:o.asleep,tilt:o.tilt||0}),{s:.95,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0});
+};
+const hopList=(a,b,step)=>{const r=[];for(let s=a;s<b-.01;s+=step)r.push(s);return r;};
+const walkBob=(w,lt)=>w>0&&w<1?-8*Math.abs(Math.sin(lt*7)):0;
+const tbl=()=>shadow(TX,522,180)+table(TX,520,170);
+const balloons=(t,kx,ky,u=1)=>{let s='';BAL.forEach((b,k)=>{const sw=8*Math.sin(t*1.6+k*1.7);
+  s+=balloon(kx+b[0]*u+sw,ky+b[1],34,b[2],kx,ky);});return s;};
+const sideClouds=(t,n)=>cloud(130+12*Math.sin(t*.3),262,.6,1-n*.85);
+const zzz=(lt,x,y)=>{let s='';for(let k=0;k<3;k++){let q=lt-2.0-k*.9;if(q>0){q%=2.7;
+  s+=`<text x="${x+q*24+8*Math.sin(q*3)}" y="${y-q*30}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}return s;};
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',pops='',cap='',o={},behind='',front='';
+  switch(i){
+  case 0:{
+    // title
+    props=tbl()+cake(TX,TY,1)+balloons(t,KNOT[0],KNOT[1]);
+    chars=lulu(lt,t,{x:LX,hops:[.6,2.8],h:20});
+    pops=pop(`${LULU}<tspan fill="${NAVY}">’s Surprise for Bunny</tspan>`,560,150,60,PINK,lt,.4,-2);
+    break;}
+  case 1:{
+    // It is Bunny's birthday! Let's make a surprise!
+    const w=eio(prog(lt,.2,2.4));
+    props=tbl();
+    chars=lulu(lt,t,{x:lerp(-140,LX,w),bob:walkBob(w,lt),hops:[4.2,4.8],h:24});
+    cap=lt<3.6?caption('It is Bunny’s birthday!',lt,.3):caption('Let’s make a surprise!',lt,3.6);
+    pops=pop('Yay!',640,165,104,ORANGE,lt,4.2,-4);
+    break;}
+  case 2:{
+    // Lulu makes a cake. A big strawberry on top!
+    const u=prog(lt,1.0,1.5), sp=prog(lt,.8,1.8);
+    props=tbl()+(u>0?place(TX,TY,cake(0,0,1),{s:back(u)}):'');
+    if(sp>0&&sp<1)for(let k=0;k<6;k++){const a=k*Math.PI/3+.3;props+=sparkle(TX+Math.cos(a)*(60+90*sp),TY-70+Math.sin(a)*(40+70*sp),1.3,1-sp);}
+    chars=lulu(lt,t,{x:LX,hops:[1.2],h:20,wave:lt>1.2&&lt<2.6});
+    cap=lt<3.6?caption('Lulu makes a cake.',lt,.3):caption('A big strawberry on top!',lt,3.6);
+    pops=pop('Ta-da!',640,165,100,PINK,lt,1.3,-3);
+    break;}
+  case 3:{
+    // Pip brings three balloons and ties them to the table
+    const w=eio(prog(lt,.3,3.0)), px=lerp(-150,880,w), tie=eio(prog(lt,3.6,4.6));
+    const kx=lerp(px+40,KNOT[0],tie), ky=lerp(470,KNOT[1],tie);
+    props=tbl()+cake(TX,TY,1)+balloons(t,kx,ky,lerp(.7,1,tie));
+    chars=lulu(lt,t,{x:LX,hops:[5.0],h:20})+pip(lt,t,{x:px,bob:walkBob(w,lt),hops:[5.2],h:20});
+    cap=lt<3.4?caption('Here comes Pip!',lt,.3):caption('Pip brings balloons.',lt,3.4);
+    pops=pop('One,',300,165,88,PINK,lt,4.6,-3)+pop('two,',590,165,88,ORANGE,lt,5.1,-3)+pop('three!',880,165,88,'#4DA3FF',lt,5.6,-3);
+    break;}
+  case 4:{
+    // Shh! Let's hide. Here comes Bunny!
+    const w=eio(prog(lt,.4,2.6)), bw=eio(prog(lt,3.6,6.4));
+    props=tbl()+cake(TX,TY,1)+balloons(t,KNOT[0],KNOT[1]);
+    chars=lulu(lt,t,{x:lerp(LX,LH,w),bob:walkBob(w,lt),sy:lerp(1,.9,w)})
+         +pip(lt,t,{x:lerp(880,PH,w),bob:walkBob(w,lt),sy:lerp(1,.88,w)});
+    front=bush(BX,534,BS)+(lt>3.6?bunnyAt(lt,t,{x:lerp(-120,BUN,bw),hops:bw<1?hopList(3.6,6.4,.55):[],h:26}):'');
+    cap=lt<3.4?caption('Shh! Let’s hide.',lt,.3):caption('Here comes Bunny!',lt,3.6);
+    pops=pop('Shh!',640,165,100,PURPLE,lt,.6,-3);
+    break;}
+  case 5:{
+    // Surprise! Happy birthday, Bunny! Bunny is so happy.
+    const w=eio(prog(lt,.4,1.4));
+    props=bush(BX,534,BS)+tbl()+cake(TX,TY,1)+balloons(t,KNOT[0],KNOT[1]);
+    for(let k=0;k<5;k++){let q=lt-3.8-k*.5;if(q>0&&q<2.2){const u=q/2.2;
+      props+=heart(BUN-55+k*22+8*Math.sin(q*4+k),290-90*u,1.1,['#FF5D8F','#FF9F1C','#7B5CFF'][k%3],Math.sin(Math.PI*u));}}
+    chars=bunnyAt(lt,t,{x:BUN,ear:lt>.5?14:0,hops:[.7,4.0,4.6],h:26})
+         +lulu(lt,t,{x:lerp(LH,LF,w),flip:true,hops:[.3,1.9],h:30,wave:lt>2&&lt<4})
+         +pip(lt,t,{x:lerp(PH,PF,w),hops:[.4,2.1],h:30});
+    cap=lt<3.6?caption('Happy birthday, Bunny!',lt,.4):caption('Bunny is so happy!',lt,3.6);
+    pops=pop('Surprise!',640,165,104,PINK,lt,.4,-3);
+    break;}
+  case 6:{
+    // Let's share the cake! Yum, yum, yum! The sun goes down.
+    n=lerp(0,.45,eio(prog(lt,4.4,8))); o={noSun:true,noMoon:true};
+    behind=sun(t,1150,lerp(100,560,eio(prog(lt,4.4,8))));
+    props=bush(BX,534,BS)+tbl()+balloons(t,KNOT[0],KNOT[1]);
+    const cut=prog(lt,1.0,1.4);
+    if(cut<1)props+=place(TX,TY,cake(0,0,1),{s:1-cut*.6});
+    else{
+      const dest=[[BUN,415,2.0],[LF-80,415,2.6],[PF,400,3.2]];
+      dest.forEach((d,k)=>{const sx=TX-70+70*k, f=prog(lt,d[2]-.5,d[2]);
+        if(f<1)props+=cakeSlice(lerp(sx,d[0],eio(f)),lerp(TY,d[1]+40,eio(f)),lerp(1.3,.5,f));
+        else{const q=lt-d[2];if(q<.6)for(let m=0;m<4;m++){const a=m*Math.PI/2+.6;props+=sparkle(d[0]+Math.cos(a)*30*(1+q*2),d[1]+Math.sin(a)*25*(1+q*2),1,1-q/.6);}}});
+    }
+    if(cut>0&&cut<1)for(let k=0;k<6;k++){const a=k*Math.PI/3;props+=sparkle(TX+Math.cos(a)*90*cut,TY-60+Math.sin(a)*50*cut,1.2,1-cut);}
+    chars=bunnyAt(lt,t,{x:BUN,hops:[2.1],h:20})
+         +lulu(lt,t,{x:LF,flip:true,hops:[2.7],h:20})
+         +pip(lt,t,{x:PF,hops:[3.3],h:20});
+    cap=lt<4.4?caption('Let’s share the cake!',lt,.3):caption('The sun goes down.',lt,4.4);
+    pops=pop('Yum,',300,165,88,PINK,lt,2.0,-3)+pop('yum,',590,165,88,ORANGE,lt,2.6,-3)+pop('yum!',880,165,88,TEAL,lt,3.2,-3);
+    break;}
+  case 7:{
+    // night: what a happy day; the friends sleep by the party table
+    n=lerp(.45,1,eio(prog(lt,0,4))); o={noSun:true};
+    props=bush(BX,534,BS)+tbl()+balloons(t,KNOT[0],KNOT[1]);
+    const asleep=lt>1.6, br=k=>1+.025*Math.sin(lt*2.2+k);
+    chars=shadow(BUN,522,52)+place(BUN,520,bunny({eye:asleep?.12:.45}),{s:1,sy:br(2)})
+         +shadow(LF,522,60)+place(LF,520,duck({asleep,eye:.45}),{s:1,sy:br(0),rot:asleep?3:0,flip:true})
+         +pip(lt,t,{x:PF,asleep,eye:.45,sy:br(1)});
+    pops=zzz(lt,880,330);
+    cap=lt<3.6?caption('What a happy day!',lt,.4):caption('Good night, friends.',lt,3.6);
+    pops+=pop('The End',640,150,112,GOLD,lt,4.6,-3,NAVY);
+    break;}
+  }
+  o.noClouds=true;
+  svg.innerHTML=bg(t,n,sideClouds(t,n)+behind,o)+props+chars+front+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#5EC2FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=`<path d="M0,440 Q300,360 640,420 T1280,410 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,520 Q380,470 760,505 T1280,490 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=balloon(560,330,44,'#FF5D8F',640,560)+balloon(650,300,44,'#FFD23F',640,560)+balloon(740,335,44,'#4DA3FF',640,560);
+  s+=cake(640,660,1.5);
+  s+=place(270,660,duck({wing:22}),{s:1.2});
+  s+=place(1020,660,bunny({ear:12}),{s:1.15});
+  s+=label(`${LULU}<tspan fill="${NAVY}">’s Surprise</tspan>`,640,125,100,PINK,-2);
+  s+=label(`<tspan fill="${NAVY}">for Bunny</tspan>`,640,225,84,PINK,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

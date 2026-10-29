@@ -1422,3 +1422,39 @@ function snowHills(u=1,n=0){
   if(u<=0)return '';
   return `<g opacity="${u}"><path d="M0,440 Q300,330 640,410 T1280,400 L1280,720 L0,720Z" fill="${mix('#EAF3FA','#8E9CC9',n)}"/><path d="M0,500 Q380,440 760,490 T1280,470 L1280,720 L0,720Z" fill="${mix('#FFFFFF','#A7B4DD',n)}"/></g>`;
 }
+
+/* ---------- birthday cake, cake slice and balloon (episode 54) ---------- */
+// cake(x,y,s): round two-layer birthday cake on a plate, pink icing and a big strawberry on top,
+// origin at the middle of the plate bottom (about 190 wide and 150 tall at s=1). No candles.
+function cake(x,y,s=1){
+  let dots='';for(let k=0;k<6;k++)dots+=`<circle cx="${-60+k*24}" cy="-30" r="5" fill="${['#FF5D8F','#19B8A6','#FFB703','#7B5CFF'][k%4]}"/>`;
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <ellipse cx="0" cy="-6" rx="96" ry="10" fill="#E8EEF4"/><ellipse cx="0" cy="-9" rx="90" ry="7" fill="#FFFFFF"/>
+  <rect x="-76" y="-62" width="152" height="54" rx="12" fill="#F7D9A8"/>
+  <path d="M-76,-50 Q-76,-64 -62,-64 L62,-64 Q76,-64 76,-50 L76,-44 Q66,-34 56,-44 Q46,-32 34,-44 Q22,-34 10,-44 Q-2,-32 -14,-44 Q-26,-34 -38,-44 Q-50,-32 -62,-44 Q-70,-36 -76,-44 Z" fill="#FFB3C7"/>
+  ${dots}
+  <rect x="-52" y="-108" width="104" height="46" rx="10" fill="#F7D9A8"/>
+  <path d="M-52,-98 Q-52,-110 -40,-110 L40,-110 Q52,-110 52,-98 L52,-92 Q44,-84 36,-92 Q28,-82 18,-92 Q8,-84 0,-92 Q-10,-82 -18,-92 Q-28,-84 -36,-92 Q-44,-82 -52,-92 Z" fill="#FF8FB1"/>
+  <path d="M-4,-128 Q-22,-124 -18,-112 Q-10,-106 0,-108 Q10,-106 18,-112 Q22,-124 4,-128 Z" fill="#E63946"/>
+  <path d="M-14,-128 Q-6,-136 0,-128 Q6,-136 14,-128 Q6,-124 0,-126 Q-6,-124 -14,-128 Z" fill="#4CAF50"/>
+  <circle cx="-8" cy="-118" r="1.8" fill="#FFE58A"/><circle cx="6" cy="-116" r="1.8" fill="#FFE58A"/><circle cx="-1" cy="-112" r="1.8" fill="#FFE58A"/>
+  <ellipse cx="-30" cy="-100" rx="10" ry="4" fill="#fff" opacity=".5"/></g>`;
+}
+// cakeSlice(x,y,s): one slice of the birthday cake on a small plate, origin at the plate bottom (about 80 wide, 70 tall).
+function cakeSlice(x,y,s=1){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <ellipse cx="0" cy="-4" rx="40" ry="6" fill="#FFFFFF"/>
+  <path d="M-28,-8 L28,-8 L28,-44 L-28,-56 Z" fill="#F7D9A8"/>
+  <path d="M-28,-34 L28,-26" stroke="#FFB3C7" stroke-width="6"/>
+  <path d="M-30,-58 L30,-46 L30,-40 Q22,-36 16,-42 Q8,-34 0,-44 Q-10,-38 -16,-48 Q-24,-42 -30,-50 Z" fill="#FF8FB1"/>
+  <circle cx="2" cy="-58" r="7" fill="#E63946"/></g>`;
+}
+// balloon(x,y,r,col,ax,ay): party balloon with its centre at (x,y), radius r, on a curly string
+// tied at (ax,ay). Draw balloons before the characters.
+function balloon(x,y,r,col,ax,ay){
+  const by=y+r*1.18, mx=(x+ax)/2;
+  return `<path d="M${x},${by+4} Q${mx-14},${(by+ay)/2-16} ${mx},${(by+ay)/2} T${ax},${ay}" stroke="#7A7A9A" stroke-width="2.5" fill="none"/>
+  <ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r*1.18}" fill="${col}"/>
+  <path d="M${x-7},${by+6} L${x},${by-3} L${x+7},${by+6} Z" fill="${col}"/>
+  <ellipse cx="${x-r*.35}" cy="${y-r*.45}" rx="${r*.22}" ry="${r*.34}" fill="#fff" opacity=".45" transform="rotate(-25 ${x-r*.35} ${y-r*.45})"/>`;
+}

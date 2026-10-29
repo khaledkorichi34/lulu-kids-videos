@@ -927,5 +927,26 @@
     "tiktokPostId": 410072319,
     "published": "2026-10-29",
     "note": "uploadVideo returned 403; a new 'unknown' video (_cwisC4vCSo, not in the log before) appeared on the channel and is taken to be this episode. Title and description must be set by hand in YouTube Studio; please confirm it is this 59-second video."
+  },
+  {
+    "number": 54,
+    "slug": "lulus-surprise-for-bunny",
+    "format": "story",
+    "ages": "3-6",
+    "title": "Lulu's Surprise for Bunny | Bedtime Story for Kids",
+    "topic": "Birthday surprise: it is Bunny's birthday; Lulu makes a cake with a big strawberry (ta-da!); Pip the kitten brings three balloons (one, two, three) and ties them to the party table; shh, Lulu and Pip hide behind a bush; Bunny hops in: Surprise! Happy birthday, Bunny! hearts; they share the cake in three slices (yum, yum, yum); sunset; the three friends sleep by the party table",
+    "cast": [
+      "duck",
+      "bunny",
+      "kitten",
+      "cake",
+      "balloons",
+      "party table",
+      "bush"
+    ],
+    "videoId": "fpCYSTqtIOo",
+    "tiktokPostId": 410380225,
+    "published": "2026-10-29",
+    "note": "YouTube uploadVideo returned [403] Forbidden; the video was uploaded as 'unknown' (fpCYSTqtIOo) without title and description; owner asked to paste them in YouTube Studio"
   }
 ]
