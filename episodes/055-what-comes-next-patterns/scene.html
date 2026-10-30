@@ -1,0 +1,107 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 55 - What Comes Next? Patterns with Lulu.
+   Title, four pattern scenes (things appear one by one, a "?" box, the things bounce in order,
+   then the next one is revealed), finale. */
+const SC=[0,4.5,13,21.5,30,38.5,44];
+const DUR=SC[SC.length-1];
+const QT=3.0, RV=5.6;                 // "?" box appears, answer revealed
+const X5=[140,320,500,680,860], X6=[110,265,420,575,730,885];
+const LX=1120;
+// coloured ball (lib ball() is always red)
+function cball(x,y,r,col,st){
+  return `<g transform="translate(${x},${y-r})"><circle r="${r}" fill="${col}"/>
+  <path d="M${-r*.97},${-r*.22} Q0,${r*.32} ${r*.97},${-r*.22}" stroke="${st}" stroke-width="${r*.3}" fill="none"/>
+  <circle cx="${-r*.36}" cy="${-r*.42}" r="${r*.2}" fill="#fff" opacity=".55"/></g>`;
+}
+const PAT=[
+  {xs:X5, names:['red','blue'], cols:['#E63946','#3F7FE8'],
+   draw:(n,x,t,k)=>shadow(x,522,54)+cball(x,520,62,n?'#3F7FE8':'#E63946','#FFD23F'),
+   c1:'Red, blue, red, blue...', c3:'Red comes next!'},
+  {xs:X5, names:['pear','apple'], cols:['#7FA620','#E63946'],
+   draw:(n,x,t,k)=>shadow(x,522,60)+(n?apple(x,520,.92):pear(x,520,.8)),
+   c1:'Pear, apple, pear, apple...', c3:'Pear comes next!'},
+  {xs:X6, names:['heart','star'], cols:['#FF5D8F','#F2A900'],
+   draw:(n,x,t,k)=>shadow(x,522,52)+(n?bigStar(x,450,68,'#FFD93B',0):heart(x,462,2.25,'#FF5D8F',1)),
+   c1:'Heart, star, heart, star...', c3:'Star comes next!'},
+  {xs:X6, names:['bunny','frog','kitten'], cols:['#7B5CFF','#2E9E44','#E9822F'],
+   draw:(n,x,t,k)=>{
+     if(n===0)return shadow(x,522,38)+place(x,520,bunny({eye:blink(t,k*.7),ear:Math.sin(t*3+k)*.5}),{s:.7});
+     if(n===1)return shadow(x,522,48)+place(x,520,frog({eye:blink(t,k*.7)}),{s:.75});
+     return shadow(x,522,38)+place(x,520,kitten({eye:blink(t,k*.7),tail:Math.sin(t*2+k)}),{s:.7});
+   },
+   c1:'Bunny, frog, kitten...', c3:'Kitten comes next!'},
+];
+const appear=(k,n)=>.4+k*(n===5?.55:.5);
+
+function lulu(x,t,lt,o={}){const j=o.j||{y:0,sx:1,sy:1};return shadow(x,522,48,-j.y)+place(x,520+j.y,duck({eye:blink(t,.3),wing:o.wing||0}),{s:o.s||.8,sx:j.sx,sy:j.sy,flip:o.flip});}
+function qbox(x,lt,u){
+  const s=back(clamp(u))*(1+.05*Math.sin(lt*6));
+  return `<g transform="translate(${x},458) scale(${s})" opacity="${clamp(u*2)}"><rect x="-60" y="-70" width="120" height="140" rx="22" fill="#fff" fill-opacity=".7" stroke="#7B5CFF" stroke-width="6" stroke-dasharray="16 10"/>
+  <text y="36" text-anchor="middle" font-size="100" fill="#7B5CFF">?</text></g>`;
+}
+function hearts(lt,t0){
+  let s='';
+  for(let k=0;k<9;k++){const q=lt-(t0+k*.4);if(q>0){const y=610-q*120,x=110+k*132+25*Math.sin(q*2+k),o=clamp((y-260)/120)*clamp(q*3)*.9;
+    if(y>260)s+=heart(x,y,1+(k%3)*.25,['#FF5D8F','#FF9F1C','#FFFFFF'][k%3],o);}}
+  return s;
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='';
+  const o={noClouds:true,noSun:true,noFlowers:true};
+  if(i===0){
+    const j=jumps(lt,[2.4,3.4],.6,22);
+    // a little red-blue ball pattern under the title
+    [280,410,870,1000].forEach((x,k)=>{const a=1.2+k*.25;if(lt>a){const g=back(prog(lt,a,a+.35));chars+=shadow(x,522,30*g)+`<g transform="translate(${x},520) scale(${g}) translate(${-x},-520)">${cball(x,520,34,k%2?'#3F7FE8':'#E63946','#FFD23F')}</g>`;}});
+    chars+=lulu(640,t,lt,{s:.85,j,wing:18+18*Math.sin(lt*9)});
+    pops=pop('Patterns',640,150,110,'#7B5CFF',lt,.3,-2)+pop('What comes next?',640,265,72,'#FF5D8F',lt,.9,2);
+    cap=caption("Let's find the pattern!",lt,1.9);
+  }else if(i<=4){
+    const P=PAT[i-1], xs=P.xs, n=xs.length, per=P.names.length;
+    xs.forEach((x,k)=>{
+      const kind=k%per, last=k===n-1;
+      const a=last?RV:appear(k,n);
+      if(last&&lt<RV+.05&&lt>QT)chars+=qbox(x,lt,prog(lt,QT,QT+.35));
+      if(last&&lt>=RV&&lt<RV+.3)chars+=qbox(x,lt,1-prog(lt,RV,RV+.25));
+      if(lt<a)return;
+      const g=back(prog(lt,a,a+.35));
+      const j=last?jumps(lt,[RV+.6,RV+1.6],.5,24):jumps(lt,[QT+.4+k*.35],.45,20);
+      chars+=`<g transform="translate(${x},${520+j.y}) scale(${g*j.sx},${g*j.sy}) translate(${-x},-520)">${P.draw(kind,x,t,k)}</g>`;
+      if(last){const q=lt-RV;for(let s=0;s<4;s++)chars+=sparkle(x+[-80,80,-70,75][s],[380,395,500,490][s],1.6,clamp(q*3)*(.55+.45*Math.sin(lt*6+s))*clamp(2.6-q));}
+      const wy=k%2?292:236, sz=n===5?50:42;
+      pops+=pop(P.names[kind],x,wy,sz,P.cols[kind],lt,a+.15,k%2?3:-3);
+    });
+    const jl=jumps(lt,[RV+.3],.6,26);
+    chars+=lulu(LX,t,lt,{flip:true,j:jl,wing:lt>RV?24*Math.abs(Math.sin(lt*9)):0});
+    cap=lt<QT?caption(P.c1,lt,.3):lt<RV+.2?caption('What comes next?',lt,QT+.1):caption(P.c3,lt,RV+.2);
+  }else{
+    const j=jumps(lt,[1.8,2.9,4.0],.6,30);
+    props=hearts(lt,1.4);
+    [190,320,960,1090].forEach((x,k)=>{chars+=shadow(x,522,40)+cball(x,520,46,k%2?'#3F7FE8':'#E63946','#FFD23F');});
+    chars+=lulu(640,t,lt,{s:1.05,j,wing:25+25*Math.sin(lt*10)});
+    pops=pop('Well done!',640,170,120,'#FF9F1C',lt,.4,-3);
+    cap=caption('You found the patterns!',lt,1.2);
+  }
+  svg.innerHTML=bg(t,0,'',o)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  [430,600,770,940].forEach((x,k)=>{s+=shadow(x,662,52)+cball(x,658,62,k%2?'#3F7FE8':'#E63946','#FFD23F');});
+  s+=`<g transform="translate(1120,590)"><rect x="-70" y="-80" width="140" height="160" rx="24" fill="#fff" fill-opacity=".8" stroke="#7B5CFF" stroke-width="7" stroke-dasharray="18 11"/><text y="42" text-anchor="middle" font-size="120" fill="#7B5CFF">?</text></g>`;
+  s+=shadow(170,662,100)+place(170,658,duck({wing:22}),{s:1.4});
+  s+=label('What comes',640,170,110,'#7B5CFF',-2)+label('next?',640,310,130,'#FF5D8F',2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

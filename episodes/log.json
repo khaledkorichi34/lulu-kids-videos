@@ -948,5 +948,27 @@
     "tiktokPostId": 410380225,
     "published": "2026-10-29",
     "note": "YouTube uploadVideo returned [403] Forbidden; the video was uploaded as 'unknown' (fpCYSTqtIOo) without title and description; owner asked to paste them in YouTube Studio"
+  },
+  {
+    "number": 55,
+    "slug": "what-comes-next-patterns",
+    "format": "learning",
+    "ages": "3-6",
+    "title": "What Comes Next? Patterns with Lulu | Learning for Kids",
+    "topic": "Patterns, what comes next?: red, blue, red, blue balls (red); pear, apple, pear, apple (pear); heart, star, heart, star, heart (star); bunny, frog, kitten, bunny, frog (kitten, an ABC pattern); a '?' box, the things bounce in order, then the answer pops in; Well done!",
+    "cast": [
+      "duck",
+      "bunny",
+      "frog",
+      "kitten",
+      "ball",
+      "apple",
+      "pear",
+      "heart",
+      "star"
+    ],
+    "videoId": "PGnWMKS1G2M",
+    "tiktokPostId": 410913882,
+    "published": "2026-10-30"
   }
 ]
