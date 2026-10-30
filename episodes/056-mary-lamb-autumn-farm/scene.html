@@ -1,0 +1,132 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script src="../../toolkit/rhymes.js"></script>
+<script>
+/* Episode 56 - Mary Had a Little Lamb on an autumn farm (sing-along). A wooden fence, an autumn
+   tree, leaves drifting down. Mary waves, the lamb hops on every "little lamb", and on "white as
+   snow" little sparkles twinkle round its white fleece and it says "Baa!". Lulu sings from the start.
+   Verse 2: the puppy trots in. Verse 3: Pip the kitten comes and the sky turns golden at sunset.
+   Ending: the lamb snuggles up to Mary - "Bye-bye, little lamb!" */
+const BPM=108, START=5.0;
+const LINES=rhymeTimes(RHYMES.mary,START,3,4,BPM);
+const END=rhymeEnd(LINES);                 // 62.78 s
+const DUR=68, SC=[0,DUR];
+const VS=[0,4,8].map(i=>LINES[i].t0);      // verse starts
+const MX=330, LX0=540, DX=760;             // Mary, lamb, Lulu
+const FX=[955,1135];                       // puppy, Pip
+const ENTER=[[VS[1]-2.6,VS[1]-.2],[VS[2]-2.6,VS[2]-.2]];
+const SNOW=LINES.filter(L=>L.index===3).map(L=>L.words[5].t0);
+const WHITE=LINES.filter(L=>L.index===3).map(L=>L.words[3].t0);
+
+function lineAt(t){const li=currentLine(LINES,t);return li>=0&&t<LINES[li].t1+.05?LINES[li]:null;}
+function dusk(t){return eio(prog(t,VS[2]-1.5,END+2));}   // 0 day .. 1 golden sunset
+
+// the lamb hops on each "lamb," of line 2 (words 2 and 5)
+function lambHop(t){
+  for(const L of LINES){if(L.index!==1)continue;
+    for(const k of [2,5]){const j=jump(t,L.words[k].t0,.45,38);if(j)return j;}}
+  return {y:0,sx:1,sy:1};
+}
+
+// a few autumn leaves drifting down from the tree, slowly, behind everyone
+function leaves(t){
+  let s='';
+  for(let k=0;k<5;k++){
+    const per=7.5, q=((t+k*1.6)%per)/per;
+    const x=60+k*42+30*Math.sin(q*6+k)+q*120, y=230+q*260;
+    const o=Math.sin(Math.PI*q);
+    s+=`<g opacity="${(o*.95).toFixed(2)}">`+autumnLeaf(x,y,.9,40*Math.sin(q*7+k)+k*30,AUTUMN[k%3])+`</g>`;
+  }
+  return s;
+}
+
+// sparkles twinkling round the lamb's white fleece on "white as snow"
+function fleeceSparkles(t,lx){
+  let s='';
+  WHITE.forEach(w=>{const a=t-w;if(a<0||a>3.2)return;
+    const o=Math.min(1,a*3)*(1-prog(a,2.4,3.2));
+    for(let k=0;k<6;k++){const ang=k*Math.PI/3+a*.8, r=95+8*Math.sin(a*5+k);
+      s+=sparkle(lx+Math.cos(ang)*r,455+Math.sin(ang)*r*.75,.9+.35*Math.sin(a*8+k*1.7),o*.95);}
+  });
+  return s;
+}
+
+function friendX(k,t){const [a,b]=ENTER[k];return lerp(1420,FX[k],eio(prog(t,a,b)));}
+
+function render(t){
+  const p=t>START-.2&&t<END+.4?beatPulse(LINES,t):0;
+  const L=lineAt(t), li=L?L.index:-1, d=dusk(t);
+  let back='',chars='',front='',pops='',cap='';
+
+  // soft hearts behind everyone at the end
+  if(t>END+1.9)for(let k=0;k<4;k++){const q=((t-END-1.9)*.35+k*.25)%1;
+    back+=heart(420+k*160,330-q*110,1.5,'#FF8FB1',Math.sin(Math.PI*q)*.8);}
+
+  // friends: the puppy trots in before verse 2, Pip trots in before verse 3
+  for(let k=0;k<2;k++){
+    const [a,b]=ENTER[k]; if(t<a)continue;
+    const x=friendX(k,t);let y=520,rot=0;
+    if(t<b+.3){rot=5*Math.sin((t-a)*11);y-=Math.abs(Math.sin((t-a)*11))*7;}
+    else if(t<END+.4)y-=6*p;
+    const inner=k===0?puppy({eye:blink(t,.7),tail:Math.sin(t*5),ear:.6*p}):kitten({eye:blink(t,1.6),tail:Math.sin(t*2.4)});
+    chars+=shadow(x,524,52,520-y)+place(x,y,inner,{s:.78,rot,flip:true});
+  }
+
+  // Lulu sings along: flaps her wings with the beat
+  {let y=520-(L?5*p:0);
+   chars+=shadow(DX,524,56,520-y)+place(DX,y,duck({eye:blink(t,2.9),wing:L?-26*p:0}),{s:.82,flip:true});}
+
+  // the lamb: bobs with the music, hops on "lamb", fluffs up on "snow"; at the end it snuggles to Mary
+  const lx=lerp(LX0,MX+140,eio(prog(t,END+.4,END+1.6)));
+  const h=lambHop(t);
+  let fluff=0;SNOW.forEach(s0=>{const a=t-s0;if(a>0&&a<1.2)fluff=Math.sin(a*Math.PI*4)*(1-a/1.2);});
+  const bob=(li===0||li===2)?5*p:0;
+  back+=fleeceSparkles(t,LX0);
+  chars+=shadow(lx,524,70,-h.y)+place(lx,520+h.y-bob,lamb({eye:blink(t,2.3),fluff,ear:li>=0?14*p:0}),{s:1,sx:h.sx,sy:h.sy,flip:true});
+
+  // Mary: waves on "Mary had a little lamb", sways on the other lines
+  let wave=0,sway=0,my=520;
+  if(L){
+    if(li===0||li===2)wave=.55+.45*Math.sin(Math.PI*2*prog(t,L.t0,L.t1)*2);
+    else sway=5*Math.sin((t-L.t0)*3);
+    my-=4*p;
+  }
+  if(t>END+.4)sway=-8*eio(prog(t,END+.6,END+1.6));
+  chars+=shadow(MX,524,54,520-my)+place(MX,my,mary({eye:blink(t,0),wave,sway}),{s:1});
+
+  // "Baa!" from the lamb on "snow"
+  SNOW.forEach(s0=>{const a=t-s0;if(a<0||a>4.1)return;
+    const u=back_(prog(a,0,.35)), o=1-prog(a,3.7,4.1);
+    pops+=`<g opacity="${o}" transform="translate(${LX0+30},285) scale(${u}) translate(${-(LX0+30)},-285)">`+speech(LX0+30,285,95,52,LX0+20,360,'Baa!',58,'#E8742A')+`</g>`;});
+
+  // title card, then the words of the song, then goodbye
+  const to=1-prog(t,3.9,4.5);
+  if(to>0)pops+=`<g opacity="${to}">`+pop('Mary Had a',660,150,96,'#FF5D8F',t,.4,-2,'#fff')+pop('Little Lamb',660,262,104,'#E8742A',t,1.0,2,'#fff')+`</g>`;
+  cap=t<END+.6?karaoke(LINES,t,'#E8742A'):caption('Bye-bye, little lamb!',t-END,.7);
+
+  // sky: in verse 3 the sun goes down and everything turns golden
+  const warm=d>0?`<defs><linearGradient id="warm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FB4F2"/><stop offset=".45" stop-color="#FFB27A"/><stop offset="1" stop-color="#FFE29A"/></linearGradient></defs><rect width="1280" height="720" fill="url(#warm)" opacity="${(.85*d).toFixed(3)}"/>`:'';
+  const sn=warm+sun(t,1150,100+d*130);
+  const glow=d>0?`<rect width="1280" height="720" fill="#FFB347" opacity="${(.1*d).toFixed(3)}"/>`:'';
+  const scenery=fence(-20,1300,505,150)+autumnTree(105,525,.7);
+  svg.innerHTML=bg(t,0,sn,{noSun:true,noFlowers:true,noClouds:true})+scenery+leaves(t)+back+chars+front+glow+pops+cap+fades(t,SC,DUR);
+}
+const back_=u=>u<=0?0:back(u);
+
+function thumb(){
+  let s=bg(0,0,sun(0,1150,100),{noSun:true,noFlowers:true,noClouds:true})+fence(-20,1300,505,150)+autumnTree(105,525,.7);
+  s+=autumnLeaf(230,330,1.3,30,'#E63946')+autumnLeaf(1180,330,1.3,-20,'#F6C026')+autumnLeaf(1030,250,1.1,60,'#F28C28');
+  s+=shadow(MX+30,524,54,0)+place(MX+30,520,mary({wave:.9}),{s:1.05});
+  s+=shadow(LX0+40,524,70,0)+place(LX0+40,520,lamb({}),{s:1.1,flip:true});
+  s+=shadow(820,524,56,0)+place(820,520,duck({wing:-30}),{s:.85,flip:true});
+  s+=shadow(1040,524,52,0)+place(1040,520,puppy({tail:.5}),{s:.8,flip:true});
+  s+=label('Mary Had a',640,130,100,'#FF5D8F',-3,'#fff')+label('Little Lamb',640,250,110,'#E8742A',-1,'#fff');
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

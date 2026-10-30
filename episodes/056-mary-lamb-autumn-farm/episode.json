@@ -1,0 +1,26 @@
+{
+  "number": 56,
+  "slug": "mary-lamb-autumn-farm",
+  "format": "rhyme",
+  "ages": "2-6",
+  "title": "Mary Had a Little Lamb on the Farm with Lulu | Nursery Rhyme for Kids",
+  "description": "Sing along to Mary Had a Little Lamb on an autumn farm! Mary waves, her fluffy lamb hops by the wooden fence, and Lulu the little duck sings along. The puppy and Pip the kitten join in as the sun goes down.\nThe words light up with the music, for children aged 2 to 6.\nA classic nursery rhyme (words by Sarah Josepha Hale, 1830; traditional tune).",
+  "duration": 68,
+  "seed": 56,
+  "lullaby_from": null,
+  "rhyme": {"name": "mary", "bpm": 108, "start": 5.0, "repeat": 3, "gap": 4},
+  "sfx": [
+    {"t": 0.4, "type": "pop"},
+    {"t": 10.56, "type": "boing_high"},
+    {"t": 12.78, "type": "boing_high"},
+    {"t": 19.44, "type": "sparkle"},
+    {"t": 30.56, "type": "boing_high"},
+    {"t": 32.78, "type": "boing_high"},
+    {"t": 39.44, "type": "sparkle"},
+    {"t": 50.56, "type": "boing_high"},
+    {"t": 52.78, "type": "boing_high"},
+    {"t": 59.44, "type": "sparkle"},
+    {"t": 64.0, "type": "ding"}
+  ],
+  "check_times": [2.0, 4.6, 7.0, 10.8, 13.0, 19.9, 21.5, 23.6, 26.0, 30.8, 41.0, 43.5, 47.0, 50.8, 59.9, 61.5, 64.5, 66.5]
+}
