@@ -1482,3 +1482,27 @@ function strawberry(x,y,s=1){
   ${sd}<ellipse cx="-38" cy="-104" rx="9" ry="18" fill="#fff" opacity=".35" transform="rotate(25 -38 -104)"/>
   ${lv}<path d="M0,-140 Q2,-158 10,-168" stroke="#2E8A3C" stroke-width="7" fill="none" stroke-linecap="round"/></g>`;
 }
+
+/* ---------- turtle facts (episode 58) ---------- */
+// sandPatch(x,y,w): low sandy mound lying on the grass, centred at (x,y) (its middle line), about w wide and 0.2*w tall.
+function sandPatch(x,y,w=360){
+  return `<ellipse cx="${x}" cy="${y}" rx="${w/2}" ry="${w*.1}" fill="#E9C98B"/>
+  <ellipse cx="${x-w*.08}" cy="${y-w*.025}" rx="${w*.36}" ry="${w*.06}" fill="#F3D9A4"/>
+  <circle cx="${x-w*.3}" cy="${y+w*.03}" r="3" fill="#C9A464"/><circle cx="${x+w*.22}" cy="${y-w*.01}" r="3.5" fill="#C9A464"/><circle cx="${x+w*.05}" cy="${y+w*.05}" r="2.5" fill="#C9A464"/>`;
+}
+// turtleEgg(x,y,s,o): small round white turtle egg, origin at its bottom (about 50 wide, 52 tall at s=1).
+// o.wob = rocking angle in degrees, o.crack = 0..1 a zigzag crack appears, o.open = 0..1 the top half lifts off
+// and falls away to the side (draw the baby turtle between the two halves: bottom half first, then baby, then turtleEggTop).
+function turtleEgg(x,y,s=1,o={}){
+  const w=o.wob||0, c=clamp(o.crack||0);
+  if(o.open>0) return `<g transform="translate(${x},${y}) scale(${s})"><path d="M-25,-24 L-17,-30 L-9,-22 L0,-30 L9,-22 L17,-30 L25,-24 Q24,0 0,0 Q-24,0 -25,-24Z" fill="#FFFDF4"/>
+    <path d="M-25,-24 Q-24,0 0,0 Q-10,-2 -16,-14Z" fill="#EDE6D2" opacity=".7"/></g>`;
+  return `<g transform="translate(${x},${y}) rotate(${w}) scale(${s})"><ellipse cx="0" cy="-25" rx="25" ry="26" fill="#FFFDF4"/>
+  <ellipse cx="9" cy="-18" rx="12" ry="14" fill="#EDE6D2" opacity=".6"/><ellipse cx="-9" cy="-35" rx="6" ry="8" fill="#fff"/>
+  ${c>0?`<path d="M-25,-24 L-17,-30 L-9,-22 L0,-30 L9,-22 L17,-30 L25,-24" stroke="#8C7A5A" stroke-width="2.6" fill="none" stroke-dasharray="${70*c} 80" stroke-linecap="round"/>`:''}</g>`;
+}
+// turtleEggTop(x,y,s,u): (x,y = the egg's bottom, as for turtleEgg) the top half of an opened turtle egg; u = 0..1 lifts it off and tips it over to the right.
+function turtleEggTop(x,y,s=1,u=1){
+  const e=eout(clamp(u));
+  return `<g transform="translate(${x+34*s*e},${y-24*s-30*s*Math.sin(Math.PI*clamp(u)*.8)+22*s*e}) rotate(${110*e}) scale(${s})"><path d="M-25,-24 L-17,-30 L-9,-22 L0,-30 L9,-22 L17,-30 L25,-24 Q24,-52 0,-51 Q-24,-52 -25,-24Z" fill="#FFFDF4" transform="translate(0,24)"/></g>`;
+}

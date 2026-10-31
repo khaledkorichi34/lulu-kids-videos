@@ -1,0 +1,114 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 58 - Did you know? Turtle facts.  Title (Turtle walks in, Lulu waves), fact 1 (a turtle's shell
+   is part of its body, it never takes it off), fact 2 (many turtles can hide their head and legs in
+   their shell), peek-a-boo (the hard shell keeps it safe), fact 3 (turtles lay their eggs on land, in a
+   sandy nest), three baby turtles hatch, recap (shell, hide, eggs), bye bye. */
+const SC=[0,5.5,12.5,19,25.5,32,38.5,45,51], DUR=51;
+const NAVY='#2D2A6E', PURPLE='#7B5CFF', ORANGE='#E76F2E', GREEN='#1F8F5A', GOLD='#FFE58A';
+const lulu=(x,lt,t,o={})=>{
+  const j=jumps(lt,o.hops||[],.6,o.h||24), w=o.wave?20+20*Math.sin(lt*9):0, s=o.s||.9;
+  return shadow(x,522,56*s/.95,-j.y)+place(x,520+j.y,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy,flip:o.flip});
+};
+const tur=(x,t,o={},s=1.6)=>shadow(x,522,80*s)+place(x,520,turtle(Object.assign({eye:blink(t,1.1)},o)),{s,flip:o.flip});
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.4)):0;
+const EX=[520,640,760];
+let WIN=0;
+function closeWin(x,y,r,g,inner,bgc){
+  if(g<=0)return '';
+  const id='w'+(WIN++);
+  return `<g transform="translate(${x},${y}) scale(${g})"><defs><clipPath id="${id}"><circle r="${r}"/></clipPath></defs>
+  <g clip-path="url(#${id})"><circle r="${r}" fill="${bgc}"/>${inner}</g>
+  <circle r="${r}" fill="none" stroke="#fff" stroke-width="9"/></g>`;
+}
+// three eggs in the nest, hatching from time h0 (scene 5); before that they just rest
+function nest(lt,h0,showFrom){
+  let back_='',front='';
+  EX.forEach((x,k)=>{
+    const g=showFrom!=null?grow(lt,showFrom[k]):1; if(g<=0)return;
+    const s=1.25*g, ht=h0==null?1e9:h0+k*.55;
+    const wob=h0==null?0:(lt>ht-1.6&&lt<ht?9*Math.sin((lt-ht)*16)*prog(lt,ht-1.6,ht-1.2):0);
+    if(lt<ht){ back_+=turtleEgg(x,512,s,{wob,crack:prog(lt,ht-.7,ht-.2)}); return; }
+    const u=prog(lt,ht,ht+.6), bs=lerp(.18,.34,eout(u)), by=512-lerp(6,0,u);
+    back_+=turtleEgg(x,512,s,{open:1});
+    front+=place(x-4+lerp(0,6,u),by,turtle({eye:blink(lt,k*.7),step:lt>ht+.8?(lt-ht)*6:0}),{s:bs})+turtleEggTop(x,512,s,prog(lt,ht,ht+.7));
+  });
+  return back_+front;
+}
+function render(t){
+  WIN=0;
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={noSun:true};
+  if(i===0){
+    const u=prog(lt,0,3.6), x=lerp(-140,430,eio(u));
+    chars=tur(x,t,{step:u<1?lt*7:0},1.3)+lulu(900,lt,t,{hops:[1.6,2.6],h:28,wave:lt>.6,flip:true});
+    pops=pop('Did you know?',640,165,96,PURPLE,lt,.3,-3);
+    cap=caption('Fun turtle facts with Lulu',lt,2.0);
+  }else if(i===1){
+    let sp='';
+    if(lt>1.2&&lt<5.6)[[440,370],[600,330],[700,400],[520,300]].forEach(([x,y],k)=>{const q=(lt*1.4+k*.25)%1;sp+=sparkle(x,y,.7+.3*Math.sin(q*Math.PI),Math.sin(q*Math.PI));});
+    chars=tur(560,t,{},1.6)+lulu(1010,lt,t,{flip:true,hops:[4.2],h:20});
+    pops=pop('Fact 1',640,160,100,ORANGE,lt,.3)+sp;
+    cap=lt<3.6?caption("A turtle's shell is part of its body.",lt,.8):caption('A turtle never takes its shell off.',lt,3.6);
+  }else if(i===2){
+    const h=eio(prog(lt,1.6,2.4));
+    chars=tur(560,t,{hide:h},1.6)+lulu(1010,lt,t,{flip:true,eye:lt>2.4?1:blink(t,0)});
+    pops=pop('Fact 2',640,160,100,ORANGE,lt,.3)+(lt>2.5?pop('Hide!',300,330,80,GOLD,lt,2.5,-4,NAVY):'');
+    cap=lt<3.6?caption('Many turtles can hide in their shell.',lt,.6):caption('Head and legs tuck inside!',lt,3.6);
+  }else if(i===3){
+    const h=1-eio(prog(lt,2.2,3.0));
+    chars=tur(560,t,{hide:h},1.6)+lulu(lerp(1010,930,eio(prog(lt,.3,1.6))),lt,t,{flip:true,hops:[3.1],h:22,wave:lt>3.6});
+    pops=pop('Peek-a-boo!',640,165,96,GOLD,lt,2.4,-3,NAVY);
+    cap=lt<3.6?caption('Peek-a-boo! Here is Turtle.',lt,2.4):caption('The hard shell keeps it safe.',lt,3.6);
+  }else if(i===4){
+    props=sandPatch(640,505,560);
+    const u=prog(lt,0,1.0);
+    chars=tur(lerp(250,300,u),t,{step:u<1?lt*7:0},1.2)+nest(lt,null,[1.0,1.5,2.0])+lulu(1070,lt,t,{flip:true,hops:[2.6],h:20});
+    pops=pop('Fact 3',640,160,100,ORANGE,lt,.3);
+    cap=lt<3.6?caption('Turtles lay their eggs on land.',lt,.6):caption('The eggs rest in a sandy nest.',lt,3.6);
+  }else if(i===5){
+    props=sandPatch(640,505,560);
+    chars=nest(lt,2.4)+lulu(1070,lt,t,{flip:true,hops:[4.4],h:20});
+    pops=pop('Crack!',640,165,96,GOLD,lt,2.4,-3,NAVY);
+    cap=lt<3.6?caption('Baby turtles hatch from the eggs.',lt,.5):caption('Hello, little turtles!',lt,3.6);
+  }else if(i===6){
+    const b=k=>1+.05*Math.sin(t*4+k*2), X=[300,640,980], Y=390, sky='#BFE8FF';
+    const gr='<rect x="-130" y="40" width="260" height="120" fill="#7CCB5E"/>';
+    props=closeWin(X[0],Y,118,grow(lt,.4)*b(0),gr+place(0,58,turtle({eye:blink(t,.2)}),{s:.75}),sky);
+    props+=closeWin(X[1],Y,118,grow(lt,1.4)*b(1),gr+place(0,58,turtle({hide:1}),{s:.75}),sky);
+    props+=closeWin(X[2],Y,118,grow(lt,2.4)*b(2),'<rect x="-130" y="30" width="260" height="120" fill="#E9C98B"/>'+turtleEgg(-66,58,1.2,{})+turtleEgg(-4,58,1.2,{})+turtleEgg(52,58,1.2,{open:1})+place(46,56,turtle({eye:blink(t,.9)}),{s:.34}),sky);
+    pops=pop('shell',X[0],230,54,GOLD,lt,.4,0,NAVY)+pop('hide',X[1],230,54,GOLD,lt,1.4,0,NAVY)+pop('eggs',X[2],230,54,GOLD,lt,2.4,0,NAVY);
+    cap=caption('Turtles are amazing!',lt,3.6);
+  }else{
+    const u=prog(lt,1.2,6);
+    chars=tur(lerp(420,620,u),t,{step:u>0&&u<1?lt*6:0},1.2);
+    [0,1,2].forEach(k=>{chars+=place(lerp(270-k*85,470-k*85,u),520,turtle({eye:blink(t,k*.6),step:u>0&&u<1?lt*8:0}),{s:.34});});
+    chars+=lulu(1000,lt,t,{flip:true,wave:lt>.8,hops:[.8],h:22});
+    pops=pop('Bye bye!',640,165,100,GOLD,lt,.4,-3,NAVY);
+    cap=caption('Bye bye, little turtles!',lt,1.4);
+  }
+  o.noFlowers=(i>=4&&i<=6);
+  svg.innerHTML=bg(t,0,'',o)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#6CC6FF','#CFF0FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(140,120,1,1)+cloud(1130,110,.9,1);
+  s+=`<path d="M0,500 Q300,430 640,480 T1280,470 L1280,720 L0,720Z" fill="#8FD86E"/>`;
+  s+=`<path d="M0,580 Q380,520 760,565 T1280,550 L1280,720 L0,720Z" fill="#6DBF55"/>`;
+  s+=sandPatch(900,660,600);
+  s+=shadow(900,662,190)+place(880,660,turtle({}),{s:2.0});
+  s+=turtleEgg(1120,668,1.2,{})+turtleEgg(1185,672,1.2,{open:1})+place(1182,668,turtle({}),{s:.36})+turtleEggTop(1185,672,1.2,1);
+  s+=shadow(255,662,100)+place(250,658,duck({wing:22}),{s:1.45});
+  s+=label('Did you know?',640,175,120,PURPLE,-3);
+  s+=label('Fun turtle facts',640,295,96,'#fff',-2,GREEN);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
