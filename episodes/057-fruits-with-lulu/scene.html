@@ -1,0 +1,91 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 57 - Fruits with Lulu (learning, first words).
+   Title, one scene per fruit (banana, strawberry, orange, pear, watermelon): the name pops in,
+   the fruit grows on the grass, a caption about its colour or shape, the fruit bounces, Lulu hops
+   and says "Yum!", then all five fruits together with their names. */
+const SC=[0,5,12,19,26,33,40,47], DUR=47;
+const NAVY='#2D2A6E';
+const NAME=['Banana','Strawberry','Orange','Pear','Watermelon'];
+const COL=['#E8A600','#E63946','#FF8C1A','#7DA81F','#2FA84A'];
+const CAP=['A long, yellow banana!','A little red strawberry!','An orange is round!','A juicy green pear!','Watermelon is red inside!'];
+const FS=[1.5,1.2,1.25,1.15,1.25];          // fruit scale in its own scene
+const FW=[110,70,70,70,130];                // half width at s=1 (for the shadow)
+const TW=.4, TA=.9, TC=2.0, TB=3.2, TY=4.4;  // name, fruit, caption, bounce, "Yum!" (inside a scene)
+
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.35)):0;
+const sideClouds=t=>cloud(125+10*Math.sin(t*.3),96,.9,.95)+cloud(1160+12*Math.sin(t*.25+1),112,.9,.95);
+
+function fruit(k){
+  if(k===0)return banana(0,0,1);
+  if(k===1)return strawberry(0,0,1);
+  if(k===2)return orange(0,0,1);
+  if(k===3)return pear(0,0,1);
+  return watermelon(0,0,1);
+}
+function lulu(x,lt,t,s,hopAt){
+  const j=jumps(lt,hopAt,.55,24), w=j.y<0?30*Math.abs(Math.sin(lt*10)):12+8*Math.sin(lt*3);
+  return shadow(x,522,52*s/.9,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy});
+}
+function yum(x,y,tx,ty,lt,t0){
+  if(lt<t0)return '';
+  const g=back(prog(lt,t0,t0+.35));
+  return `<g transform="translate(${x},${y}) scale(${g}) translate(${-x},${-y})">${speech(x,y,112,62,tx,ty,'Yum!',54,'#FF5D8F')}</g>`;
+}
+function twinkles(x,y,lt,t0){
+  if(lt<t0||lt>t0+1.6)return '';
+  const u=prog(lt,t0,t0+1.6), o=Math.sin(u*Math.PI);
+  let s='';[[-1,-.2],[1,-.4],[-.7,-1],[.8,-1.1]].forEach(([a,b],m)=>{s+=sparkle(x+a*(150+40*u),y+b*120-30*u,1.4+.4*Math.sin(lt*8+m),o);});
+  return s;
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let chars='',pops='',cap='',sky=sideClouds(t),talk='',back2='';
+  const o={noSun:true,noClouds:true,noFlowers:i===6};
+  if(i===0){
+    chars=lulu(640,lt,t,1.1,[1.4,2.4]);
+    pops=pop('Fruits with',640,128,80,NAVY,lt,.3)+pop(LULU,640,262,140,'#FF5D8F',lt,.7,-3);
+  }else if(i<=5){
+    const k=i-1, X=790, S=FS[k], g=grow(lt,TA), j=jumps(lt,[TB],.55,22);
+    chars+=lulu(260,lt,t,.9,[TB+.15,TY]);
+    if(g>0){
+      chars+=shadow(X,522,FW[k]*S*.9,-j.y)+place(X,520+j.y,fruit(k),{s:S*g,sx:j.sx,sy:j.sy});
+    }
+    back2=twinkles(X,520-90*S,lt,TB);
+    talk=yum(470,300,350,420,lt,TY);
+    pops=pop(NAME[k],640,165,124,COL[k],lt,TW);
+    cap=caption(CAP[k],lt,TC);
+  }else{
+    const X=[150,390,630,860,1110], S=[.85,.82,.82,.72,.75];
+    for(let k=0;k<5;k++){
+      const t0=.4+k*.5, g=grow(lt,t0), j=jumps(lt,[3.4+k*.35],.5,20);
+      if(g>0)chars+=shadow(X[k],522,FW[k]*S[k]*.9,-j.y)+place(X[k],520+j.y,fruit(k),{s:S[k]*g,sx:j.sx,sy:j.sy});
+      pops+=pop(NAME[k],X[k],340,40,COL[k],lt,t0+.2);
+    }
+    pops+=pop('All together!',640,160,96,NAVY,lt,.2);
+    cap=caption('Five fruits! Well done!',lt,4.6);
+  }
+  svg.innerHTML=bg(t,0,'',o)+sky+back2+chars+talk+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(130,110,1.3,.95)+cloud(1160,90,1.1,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(250,662,120)+place(250,658,duck({wing:22}),{s:1.8});
+  s+=shadow(520,668,90)+banana(520,664,1.1);
+  s+=strawberry(735,690,.9)+orange(1110,690,.9);
+  s+=label('Fruits',880,250,150,'#E63946',-3);
+  s+=label('with',880,360,62,NAVY)+label(LULU,880,500,140,'#FF5D8F',-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

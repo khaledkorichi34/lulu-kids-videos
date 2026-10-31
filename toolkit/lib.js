@@ -1458,3 +1458,27 @@ function balloon(x,y,r,col,ax,ay){
   <path d="M${x-7},${by+6} L${x},${by-3} L${x+7},${by+6} Z" fill="${col}"/>
   <ellipse cx="${x-r*.35}" cy="${y-r*.45}" rx="${r*.22}" ry="${r*.34}" fill="#fff" opacity=".45" transform="rotate(-25 ${x-r*.35} ${y-r*.45})"/>`;
 }
+
+/* ---------- fruits (episode 57) ---------- */
+// banana(x,y,s): curved yellow banana lying on its side, tips up, origin at the middle of its bottom
+// (about 220 wide and 80 tall at s=1).
+function banana(x,y,s=1){
+  return `<g transform="translate(${x},${y+6*s}) scale(${s})">
+  <path d="M-108,-74 Q0,62 108,-74 Q0,-12 -108,-74 Z" fill="#FFD23F"/>
+  <path d="M-92,-60 Q0,30 92,-60 Q0,8 -92,-60 Z" fill="#FFE27A" opacity=".8"/>
+  <path d="M-100,-62 Q0,42 100,-62" stroke="#F2B90F" stroke-width="5" fill="none" opacity=".7"/>
+  <path d="M104,-72 L118,-86" stroke="#7A5A21" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="-108" cy="-74" r="6" fill="#5A3E1A"/></g>`;
+}
+// strawberry(x,y,s): red strawberry with yellow seeds and a green leafy top, origin at its bottom tip
+// (about 140 wide and 170 tall at s=1).
+function strawberry(x,y,s=1){
+  const seeds=[[-34,-104],[0,-112],[34,-104],[-48,-78],[-16,-82],[16,-82],[48,-78],[-32,-54],[0,-56],[32,-54],[-14,-30],[14,-30]];
+  let sd='';seeds.forEach(([a,b])=>{sd+=`<ellipse cx="${a}" cy="${b}" rx="3.5" ry="5.5" fill="#FFE27A"/>`;});
+  let lv='';[-70,-35,0,35,70].forEach(r=>{lv+=`<ellipse cx="0" cy="-152" rx="11" ry="28" fill="#3FA34D" transform="rotate(${r+180} 0 -138)"/>`;});
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M0,0 C-40,-12 -72,-70 -66,-108 C-62,-138 -30,-146 0,-136 C30,-146 62,-138 66,-108 C72,-70 40,-12 0,0 Z" fill="#E63946"/>
+  <path d="M20,-130 C56,-132 66,-92 52,-60 C42,-36 24,-16 8,-8 C34,-30 50,-70 40,-104 C36,-118 30,-126 20,-130 Z" fill="#C92E3B" opacity=".6"/>
+  ${sd}<ellipse cx="-38" cy="-104" rx="9" ry="18" fill="#fff" opacity=".35" transform="rotate(25 -38 -104)"/>
+  ${lv}<path d="M0,-140 Q2,-158 10,-168" stroke="#2E8A3C" stroke-width="7" fill="none" stroke-linecap="round"/></g>`;
+}

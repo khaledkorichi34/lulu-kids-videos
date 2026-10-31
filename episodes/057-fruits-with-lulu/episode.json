@@ -1,0 +1,120 @@
+{
+  "number": 57,
+  "slug": "fruits-with-lulu",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "Fruits with Lulu | Learn First Words for Kids",
+  "description": "Lulu the little duck meets five fruits: a banana, a strawberry, an orange, a pear and a watermelon.\n\nSay each fruit name out loud and see its colour and shape.\n\nA short, gentle first-words video for children aged 3 to 6.",
+  "duration": 47,
+  "seed": 57,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 1.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 2.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 5.4,
+      "type": "pop"
+    },
+    {
+      "t": 5.9,
+      "type": "boing_high"
+    },
+    {
+      "t": 8.2,
+      "type": "sparkle"
+    },
+    {
+      "t": 9.4,
+      "type": "pop"
+    },
+    {
+      "t": 12.4,
+      "type": "pop"
+    },
+    {
+      "t": 12.9,
+      "type": "boing_high"
+    },
+    {
+      "t": 15.2,
+      "type": "sparkle"
+    },
+    {
+      "t": 16.4,
+      "type": "pop"
+    },
+    {
+      "t": 19.4,
+      "type": "pop"
+    },
+    {
+      "t": 19.9,
+      "type": "boing_high"
+    },
+    {
+      "t": 22.2,
+      "type": "sparkle"
+    },
+    {
+      "t": 23.4,
+      "type": "pop"
+    },
+    {
+      "t": 26.4,
+      "type": "pop"
+    },
+    {
+      "t": 26.9,
+      "type": "boing_high"
+    },
+    {
+      "t": 29.2,
+      "type": "sparkle"
+    },
+    {
+      "t": 30.4,
+      "type": "pop"
+    },
+    {
+      "t": 33.4,
+      "type": "pop"
+    },
+    {
+      "t": 33.9,
+      "type": "boing_high"
+    },
+    {
+      "t": 36.2,
+      "type": "sparkle"
+    },
+    {
+      "t": 37.4,
+      "type": "pop"
+    },
+    {
+      "t": 44.6,
+      "type": "ding"
+    }
+  ],
+  "check_times": [
+    3.5,
+    8.5,
+    9.6,
+    15.4,
+    16.6,
+    22.4,
+    23.6,
+    29.4,
+    30.6,
+    36.4,
+    37.6,
+    43.8,
+    46
+  ]
+}
