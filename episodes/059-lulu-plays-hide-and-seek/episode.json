@@ -1,0 +1,111 @@
+{
+  "number": 59,
+  "slug": "lulu-plays-hide-and-seek",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu Plays Hide-and-Seek | Bedtime Story for Kids",
+  "description": "Lulu the duck plays hide-and-seek with Bunny, Puppy and Turtle. She closes her eyes and counts: one, two, three!\nBunny's ears peek over a bush, Puppy's tail wags in the leaves, and a green rock is really Turtle!\nFound you all! The sun goes down and the friends fall asleep under the tree.\nA gentle story about playing together, for children aged 3 to 6.",
+  "duration": 56,
+  "seed": 59,
+  "lullaby_from": 48.0,
+  "sfx": [
+    {
+      "t": 0.4,
+      "type": "pop"
+    },
+    {
+      "t": 9.3,
+      "type": "boing_high"
+    },
+    {
+      "t": 9.5,
+      "type": "boing_high"
+    },
+    {
+      "t": 13.0,
+      "type": "ding"
+    },
+    {
+      "t": 14.0,
+      "type": "ding"
+    },
+    {
+      "t": 15.0,
+      "type": "ding"
+    },
+    {
+      "t": 20.8,
+      "type": "sparkle"
+    },
+    {
+      "t": 22.6,
+      "type": "boing_high"
+    },
+    {
+      "t": 23.0,
+      "type": "pop"
+    },
+    {
+      "t": 28.1,
+      "type": "sparkle"
+    },
+    {
+      "t": 29.6,
+      "type": "boing_low"
+    },
+    {
+      "t": 29.8,
+      "type": "pop"
+    },
+    {
+      "t": 35.8,
+      "type": "pop"
+    },
+    {
+      "t": 36.8,
+      "type": "boing_high"
+    },
+    {
+      "t": 37.0,
+      "type": "pop"
+    },
+    {
+      "t": 40.5,
+      "type": "boing_high"
+    },
+    {
+      "t": 40.6,
+      "type": "sparkle"
+    },
+    {
+      "t": 41.7,
+      "type": "boing_high"
+    },
+    {
+      "t": 52.6,
+      "type": "sparkle"
+    }
+  ],
+  "check_times": [
+    2.5,
+    9.6,
+    15.5,
+    20.5,
+    22.9,
+    23.2,
+    24.5,
+    28.5,
+    29.9,
+    30.3,
+    31.4,
+    35.5,
+    37.2,
+    38.5,
+    40.6,
+    41.8,
+    44,
+    46.5,
+    51,
+    54.8
+  ]
+}

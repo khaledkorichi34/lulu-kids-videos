@@ -1506,3 +1506,14 @@ function turtleEggTop(x,y,s=1,u=1){
   const e=eout(clamp(u));
   return `<g transform="translate(${x+34*s*e},${y-24*s-30*s*Math.sin(Math.PI*clamp(u)*.8)+22*s*e}) rotate(${110*e}) scale(${s})"><path d="M-25,-24 L-17,-30 L-9,-22 L0,-30 L9,-22 L17,-30 L25,-24 Q24,-52 0,-51 Q-24,-52 -25,-24Z" fill="#FFFDF4" transform="translate(0,24)"/></g>`;
 }
+
+/* ---------- rock (episode 59) ---------- */
+// rock(x,y,s,col): round smooth grey rock resting on the ground, origin at the middle of its bottom
+// (about 190 wide and 105 tall at s=1). col = main colour (default grey).
+function rock(x,y,s=1,col='#A7A9B4'){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <ellipse cx="0" cy="-4" rx="98" ry="10" fill="#000" opacity=".12"/>
+  <path d="M-94,-2 Q-100,-70 -40,-98 Q10,-114 58,-92 Q100,-66 94,-2 Z" fill="${col}"/>
+  <path d="M-60,-62 Q-36,-90 2,-94" stroke="#fff" stroke-width="9" fill="none" stroke-linecap="round" opacity=".35"/>
+  <ellipse cx="34" cy="-36" rx="22" ry="12" fill="#000" opacity=".07"/></g>`;
+}

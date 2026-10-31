@@ -1,0 +1,163 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 59 - Lulu Plays Hide-and-Seek. Bunny, Puppy and Turtle come to play. Lulu closes her eyes
+   and counts (one, two, three); the friends hide. Bunny's ears peek over the bush (peek-a-boo!),
+   Puppy's tail wags in the leaf pile (whoosh!), and a green "rock" is Turtle in her shell.
+   Found you all! Hooray! The sun goes down and the friends sleep under the tree. */
+const DUR=56, SC=[0,5,12,19,26,33,40,48,56];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', ORANGE='#F27A12', TEAL='#19B8A6', GOLD='#FFE58A', BLUE='#3FA9F5';
+const BRN='#A86B3C', LBR='#E8C49A';
+
+const lulu=(lt,t,o={})=>{
+  const x=o.x, j=jumps(lt,o.hops||[],.6,o.h||26), w=o.wave?20+20*Math.sin(lt*9):(o.wing||0);
+  return shadow(x,522,60,-j.y)+place(x,520+j.y+(o.bob||0),duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),{s:1,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0,flip:o.flip});
+};
+const bunnyAt=(lt,t,o={})=>{
+  const x=o.x, j=o.j||jumps(lt,o.hops||[],.5,o.h||26);
+  return (o.noShadow?'':shadow(x,522,52,-j.y))+place(x,520+j.y+(o.bob||0),bunny({eye:o.eye!=null?o.eye:blink(t,.8),ear:o.ear||0}),{s:o.s||1,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0});
+};
+const pup=(lt,t,o={})=>{
+  const x=o.x, j=o.j||jumps(lt,o.hops||[],.6,o.h||24);
+  return (o.noShadow?'':shadow(x,522,70,-j.y))+place(x,520+j.y+(o.bob||0),puppy({eye:o.eye!=null?o.eye:blink(t,1.6),tail:o.asleep?0:Math.sin(t*9),ear:o.ear||0,asleep:o.asleep}),{s:.95,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0,flip:o.flip});
+};
+const turt=(lt,t,o={})=>{
+  const x=o.x;
+  return shadow(x,522,70)+place(x,520+(o.bob||0),turtle({eye:o.eye!=null?o.eye:blink(t,2.2),hide:o.hide||0,step:o.step||0,asleep:o.asleep}),{s:o.s||.9,rot:o.rot||0,flip:o.flip});
+};
+const hopList=(a,b,step)=>{const r=[];for(let s=a;s<b-.01;s+=step)r.push(s);return r;};
+const walkBob=(w,lt)=>w>0&&w<1?-8*Math.abs(Math.sin(lt*7)):0;
+const sideClouds=(t,n)=>cloud(130+12*Math.sin(t*.3),262,.6,1-n*.85);
+const zzz=(lt,x,y)=>{let s='';for(let k=0;k<3;k++){let q=lt-2.0-k*.9;if(q>0){q%=2.7;
+  s+=`<text x="${x+q*24+8*Math.sin(q*3)}" y="${y-q*30}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}return s;};
+// Bunny's two ears peeking over the bush (drawn before the bush)
+const ears=(x,lt,up)=>{const wig=6*Math.sin(lt*7);
+  return `<clipPath id="earclip"><rect x="0" y="0" width="1280" height="470"/></clipPath><g clip-path="url(#earclip)">`+place(x,520+150-115*up,bunny({eye:1,ear:wig}),{s:1})+'</g>';};
+// Puppy's tail sticking up out of the leaf pile (drawn before the pile)
+const pileTail=(x,y,t,u)=>u<=0?'':`<g transform="translate(${x},${y}) rotate(${22*Math.sin(t*10)})"><path d="M0,30 Q-10,${30-60*u} 6,${30-90*u}" stroke="${BRN}" stroke-width="15" fill="none" stroke-linecap="round"/><circle cx="6" cy="${30-90*u}" r="8" fill="${LBR}"/></g>`;
+const flyLeaves=(x,y,u)=>{if(u<=0||u>=1)return '';let s='';
+  for(let k=0;k<9;k++){const a=Math.PI*(.12+.76*k/8), d=60+220*u;
+    s+=autumnLeaf(x+Math.cos(a)*d,y-Math.sin(a)*d*.8+140*u*u,1.1,k*40+u*300,AUTUMN[k%3]);}return s;};
+const PILE=[820,1.35];
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',pops='',cap='',o={},behind='',front='';
+  switch(i){
+  case 0:{
+    // title: Lulu hops, Bunny's ears peek over the bush
+    props=tree(1060,520,.8)+ears(760,lt,1)+bush(760,534,1.1);
+    chars=lulu(lt,t,{x:330,hops:[.8,3.0],h:20});
+    pops=pop(`${LULU}<tspan fill="${NAVY}"> Plays Hide-and-Seek</tspan>`,560,150,60,PINK,lt,.4,-2);
+    break;}
+  case 1:{
+    // the friends come; let's play hide-and-seek!
+    const w=eio(prog(lt,.2,2.6)), bw=eio(prog(lt,.4,2.8)), tw=eio(prog(lt,.2,3.4));
+    props=tree(1120,520,.75);
+    chars=lulu(lt,t,{x:lerp(-140,250,w),bob:walkBob(w,lt),hops:[4.3],h:24})
+         +bunnyAt(lt,t,{x:lerp(1400,520,bw),hops:bw<1?hopList(.4,2.8,.55):[4.4],h:24})
+         +pup(lt,t,{x:lerp(1450,760,w),bob:walkBob(w,lt),flip:true,hops:[4.5],h:22})
+         +turt(lt,t,{x:lerp(1460,1000,tw),flip:true,step:lt*6,bob:tw<1?-3*Math.abs(Math.sin(lt*6)):0});
+    cap=lt<3.6?caption('Here come Lulu’s friends!',lt,.3):caption('Let’s play hide-and-seek!',lt,3.6);
+    pops=pop('Yay!',640,165,104,ORANGE,lt,4.3,-4);
+    break;}
+  case 2:{
+    // Lulu closes her eyes and counts; the friends run off to hide
+    props=tree(170,520,.8);
+    const cover=lt>.6;
+    chars=lulu(lt,t,{x:360,flip:true,asleep:cover,wing:cover?-35:0});
+    const bw=eio(prog(lt,1.2,3.6)), pw=eio(prog(lt,1.4,3.8)), tw=eio(prog(lt,1.0,5.6));
+    chars+=bunnyAt(lt,t,{x:lerp(560,1420,bw),hops:bw>0&&bw<1?hopList(1.2,3.6,.5):[],h:22})
+         +pup(lt,t,{x:lerp(780,1460,pw),bob:walkBob(pw,lt)})
+         +turt(lt,t,{x:lerp(1000,1450,tw),step:lt*6,bob:tw>0&&tw<1?-3*Math.abs(Math.sin(lt*6)):0});
+    cap=lt<4.2?caption('Lulu closes her eyes.',lt,.3):caption('Ready or not, here I come!',lt,4.2);
+    pops=pop('One,',390,165,88,PINK,lt,1.0,-3)+pop('two,',630,165,88,ORANGE,lt,2.0,-3)+pop('three!',890,165,88,BLUE,lt,3.0,-3);
+    break;}
+  case 3:{
+    // Where is Bunny? ears peek over the bush. Peek-a-boo! Found you, Bunny!
+    const w=eio(prog(lt,.2,2.4)), up=eio(prog(lt,1.0,1.8));
+    const jt=prog(lt,3.6,4.4), BX=860;
+    let bun='';
+    if(jt>0){const jx=lerp(BX,640,eio(jt));
+      const jj=jt<1?{y:-Math.sin(Math.PI*jt)*70+lerp(35,0,eio(Math.min(1,jt*1.6))),sx:1,sy:1}:jumps(lt,[5.2,5.8],.5,22);
+      bun=bunnyAt(lt,t,{x:jx,j:jj,ear:14,noShadow:jt<.6});}
+    props=(jt<=0?ears(BX,lt,up):'')+(jt>0&&jt<.55?bun:'')+bush(BX,534,1.1);
+    front=jt>=.55?bun:'';
+    chars=lulu(lt,t,{x:lerp(-140,360,w),bob:walkBob(w,lt),hops:[4.6],h:28,wave:lt>4.6&&lt<6});
+    cap=lt<3.6?caption('Where is Bunny?',lt,.3):caption('Found you, Bunny!',lt,3.8);
+    pops=lt<3.6?pop('Ears!',BX,250,64,PINK,lt,1.8,-4):pop('Peek-a-boo!',600,150,96,PURPLE,lt,3.9,-3);
+    break;}
+  case 4:{
+    // Where is Puppy? A tail wags in the leaf pile. Whoosh! Found you, Puppy!
+    const w=eio(prog(lt,.2,2.4)), tu=eio(prog(lt,1.2,1.9)), jt=prog(lt,3.6,4.4);
+    const PX=PILE[0], wob=lt>1.2&&lt<3.6?2.5*Math.sin(lt*14):0;
+    const pile=place(PX,520,leafPile(0,0,1,PILE[1]),{rot:wob});
+    let pp='';
+    if(jt>0){const jx=lerp(PX,620,eio(jt));
+      const jj=jt<1?{y:-Math.sin(Math.PI*jt)*110+lerp(60,0,eio(Math.min(1,jt*2))),sx:1,sy:1}:jumps(lt,[5.3,5.9],.5,20);
+      pp=pup(lt,t,{x:jx,j:jj,flip:true,ear:jt<1?1:0,noShadow:jt<.5});}
+    props=autumnTree(1130,520,.7)+(jt<=0?pileTail(PX+30,520-156,t,tu):'')+(jt>0&&jt<.35?pp:'')+pile+flyLeaves(PX,440,prog(lt,3.7,5.0));
+    front=jt>=.35?pp:'';
+    chars=lulu(lt,t,{x:lerp(-140,330,w),bob:walkBob(w,lt),hops:[4.7],h:28,wave:lt>4.7&&lt<6});
+    cap=lt<3.6?caption('Where is Puppy?',lt,.3):caption('Found you, Puppy!',lt,3.8);
+    pops=lt<3.6?pop('Wag, wag!',PX,300,60,ORANGE,lt,1.9,-4):pop('Whoosh!',600,150,100,ORANGE,lt,3.8,-3);
+    break;}
+  case 5:{
+    // Where is Turtle? A green rock? Peek-a-boo! It is Turtle!
+    const w=eio(prog(lt,.2,2.4)), out=eio(prog(lt,3.8,4.6)), wob=lt>2.2&&lt<3.6?3*Math.sin(lt*16):0;
+    props=rock(620,520,.9)+rock(1110,520,1.05,'#9A9CA8');
+    chars=turt(lt,t,{x:860,hide:1-out,rot:wob,step:0,s:.9,eye:out>.5?blink(t,2.2):1})
+         +lulu(lt,t,{x:lerp(-140,340,w),bob:walkBob(w,lt),hops:[4.9],h:28,wave:lt>4.9&&lt<6.4});
+    cap=lt<3.6?caption('Where is Turtle?',lt,.3):caption('Found you, Turtle!',lt,3.8);
+    pops=lt<3.6?pop('A green rock?',820,300,58,TEAL,lt,1.8,-3):pop('Peek-a-boo!',640,150,96,TEAL,lt,4.0,-3);
+    break;}
+  case 6:{
+    // Found you all! Hooray! The sun goes down.
+    n=lerp(0,.45,eio(prog(lt,4.4,8))); o={noSun:true,noMoon:true};
+    behind=sun(t,1150,lerp(100,560,eio(prog(lt,4.4,8))));
+    props=tree(640,520,.8);
+    for(let k=0;k<6;k++){let q=lt-.8-k*.45;if(q>0&&q<2.4){const u=q/2.4;
+      props+=heart(640-150+k*60+10*Math.sin(q*4+k),330-110*u,1.1,['#FF5D8F','#FF9F1C','#7B5CFF'][k%3],Math.sin(Math.PI*u));}}
+    chars=bunnyAt(lt,t,{x:220,hops:[.6,1.8],h:26,ear:10})
+         +lulu(lt,t,{x:470,hops:[.5,1.7],h:30,wave:lt>.5&&lt<3})
+         +pup(lt,t,{x:800,flip:true,hops:[.7,1.9],h:24})
+         +turt(lt,t,{x:1060,flip:true});
+    cap=lt<4.4?caption('Found you all! Hooray!',lt,.3):caption('The sun goes down.',lt,4.4);
+    pops=pop('Hooray!',640,150,104,PINK,lt,.6,-3);
+    break;}
+  case 7:{
+    // night: what a fun game; the friends sleep under the tree
+    n=lerp(.45,1,eio(prog(lt,0,4))); o={noSun:true};
+    props=tree(640,520,.8);
+    const asleep=lt>1.6, br=k=>1+.025*Math.sin(lt*2.2+k);
+    chars=shadow(220,522,52)+place(220,520,bunny({eye:asleep?.12:.45}),{s:1,sy:br(2)})
+         +shadow(470,522,60)+place(470,520,duck({asleep,eye:.45}),{s:1,sy:br(0),rot:asleep?3:0})
+         +pup(lt,t,{x:800,flip:true,asleep,eye:.45,sy:br(1)})
+         +turt(lt,t,{x:1060,flip:true,asleep,eye:.45});
+    pops=zzz(lt,520,330);
+    cap=lt<3.6?caption('What a fun game!',lt,.4):caption('Good night, friends.',lt,3.6);
+    pops+=pop('The End',640,140,112,GOLD,lt,4.6,-3,NAVY);
+    break;}
+  }
+  o.noClouds=true;
+  svg.innerHTML=bg(t,n,sideClouds(t,n)+behind,o)+props+chars+front+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#5EC2FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=`<path d="M0,440 Q300,360 640,420 T1280,410 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,520 Q380,470 760,505 T1280,490 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=place(960,560+150-115,bunny({ear:8}),{s:1.25})+bush(960,680,1.5);
+  s+=place(330,670,duck({wing:22}),{s:1.25});
+  s+=place(640,676,turtle({hide:0}),{s:.85,flip:true});
+  s+=label(`${LULU}<tspan fill="${NAVY}"> Plays</tspan>`,640,125,100,PINK,-2);
+  s+=label(`<tspan fill="${NAVY}">Hide-and-Seek</tspan>`,640,235,96,PINK,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
