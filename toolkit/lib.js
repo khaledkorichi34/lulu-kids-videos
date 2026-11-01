@@ -1517,3 +1517,52 @@ function rock(x,y,s=1,col='#A7A9B4'){
   <path d="M-60,-62 Q-36,-90 2,-94" stroke="#fff" stroke-width="9" fill="none" stroke-linecap="round" opacity=".35"/>
   <ellipse cx="34" cy="-36" rx="22" ry="12" fill="#000" opacity=".07"/></g>`;
 }
+
+/* ---------- vegetables (episode 60) ---------- */
+// peaPod(x,y,s): open green pea pod lying on its side with five round peas, origin at the middle of its
+// bottom (about 240 wide and 95 tall at s=1).
+function peaPod(x,y,s=1){
+  let p='';[-68,-34,0,34,68].forEach(a=>{p+=`<circle cx="${a}" cy="-46" r="19" fill="#6CC24A"/><circle cx="${a-6}" cy="-53" r="5.5" fill="#fff" opacity=".45"/>`;});
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-116,-48 Q-60,-96 0,-92 Q60,-96 116,-52 Q60,4 0,0 Q-60,4 -116,-48 Z" fill="#3E9B45"/>
+  <path d="M-100,-48 Q-50,-78 0,-76 Q50,-78 100,-50 Q50,-26 0,-26 Q-50,-26 -100,-48 Z" fill="#CDEB9A"/>
+  ${p}
+  <path d="M-116,-48 Q0,14 116,-52 Q60,-18 0,-16 Q-60,-18 -116,-48 Z" fill="#4CB85A"/>
+  <path d="M-80,-28 Q0,-6 80,-30" stroke="#8ED36A" stroke-width="5" fill="none" stroke-linecap="round" opacity=".7"/>
+  <path d="M114,-52 Q130,-60 128,-78" stroke="#3E9B45" stroke-width="7" fill="none" stroke-linecap="round"/></g>`;
+}
+// corn(x,y,s): yellow corn on the cob with green husk leaves at the bottom, origin at its bottom
+// (about 150 wide and 200 tall at s=1).
+function corn(x,y,s=1){
+  let k='';
+  for(let yy=-176;yy<=-44;yy+=15){const hw=42*Math.sqrt(Math.max(0,1-Math.pow((yy+104)/92,2)))-9;
+    for(let xx=-Math.floor(hw/14)*14;xx<=hw;xx+=14)k+=`<ellipse cx="${xx}" cy="${yy}" rx="6" ry="6.5" fill="#FFE066"/>`;}
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <ellipse cx="0" cy="-104" rx="44" ry="94" fill="#F2B90F"/>${k}
+  <ellipse cx="-20" cy="-140" rx="7" ry="26" fill="#fff" opacity=".35"/>
+  <path d="M0,0 C-70,-14 -80,-100 -62,-150 C-48,-96 -34,-44 4,-6 Z" fill="#5CC85A"/>
+  <path d="M0,0 C70,-14 80,-100 62,-150 C48,-96 34,-44 -4,-6 Z" fill="#4CB85A"/>
+  <path d="M-8,0 C-30,-30 -24,-70 -10,-92 C-8,-60 -2,-30 8,-2 Z" fill="#7BD66A"/></g>`;
+}
+// broccoli(x,y,s): green broccoli with a light stalk and a bumpy dark green top, origin at the bottom of
+// the stalk (about 210 wide and 240 tall at s=1).
+function broccoli(x,y,s=1){
+  const B=[[-64,-122,42],[64,-122,42],[-34,-168,46],[34,-168,46],[0,-132,48],[0,-198,38],[-80,-160,30],[80,-160,30]];
+  let h='';B.forEach(([a,b,r])=>{h+=`<circle cx="${a}" cy="${b}" r="${r}" fill="#2E8B3C"/>`;});
+  B.forEach(([a,b,r])=>{h+=`<circle cx="${a-r*.25}" cy="${b-r*.25}" r="${r*.62}" fill="#3FA34D"/>`;});
+  B.forEach(([a,b,r])=>{h+=`<circle cx="${a-r*.4}" cy="${b-r*.42}" r="${r*.18}" fill="#7BD66A" opacity=".8"/>`;});
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-30,0 L-20,-96 L-44,-118 L-8,-104 L0,-124 L8,-104 L44,-118 L20,-96 L30,0 Q0,8 -30,0 Z" fill="#A8D86A"/>
+  <path d="M8,-90 L16,-4" stroke="#8CC34F" stroke-width="7" stroke-linecap="round"/>
+  ${h}</g>`;
+}
+// pepper(x,y,s): shiny red bell pepper with a green stalk, origin at its bottom (about 170 wide and 200 tall at s=1).
+function pepper(x,y,s=1){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <ellipse cx="-44" cy="-80" rx="44" ry="78" fill="#C92A2A"/><ellipse cx="44" cy="-80" rx="44" ry="78" fill="#C92A2A"/>
+  <ellipse cx="0" cy="-82" rx="50" ry="82" fill="#E63946"/>
+  <ellipse cx="-50" cy="-86" rx="30" ry="64" fill="#E63946"/><ellipse cx="50" cy="-86" rx="30" ry="64" fill="#D93240"/>
+  <ellipse cx="-26" cy="-108" rx="10" ry="34" fill="#fff" opacity=".4"/>
+  <ellipse cx="0" cy="-158" rx="44" ry="12" fill="#3FA34D"/>
+  <path d="M-6,-160 Q-8,-186 10,-198 L18,-190 Q6,-180 8,-160 Z" fill="#2E8A3C"/></g>`;
+}
