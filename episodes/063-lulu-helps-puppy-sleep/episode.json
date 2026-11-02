@@ -1,0 +1,30 @@
+{
+  "number": 63,
+  "slug": "lulu-helps-puppy-sleep",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu Helps Puppy Sleep | Bedtime Story for Kids",
+  "description": "Lulu the duck and Puppy play ball all day. The sun goes down, but Puppy is wide awake!\nLulu brings a soft blanket, they count the stars, and Lulu hums a soft song. Puppy yawns...\nGood night, Puppy. Good night, Lulu.\nA calm bedtime story for children aged 3 to 6.",
+  "duration": 55,
+  "seed": 63,
+  "lullaby_from": 40.0,
+  "sfx": [
+    {"t": 0.4, "type": "pop"},
+    {"t": 1.2, "type": "boing_high"},
+    {"t": 5.6, "type": "pop"},
+    {"t": 6.4, "type": "boing_low"},
+    {"t": 7.8, "type": "boing_low"},
+    {"t": 15.4, "type": "boing_high"},
+    {"t": 16.2, "type": "boing_high"},
+    {"t": 16.97, "type": "boing_high"},
+    {"t": 20.8, "type": "sparkle"},
+    {"t": 22.6, "type": "pop"},
+    {"t": 27.0, "type": "ding"},
+    {"t": 28.1, "type": "ding"},
+    {"t": 29.2, "type": "ding"},
+    {"t": 36.9, "type": "pop"},
+    {"t": 47.8, "type": "sparkle"},
+    {"t": 51.6, "type": "pop"}
+  ],
+  "check_times": [1.0, 2.0, 6.5, 9.5, 15.6, 17.0, 20.0, 21.5, 23.5, 29.5, 31.0, 34.5, 37.5, 42.5, 45.0, 49.0, 52.0, 54.0]
+}

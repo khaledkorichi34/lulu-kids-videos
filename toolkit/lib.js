@@ -1566,3 +1566,24 @@ function pepper(x,y,s=1){
   <ellipse cx="0" cy="-158" rx="44" ry="12" fill="#3FA34D"/>
   <path d="M-6,-160 Q-8,-186 10,-198 L18,-190 Q6,-180 8,-160 Z" fill="#2E8A3C"/></g>`;
 }
+
+/* ---------- cosy blanket and music notes (episode 63) ---------- */
+// cosyBlanket(x,y,w,h,u,col,dot): soft blanket lying over a character who rests on the ground,
+// origin at the middle of its bottom (width w, height h at u=1). Draw it AFTER the character so it
+// covers the legs and body and the head peeks out. u = 0..1 how far it has been pulled up (it grows
+// from the ground). col = main colour, dot = polka-dot colour.
+function cosyBlanket(x,y,w=170,h=90,u=1,col='#8FB8FF',dot='#FFFFFF'){
+  if(u<=0)return '';
+  const H=h*clamp(u), hw=w/2;
+  let s=`<path d="M${x-hw-8},${y+4} Q${x-hw-14},${y-H*.55} ${x-hw+18},${y-H} Q${x},${y-H-16} ${x+hw-18},${y-H} Q${x+hw+14},${y-H*.55} ${x+hw+8},${y+4} Z" fill="${col}"/>`;
+  s+=`<path d="M${x-hw+18},${y-H+2} Q${x},${y-H-14} ${x+hw-18},${y-H+2}" stroke="#fff" stroke-width="9" fill="none" stroke-linecap="round" opacity=".8"/>`;
+  if(u>.5){const o=clamp((u-.5)*2);
+    [[-.55,.35],[-.15,.55],[.25,.32],[.6,.6],[-.38,.75],[.05,.25]].forEach(([dx,dy])=>{
+      s+=`<circle cx="${x+dx*hw}" cy="${y-H*dy}" r="7" fill="${dot}" opacity="${.75*o}"/>`;});}
+  return s;
+}
+// musicNote(x,y,s,col,op): a small eighth note, origin at the bottom of its round head (about 40 wide, 70 tall at s=1).
+function musicNote(x,y,s=1,col='#FFE58A',op=1){
+  return `<g transform="translate(${x},${y}) scale(${s}) rotate(-12)" opacity="${op}"><ellipse cx="0" cy="-10" rx="13" ry="10" fill="${col}"/>
+  <rect x="9" y="-66" width="5" height="56" fill="${col}"/><path d="M14,-66 Q34,-56 30,-34 Q26,-48 14,-50 Z" fill="${col}"/></g>`;
+}
