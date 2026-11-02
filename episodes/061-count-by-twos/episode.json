@@ -1,0 +1,118 @@
+{
+  "number": 61,
+  "slug": "count-by-twos",
+  "format": "learning",
+  "ages": "4-7",
+  "title": "Count by Twos with Lulu | Learn Numbers for Kids",
+  "description": "Lulu the little duck counts in twos: two apples, two oranges, two pears, two strawberries and two balls.\n\nCount along: 2, 4, 6, 8, 10!\n\nA short, gentle counting video for children aged 4 to 7.",
+  "duration": 48,
+  "seed": 61,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 1.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 2.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 5.6,
+      "type": "pop"
+    },
+    {
+      "t": 6.3,
+      "type": "pop"
+    },
+    {
+      "t": 7.2,
+      "type": "boing_high"
+    },
+    {
+      "t": 8.0,
+      "type": "ding"
+    },
+    {
+      "t": 12.6,
+      "type": "pop"
+    },
+    {
+      "t": 13.3,
+      "type": "pop"
+    },
+    {
+      "t": 14.2,
+      "type": "boing_high"
+    },
+    {
+      "t": 15.0,
+      "type": "ding"
+    },
+    {
+      "t": 19.6,
+      "type": "pop"
+    },
+    {
+      "t": 20.3,
+      "type": "pop"
+    },
+    {
+      "t": 21.2,
+      "type": "boing_high"
+    },
+    {
+      "t": 22.0,
+      "type": "ding"
+    },
+    {
+      "t": 26.6,
+      "type": "pop"
+    },
+    {
+      "t": 27.3,
+      "type": "pop"
+    },
+    {
+      "t": 28.2,
+      "type": "boing_high"
+    },
+    {
+      "t": 29.0,
+      "type": "ding"
+    },
+    {
+      "t": 33.6,
+      "type": "pop"
+    },
+    {
+      "t": 34.3,
+      "type": "pop"
+    },
+    {
+      "t": 35.2,
+      "type": "boing_high"
+    },
+    {
+      "t": 36.0,
+      "type": "ding"
+    },
+    {
+      "t": 44.8,
+      "type": "sparkle"
+    }
+  ],
+  "check_times": [
+    3.5,
+    8.5,
+    9.5,
+    15.5,
+    22.5,
+    29.5,
+    36.5,
+    39.5,
+    41.5,
+    43.5,
+    46.5
+  ]
+}

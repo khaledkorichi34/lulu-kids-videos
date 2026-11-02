@@ -1,0 +1,93 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 61 - Count by Twos with Lulu (learning, skip counting).
+   Title, then five scenes: a new pair of things grows on the grass (apples, oranges, pears,
+   strawberries, balls), the pair bounces and the running total pops in (2, 4, 6, 8, 10) above it
+   and in big numbers. Earlier pairs stay on screen with their numbers. Ending: every pair bounces
+   in turn while its number grows, "2, 4, 6, 8, 10!", Well done. No sun or small flowers (counting). */
+const SC=[0,5,12,19,26,33,40,48], DUR=48;
+const NAVY='#2D2A6E';
+const PX=[310,510,710,910,1110], D=46;                 // pair centres, half distance inside a pair
+const NUM=['2','4','6','8','10'];
+const NCOL=['#E63946','#FF8C1A','#7DA81E','#FF5D8F','#3FA9F5'];
+const CAP=['Two apples. Two!','Two more oranges. Four!','Two more pears. Six!','Two more strawberries. Eight!','Two more balls. Ten!'];
+const TL=.6, TR=1.3, TBN=2.2, TN=3.0;                  // left item, right item, bounce, number (inside a scene)
+
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.35)):0;
+const sideClouds=t=>cloud(125+10*Math.sin(t*.3),96,.9,.95)+cloud(1160+12*Math.sin(t*.25+1),112,.9,.95);
+
+function thing(k,x,y,g){
+  if(g<=0)return '';
+  if(k===0)return apple(x,y,.55*g);
+  if(k===1)return orange(x,y,.58*g);
+  if(k===2)return pear(x,y,.55*g);
+  if(k===3)return strawberry(x,y,.58*g);
+  return ball(x,y,38*g,0);
+}
+// one pair k: gl/gr = grow of the left/right item, j = jump
+function pair(k,gl,gr,j){
+  let s='';
+  [[-D,gl],[D,gr]].forEach(([dx,g])=>{
+    if(g<=0)return;
+    s+=shadow(PX[k]+dx,522,36,-j.y)+`<g transform="translate(${PX[k]+dx},${520+j.y}) scale(${j.sx},${j.sy}) translate(${-(PX[k]+dx)},-520)">${thing(k,PX[k]+dx,520,g)}</g>`;
+  });
+  return s;
+}
+function numLabel(k,sc){
+  if(sc<=0)return '';
+  return `<g transform="translate(${PX[k]},350) scale(${sc}) translate(${-PX[k]},-350)">${label(NUM[k],PX[k],350,70,NCOL[k])}</g>`;
+}
+function lulu(x,lt,t,s,hopAt){
+  const j=jumps(lt,hopAt,.55,24), w=j.y<0?30*Math.abs(Math.sin(lt*10)):12+8*Math.sin(lt*3);
+  return shadow(x,522,52*s/.9,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy});
+}
+const still={y:0,sx:1,sy:1};
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let chars='',pops='',cap='',labels='';
+  const o={noSun:true,noClouds:true,noFlowers:true};
+  if(i===0){
+    chars=lulu(640,lt,t,1.1,[1.4,2.4]);
+    pops=pop('Count by Twos',640,128,92,NAVY,lt,.3)+pop('with '+LULU,640,240,96,NAVY,lt,.8,-3);
+  }else if(i<=5){
+    const k=i-1;
+    chars+=lulu(110,lt,t,.72,[TN+.2,TN+1.2]);
+    for(let m=0;m<k;m++){chars+=pair(m,1,1,still);labels+=numLabel(m,1);}
+    chars+=pair(k,grow(lt,TL),grow(lt,TR),jumps(lt,[TBN],.5,22));
+    labels+=numLabel(k,lt>TN?back(prog(lt,TN,TN+.35)):0);
+    pops=pop(NUM[k],640,180,150,NCOL[k],lt,TN);
+    cap=caption(CAP[k],lt,TN);
+  }else{
+    for(let m=0;m<5;m++){
+      const t0=.8+m*.7, j=jumps(lt,[t0],.5,22), b=Math.sin(Math.PI*prog(lt,t0,t0+.5));
+      chars+=pair(m,1,1,j);labels+=numLabel(m,1+.3*b);
+    }
+    chars+=lulu(110,lt,t,.72,[4.6,5.4]);
+    pops=pop('Count by twos!',640,170,96,NAVY,lt,.2);
+    cap=lt<4.8?caption('Two, four, six, eight, ten!',lt,.4):caption('Well done!',lt,4.8);
+  }
+  svg.innerHTML=bg(t,0,'',o)+sideClouds(t)+chars+labels+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(130,110,1.3,.95)+cloud(1200,440,.8,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(230,662,120)+place(230,658,duck({wing:22}),{s:1.8});
+  s+=apple(560,690,.8)+apple(680,690,.8)+orange(900,690,.8)+orange(1020,690,.8);
+  s+=label('Count by Twos',820,170,104,NAVY,-2);
+  const xs=[560,680,800,920,1060];
+  NUM.forEach((n,k)=>{s+=label(n,xs[k],330,110,NCOL[k]);});
+  s+=label('with '+LULU,820,450,80,NAVY,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
