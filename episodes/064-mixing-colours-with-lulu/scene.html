@@ -1,0 +1,115 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 64 - Mixing Colours with Lulu (learning, colours).
+   Title, then four paint mixes: red + yellow = orange (an orange grows), blue + yellow = green
+   (a frog hops in), red + blue = purple (grapes grow), red + white = pink (a pink flower grows).
+   In each mix two paint drops pop in under their words, slide together and become a new drop;
+   Lulu hops. Ending: all four mixes in rows, the new colours bounce in turn. */
+const SC=[0,5,14,23,32,41,49], DUR=49;
+const NAVY='#2D2A6E';
+const C={red:'#E63946',yellow:'#FFC928',blue:'#3FA9F5',white:'#FFFFFF',orange:'#FF8C1A',green:'#4CB85A',purple:'#8E5CE6',pink:'#FF8FB8'};
+const MIX=[
+  ['Red','Yellow','Orange','red','yellow','orange','Mix red and yellow paint.','Red and yellow make orange!'],
+  ['Blue','Yellow','Green','blue','yellow','green','Mix blue and yellow paint.','Blue and yellow make green!'],
+  ['Red','Blue','Purple','red','blue','purple','Mix red and blue paint.','Red and blue make purple!'],
+  ['Red','White','Pink','red','white','pink','Mix red and white paint.','Red and white make pink!']
+];
+const WX=[220,640,1075], DY=300, DR=50, WY=140, WS=78;
+const T1=.3,T2=1.2,TC1=1.0,TM0=2.6,TM1=3.6,TR=3.8,TC2=4.6,TO=5.2,TH=[5.9,6.6];
+
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.35)):0;
+const sideClouds=t=>cloud(110+10*Math.sin(t*.3),300,.7,.9)+cloud(1190+12*Math.sin(t*.25+1),330,.6,.9);
+// word colour: white text gets a grey fill so it can be read
+const wcol=k=>k==='white'?'#9A9CB0':(k==='yellow'?'#F2B400':C[k]);
+
+function lulu(x,lt,t,s,hopAt){
+  const j=jumps(lt,hopAt,.55,24), w=j.y<0?30*Math.abs(Math.sin(lt*10)):12+8*Math.sin(lt*3);
+  return shadow(x,522,52*s/.9,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy});
+}
+function thing(k,x,lt,t){       // the new colour shows up on the grass
+  const g=grow(lt,TO); if(g<=0)return '';
+  const j=jumps(lt,[TO+1.6],.5,18);
+  if(k===0)return shadow(x,522,70,-j.y)+place(x,520+j.y,orange(0,0,1),{s:1.0*g,sx:j.sx,sy:j.sy});
+  if(k===1){const h=jumps(lt,[TO,TO+1.6],.6,40);return shadow(x,522,70,-h.y)+place(x,520+h.y,frog({eye:blink(t,1.1)}),{s:.85*Math.min(1,g),sx:h.sx,sy:h.sy});}
+  if(k===2)return shadow(x,522,60,-j.y)+place(x,520+j.y,grapes(0,0,1,'#8E5CE6','#7B4BD6'),{s:.9*g,sx:j.sx,sy:j.sy});
+  return place(x,522,flower(0,0,120,C.pink,t,2,1,'#FFD23F'),{s:1.45*g});
+}
+function mixScene(k,lt,t){
+  const M=MIX[k];
+  let back2='',chars='',drops='',pops='',cap='';
+  // two drops pop in, then slide to the right and turn into the new colour
+  const u=eio(prog(lt,TM0,TM1)), fade=1-prog(lt,TM1-.15,TM1+.2), bob=v=>4*Math.sin(lt*3+v);
+  const g1=grow(lt,T1), g2=grow(lt,T2);
+  if(fade>0){
+    if(g1>0)drops+=place(lerp(WX[0],WX[2],u),DY+bob(0)-25*Math.sin(u*Math.PI),paintDrop(0,0,DR,C[M[3]],{eye:blink(t,.4)}),{s:g1*(1-.2*u)});
+    if(g2>0)drops+=place(lerp(WX[1],WX[2],u),DY+bob(1)-15*Math.sin(u*Math.PI),paintDrop(0,0,DR,C[M[4]],{eye:blink(t,1.2)}),{s:g2*(1-.2*u)});
+    if(fade<1)drops=`<g opacity="${fade}">${drops}</g>`;
+  }
+  const gr=grow(lt,TM1-.1);
+  if(gr>0){
+    const wob=1+.04*Math.sin(lt*4);
+    drops+=place(WX[2],DY+bob(2),paintDrop(0,0,DR,C[M[5]],{eye:blink(t,2)}),{s:gr*1.15*wob});
+  }
+  if(lt>TM1&&lt<TM1+1.4){const v=prog(lt,TM1,TM1+1.4),o=Math.sin(v*Math.PI);
+    [[-1,-.6],[1,-.9],[-.8,.5],[.9,.4]].forEach(([a,b],m)=>{back2+=sparkle(WX[2]+a*(70+40*v),DY+b*(60+30*v),1.3+.3*Math.sin(lt*8+m),o);});}
+  chars+=lulu(430,lt,t,.75,TH);
+  chars+=thing(k,850,lt,t);
+  pops+=pop(M[0],WX[0],WY,WS,wcol(M[3]),lt,T1)+pop('+',430,WY-4,WS,NAVY,lt,T2-.25);
+  pops+=pop(M[1],WX[1],WY,WS,wcol(M[4]),lt,T2)+pop('=',850,WY-4,WS,NAVY,lt,TR-.2);
+  pops+=pop(M[2],WX[2],WY,WS,wcol(M[5]),lt,TR);
+  cap=lt<TC2?caption(M[6],lt,TC1):caption(M[7],lt,TC2);
+  return {back2,chars,drops,pops,cap};
+}
+function recap(lt,t){
+  let drops='',pops='';
+  const RY=[250,335,420,505], r=28, X=[470,550,630,710,790];
+  for(let k=0;k<4;k++){
+    const M=MIX[k], t0=.4+k*.45, g=grow(lt,t0), y=RY[k];
+    if(g<=0)continue;
+    const j=jumps(lt,[3.2+k*.55],.5,16);
+    drops+=place(X[0],y,paintDrop(0,0,r,C[M[3]],{eye:blink(t,k)}),{s:g});
+    drops+=place(X[2],y,paintDrop(0,0,r,C[M[4]],{eye:blink(t,k+.5)}),{s:g});
+    drops+=place(X[4],y+j.y,paintDrop(0,0,r*1.15,C[M[5]],{eye:blink(t,k+1)}),{s:g,sx:j.sx,sy:j.sy});
+    drops+=label('+',X[1],y+18,52,NAVY,0,'#fff',.14)+label('=',X[3],y+18,52,NAVY,0,'#fff',.14);
+    pops+=pop(M[2],960,y+18,46,wcol(M[5]),lt,3.2+k*.55);
+  }
+  pops+=pop('All together!',640,140,92,NAVY,lt,.2);
+  const cap=lt<5.3?caption('Four new colours!',lt,2.6):caption('Well done!',lt,5.3);
+  const chars=lulu(200,lt,t,.9,[5.4,6.1]);
+  return {drops,pops,cap,chars};
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let chars='',drops='',pops='',cap='',back2='';
+  const o={noSun:true,noClouds:true,noFlowers:true};
+  if(i===0){
+    chars=lulu(640,lt,t,1.1,[1.4,2.4]);
+    drops=place(330,330+4*Math.sin(lt*3),paintDrop(0,0,44,C.red,{eye:blink(t,.3)}),{s:grow(lt,.9)})
+         +place(950,330+4*Math.sin(lt*3+1),paintDrop(0,0,44,C.blue,{eye:blink(t,1)}),{s:grow(lt,1.1)});
+    pops=pop('Mixing Colours',640,128,88,NAVY,lt,.3)+pop('with '+LULU,640,250,96,'#FF5D8F',lt,.7,-3);
+  }else if(i<=4){
+    ({back2,chars,drops,pops,cap}=mixScene(i-1,lt,t));
+  }else{
+    ({drops,pops,cap,chars}=recap(lt,t));
+  }
+  svg.innerHTML=bg(t,0,'',o)+sideClouds(t)+back2+chars+drops+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(230,662,120)+place(230,658,duck({wing:22}),{s:1.75});
+  s+=paintDrop(520,470,52,C.red)+label('+',640,492,80,NAVY)+paintDrop(760,470,52,C.yellow)+label('=',880,492,80,NAVY)+paintDrop(1040,462,66,C.orange);
+  s+=label('Mixing',780,175,140,'#E63946',-3)+label('Colours',780,320,140,'#3FA9F5',-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

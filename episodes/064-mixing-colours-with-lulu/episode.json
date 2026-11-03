@@ -1,0 +1,115 @@
+{
+  "number": 64,
+  "slug": "mixing-colours-with-lulu",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "Mixing Colours with Lulu | Learn Colours for Kids",
+  "description": "Lulu the little duck mixes paint: red and yellow make orange, blue and yellow make green, red and blue make purple, and red and white make pink.\n\nWatch the paint drops come together and say each new colour out loud.\n\nA short, gentle colours video for children aged 3 to 6.",
+  "duration": 49,
+  "seed": 64,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 1.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 2.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 5.3,
+      "type": "pop"
+    },
+    {
+      "t": 6.2,
+      "type": "pop"
+    },
+    {
+      "t": 8.6,
+      "type": "sparkle"
+    },
+    {
+      "t": 10.9,
+      "type": "boing_high"
+    },
+    {
+      "t": 14.3,
+      "type": "pop"
+    },
+    {
+      "t": 15.2,
+      "type": "pop"
+    },
+    {
+      "t": 17.6,
+      "type": "sparkle"
+    },
+    {
+      "t": 19.9,
+      "type": "boing_high"
+    },
+    {
+      "t": 23.3,
+      "type": "pop"
+    },
+    {
+      "t": 24.2,
+      "type": "pop"
+    },
+    {
+      "t": 26.6,
+      "type": "sparkle"
+    },
+    {
+      "t": 28.9,
+      "type": "boing_high"
+    },
+    {
+      "t": 32.3,
+      "type": "pop"
+    },
+    {
+      "t": 33.2,
+      "type": "pop"
+    },
+    {
+      "t": 35.6,
+      "type": "sparkle"
+    },
+    {
+      "t": 37.9,
+      "type": "boing_high"
+    },
+    {
+      "t": 45.4,
+      "type": "pop"
+    },
+    {
+      "t": 46.3,
+      "type": "ding"
+    }
+  ],
+  "check_times": [
+    3.5,
+    8.1,
+    8.8,
+    11.7,
+    13.6,
+    17.1,
+    17.8,
+    20.7,
+    22.6,
+    26.1,
+    26.8,
+    29.7,
+    31.6,
+    35.1,
+    35.8,
+    38.7,
+    40.6,
+    44.0,
+    46.5,
+    48.0
+  ]
+}

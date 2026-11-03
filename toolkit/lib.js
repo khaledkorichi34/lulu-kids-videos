@@ -1587,3 +1587,23 @@ function musicNote(x,y,s=1,col='#FFE58A',op=1){
   return `<g transform="translate(${x},${y}) scale(${s}) rotate(-12)" opacity="${op}"><ellipse cx="0" cy="-10" rx="13" ry="10" fill="${col}"/>
   <rect x="9" y="-66" width="5" height="56" fill="${col}"/><path d="M14,-66 Q34,-56 30,-34 Q26,-48 14,-50 Z" fill="${col}"/></g>`;
 }
+
+/* ---------- paint drops (episode 64) ---------- */
+// paintDrop(x,y,r,col,o): a round drop of paint with a pointed top and a small happy face, origin at the
+// CENTRE of its round part (it reaches 1.9*r above and r below the origin). o = {eye, face:false, op}.
+// White paint gets a soft grey shade so it shows on the light sky.
+function paintDrop(x,y,r,col,o={}){
+  const e=o.eye==null?1:o.eye, op=o.op==null?1:o.op;
+  const shade=col.toUpperCase()==='#FFFFFF'?'#DCDDEA':'#000';
+  const d=`M0,${-1.9*r} C${.35*r},${-1.3*r} ${r},${-.6*r} ${r},0 A${r},${r} 0 0 1 ${-r},0 C${-r},${-.6*r} ${-.35*r},${-1.3*r} 0,${-1.9*r} Z`;
+  let s=`<g transform="translate(${x},${y})" opacity="${op}"><path d="${d}" fill="${col}"/>`;
+  s+=`<path d="M${.55*r},${-.55*r} A${r},${r} 0 0 1 ${-.75*r},${.66*r} A${.95*r},${.95*r} 0 0 0 ${.55*r},${-.55*r} Z" fill="${shade}" opacity="${shade==='#000'?.12:.9}"/>`;
+  s+=`<ellipse cx="${-.42*r}" cy="${-.45*r}" rx="${.14*r}" ry="${.3*r}" fill="#fff" opacity=".55" transform="rotate(25 ${-.42*r} ${-.45*r})"/>`;
+  if(o.face!==false){
+    const ey=v=>`<g transform="translate(${v*r},${-.05*r}) scale(${r/50},${e*r/50})"><circle r="6.5" fill="#2b1d12"/><circle cx="2.2" cy="-2.4" r="2.3" fill="#fff"/></g>`;
+    s+=ey(-.28)+ey(.28);
+    s+=`<path d="M${-.17*r},${.25*r} Q0,${.42*r} ${.17*r},${.25*r}" stroke="#2b1d12" stroke-width="${Math.max(2,r*.07)}" fill="none" stroke-linecap="round"/>`;
+    s+=`<circle cx="${-.5*r}" cy="${.2*r}" r="${.12*r}" fill="#FF6F91" opacity=".55"/><circle cx="${.5*r}" cy="${.2*r}" r="${.12*r}" fill="#FF6F91" opacity=".55"/>`;
+  }
+  return s+'</g>';
+}
