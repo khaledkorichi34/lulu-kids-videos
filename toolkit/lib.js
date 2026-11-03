@@ -1607,3 +1607,65 @@ function paintDrop(x,y,r,col,o={}){
   }
   return s+'</g>';
 }
+
+/* ---------- giraffe and flat-topped tree (episode 65) ---------- */
+// giraffe({eye, neck, low, spread, tongue, walk}): tall giraffe seen from the side, facing right, origin at its feet.
+// About 460 tall and 330 wide at s=1 (use s .75 to .85). neck = extra forward bend of the neck in degrees
+// (0 = up, about 105 = head down at the ground for drinking), low = how far the body is lowered (0..150),
+// spread = 0..1 front legs spread wide (drinking), tongue = 0..1 long dark tongue out, walk = leg swing phase.
+// giraffeHead(o) returns the head alone (origin where the neck meets the head) for peeking.
+function giraffeHead(o={}){
+  const e=o.eye==null?1:o.eye, tg=clamp(o.tongue||0);
+  const tongue=tg>0?`<path d="M44,10 Q${44+26*tg},${14-10*tg} ${44+40*tg},${-4-22*tg}" stroke="#5B3C8C" stroke-width="11" fill="none" stroke-linecap="round"/>`:'';
+  return `${tongue}
+  <path d="M-14,-30 L-18,-60" stroke="#D9963E" stroke-width="9" stroke-linecap="round"/><circle cx="-18" cy="-62" r="8" fill="#8A5A33"/>
+  <path d="M2,-30 L4,-62" stroke="#E0A548" stroke-width="9" stroke-linecap="round"/><circle cx="4" cy="-64" r="8" fill="#8A5A33"/>
+  <ellipse cx="-34" cy="-22" rx="20" ry="9" fill="#F0B84A" transform="rotate(-25 -34 -22)"/><ellipse cx="-34" cy="-22" rx="11" ry="4.5" fill="#FF9AA2" transform="rotate(-25 -34 -22)"/>
+  <ellipse cx="4" cy="-8" rx="38" ry="27" fill="#F6C453" transform="rotate(14 4 -8)"/>
+  <ellipse cx="34" cy="4" rx="24" ry="19" fill="#F9DC94"/>
+  <circle cx="46" cy="-2" r="3" fill="#8A5A33"/>
+  <path d="M30,14 Q38,19 46,13" stroke="#6B4226" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <g transform="translate(8,-14) scale(1,${e})"><circle r="7.5" fill="#2b1d12"/><circle cx="2.4" cy="-2.6" r="2.7" fill="#fff"/></g>
+  <circle cx="14" cy="6" r="7" fill="#FF9AA2" opacity=".75"/>`;
+}
+function giraffe(o={}){
+  const nk=o.neck||0, lo=o.low||0, sp=clamp(o.spread||0), w=o.walk==null?null:o.walk;
+  const C='#F6C453', P='#D98A3D', DL='#E3A63F', H='#7A4A26';
+  const by=-205+lo, legTop=-165+lo;
+  const sw=k=>w==null?0:Math.sin(w+k)*16;
+  const leg=(x,dx,col)=>{const bx=x+dx, L=Math.max(0,-legTop);
+    if(L<8)return '';
+    return `<path d="M${x},${legTop} L${bx},-6" stroke="${col}" stroke-width="17" stroke-linecap="round"/><rect x="${bx-10}" y="-14" width="20" height="14" rx="5" fill="${H}"/>`;};
+  let s='';
+  s+=leg(-38,sw(Math.PI),DL)+leg(64,sp*-34+sw(0),DL);                       // far legs
+  s+=`<path d="M-88,${by-10} Q-108,${by+30} -104,${by+80}" stroke="${DL}" stroke-width="6" fill="none" stroke-linecap="round"/><ellipse cx="-104" cy="${by+88}" rx="8" ry="14" fill="${H}"/>`;
+  s+=leg(-62,sw(0),C)+leg(42,sp*62+sw(Math.PI),C);                          // near legs
+  // neck (rotates about its base) with the head at its top
+  const px=58, py=by-25, a=nk*Math.PI/180, L=190, base=20*Math.PI/180;
+  const hx=px+Math.sin(base+a)*L, hy=py-Math.cos(base+a)*L;
+  s+=`<g transform="rotate(${nk} ${px} ${py})">
+  <path d="M${px-34},${py+18} Q${px+4},${py-90} ${px+50},${py-182} L${px+84},${py-170} Q${px+40},${py-80} ${px+40},${py+26} Z" fill="${C}"/>
+  <path d="M${px-30},${py+4} Q${px+4},${py-96} ${px+48},${py-186}" stroke="#B5652A" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <path d="M${px+14},${py-40} q14,-6 18,8 q-4,14 -18,8 q-8,-8 0,-16Z" fill="${P}"/>
+  <path d="M${px+34},${py-96} q14,-4 16,9 q-4,12 -17,7 q-6,-8 1,-16Z" fill="${P}"/>
+  <path d="M${px+52},${py-146} q11,-3 12,7 q-3,10 -13,6 q-5,-7 1,-13Z" fill="${P}"/></g>`;
+  // body
+  s+=`<ellipse cx="0" cy="${by}" rx="98" ry="54" fill="${C}"/>
+  <path d="M-60,${by-30} q18,-8 26,6 q-2,18 -20,18 q-16,-6 -6,-24Z" fill="${P}"/>
+  <path d="M-18,${by-40} q20,-6 26,8 q-4,16 -22,14 q-12,-8 -4,-22Z" fill="${P}"/>
+  <path d="M26,${by-34} q18,-4 22,10 q-4,14 -20,12 q-12,-10 -2,-22Z" fill="${P}"/>
+  <path d="M-38,${by+4} q16,-6 22,8 q-4,14 -20,12 q-10,-8 -2,-20Z" fill="${P}"/>
+  <path d="M8,${by+2} q18,-6 24,8 q-2,16 -20,14 q-14,-8 -4,-22Z" fill="${P}"/>
+  <path d="M-80,${by-4} q12,-4 14,8 q-2,12 -14,10 q-6,-8 0,-18Z" fill="${P}"/>`;
+  s+=`<g transform="translate(${hx},${hy}) rotate(${nk*.55})">${giraffeHead(o)}</g>`;
+  return s;
+}
+// flatTree(x,y,s): tall savanna tree with a wide flat top, origin at the foot of its trunk.
+// The leafy top spans about x-170..x+170 and y-390..y-300 at s=1.
+function flatTree(x,y,s=1){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-20,0 Q-12,-160 -8,-250 Q-60,-290 -110,-310 L-100,-322 Q-50,-300 0,-270 Q40,-300 100,-322 L110,-310 Q50,-290 12,-250 Q14,-160 22,0 Z" fill="#9C6B3F"/>
+  <ellipse cx="-90" cy="-330" rx="95" ry="36" fill="#3E9E3E"/><ellipse cx="90" cy="-330" rx="95" ry="36" fill="#3E9E3E"/>
+  <ellipse cx="0" cy="-352" rx="150" ry="42" fill="#47AD47"/>
+  <ellipse cx="-50" cy="-372" rx="60" ry="20" fill="#52BA52"/><ellipse cx="60" cy="-366" rx="58" ry="18" fill="#52BA52"/></g>`;
+}

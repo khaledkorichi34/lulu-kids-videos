@@ -1,0 +1,143 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 65 - Who am I? A tall riddle.  Title, three clues (I eat leaves from tall trees; my coat has
+   brown patches; I have a very long neck (the neck rises over the bush and sinks again)), "Who am I?",
+   the reveal (a giraffe stands up and walks out; the tallest animal in the world), fact 1 (a giraffe has
+   a very long tongue that helps it pick leaves), fact 2 (to drink, it spreads its front legs and bends
+   its long neck down), goodbye. */
+const SC=[0,5.5,12.5,19.5,26.5,32.5,42,49.5,57.5,63], DUR=63;
+const NAVY='#2D2A6E', PURPLE='#7B5CFF', ORANGE='#E76F2E', BLUE='#1C7FC4', TEAL='#19B8A6', PINK='#FF5D8F', BROWN='#B5652A';
+const BX=760, BS=1.4, GS=.85, GX=700;                   // bush centre and scale, giraffe scale and hiding x
+const shade=(x,w,lift=0)=>`<ellipse cx="${x}" cy="522" rx="${w*(1-clamp(-lift/260)*.5)}" ry="${w*.18}" fill="#5E8A3A" opacity=".25"/>`;
+const lulu=(x,lt,t,hops,h=20,s=.95,wave=false)=>{
+  const j=jumps(lt,hops,.6,h), w=wave?20+20*Math.sin(lt*9):0;
+  return shade(x,56*s/.95,j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy});
+};
+const G=(x,y,t,o={},s=GS)=>place(x,y,giraffe(Object.assign({eye:blink(t,.7)},o)),{s});
+const CLIPG='<defs><clipPath id="gnd"><rect x="0" y="0" width="1280" height="521"/></clipPath></defs>';
+const hidden=inner=>CLIPG+`<g clip-path="url(#gnd)">${inner}</g>`;
+const qmark=t=>label('?',BX,455+4*Math.sin(t*3),110,'#fff',0,BROWN,.12);
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.4)):0;
+// warm savanna grass over the hills of bg()
+const savanna=()=>`<path d="M0,440 Q300,330 640,410 T1280,400 L1280,720 L0,720Z" fill="#C9D86A"/><path d="M0,500 Q380,440 760,490 T1280,470 L1280,720 L0,720Z" fill="#9CC45A"/>`;
+function icon(x,y,g,inner){
+  if(g<=0)return '';
+  return `<g transform="translate(${x},${y}) scale(${g})"><defs><clipPath id="ic"><circle r="88"/></clipPath></defs>
+  <circle r="92" fill="#fff" stroke="#FFD23F" stroke-width="7"/><g clip-path="url(#ic)">${inner}</g></g>`;
+}
+// a tall tree top with leaves
+function leavesIcon(t){
+  let s=`<rect x="-100" y="-100" width="200" height="200" fill="#E3F5FF"/>
+  <path d="M-110,40 Q-20,10 70,-40 M-30,14 Q0,40 30,60 M20,-14 Q40,-50 30,-80" stroke="#8A5A33" stroke-width="12" fill="none" stroke-linecap="round"/>`;
+  const L=[[70,-40,-20],[30,60,30],[30,-80,-60],[-60,20,-30],[0,40,50],[50,-10,10],[-20,0,-50]];
+  L.forEach(([x,y,r],k)=>{const w=3*Math.sin(t*3+k);s+=`<ellipse cx="${x}" cy="${y}" rx="30" ry="14" fill="${['#3E9E3E','#47AD47','#52BA52'][k%3]}" transform="rotate(${r+w} ${x} ${y})"/>`;});
+  return s;
+}
+// yellow coat with brown patches
+function patchIcon(){
+  let s=`<rect x="-100" y="-100" width="200" height="200" fill="#F6C453"/>`;
+  const P=[[-55,-55],[10,-65],[70,-40],[-75,10],[-15,0],[50,20],[-45,65],[20,70],[85,80]];
+  P.forEach(([x,y],k)=>{s+=`<path transform="translate(${x},${y}) rotate(${k*37})" d="M-24,-18 Q0,-30 22,-16 Q32,4 18,22 Q-4,30 -22,18 Q-32,0 -24,-18Z" fill="#D98A3D"/>`;});
+  return s;
+}
+function sparkles(x,y,lt,t0){
+  const u=prog(lt,t0,t0+1.2);if(u<=0||u>=1)return '';
+  let s='';for(let k=0;k<6;k++){const a=k*Math.PI/3+.4, d=40+u*110;s+=sparkle(x+Math.cos(a)*d,y+Math.sin(a)*d*.7,1.3,1-u);}
+  return s;
+}
+// leaves the giraffe eats in fact 1: a little bunch in front of the tree top
+function leafBunch(x,y,u){
+  if(u<=0)return '';
+  return `<g transform="translate(${x},${y}) scale(${u})"><ellipse cx="-10" cy="0" rx="20" ry="10" fill="#7ED957" transform="rotate(-25 -10 0)"/>
+  <ellipse cx="12" cy="-6" rx="20" ry="10" fill="#9BE46F" transform="rotate(20 12 -6)"/><ellipse cx="2" cy="12" rx="18" ry="9" fill="#B5EE88"/></g>`;
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let back_='',props='',chars='',pops='',cap='';
+  const o={noClouds:true,noFlowers:true,noSun:true};
+  back_=bg(t,0,'',o)+savanna();
+  if(i===0){
+    back_=bg(t,0,cloud(150+10*Math.sin(t*.3),95,.8,.95),o)+savanna();
+    props=flatTree(1060,520,.9)+bush(980,520,.8);
+    chars=lulu(330,lt,t,[1.3,2.3],30,1.1,true);
+    pops=pop('Who am I?',640,165,120,PURPLE,lt,.3,-3);
+    cap=caption('A new riddle with '+LULU,lt,1.8,'A new riddle with Lulu');
+  }else if(i>=1&&i<=3){
+    const N=i;
+    const shake=N===3?14*Math.sin(lt*14)*prog(lt,1.8,2.1)*(1-prog(lt,2.4,2.7)):0;
+    if(N===3){ // the long neck rises over the bush, stays, and sinks back
+      const u=eio(prog(lt,2.4,3.4))-eio(prog(lt,5.6,6.5)), D=lerp(240,60,u);
+      if(u>0)props+=hidden(G(GX,520+D,t,{}));
+    }
+    props+=bush(BX+shake,520,BS)+qmark(t);
+    if(N===1)props+=icon(1110,370,grow(lt,2.4),leavesIcon(t));
+    if(N===2)props+=icon(1110,370,grow(lt,2.4),patchIcon());
+    chars=lulu(230,lt,t,[3.2]);
+    pops=pop('Clue '+N,500,150,100,ORANGE,lt,.3);
+    cap=caption(['','I eat leaves from tall trees.','My coat has brown patches.','I have a very long neck.'][N],lt,1.2);
+  }else if(i===4){
+    props=bush(BX+18*Math.sin(lt*14)*prog(lt,3.8,4.1)*(1-prog(lt,5.2,5.6)),520,BS)+qmark(t);
+    chars=lulu(230,lt,t,[]);
+    pops=pop('leaves',260,165,56,'#3E9E3E',lt,.3)+pop('patches',590,165,56,BROWN,lt,.9)+pop('long neck',920,165,56,ORANGE,lt,1.5);
+    cap=caption('Who am I? Can you guess?',lt,2.2);
+  }else if(i===5){
+    // stands up behind the bush, then walks out to the right
+    const up=eio(prog(lt,.4,1.8)), D=lerp(240,0,up);
+    const u=eio(prog(lt,2.0,4.0)), gx=lerp(GX,1010,u), walking=u>0&&u<1;
+    const g=G(gx,520+D,t,walking?{walk:lt*9}:{});
+    props=(D>0?hidden(g):(u>.5?shade(gx,80):'')+g);
+    props=(u<.5?props+bush(BX,520,BS):bush(BX,520,BS)+props);
+    props+=sparkles(gx+100,260,lt,4.2);
+    chars=lulu(230,lt,t,[4.6,5.3],30,.95,lt>4.4);
+    pops=pop('A giraffe!',420,165,104,ORANGE,lt,4.2,-3);
+    cap=lt<6.8?caption('I am a giraffe!',lt,4.6):caption('The tallest animal in the world!',lt,6.8);
+  }else if(i===6){
+    // stretches its tongue to the leaves at the top of the tree
+    props=flatTree(1030,520,.95);
+    const tg=clamp(prog(lt,1.6,2.2)-prog(lt,2.9,3.3))+clamp(prog(lt,4.0,4.6)-prog(lt,5.3,5.7));
+    const ate=prog(lt,2.9,3.2);
+    props+=shade(800,80)+G(800,520,t,{tongue:tg});
+    props+=leafBunch(992,146,1-ate)+leafBunch(990,150,prog(lt,3.6,3.9)*(1-prog(lt,5.3,5.6)));
+    chars=lulu(200,lt,t,[3.2],20,.9);
+    pops=pop('Fact 1',330,150,100,BLUE,lt,.3)+(lt>3.0?pop('Munch!',360,280,64,TEAL,lt,3.0,-4):'');
+    cap=lt<3.9?caption('A giraffe has a very long tongue.',lt,1.0):caption('It helps the giraffe pick leaves.',lt,3.9);
+  }else if(i===7){
+    // spreads its front legs and bends the neck down to the water
+    const sp=eio(prog(lt,1.2,2.2)), bend=eio(prog(lt,3.6,4.8));
+    props=pond(950,548,220);
+    props+=shade(740,90)+G(740,520,t,{spread:sp,low:sp*55,neck:bend*118});
+    if(lt>5.2)for(let k=0;k<3;k++){const q=((lt-5.2)*.8+k/3)%1;props+=`<ellipse cx="960" cy="546" rx="${16+q*70}" ry="${4+q*12}" fill="none" stroke="#fff" stroke-width="3" opacity="${(1-q)*.8}"/>`;}
+    chars=lulu(200,lt,t,[2.4],20,.9);
+    pops=pop('Fact 2',330,150,100,BLUE,lt,.3)+(lt>5.2?pop('Sip, sip!',360,280,64,TEAL,lt,5.2,-4):'');
+    cap=lt<3.6?caption('To drink, a giraffe spreads its legs.',lt,1.0):caption('Then it bends its long neck down.',lt,3.6);
+  }else{
+    props=heart(640,330+6*Math.sin(t*3),1.4,'#FF7FB0',.85*prog(lt,2,2.5))+heart(600,275+6*Math.sin(t*3+1),1,'#FF9AA2',.85*prog(lt,2.3,2.8));
+    props+=flatTree(1130,520,.8)+shade(930,80)+G(930,520,t,{neck:-6+6*Math.sin(lt*3)});
+    chars=lulu(380,lt,t,[1.0,1.8],26,.95,true);
+    pops=pop('Bye bye!',540,160,110,PURPLE,lt,.4,-2);
+    cap=caption('Bye bye, tall giraffe!',lt,1.6);
+  }
+  svg.innerHTML=back_+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(140,110,1.1,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#C9D86A"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#9CC45A"/>`;
+  s+=shadow(165,702,85)+place(160,698,duck({wing:22}),{s:1.25});
+  s+=`<defs><clipPath id="tc"><rect width="1280" height="700"/></clipPath></defs><g clip-path="url(#tc)">`+place(985,800,giraffe({}),{s:1.1})+'</g>';
+  s+=bush(1030,700,1.45)+label('?',1030,620,170,'#fff',0,BROWN,.12);
+  s+=label('Who',600,190,150,'#FF5D8F',-3)+label('am I?',620,350,150,PURPLE,-3);
+  s+=label('A new riddle with '+LULU,600,440,60,NAVY);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

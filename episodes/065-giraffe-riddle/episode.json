@@ -1,0 +1,123 @@
+{
+  "number": 65,
+  "slug": "giraffe-riddle",
+  "format": "curious",
+  "ages": "6-10",
+  "title": "Who Am I? A Tall Animal Riddle with Lulu | Riddle for Kids",
+  "description": "Lulu the little duck has a new riddle for you!\nRead three clues and guess who is hiding behind the big bush.\nThen see how this tall friend picks leaves with its long tongue and bends down to drink.\nA gentle riddle video for children aged 6 to 10.",
+  "duration": 63,
+  "seed": 65,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.3,
+      "type": "sparkle"
+    },
+    {
+      "t": 1.3,
+      "type": "boing_high"
+    },
+    {
+      "t": 2.3,
+      "type": "boing_high"
+    },
+    {
+      "t": 5.8,
+      "type": "pop"
+    },
+    {
+      "t": 7.9,
+      "type": "ding"
+    },
+    {
+      "t": 12.8,
+      "type": "pop"
+    },
+    {
+      "t": 14.9,
+      "type": "ding"
+    },
+    {
+      "t": 19.8,
+      "type": "pop"
+    },
+    {
+      "t": 21.3,
+      "type": "boing_low"
+    },
+    {
+      "t": 21.9,
+      "type": "boing_high"
+    },
+    {
+      "t": 26.8,
+      "type": "pop"
+    },
+    {
+      "t": 27.4,
+      "type": "pop"
+    },
+    {
+      "t": 28.0,
+      "type": "pop"
+    },
+    {
+      "t": 30.3,
+      "type": "boing_low"
+    },
+    {
+      "t": 33.0,
+      "type": "boing_high"
+    },
+    {
+      "t": 36.7,
+      "type": "sparkle"
+    },
+    {
+      "t": 37.1,
+      "type": "boing_high"
+    },
+    {
+      "t": 42.3,
+      "type": "pop"
+    },
+    {
+      "t": 45.0,
+      "type": "pop"
+    },
+    {
+      "t": 49.8,
+      "type": "pop"
+    },
+    {
+      "t": 54.7,
+      "type": "pop"
+    },
+    {
+      "t": 57.9,
+      "type": "pop"
+    },
+    {
+      "t": 58.5,
+      "type": "boing_high"
+    },
+    {
+      "t": 59.3,
+      "type": "boing_high"
+    }
+  ],
+  "check_times": [
+    23.0,
+    30.5,
+    33.5,
+    35.0,
+    36.8,
+    40.0,
+    44.4,
+    46.6,
+    50.5,
+    54.5,
+    56.5,
+    60.0
+  ]
+}
