@@ -1,0 +1,31 @@
+{
+  "number": 66,
+  "slug": "lulu-and-the-little-fish",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and the Little Fish | Bedtime Story for Kids",
+  "description": "Lulu the duck goes to the pond for a swim. Splash! Little bubbles come up... Hello, Little Fish!\nLittle Fish can jump, they play peek-a-boo, and Frog comes to play too.\nThe sun goes down. Bye-bye, Little Fish! Good night, friends.\nA calm bedtime story for children aged 3 to 6.",
+  "duration": 55,
+  "seed": 66,
+  "lullaby_from": 40.0,
+  "sfx": [
+    {"t": 0.4, "type": "pop"},
+    {"t": 1.9, "type": "pop"},
+    {"t": 8.4, "type": "boing_high"},
+    {"t": 9.2, "type": "boing_low"},
+    {"t": 13.0, "type": "pop"},
+    {"t": 13.8, "type": "pop"},
+    {"t": 15.4, "type": "sparkle"},
+    {"t": 20.0, "type": "boing_high"},
+    {"t": 21.4, "type": "boing_high"},
+    {"t": 22.8, "type": "boing_high"},
+    {"t": 29.4, "type": "pop"},
+    {"t": 33.4, "type": "boing_high"},
+    {"t": 34.3, "type": "boing_low"},
+    {"t": 36.9, "type": "boing_high"},
+    {"t": 37.3, "type": "sparkle"},
+    {"t": 45.0, "type": "pop"},
+    {"t": 51.6, "type": "sparkle"}
+  ],
+  "check_times": [1.0, 2.5, 7.5, 8.8, 9.6, 13.5, 16.0, 20.5, 21.9, 23.3, 27.5, 30.0, 34.0, 35.0, 37.4, 38.5, 42.0, 44.5, 46.0, 49.0, 52.5, 54.0]
+}

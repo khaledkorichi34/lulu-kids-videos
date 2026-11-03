@@ -1,0 +1,149 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 66 - Lulu and the Little Fish. Lulu goes to the pond and swims (splash!). Little bubbles
+   come up (blub, blub) and a little fish peeks out: Hello, Little Fish! The fish can jump
+   (jump, jump, jump!), they play peek-a-boo, Frog hops onto a lily pad and the three friends play.
+   The sun goes down, bye-bye Little Fish; Lulu sleeps on the grass by the pond under the moon. */
+const DUR=55, SC=[0,5,12,19,26,33,40,47,55];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', ORANGE='#F27A12', TEAL='#19B8A6', GOLD='#FFE58A', BLUE='#1B7FD6', GREEN='#16A34A';
+const PCX=820, WL=560, PRX=440, PRY=52;     // the pond: centre, water line, radii (x 380..1260, y 508..612)
+const PADX=1070;                             // lily pad
+const CLIPDEF=`<defs><clipPath id="aw"><rect x="0" y="0" width="1280" height="${WL+2}"/></clipPath></defs>`;
+const water=n=>`<ellipse cx="${PCX}" cy="${WL+4}" rx="${PRX}" ry="${PRY}" fill="${mix('#3FA3E0','#1E3C66',n)}"/>
+  <ellipse cx="${PCX-10}" cy="${WL}" rx="${PRX*.92}" ry="${PRY*.8}" fill="${mix('#7DD3FA','#35598E',n)}"/>
+  <ellipse cx="${PCX-220}" cy="${WL-18}" rx="70" ry="6" fill="#fff" opacity="${.5*(1-n*.6)}"/>
+  <ellipse cx="${PCX+150}" cy="${WL+22}" rx="50" ry="5" fill="#fff" opacity="${.4*(1-n*.6)}"/>`;
+const ripple=(x,lt,ph=0,w=70)=>{let s='';for(let k=0;k<2;k++){const q=((lt+ph+k*.9)%1.8)/1.8;
+  s+=`<ellipse cx="${x}" cy="${WL+4}" rx="${w*(.7+.6*q)}" ry="${11*(.7+.6*q)}" fill="none" stroke="#fff" stroke-width="3.5" opacity="${(1-q)*.7}"/>`;}return s;};
+const shore=(t,n)=>water(n)+lilyPad(PADX,WL-4)+reed(400,548,120,t,0)+reed(1238,546,110,t,1)
+  +flower(60,592,90,'#FF7FB0',t,0,.55)+flower(130,578,90,'#FFFFFF',t,1,.45);
+// Lulu on the grass
+const lulu=(lt,t,o={})=>{
+  const x=o.x, j=jumps(lt,o.hops||[],.6,o.h||24), w=o.wave?20+20*Math.sin(lt*9):(o.wing||0);
+  return shadow(x,522,60,-j.y)+place(x,520+j.y+(o.bob||0),duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),{s:1,sx:j.sx,sy:j.sy,rot:o.rot||0,flip:o.flip});
+};
+// Lulu swimming: her feet and the bottom of her body are under the water
+const swim=(lt,t,o={})=>{
+  const x=o.x, w=o.wave?20+20*Math.sin(lt*9):6*Math.sin(lt*2), bob=3*Math.sin(lt*2.4);
+  return ripple(x,lt,0,74)+`<g clip-path="url(#aw)">${place(x,WL+26+bob,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w}),{s:1,rot:2*Math.sin(lt*1.6),flip:o.flip})}</g>`;
+};
+// Little Fish under the water line; ang = rotation (negative = nose up), y = centre
+const fishAt=(x,y,ang,t,o={})=>`<g clip-path="url(#aw)">${place(x,y,fish({eye:o.eye!=null?o.eye:blink(t,1.3),col:'#FF9F1C',tail:Math.sin(t*7)}),{s:o.s||.8,rot:ang,flip:o.flip})}</g>`;
+// peek: 0 = hidden, 1 = head out of the water and smiling at Lulu (on her left)
+const peekFish=(x,u,lt,t,face=-1)=>u<=0?'':ripple(x,lt,.4,46)+fishAt(x,lerp(WL+56,WL-26,eout(u))+3*Math.sin(lt*3),face<0?60+6*Math.sin(lt*4):-60+6*Math.sin(lt*4),t,{flip:face<0});
+// a jump from x0 to x1 that starts at time a and lasts d seconds
+const fishJump=(lt,t,a,d,x0,x1,h=190)=>{const u=prog(lt,a,a+d);if(u<=0||u>=1)return '';
+  const x=lerp(x0,x1,u), y=WL+34-h*4*u*(1-u), ang=Math.atan2(-h*4*(1-2*u),x1-x0)*180/Math.PI*.9;
+  return fishAt(x,y,ang,t);};
+const drops=(x,u,half=50)=>splash(x,WL,u,.9,half);
+const bubblesUp=(lt,x,t0,t1)=>{let s='';for(let k=0;k<7;k++){const st=t0+k*.45;if(st>t1)break;const q=lt-st;if(q>0&&q<1.6){const u=q/1.6;
+  s+=bubble(x+(k%3-1)*22+8*Math.sin(q*6+k),WL-6-110*u,8+5*(k%2)+6*u,Math.sin(Math.PI*u));}}return s;};
+const hearts=(lt,t0,x,y)=>{let s='';for(let k=0;k<4;k++){const q=lt-t0-k*.5;if(q>0&&q<2.4){const u=q/2.4;
+  s+=heart(x+k*40+10*Math.sin(q*4+k),y-90*u,1,[PINK,'#FF9F1C',PURPLE][k%3],Math.sin(Math.PI*u));}}return s;};
+const frogPad=(t,o={})=>place(PADX,WL-6,frog({eye:o.eye!=null?o.eye:blink(t,2.2)}),{s:.7});
+const zzz=(lt,x,y,t0=2)=>{let s='';for(let k=0;k<3;k++){let q=lt-t0-k*.9;if(q>0){q%=2.7;
+  s+=`<text x="${x+q*24+8*Math.sin(q*3)}" y="${y-q*30}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}return s;};
+const sideCloud=(t,n)=>cloud(170+10*Math.sin(t*.3),262,.6,1-n*.9);
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',pops='',cap='',o={},behind='',front='';
+  switch(i){
+  case 0:{
+    // title: Lulu swims, Little Fish peeks out and says hello
+    chars=swim(lt,t,{x:600})+peekFish(860,prog(lt,1.6,2.4),lt,t);
+    pops=pop(LULU,640,150,140,PINK,lt,.4,-3)+pop('and the Little Fish',640,236,60,NAVY,lt,1.0);
+    break;}
+  case 1:{
+    // Lulu walks to the pond and hops in: splash! Lulu can swim
+    const w=eio(prog(lt,.2,3.0)), mv=lt>.2&&lt<3.0?1:0, ju=prog(lt,3.4,4.2);
+    if(ju<=0){
+      chars=lulu(lt,t,{x:lerp(-80,290,w),bob:-mv*Math.abs(Math.sin(lt*9))*7,rot:mv*Math.sin(lt*9)*5});
+    }else if(ju<1){
+      const x=lerp(290,560,ju), y=lerp(520,WL+26,ju)-150*4*ju*(1-ju);
+      chars=`<g clip-path="url(#aw)">${place(x,y,duck({eye:blink(t,0),wing:30}),{rot:10*ju})}</g>`;
+    }else{
+      chars=swim(lt,t,{x:560});
+      front=drops(560,prog(lt,4.2,5.0),70);
+    }
+    cap=lt<4.3?caption('Lulu goes to the pond.',lt,.3):caption('Lulu can swim!',lt,4.3);
+    pops=pop('Splash!',640,160,100,BLUE,lt,4.2,-3);
+    break;}
+  case 2:{
+    // little bubbles come up (blub, blub), then a little fish peeks out
+    chars=swim(lt,t,{x:560,wave:lt>3.6&&lt<5.2})+bubblesUp(lt,840,.5,3.2)+peekFish(840,prog(lt,3.3,3.9),lt,t);
+    cap=lt<3.4?caption('Look! Little bubbles.',lt,.3):caption('Hello, Little Fish!',lt,3.4);
+    pops=lt<3.4?pop('Blub,',680,165,84,BLUE,lt,1.0,-4)+pop('blub!',900,165,84,BLUE,lt,1.8,4):pop('Hello!',640,160,100,PINK,lt,3.7,-3);
+    break;}
+  case 3:{
+    // Little Fish can jump: jump, jump, jump!
+    const J=[[1.0,700,840],[2.4,840,980],[3.8,980,1120]];
+    chars=swim(lt,t,{x:520,wave:lt>5.0});
+    J.forEach(([a,x0,x1])=>{chars+=fishJump(lt,t,a,1.1,x0,x1);front+=drops(x0,prog(lt,a,a+.7),34)+drops(x1,prog(lt,a+1.0,a+1.7),34);});
+    if(lt<1.0)chars+=peekFish(700,1-prog(lt,.3,.9),lt,t,1);
+    cap=caption('Little Fish can jump!',lt,.3);
+    pops=pop('Jump,',300,160,84,ORANGE,lt,1.5,-5)+pop('jump,',590,150,84,GREEN,lt,2.9,3)+pop('jump!',880,160,84,ORANGE,lt,4.3,5);
+    break;}
+  case 4:{
+    // peek-a-boo: where is Little Fish? Lulu looks left (this way?), then right (that way?); Fish peeks out
+    const flip=lt>.6&&lt<2.0;
+    chars=swim(lt,t,{x:600,flip,wave:lt>3.8&&lt<5.4})+peekFish(860,prog(lt,3.3,3.9),lt,t);
+    cap=lt<3.4?caption('Where is Little Fish?',lt,.3):caption('There you are!',lt,3.4);
+    pops=lt<3.4?pop('This way?',360,165,72,PURPLE,lt,.6,-4)+(lt>2.0?pop('That way?',880,165,72,PURPLE,lt,2.0,4):'')
+                :pop('Peek-a-boo!',640,160,100,PINK,lt,3.6,-3);
+    break;}
+  case 5:{
+    // Frog hops onto the lily pad (ribbit!) and the three friends play together
+    const fu=prog(lt,.4,1.3);
+    props=hearts(lt,4.3,560,350);
+    const fr=fu<1?place(lerp(1360,PADX,fu),lerp(470,WL-6,fu)-110*4*fu*(1-fu),frog({eye:blink(t,2.2)}),{s:.7}):frogPad(t);
+    chars=swim(lt,t,{x:560,wave:lt>4.0&&lt<5.6})+fishJump(lt,t,3.9,1.1,700,900,170)+(lt<3.9?peekFish(700,prog(lt,2.4,3.0),lt,t):'');
+    chars+=fr;
+    if(fu>=1)front=drops(PADX,prog(lt,1.3,2.0),70);
+    front+=drops(700,prog(lt,3.9,4.6),34)+drops(900,prog(lt,4.9,5.6),34);
+    cap=lt<3.6?caption('Frog comes to play.',lt,.3):caption('Three friends play together.',lt,3.6);
+    pops=lt<3.6?pop('Ribbit!',860,165,84,GREEN,lt,1.5,4):pop('Hooray!',640,160,100,ORANGE,lt,4.0,-3);
+    break;}
+  case 6:{
+    // the sun goes down; bye-bye, Little Fish (it dives home)
+    n=lerp(0,.6,eio(prog(lt,.2,4.4))); o={noSun:true,noMoon:true};
+    behind=sun(t,1150,lerp(100,560,eio(prog(lt,.2,4.4))));
+    const fu=1-prog(lt,5.0,5.6);
+    chars=swim(lt,t,{x:560,wave:lt>3.8&&lt<5.4})+peekFish(840,fu*prog(lt,.4,1.0),lt,t)+frogPad(t);
+    if(lt>5.0&&lt<6.8)chars+=ripple(840,lt,0,40);
+    cap=lt<3.6?caption('The sun goes down.',lt,.3):caption('Bye-bye, Little Fish!',lt,3.6);
+    pops=pop('Bye-bye!',640,160,100,PURPLE,lt,3.8,-3);
+    break;}
+  case 7:{
+    // night: Lulu sleeps on the grass by the pond, the moon shines on the water. The End.
+    n=lerp(.6,1,eio(prog(lt,0,2.2))); o={noSun:true,noMoon:true};
+    behind=moon(1000,120);
+    // (no moon reflection: it read as a stone on the water)
+    const asleep=lt>1.6;
+    chars=shadow(235,522,62)+place(235,520,duck({asleep,eye:blink(t,0)}),{s:1,sy:1+.02*Math.sin(lt*2.2),rot:asleep?-3:0})
+         +frogPad(t,{eye:lt>1.2?.12:blink(t,2.2)})+bubblesUp(lt,780,3.0,5.0);
+    pops=zzz(lt,270,380,2.0);
+    cap=lt<3.6?caption('Lulu is sleepy.',lt,.4):caption('Good night, friends.',lt,3.6);
+    pops+=pop('The End',640,150,112,GOLD,lt,4.6,-3,NAVY);
+    break;}
+  }
+  o.noClouds=true; o.noFlowers=true;
+  svg.innerHTML=CLIPDEF+bg(t,n,sideCloud(t,n)+behind,o)+shore(t,n)+props+chars+front+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=CLIPDEF+bg(0,0,cloud(170,262,.6,1),{noClouds:true,noFlowers:true})+shore(0,0);
+  s+=ripple(480,.3,0,90)+`<g clip-path="url(#aw)">${place(480,WL+32,duck({wing:24}),{s:1.25})}</g>`;
+  s+=`<g clip-path="url(#aw)">${place(830,430,fish({col:'#FF9F1C',tail:.6}),{s:1.25,rot:-22})}</g>`+splash(760,WL,.45,1,40);
+  s+=label(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,640,125,100,PINK,-2);
+  s+=label(`<tspan fill="${NAVY}">Little Fish</tspan>`,640,235,104,PINK,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
