@@ -1,0 +1,167 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 69 - Lulu's Little Band. Lulu taps her xylophone (ding, ding!); Pip the kitten comes with
+   a little bell on a ribbon (jingle, jingle!); Bunny hops in and dances (hop, hop, hop!). They play
+   together. The sun goes down, they play softly; Pip and Bunny fall asleep; Lulu plays one last
+   soft note that floats up to the moon. Good night, little band. */
+const DUR=53, SC=[0,5,12,19,26,33,40,46,53];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', ORANGE='#F27A12', TEAL='#19B8A6', GOLD='#FFE58A', BLUE='#3FA9F5', GREEN='#3FA34D';
+const LX=360, XX=620, XS=.85, PX=880, BX=1090;   // Lulu, xylophone, Pip, Bunny
+const HAND=[LX+48,482];                           // where Lulu holds the mallet
+const barX=k=>XX+(-125+k*50)*XS;
+const barHitY=k=>520-72*XS-(110-k*12)*XS/2+16;
+
+const lulu=(lt,t,o={})=>{
+  const x=o.x==null?LX:o.x, j=jumps(lt,o.hops||[],.6,o.h||22), w=o.wave?20+20*Math.sin(lt*9):(o.wing||0);
+  return shadow(x,522,60,-j.y)+place(x,520+j.y+(o.bob||0),duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),{s:1,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0});
+};
+// Pip with a little bell on a pink ribbon; ring = swing of the bell in degrees
+const pip=(lt,t,o={})=>{
+  const x=o.x==null?PX:o.x, j=jumps(lt,o.hops||[],.6,o.h||36);
+  const b=`<path d="M-30,-82 Q0,-66 30,-82" stroke="#FF7FB0" stroke-width="8" fill="none" stroke-linecap="round"/>`+bell(0,-76,.32,o.ring||0);
+  return shadow(x,522,58,-j.y)+place(x,520+j.y+(o.bob||0),kitten({eye:o.eye!=null?o.eye:blink(t,1.3),tail:o.tail!=null?o.tail:Math.sin(t*3),asleep:o.asleep})+b,{s:1,sx:j.sx,sy:j.sy*(o.sy||1)});
+};
+const bny=(lt,t,o={})=>{
+  const x=o.x==null?BX:o.x, j=jumps(lt,o.hops||[],.6,o.h||44);
+  return shadow(x,522,56,-j.y)+place(x,520+j.y,bunny({eye:o.eye!=null?o.eye:blink(t,2.1),ear:o.ear||0}),{s:1,sx:j.sx,sy:j.sy*(o.sy||1)});
+};
+// bell swing: rings after each hop lands (or after given times)
+const ring=(lt,times)=>{let r=0;for(const t0 of times){const d=lt-t0;if(d>0)r+=28*Math.exp(-d*2.2)*Math.sin(d*11);}return r;};
+// the mallet: a stick from Lulu's wing to a round pink head
+const malletDraw=(hx,hy)=>`<path d="M${HAND[0]},${HAND[1]} L${hx},${hy}" stroke="#C98545" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="${HAND[0]}" cy="${HAND[1]}" r="9" fill="#F5B301"/><circle cx="${hx}" cy="${hy}" r="14" fill="#FF5D8F"/><circle cx="${hx-4}" cy="${hy-4}" r="4.5" fill="#fff" opacity=".5"/>`;
+// taps = [[time, bar], ...]; returns {mallet, hit, ht}
+const play=(lt,taps,lift=40)=>{
+  const rest=[barX(0)-14,barHitY(0)-22];
+  if(!taps.length||lt<taps[0][0]-.5){return {m:malletDraw(...rest),hit:-1,ht:0};}
+  let i=-1;for(let k=0;k<taps.length;k++)if(lt>=taps[k][0])i=k;
+  let hx,hy;
+  if(i<0){const u=eio(prog(lt,taps[0][0]-.5,taps[0][0]));hx=lerp(rest[0],barX(taps[0][1]),u);hy=lerp(rest[1],barHitY(taps[0][1]),u*u);}
+  else if(i<taps.length-1){const [a,ka]=taps[i],[b,kb]=taps[i+1],u=(lt-a)/(b-a);
+    hx=lerp(barX(ka),barX(kb),eio(u));hy=lerp(barHitY(ka),barHitY(kb),u)-lift*Math.sin(Math.PI*u);}
+  else{const [a,ka]=taps[i],u=eout(prog(lt,a,a+.5));hx=lerp(barX(ka),rest[0],u);hy=lerp(barHitY(ka),rest[1],u);}
+  return {m:malletDraw(hx,hy),hit:i<0?-1:taps[i][1],ht:i<0?0:lt-taps[i][0]};
+};
+// little notes that float up from each tapped bar
+const tapNotes=(lt,taps,dur=2.2,rise=150)=>{let s='';taps.forEach(([t0,k],i)=>{const q=lt-t0;if(q>0&&q<dur){const u=q/dur;
+  s+=musicNote(barX(k)+10+20*Math.sin(q*3+i),barHitY(k)-30-rise*u,.9+.2*u,BLOCKS[k],Math.sin(Math.PI*u));}});return s;};
+const xylo=p=>xylophone(XX,520,XS,p.hit,p.ht);
+const zzz=(lt,x,y,t0=2)=>{let s='';for(let k=0;k<3;k++){let q=lt-t0-k*.9;if(q>0){q%=2.7;
+  s+=`<text x="${x+q*24+8*Math.sin(q*3)}" y="${y-q*30}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}return s;};
+const walkBob=(w,lt)=>w>0&&w<1?-8*Math.abs(Math.sin(lt*7)):0;
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',pops='',cap='',o={},behind='',front='';
+  switch(i){
+  case 0:{
+    // title: Lulu waves by her xylophone
+    const p=play(lt,[]);
+    props=xylo(p);
+    chars=lulu(lt,t,{hops:[.8],wave:lt>1.4&&lt<3.4});
+    pops=pop(`${LULU}<tspan fill="${NAVY}">’s Little Band</tspan>`,640,160,76,PINK,lt,.4,-2);
+    break;}
+  case 1:{
+    // Lulu has a xylophone; she taps the bars: ding, ding!
+    const taps=[[3.6,0],[4.2,1],[4.8,2],[5.4,1],[6.0,0]];
+    const p=play(lt,taps);
+    props=xylo(p)+tapNotes(lt,taps);
+    chars=lulu(lt,t,{hops:[1.0],h:18})+p.m;
+    cap=lt<3.4?caption('Lulu has a xylophone.',lt,.3):caption('Tap, tap!',lt,3.4);
+    pops=pop('Ding, ding!',620,160,86,ORANGE,lt,3.8,-3);
+    break;}
+  case 2:{
+    // Pip the kitten comes with a little bell: jingle, jingle!
+    const w=eio(prog(lt,.2,2.2)), hops=[3.8,4.7,5.6];
+    const p=play(lt,[]);
+    props=xylo(p);
+    chars=lulu(lt,t,{hops:[2.6],h:16})+p.m
+         +pip(lt,t,{x:lerp(1380,PX,w),bob:walkBob(w,lt),hops,ring:ring(lt,hops.map(h=>h+.3))+(w>0&&w<1?12*Math.sin(lt*7):0)});
+    cap=lt<3.4?caption('Here comes Pip the kitten.',lt,.3):caption('Pip has a little bell.',lt,3.4);
+    pops=pop('Jingle, jingle!',640,160,82,TEAL,lt,3.9,-3);
+    break;}
+  case 3:{
+    // Bunny hops in and dances: hop, hop, hop!
+    const inHops=[.3,.95,1.6], hops=[3.8,4.6,5.4];
+    const w=eio(prog(lt,.3,2.2));
+    const p=play(lt,[]);
+    props=xylo(p);
+    chars=lulu(lt,t,{})+p.m+pip(lt,t,{ring:ring(lt,[3.8])*.3})
+         +bny(lt,t,{x:lerp(1400,BX,w),hops:[...inHops,...hops],h:lt>3?50:30,ear:lt>3.6?6*Math.sin(lt*8):0});
+    cap=lt<3.4?caption('Bunny hops to the music.',lt,.3):caption('Bunny is the dancer!',lt,3.4);
+    pops=pop('Hop! Hop! Hop!',640,160,82,PURPLE,lt,3.9,-3);
+    break;}
+  case 4:{
+    // all together: a happy little band
+    const taps=[[1.0,0],[1.6,2],[2.2,1],[2.8,3],[4.4,2],[5.0,1],[5.6,0]];
+    const p=play(lt,taps), ph=[1.2,2.4,4.8,6.0], bh=[1.5,2.7,5.1];
+    for(let k=0;k<5;k++){let q=lt-3.6-k*.5;if(q>0&&q<2.4){const u=q/2.4;
+      props+=heart(640+(k%2?-1:1)*(40+k*14)+8*Math.sin(q*4+k),330-90*u,.9,[PINK,ORANGE,PURPLE][k%3],Math.sin(Math.PI*u));}}
+    props+=xylo(p)+tapNotes(lt,taps);
+    chars=lulu(lt,t,{bob:2*Math.sin(lt*6)})+p.m+pip(lt,t,{hops:ph,h:30,ring:ring(lt,ph.map(h=>h+.3))})
+         +bny(lt,t,{hops:bh,h:40});
+    cap=lt<3.4?caption('Let’s play together!',lt,.3):caption('A happy little band!',lt,3.4);
+    pops=pop('La, la, la!',640,160,86,PINK,lt,1.0,-3);
+    break;}
+  case 5:{
+    // the sun goes down; they play softly
+    n=lerp(0,.6,eio(prog(lt,.2,6.5))); o={noSun:true,noMoon:true};
+    behind=sun(t,1150,lerp(100,560,eio(prog(lt,.2,5))));
+    const taps=[[3.8,2],[5.0,1],[6.2,0]];
+    const p=play(lt,taps,28);
+    props=xylo(p)+tapNotes(lt,taps,2.8,120);
+    chars=lulu(lt,t,{})+p.m+pip(lt,t,{ring:ring(lt,[5.1])*.4,tail:Math.sin(t*1.5)*.6})+bny(lt,t,{ear:3*Math.sin(lt*2)});
+    cap=lt<3.4?caption('The sun goes down.',lt,.3):caption('Let’s play softly now.',lt,3.4);
+    pops=pop('Shh...',640,160,86,PURPLE,lt,3.6,-3);
+    break;}
+  case 6:{
+    // Pip and Bunny are sleepy and fall asleep
+    n=lerp(.6,.95,eio(prog(lt,0,6))); o={noSun:true};
+    const p=play(lt,[]);
+    const sl=lt>2.2, yb=lt>1.2&&lt<2.2;
+    props=xylo(p);
+    chars=lulu(lt,t,{})+p.m+pip(lt,t,{asleep:sl,eye:yb?.4:undefined,tail:sl?.2:undefined,sy:sl?1+.02*Math.sin(lt*2.2):1})
+         +bny(lt,t,{eye:sl?.1:(yb?.4:undefined),sy:sl?1+.02*Math.sin(lt*2.2+1):1});
+    cap=lt<3.4?caption('Pip and Bunny are sleepy.',lt,.3):caption('Good night, friends.',lt,3.4);
+    pops=zzz(lt,PX+30,320,2.4)+zzz(lt,BX-40,310,3.2);
+    break;}
+  case 7:{
+    // one last soft note floats up to the moon; Lulu sleeps
+    n=1; o={noSun:true};
+    const taps=[[.8,2]];
+    const p=play(lt,taps,28);
+    const q=lt-.9;let note='';
+    if(q>0&&q<4.6){const u=eio(q/4.6);note=musicNote(lerp(barX(2)+10,1080,u),lerp(barHitY(2)-30,150,u)+14*Math.sin(q*3),1+.3*u,GOLD,Math.min(1,q*3)*(1-prog(q,3.8,4.6)));}
+    const asleep=lt>3.0;
+    props=xylo(p)+note;
+    chars=lulu(lt,t,{asleep,eye:lt>2.2?.45:undefined,rot:asleep?3:0,sy:asleep?1+.02*Math.sin(lt*2.2):1})+(asleep?'':p.m)
+         +pip(lt,t,{asleep:true,tail:.2,sy:1+.02*Math.sin(lt*2.2)})+bny(lt,t,{eye:.1,sy:1+.02*Math.sin(lt*2.2+1)});
+    if(asleep)front=`<g opacity="${prog(lt,3.0,3.4)}"><path d="M${XX-120},515 L${XX+40},500" stroke="#C98545" stroke-width="9" stroke-linecap="round"/><circle cx="${XX+40}" cy="500" r="14" fill="#FF5D8F"/></g>`;
+    pops=zzz(lt,PX+30,320,0)+zzz(lt,BX-40,310,1.2)+zzz(lt,LX+60,350,3.6);
+    cap=lt<3.4?caption('One last soft note...',lt,.3):caption('Good night, little band.',lt,3.4);
+    pops+=pop('The End',640,160,104,GOLD,lt,4.4,-3,NAVY);
+    break;}
+  }
+  o.noClouds=true;
+  if(i<5)behind+=cloud(150+10*Math.sin(t*.3),90,.7,1);
+  svg.innerHTML=bg(t,n,behind,o)+props+chars+front+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,cloud(140,250,.8,1),{noSun:true,noClouds:true});
+  s+=`<g transform="translate(-20,40)">`+xylophone(560,520,1,2,0.05)+place(260,520,duck({wing:18}),{s:1.2})
+    +`<path d="M318,470 L505,430" stroke="#C98545" stroke-width="10" stroke-linecap="round"/><circle cx="318" cy="470" r="10" fill="#F5B301"/><circle cx="505" cy="430" r="16" fill="#FF5D8F"/><circle cx="500" cy="425" r="5" fill="#fff" opacity=".5"/></g>`;
+  s+=place(860,560,kitten({eye:1})+`<path d="M-30,-82 Q0,-66 30,-82" stroke="#FF7FB0" stroke-width="8" fill="none" stroke-linecap="round"/>`+bell(0,-76,.32,12),{s:1.15});
+  s+=place(1090,560,bunny({eye:1}),{s:1.15});
+  s+=musicNote(470,330,1.3,'#FF5D5D')+musicNote(620,300,1.5,'#3FA9F5')+musicNote(760,340,1.2,'#7B5CFF');
+  s+=label(`${LULU}<tspan fill="${NAVY}">’s Little Band</tspan>`,640,150,100,PINK,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

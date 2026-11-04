@@ -1,0 +1,118 @@
+{
+  "number": 69,
+  "slug": "lulus-little-band",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu's Little Band | Bedtime Story for Kids",
+  "description": "Lulu the duck taps her xylophone. Ding, ding! Pip the kitten comes with a little bell, and Bunny hops in to dance.\nThey play together, then softly as the sun goes down.\nOne last soft note floats up to the moon. Good night, little band.\nA calm bedtime story for children aged 3 to 6.",
+  "duration": 53,
+  "seed": 69,
+  "lullaby_from": 40.0,
+  "sfx": [
+    {
+      "t": 0.4,
+      "type": "pop"
+    },
+    {
+      "t": 8.6,
+      "type": "ding"
+    },
+    {
+      "t": 9.2,
+      "type": "ding"
+    },
+    {
+      "t": 9.8,
+      "type": "ding"
+    },
+    {
+      "t": 10.4,
+      "type": "ding"
+    },
+    {
+      "t": 11.0,
+      "type": "ding"
+    },
+    {
+      "t": 16.1,
+      "type": "sparkle"
+    },
+    {
+      "t": 17.0,
+      "type": "sparkle"
+    },
+    {
+      "t": 22.8,
+      "type": "boing_high"
+    },
+    {
+      "t": 23.6,
+      "type": "boing_high"
+    },
+    {
+      "t": 24.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 27.0,
+      "type": "ding"
+    },
+    {
+      "t": 27.6,
+      "type": "ding"
+    },
+    {
+      "t": 28.2,
+      "type": "ding"
+    },
+    {
+      "t": 28.8,
+      "type": "ding"
+    },
+    {
+      "t": 29.4,
+      "type": "sparkle"
+    },
+    {
+      "t": 36.8,
+      "type": "ding"
+    },
+    {
+      "t": 38.0,
+      "type": "ding"
+    },
+    {
+      "t": 39.2,
+      "type": "ding"
+    },
+    {
+      "t": 46.8,
+      "type": "ding"
+    },
+    {
+      "t": 50.4,
+      "type": "sparkle"
+    }
+  ],
+  "check_times": [
+    2.0,
+    8.7,
+    10.5,
+    13.5,
+    16.1,
+    17.9,
+    20.0,
+    23.1,
+    24.7,
+    27.3,
+    29.0,
+    31.8,
+    35.0,
+    38.3,
+    42.0,
+    45.0,
+    47.5,
+    49.5,
+    52.3
+  ]
+}
