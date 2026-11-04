@@ -1,0 +1,111 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 67 - Count with Lulu in the Snow: 1 to 5.  Title, one scene per number, finale.
+   1 snowman, 2 penguins, 3 snowballs, 4 birds, 5 snowflakes. Snowy hills, no sun, no
+   background flowers or clouds and no falling snow in the counting scenes (nothing extra to count). */
+const T0=.9, STEP=.7;
+const tcOf=N=>T0+(N-1)*STEP+1.0;
+const SC=[0,5];
+for(let N=1;N<=5;N++)SC.push(+(SC[SC.length-1]+tcOf(N)+3.0).toFixed(2));
+SC.push(+(SC[SC.length-1]+7.5).toFixed(2));
+const DUR=SC[SC.length-1];
+const NAVY='#2D2A6E';
+const COL=['#FF5D8F','#FF9F1C','#19B8A6','#7B5CFF','#3FA9F5'];
+const NAMES=['1 snowman','2 penguins','3 snowballs','4 birds','5 snowflakes'];
+const BIRD_COL=[['#2979E8','#1B5FC4','#CFE6FF'],['#E63946','#B82835','#FFD6D9'],['#2979E8','#1B5FC4','#CFE6FF'],['#E63946','#B82835','#FFD6D9']];
+
+function badge(x,y,k,col,lt,t0){
+  const u=prog(lt,t0+.1,t0+.4);if(u<=0)return '';
+  return `<g transform="translate(${x},${y}) scale(${back(u)})"><circle r="27" fill="#fff" stroke="${col}" stroke-width="5"/><text y="12" text-anchor="middle" font-size="36" fill="${NAVY}">${k+1}</text></g>`;
+}
+function hearts(lt,t0){
+  let s='';
+  for(let k=0;k<9;k++){const q=lt-(t0+k*.4);if(q>0){const y=610-q*120,x=110+k*132+25*Math.sin(q*2+k),o=clamp((y-50)/140)*clamp(q*3)*.9;
+    if(y>40)s+=heart(x,y,1+(k%3)*.25,['#FF5D8F','#FF9F1C','#FFFFFF'][k%3],o);}}
+  return s;
+}
+// gentle falling snow (title and finale only)
+function snowfall(t,o=1){
+  let s='';
+  for(let k=0;k<18;k++){const sp=28+(k%4)*7, y=((k*83+t*sp)%560)-30, x=(k*151+40)%1280+18*Math.sin(t*.8+k);
+    const near=y>40&&y<290?.15:1;   // fade flakes that pass behind the big words
+    s+=snowflake(x,y,.5+(k%3)*.18,t*20+k*30,o*.9*near);}
+  return s;
+}
+// snowy hills with a soft blue-white tint, so white snowmen, snowballs and snowflakes stand out
+const ground=()=>`<path d="M0,440 Q300,330 640,410 T1280,400 L1280,720 L0,720Z" fill="#E4EFF9"/><path d="M0,500 Q380,440 760,490 T1280,470 L1280,720 L0,720Z" fill="#CFE2F3"/>`;
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',sky='';
+  const o={noSun:true,noFlowers:true,noClouds:true};
+  if(i===0){
+    const j=jumps(lt,[1.6,2.6],.6,30);
+    sky=snowfall(t);
+    chars=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:20+20*Math.sin(lt*9),eye:blink(t,0)}),{s:1.1,sx:j.sx,sy:j.sy});
+    pops=pop('Count in the Snow',640,128,80,NAVY,lt,.3)+pop('with '+LULU,640,250,110,NAVY,lt,.7,-3);
+    for(let k=0;k<5;k++)pops+=pop(String(k+1),380+k*130,676,92,COL[k],lt,1.5+k*.3,(k%2?4:-4));
+  }else if(i<=5){
+    const N=i, col=COL[N-1], tc=tcOf(N);
+    const grow=k=>lt>T0+k*STEP?back(prog(lt,T0+k*STEP,T0+k*STEP+.35)):0;
+    const cheer=k=>jumps(lt,[tc+.2+k*.06],.55,30);
+    const lj=jumps(lt,[tc+.2],.55,12);
+    chars=shadow(220,522,52,-lj.y)+place(220,520+lj.y,duck({eye:blink(t,0),wing:lt>tc?30*Math.abs(Math.sin(lt*10)):0}),{s:.9,sx:lj.sx,sy:lj.sy});
+    pops=pop(String(N),220,318,290,col,lt,.3,-4);
+    for(let k=0;k<N;k++){
+      const g=grow(k);if(g<=0)continue;
+      const j=cheer(k), tk=T0+k*STEP;
+      if(N===1){
+        const x=790;
+        chars+=place(x,520+j.y,snowman({eye:blink(t,.4),arm:lt>tc?.5+.5*Math.sin(lt*6):0}),{s:g,sx:j.sx,sy:j.sy});
+        pops+=badge(x,195,k,col,lt,tk);
+      }else if(N===2){
+        const x=[640,940][k];
+        chars+=shadow(x+10,522,60,-j.y)+place(x,520+j.y,penguin({eye:blink(t,k*.8),flap:lt>tc?Math.sin(lt*9+k):0}),{s:g,sx:j.sx,sy:j.sy});
+        pops+=badge(x+10,268,k,col,lt,tk);
+      }else if(N===3){
+        const x=[560,790,1020][k], r=56;
+        props+=shadow(x,522,48,-j.y)+`<g transform="translate(${x},${520+j.y}) scale(${g*j.sx},${g*j.sy})">${snowball(0,0,r,(k%2?1:-1)*Math.sin(lt*2+k)*12)}</g>`;
+        pops+=badge(x,340,k,col,lt,tk);
+      }else if(N===4){
+        const x=[500,690,880,1070][k], c=BIRD_COL[k];
+        chars+=shadow(x,522,44,-j.y)+place(x,520+j.y,bird({eye:blink(t,k*.6),wing:lt>tc?-25*Math.abs(Math.sin(lt*10)):0,col:c[0],dark:c[1],belly:c[2]}),{s:.8*g,sx:j.sx,sy:j.sy});
+        pops+=badge(x+20,305,k,col,lt,tk);
+      }else{
+        const x=[480,640,800,960,1120][k], y=[330,250,330,250,330][k]+8*Math.sin(t*2+k)+j.y*.5;
+        props+=snowflake(x,y,3.4*g,lt*15+k*20,1);
+        pops+=badge(x,y-105,k,col,lt,tk);
+      }
+    }
+    cap=caption(NAMES[N-1],lt,tc-.2);
+  }else{
+    const j=jumps(lt,[3.5,4.6,5.7],.6,35);
+    sky=snowfall(t,.8);
+    props=hearts(lt,3.2);
+    chars=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:25+25*Math.sin(lt*10),eye:blink(t,0)}),{s:1.1,sx:j.sx,sy:j.sy});
+    const X=[180,400,620,840,1080];
+    for(let k=0;k<5;k++)pops+=pop(String(k+1),X[k],215,170,COL[k],lt,.4+k*.5,(k%2?5:-5));
+    cap=caption('Great counting!',lt,3.2);
+  }
+  svg.innerHTML=bg(t,0,'',o)+ground()+sky+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  for(let k=0;k<10;k++)s+=snowflake(40+(k%5)*115+(k>4?55:0),70+(k>4?150:0)+(k%2)*40,.6+(k%3)*.25,k*25,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#EAF3FA"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#FFFFFF"/>`;
+  s+=place(170,690,snowman({}),{s:1.25});
+  s+=shadow(420,662,120)+place(410,658,duck({wing:22}),{s:1.8});
+  s+=label('1',650,330,230,COL[0],-6)+label('to',815,300,90,NAVY)+label('5',980,330,230,COL[4],4);
+  s+=label('Count with',820,460,70,NAVY)+label(LULU,820,610,150,'#FF5D8F',-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
