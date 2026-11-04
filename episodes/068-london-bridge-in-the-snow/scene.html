@@ -1,0 +1,114 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script src="../../toolkit/rhymes.js"></script>
+<script>
+/* Episode 68 - London Bridge Is Falling Down in the snow (sing-along). Lulu builds a little bridge of
+   ice blocks on a snowy hill while a snowman watches and waves. On "my fair lady" the top ice blocks
+   tumble softly into the snow, and they hop back up again in the gap. Verse 2: Penguin waddles in.
+   Verse 3: soft snow falls, evening comes and a little bird joins. Ending: built again, hooray! */
+const BPM=112, START=5.0;
+const LINES=rhymeTimes(RHYMES.london,START,3,4,BPM);
+const END=rhymeEnd(LINES);                 // about 60.7 s
+const DUR=66, SC=[0,DUR];
+const SPB=60/BPM;
+const V2=LINES[4].t0, V3=LINES[8].t0;
+
+// the bridge: two pillars of three ice blocks, a top of four blocks
+const PX=[526,754];
+const PIL=[];PX.forEach(x=>{for(let r=0;r<3;r++)PIL.push([x,520-42*r]);});
+const TOPY=394, TOP=[526,602,678,754];
+const LAND=[[425,-12],[640,8],[838,-10],[910,14]];   // where the top blocks land, and their tilt
+const FALL=[3,7,11].map(i=>LINES[i].words[3].t0);   // on "dy!" of each "my fair lady!"
+const BUILD=[FALL[0]+1.6,FALL[1]+1.6,END+.3];
+
+function topBlock(t,k){
+  const x0=TOP[k], y0=TOPY, [x1,r1]=LAND[k];
+  let x=x0,y=y0,r=0;
+  for(let v=0;v<3;v++){
+    const tf=FALL[v]+k*.08, tb=BUILD[v]+k*.3;
+    if(t>=tf&&t<tb){
+      const u=prog(t,tf,tf+.55);
+      x=lerp(x0,x1,eout(u)); y=lerp(y0,520,u*u)-30*Math.sin(Math.PI*u); r=r1*u;
+      const q=t-(tf+.55); if(q>0)y-=12*Math.abs(Math.sin(q*9))*Math.exp(-q*6);
+    }else if(t>=tb&&t<tb+.5){
+      const u=eio(prog(t,tb,tb+.5));
+      x=lerp(x1,x0,u); y=lerp(520,y0,u)-60*Math.sin(Math.PI*u); r=r1*(1-u);
+    }
+  }
+  return iceBlock(x.toFixed(1),y.toFixed(1),r);
+}
+// soft falling snow in verse 3 and the ending (small flakes, faint where the big words sit)
+function snowfall(t,o){
+  if(o<=0)return '';let s='';
+  for(let k=0;k<16;k++){const sp=26+(k%4)*7, y=((k*83+t*sp)%540)-30, x=(k*151+40)%1280+18*Math.sin(t*.8+k);
+    const near=y>70&&y<250&&x>250&&x<1030?.2:1;
+    s+=snowflake(x.toFixed(1),y.toFixed(1),.45+(k%3)*.15,t*20+k*30,o*.85*near);}
+  return s;
+}
+const ground=n=>`<path d="M0,440 Q300,330 640,410 T1280,400 L1280,720 L0,720Z" fill="${mix('#E4EFF9','#8E9CC9',n)}"/><path d="M0,500 Q380,440 760,490 T1280,470 L1280,720 L0,720Z" fill="${mix('#F4F9FE','#A7B4DD',n)}"/>`;
+
+function render(t){
+  const n=t<V3-2.2?0:lerp(0,.45,eio(prog(t,V3-2.2,V3)));
+  const p=t<END+.5?beatPulse(LINES,t):0;
+  const sway=t>START-.5&&t<END+.4?Math.sin(2*Math.PI*(t-START)/(2*SPB)):0;
+  let props='',chars='',pops='',cap='';
+
+  // the bridge (wobbles a little with the music while it stands)
+  const standing=!FALL.some((f,v)=>t>=f&&t<BUILD[v]+1.4);
+  const wob=standing?1.4*sway:0;
+  let br='';
+  PIL.forEach(([x,y])=>br+=iceBlock(x,y));
+  props+=shadow(526,524,74)+shadow(754,524,74)+`<g transform="rotate(${wob.toFixed(2)} 640 520)">${br}`;
+  for(let k=0;k<4;k++)props+=topBlock(t,k);
+  props+='</g>';
+
+  const hop=v=>{const q=t-FALL[v];return q>0&&q<.6?40*Math.sin(Math.PI*q/.6):0;};
+  const h=hop(0)+hop(1)+hop(2);
+  const cheer=t>END+2.0?Math.abs(Math.sin((t-END-2.0)*4.5))*24*(1-prog(t,DUR-2.6,DUR-1.6)):0;
+  // the snowman watches from the right and waves with the music
+  chars+=place(1150,524,snowman({eye:blink(t,1.2),arm:t>START?.5+.5*sway:0}),{s:.86});
+  // Lulu on the left
+  chars+=shadow(290,522,62)+place(290,520-7*p-h-cheer,duck({eye:blink(t,0),wing:14+12*sway}),{s:.95,rot:4*sway});
+  // verse 2: Penguin waddles in and faces Lulu
+  const g2=t>V2-2.4?prog(t,V2-2.4,V2-.6):0;
+  if(g2>0){
+    const x=lerp(1340,1000,eout(g2)), wad=g2<1?6*Math.sin(t*14):0;
+    chars+=shadow(x,522,52)+place(x,520-6*p-h*.8-cheer,penguin({eye:blink(t,.8),flap:.4+.4*sway}),{s:.85,flip:true,rot:wad-3*sway});
+  }
+  // verse 3: a little bird hops in on the left
+  const g3=t>V3-2.0?back(prog(t,V3-2.0,V3-1.4)):0;
+  if(g3>0)chars+=shadow(130,522,48)+place(130,520-6*p-h*.7-cheer,bird({eye:blink(t,2.3),wing:-10+14*sway}),{s:.8*g3,rot:-3*sway});
+
+  // little sparkles when the bridge is built again
+  BUILD.forEach(b=>{const q=t-(b+1.5);if(q>0&&q<1.2){const o=1-q/1.2;
+    pops+=sparkle(480,330-30*q,1.1,o)+sparkle(800,320-30*q,1,o)+sparkle(640,290-30*q,.8,o);}});
+
+  // title, the words of the song, "Build it up!" in the gaps, then the ending
+  const to=1-prog(t,3.7,4.3);
+  if(to>0)pops+=`<g opacity="${to}">`+pop('London Bridge',640,150,92,'#FF5D8F',t,.4,-2,'#fff')+pop('Is Falling Down',640,262,78,'#7B5CFF',t,1.0,2,'#fff')+`</g>`;
+  [0,1].forEach(v=>{const a=FALL[v]+1.2,o=1-prog(t,a+2.6,a+3.0);if(t>a&&o>0)pops+=`<g opacity="${o}">`+pop('Build it up!',640,165,84,'#19B8A6',t-a,0,-2)+`</g>`;});
+  cap=t<END+1.2?karaoke(LINES,t,'#3FA9F5'):caption('We built it again!',t-END,2.0);
+  if(t>END+2.2)pops+=pop('Hooray!',640,165,96,'#FF9F1C',t-END,2.2,-3);
+
+  const sf=prog(t,V3-2.2,V3);
+  const sky=(n>.2?`<g opacity="${clamp((n-.2)/.2).toFixed(2)}">`+moon(1150,110)+'</g>':'')+cloud(170+12*Math.sin(t*.3),95,.9,1-n*.75)+cloud(1010+12*Math.sin(t*.25+1),250,.7,1-n*.75);
+  svg.innerHTML=bg(t,n,sky,{noFlowers:true,noSun:true,noMoon:true,noClouds:true})+ground(n)+snowfall(t,sf)+props+chars+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,'',{noFlowers:true,noSun:true,noClouds:true})+ground(0);
+  for(let k=0;k<9;k++)s+=snowflake(60+k*140,(k%2?60:110),.6+(k%3)*.2,k*25,.9);
+  let br='';PIL.forEach(([x,y])=>br+=iceBlock(x,y));TOP.forEach(x=>br+=iceBlock(x,TOPY));
+  s+=shadow(720,664,96)+shadow(965,664,96)+`<g transform="translate(840,660) scale(1.3) translate(-640,-520)">${br}</g>`;
+  s+=shadow(1180,664,70)+place(1180,660,penguin({flap:.5}),{s:1.05,flip:true});
+  s+=shadow(250,662,140)+place(240,658,duck({wing:20}),{s:1.9});
+  s+=label('London Bridge',640,180,118,'#3FA9F5',-3)+label('in the Snow',800,292,88,'#7B5CFF',-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

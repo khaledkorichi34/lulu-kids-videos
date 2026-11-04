@@ -1669,3 +1669,14 @@ function flatTree(x,y,s=1){
   <ellipse cx="0" cy="-352" rx="150" ry="42" fill="#47AD47"/>
   <ellipse cx="-50" cy="-372" rx="60" ry="20" fill="#52BA52"/><ellipse cx="60" cy="-366" rx="58" ry="18" fill="#52BA52"/></g>`;
 }
+
+/* ---------- ice block (episode 68) ---------- */
+// iceBlock(x,y,rot,s): pale blue ice brick, 76 wide and 42 tall at s=1, origin at the middle of its
+// bottom edge (standing on the ground: y=520). rot turns it about its own centre. Reads well on snow.
+function iceBlock(x,y,rot=0,s=1){
+  return `<g transform="translate(${x},${y-21*s}) rotate(${rot}) scale(${s})">
+  <rect x="-38" y="-21" width="76" height="42" rx="9" fill="#6FB8E8"/>
+  <rect x="-38" y="-21" width="76" height="36" rx="9" fill="#A9DDF7"/>
+  <rect x="-30" y="-15" width="26" height="6" rx="3" fill="#fff" opacity=".75"/>
+  <circle cx="22" cy="-8" r="4" fill="#fff" opacity=".6"/></g>`;
+}
