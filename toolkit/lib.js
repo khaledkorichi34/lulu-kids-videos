@@ -1780,3 +1780,65 @@ function plane(o={}){
   <circle cx="-162" cy="0" r="12" fill="#FFC928"/>
   <ellipse cx="-168" cy="0" rx="5" ry="${ry.toFixed(1)}" fill="#6B6880" opacity=".8"/>`;
 }
+
+/* ---------- squirrel, acorn and oak sapling (episode 71) ---------- */
+// squirrel({eye, tail, acorn, dig, teeth, chew, step, asleep}): little red-brown squirrel sitting up, facing right,
+// origin at its feet (about 150 wide and 215 tall with the tail at s=1; the head top is at about y-160).
+// tail = sway of the bushy tail (-1..1), acorn = holds an acorn in its front paws, dig = 0..1 leans forward
+// with the paws down at the ground (about x+70), teeth = shows its two front teeth, chew = 0..1 small head bob,
+// step = running phase (legs move when it changes).
+function acorn(x,y,s=1,rot=0){
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})">
+  <ellipse cx="0" cy="-17" rx="13" ry="17" fill="#C27A3A"/><ellipse cx="-4" cy="-14" rx="4" ry="8" fill="#DB9A5A" opacity=".8"/>
+  <path d="M-16,-28 Q-16,-44 0,-44 Q16,-44 16,-28 Q0,-22 -16,-28Z" fill="#7A4A26"/>
+  <path d="M0,-44 Q2,-52 6,-54" stroke="#5a3418" stroke-width="4" fill="none" stroke-linecap="round"/></g>`;
+}
+function squirrel(o={}){
+  const e=o.eye==null?1:o.eye, tl=o.tail||0, d=clamp(o.dig||0), ch=o.chew||0, st=o.step||0;
+  const F='#C8763A', D='#A65D2A', L='#F3D9B1', T='#D3843F', TL='#E9A866';
+  const eye=o.asleep
+    ?`<path d="M36,-118 Q43,-111 50,-118" stroke="#2b1d12" stroke-width="4" fill="none" stroke-linecap="round"/>`
+    :`<g transform="translate(43,-118) scale(1,${e})"><circle r="7.5" fill="#2b1d12"/><circle cx="2.5" cy="-2.6" r="2.6" fill="#fff"/></g>`;
+  const teeth=o.teeth?`<rect x="60" y="-95" width="6" height="11" rx="2" fill="#fff"/><rect x="66.5" y="-95" width="6" height="11" rx="2" fill="#fff"/>`:'';
+  const paws=d>0||o.acorn
+    ?`<ellipse cx="44" cy="-66" rx="9" ry="16" fill="${D}" transform="rotate(${-30+70*d} 44 -66)"/><ellipse cx="54" cy="-62" rx="9" ry="16" fill="${F}" transform="rotate(${-40+70*d} 54 -62)"/>`
+    :`<ellipse cx="46" cy="-62" rx="9" ry="16" fill="${F}" transform="rotate(-25 46 -62)"/>`;
+  const nut=o.acorn?acorn(60,-50,.9,10):'';
+  const lx=6*Math.sin(st);
+  return `
+  <g transform="rotate(${tl*9} -28 -30)">
+    <path d="M-26,-22 C-96,-30 -112,-110 -84,-160 C-66,-196 -14,-208 -2,-176 C8,-150 -26,-138 -40,-150 C-26,-118 -40,-70 -26,-22Z" fill="${T}"/>
+    <path d="M-44,-46 C-86,-66 -92,-120 -74,-152 C-60,-176 -30,-186 -20,-172" stroke="${TL}" stroke-width="12" fill="none" stroke-linecap="round" opacity=".8"/>
+  </g>
+  <g transform="rotate(${22*d} 0 0)">
+  <ellipse cx="${-8+lx}" cy="-6" rx="24" ry="8" fill="${D}"/>
+  <ellipse cx="0" cy="-52" rx="40" ry="48" fill="${F}"/>
+  <ellipse cx="14" cy="-46" rx="22" ry="34" fill="${L}"/>
+  <ellipse cx="-14" cy="-24" rx="28" ry="22" fill="${D}"/>
+  <ellipse cx="${10-lx}" cy="-5" rx="22" ry="7" fill="${D}"/>
+  <g transform="translate(0,${3*Math.sin(ch*Math.PI*2)})">
+  <ellipse cx="14" cy="-148" rx="10" ry="19" fill="${F}" transform="rotate(-14 14 -148)"/>
+  <ellipse cx="15" cy="-146" rx="5" ry="11" fill="#FFB3BA" transform="rotate(-14 15 -146)"/>
+  <path d="M8,-164 Q12,-180 18,-166" stroke="${D}" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <circle cx="30" cy="-112" r="35" fill="${F}"/>
+  <ellipse cx="56" cy="-100" rx="20" ry="15" fill="${L}"/>
+  <ellipse cx="73" cy="-106" rx="6.5" ry="5" fill="#5a3418"/>
+  ${teeth}
+  <path d="M64,-96 Q70,-92 74,-97" stroke="#5a3418" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <circle cx="34" cy="-94" r="8" fill="#FF9AA2" opacity=".75"/>
+  ${eye}
+  </g>
+  ${paws}${nut}
+  </g>`;
+}
+// sapling(x,y,h,t): little oak tree growing from the ground at (x,y); h = height 0..160 (small h = a sprout with two leaves)
+function sapling(x,y,h,t=0){
+  if(h<=0)return '';
+  const sw=Math.sin(t*1.3)*2, lf=clamp(h/30), cr=clamp((h-70)/90);
+  const lv=(cx,cy,r,c)=>`<ellipse cx="${cx}" cy="${cy}" rx="${16*lf}" ry="${8*lf}" fill="${c}" transform="rotate(${r} ${cx} ${cy})"/>`;
+  return `<g transform="translate(${x},${y}) rotate(${sw})">
+  <path d="M0,0 Q5,${-h/2} 0,${-h}" stroke="#8A5A33" stroke-width="${6+4*cr}" fill="none" stroke-linecap="round"/>
+  ${lv(14,-Math.min(h,40)+8,-25,'#3FA34D')}${lv(-14,-Math.min(h,40)+8,25,'#47AD47')}
+  ${cr>0?`<g transform="translate(0,${-h}) scale(${cr})"><circle cx="-34" cy="6" r="30" fill="#3E9E3E"/><circle cx="34" cy="6" r="30" fill="#3E9E3E"/><circle cx="0" cy="-14" r="40" fill="#52BA52"/><circle cx="-14" cy="-26" r="9" fill="#6FCF6F" opacity=".7"/></g>`:''}
+  </g>`;
+}
