@@ -1,0 +1,95 @@
+{
+  "number": 72,
+  "slug": "lulu-and-the-shy-snail",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and the Shy Snail | Bedtime Story for Kids",
+  "description": "Lulu the duck finds a round shell in the garden. A loud hello, and the shy snail hides!\nLulu waits quietly, the snail peeks out, and they become friends. Lulu shares a green leaf.\nThe sun goes down, Snail sleeps in her shell, and Lulu sleeps beside her. Good night, friends.\nA calm bedtime story for children aged 3 to 6.",
+  "duration": 54,
+  "seed": 72,
+  "lullaby_from": 40.0,
+  "sfx": [
+    {
+      "t": 0.4,
+      "type": "pop"
+    },
+    {
+      "t": 12.8,
+      "type": "boing_high"
+    },
+    {
+      "t": 13.4,
+      "type": "pop"
+    },
+    {
+      "t": 15.4,
+      "type": "boing_low"
+    },
+    {
+      "t": 22.6,
+      "type": "sparkle"
+    },
+    {
+      "t": 23.4,
+      "type": "pop"
+    },
+    {
+      "t": 26.6,
+      "type": "pop"
+    },
+    {
+      "t": 29.6,
+      "type": "pop"
+    },
+    {
+      "t": 30.4,
+      "type": "sparkle"
+    },
+    {
+      "t": 36.0,
+      "type": "boing_high"
+    },
+    {
+      "t": 36.9,
+      "type": "pop"
+    },
+    {
+      "t": 37.6,
+      "type": "pop"
+    },
+    {
+      "t": 38.3,
+      "type": "pop"
+    },
+    {
+      "t": 43.9,
+      "type": "sparkle"
+    },
+    {
+      "t": 51.4,
+      "type": "sparkle"
+    }
+  ],
+  "check_times": [
+    2.5,
+    4.0,
+    9.0,
+    10.5,
+    13.0,
+    13.8,
+    17.0,
+    20.0,
+    23.0,
+    24.5,
+    27.5,
+    30.5,
+    31.5,
+    35.0,
+    37.5,
+    42.0,
+    45.0,
+    48.0,
+    50.0,
+    52.5
+  ]
+}

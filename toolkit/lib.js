@@ -218,9 +218,10 @@ const nightTint=n=>n>0?`<rect width="1280" height="720" fill="#14153F" opacity="
 const SNAIL_SPIRAL=(function(){let d='';const N=60,T=4.2*Math.PI;for(let k=0;k<=N;k++){const a=T*k/N, r=4+50*k/N;d+=(k?'L':'M')+(-15+Math.cos(-a-1.2)*r).toFixed(1)+','+(-80+Math.sin(-a-1.2)*r).toFixed(1)+' ';}return d;})();
 function snail(o={}){
   const e=o.eye==null?1:o.eye, lk=o.look||0;
-  const shell=`<circle cx="-15" cy="-80" r="72" fill="#F4A261"/><circle cx="-26" cy="-92" r="52" fill="#F7B983" opacity=".55"/>
+  let shell=`<circle cx="-15" cy="-80" r="72" fill="#F4A261"/><circle cx="-26" cy="-92" r="52" fill="#F7B983" opacity=".55"/>
   <path d="${SNAIL_SPIRAL}" stroke="#C8693A" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
   if(o.noHead)return shell;
+  if(o.noShell)shell='';
   const stalk=(bx,tx,ty)=>`<path d="M${bx},-92 Q${(bx+tx)/2},-120 ${tx},${ty}" stroke="#EBCB9C" stroke-width="10" fill="none" stroke-linecap="round"/><circle cx="${tx}" cy="${ty}" r="11" fill="#EBCB9C"/>
   <g transform="translate(${tx+2},${ty}) scale(1,${e})"><circle r="7" fill="#2b1d12"/><circle cx="2.3" cy="-2.4" r="2.4" fill="#fff"/></g>`;
   return `
@@ -231,6 +232,13 @@ function snail(o={}){
   <path d="M110,-52 Q121,-42 132,-54" stroke="#7A5230" stroke-width="4" fill="none" stroke-linecap="round"/>
   <circle cx="98" cy="-50" r="7" fill="#FF9AA2" opacity=".8"/>
   ${shell}`;
+}
+// snailPeek(u,o): the snail coming out of (or going back into) its shell. u = 0 hidden inside the
+// shell, 1 all the way out (same as snail(o)). Same size and origin as snail(); o as snail() (plus noShell).
+// Uses the clip id 'snailpeek', so draw only one per frame. (episode 72)
+function snailPeek(u,o={}){
+  u=clamp(u);const dx=-130*(1-u), dy=30*(1-u), cx=lerp(-90,-130,u);
+  return `<defs><clipPath id="snailpeek"><rect x="${cx}" y="-300" width="500" height="302"/></clipPath></defs><g clip-path="url(#snailpeek)"><g transform="translate(${dx},${dy})">${snail({...o,noShell:true})}</g></g>${snail({noHead:true})}`;
 }
 // bush(x,y,s): round green bush standing on the ground, about 320 wide and 150 tall
 function bush(x,y,s=1){

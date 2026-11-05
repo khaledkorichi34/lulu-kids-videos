@@ -1,0 +1,125 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 72 - Lulu and the Shy Snail. Lulu finds a round shell in the garden. She says a loud
+   "Hello!" and the shy snail stays inside. Lulu waits quietly (shh...) and the snail peeks out.
+   They say hello softly and become friends; Lulu shares a green leaf (munch, munch). The sun goes
+   down and Snail slides slowly next to Lulu, leaving a shiny trail. Snail sleeps in her shell and
+   Lulu sleeps beside her. Good night, friends. */
+const DUR=54, SC=[0,5,12,19,26,33,40,47,54];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', ORANGE='#F27A12', TEAL='#19B8A6', GOLD='#FFE58A', GREEN='#3FA34D';
+const LX=440, SX=840, SS=.8;   // Lulu, Snail, snail scale
+
+const lulu=(lt,t,o={})=>{
+  const x=o.x==null?LX:o.x, j=jumps(lt,o.hops||[],.6,o.h||24), w=o.wave?20+20*Math.sin(lt*9):(o.wing||0);
+  return shadow(x,522,60,-j.y)+place(x,520+j.y+(o.bob||0),duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),{s:1,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0});
+};
+// the snail faces left (towards Lulu); u = how far she is out of her shell
+const sn=(t,u,o={})=>{
+  const x=o.x==null?SX:o.x;
+  return shadow(x+10,522,92)+place(x,520,snailPeek(u,{eye:o.eye!=null?o.eye:blink(t,1.7),look:o.look||0}),{s:SS,flip:true,rot:o.rot||0,sy:o.sy||1});
+};
+const walkBob=(w,lt)=>w>0&&w<1?-8*Math.abs(Math.sin(lt*7)):0;
+const zzz=(lt,x,y,t0=2)=>{let s='';for(let k=0;k<3;k++){let q=lt-t0-k*.9;if(q>0){q%=2.7;
+  s+=`<text x="${x+q*24+8*Math.sin(q*3)}" y="${y-q*30}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}return s;};
+// shiny trail on the grass from x0 to x1, with little twinkles
+const trail=(x0,x1,t)=>{if(x1-x0<4)return '';let s=`<path d="M${x0},517 L${x1},517" stroke="#E8F6FF" stroke-width="7" stroke-linecap="round" opacity=".75"/>`;
+  for(let k=0;k<6;k++){const x=x0+12+k*34;if(x<x1-6)s+=sparkle(x,515,.55,.5+.5*Math.sin(t*4+k*1.3));}return s;};
+const garden=()=>bush(1030,520,.8);
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',pops='',cap='',o={},behind='',front='';
+  switch(i){
+  case 0:{
+    // title: Lulu waves, the snail peeks out to say hello
+    props=garden();
+    chars=lulu(lt,t,{x:380,hops:[.8],wave:lt>1.4&&lt<3.6})+sn(t,eio(prog(lt,1.4,3.0)),{look:Math.sin(lt*3)});
+    pops=pop(`${LULU}<tspan fill="${NAVY}"> and the Shy Snail</tspan>`,640,160,74,PINK,lt,.4,-2);
+    break;}
+  case 1:{
+    // Lulu walks in the garden and finds a round shell
+    const w=eio(prog(lt,.2,2.6));
+    props=garden();
+    chars=lulu(lt,t,{x:lerp(-140,LX,w),bob:walkBob(w,lt)})+sn(t,0);
+    cap=lt<3.4?caption('Lulu goes for a walk.',lt,.3):caption('She finds a round shell.',lt,3.4);
+    pops=pop('What is this?',640,165,80,ORANGE,lt,3.9,-3);
+    break;}
+  case 2:{
+    // a loud hello: the shell wobbles, the shy snail stays inside
+    const wob=lt>1.4?6*Math.exp(-(lt-1.4)*1.5)*Math.sin((lt-1.4)*12):0;
+    props=garden();
+    chars=lulu(lt,t,{hops:[.8],wave:lt>.8&&lt<2.2})+sn(t,0,{rot:wob});
+    cap=lt<3.4?caption('Lulu says hello.',lt,.3):caption('Snail is shy. She hides.',lt,3.4);
+    pops=pop('Hello!',600,165,90,PINK,lt,.8,-3);
+    break;}
+  case 3:{
+    // Lulu waits quietly; the snail peeks out
+    const u=eio(prog(lt,3.4,5.4));
+    props=garden();
+    chars=lulu(lt,t,{eye:blink(t,0)})+sn(t,u,{look:u>.9?Math.sin(lt*3):0});
+    cap=lt<3.4?caption('Lulu waits quietly.',lt,.3):caption('Out comes the snail!',lt,3.4);
+    pops=pop('Shh...',LX,170,80,PURPLE,lt,.6,-3)+pop('Peek-a-boo!',790,170,66,TEAL,lt,4.4,-3);
+    break;}
+  case 4:{
+    // they say hello softly and become friends
+    for(let k=0;k<4;k++){let q=lt-4.4-k*.45;if(q>0&&q<2.4){const u=q/2.4;
+      props+=heart(640+(k%2?-1:1)*(26+k*12)+8*Math.sin(q*4+k),420-110*u,.8,[PINK,ORANGE,PURPLE][k%3],Math.sin(Math.PI*u));}}
+    props=garden()+props;
+    chars=lulu(lt,t,{wing:lt>.6&&lt<2.4?14:0})+sn(t,1,{look:Math.sin(lt*2)});
+    if(lt>.6)front+=`<g opacity="${prog(lt,.6,1.0)}">${speech(400,250,150,62,470,330,'Hi, Snail!',48)}</g>`;
+    if(lt>3.6)front+=`<g opacity="${prog(lt,3.6,4.0)}">${speech(860,250,140,62,800,350,'Hi, Lulu!',48)}</g>`;
+    cap=lt<3.4?caption('Lulu speaks softly.',lt,.3):caption('Now they are friends!',lt,3.4);
+    break;}
+  case 5:{
+    // Lulu shares a green leaf: munch, munch!
+    const m=prog(lt,1.6,2.8), bite=prog(lt,3.8,6.4);
+    const lx=lerp(LX+20,668,eio(m)), ly=lerp(470,490,eio(m))-60*Math.sin(Math.PI*m);
+    props=garden();front=leaf(lx,ly,lerp(.26,.36,m)*(1-.3*bite),lerp(-20,0,m),'#2E9E4F');
+    chars=lulu(lt,t,{wing:lt<1.6?20:0,hops:[3.0],h:16})+sn(t,1,{look:lt>3.8?.6*Math.sin(lt*6):0});
+    cap=lt<3.4?caption('Lulu shares a green leaf.',lt,.3):caption('Snails like to eat leaves.',lt,3.4);
+    pops=pop('Munch, munch!',640,165,80,GREEN,lt,3.9,-3);
+    break;}
+  case 6:{
+    // the sun goes down; Snail slides slowly next to Lulu, leaving a shiny trail
+    n=lerp(0,.6,eio(prog(lt,.2,6.5))); o={noSun:true,noMoon:true};
+    behind=sun(t,1150,lerp(100,560,eio(prog(lt,.2,5))));
+    const x=lerp(SX,690,eio(prog(lt,.6,5.6)));
+    props=garden()+trail(x+90,SX+96,t);
+    chars=lulu(lt,t,{})+sn(t,1,{x,look:Math.sin(lt*1.5)*.5});
+    cap=lt<3.4?caption('Slowly, slowly...',lt,.3):caption('Snail leaves a shiny trail.',lt,3.4);
+    pops=pop('Shiny!',820,170,80,GOLD,lt,3.9,-3,NAVY);
+    break;}
+  case 7:{
+    // night: Snail goes into her shell to sleep, then Lulu sleeps too
+    n=lerp(.6,1,eio(prog(lt,0,3))); o={noSun:true};
+    const u=1-eio(prog(lt,.8,2.8)), asleep=lt>3.0;
+    props=garden()+trail(780,SX+96,t);
+    chars=lulu(lt,t,{asleep,eye:lt>2.2&&!asleep?.45:undefined,rot:asleep?3:0,sy:asleep?1+.02*Math.sin(lt*2.2):1})
+         +sn(t,u,{x:690,eye:lt>.4?.5:undefined,sy:1+.015*Math.sin(lt*2.2)});
+    pops=zzz(lt,700,400,2.6)+zzz(lt,LX+60,330,3.6);
+    cap=lt<3.4?caption('Snail sleeps in her shell.',lt,.3):caption('Good night, friends.',lt,3.4);
+    pops+=pop('The End',640,160,104,GOLD,lt,4.4,-3,NAVY);
+    break;}
+  }
+  o.noClouds=true;
+  if(i<6)behind+=cloud(170+10*Math.sin(t*.3),90,.7,1);
+  svg.innerHTML=bg(t,n,behind,o)+props+chars+nightTint(n)+front+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,cloud(160,250,.8,1),{noSun:true,noClouds:true,noFlowers:true});
+  s+=bush(1080,580,.9)+leaf(690,560,.3,0,'#2E9E4F');
+  s+=shadow(330,582,70)+place(330,580,duck({wing:18}),{s:1.25});
+  s+=shadow(900,582,110)+place(900,580,snail({eye:1,look:.4}),{s:1.05,flip:true});
+  for(let k=0;k<3;k++)s+=heart(560+k*70,380-(k%2)*40,.9,[PINK,ORANGE,PURPLE][k]);
+  s+=label(`${LULU}<tspan fill="${NAVY}"> and the Shy Snail</tspan>`,640,150,90,PINK,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
