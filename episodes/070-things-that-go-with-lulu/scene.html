@@ -1,0 +1,113 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 70 - Things That Go with Lulu (learning, first words).
+   Title, one scene per vehicle (car, bus, train, boat, plane): the name pops in, the vehicle
+   arrives from the right, a caption, it bounces, Lulu hops and says "Wow!", then all five together. */
+const SC=[0,5,12,19,26,33,40,47], DUR=47;
+const NAVY='#2D2A6E';
+const NAME=['Car','Bus','Train','Boat','Plane'];
+const COL=['#E63946','#E0A800','#2F8FD8','#19B8A6','#7B5CFF'];
+const CAP=['The red car goes beep!','A big yellow bus!','The train goes choo choo!','A boat sails on water!','A plane flies high!'];
+const TW=.4, TA=.6, TS=2.2, TC=2.2, TB=3.2, TY=4.4;   // name, arrive start/stop, caption, bounce, "Wow!"
+const WR=[27,30,24,1,1];                               // wheel radius (for turning wheels)
+
+const sideClouds=t=>cloud(125+10*Math.sin(t*.3),96,.9,.95)+cloud(1160+12*Math.sin(t*.25+1),112,.9,.95);
+function vehicle(k,o){
+  if(k===0)return car(o);
+  if(k===1)return bus(o);
+  if(k===2)return train(o);
+  if(k===3)return sailboat(o);
+  return plane(o);
+}
+function lulu(x,lt,t,s,hopAt){
+  const j=jumps(lt,hopAt,.55,24), w=j.y<0?30*Math.abs(Math.sin(lt*10)):12+8*Math.sin(lt*3);
+  return shadow(x,522,52*s/.9,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy});
+}
+function wow(x,y,tx,ty,lt,t0){
+  if(lt<t0)return '';
+  const g=back(prog(lt,t0,t0+.35));
+  return `<g transform="translate(${x},${y}) scale(${g}) translate(${-x},${-y})">${speech(x,y,120,62,tx,ty,'Wow!',54,'#FF5D8F')}</g>`;
+}
+function water(x,y,rx,ry){
+  return `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="#4DB8F0"/><ellipse cx="${x}" cy="${y-4}" rx="${rx*.9}" ry="${ry*.72}" fill="#7DD3FA"/>`;
+}
+// one vehicle in its own scene: k, centre X, ground/water/flight y, scale S
+function hero(k,lt,t){
+  const X=[790,800,760,820,800][k], Y=[520,520,520,540,330][k], S=[1.05,1,1,1,1][k];
+  const u=eout(prog(lt,TA,TS)), x=lerp(1560,X,u);
+  const j=jumps(lt,[TB],.55,k===2?10:18);
+  let s='', o={};
+  if(k<3){o.rot=(x-X)/WR[k]*57.3; if(k===2)o.puff=t;
+    const yy=Y+(k===3?0:j.y);
+    if(k===2)s+=trainTrack(0,1280,522);
+    s+=shadow(x+(k===2?40:0),522,(k===2?270:k===1?175:125)*S,-j.y);
+    s+=place(x,yy,vehicle(k,o),{s:S,sx:j.sx,sy:j.sy});
+  }else if(k===3){
+    o.rock=3*Math.sin(t*1.6);
+    s+=water(830,548,480,46);
+    s+=place(x,Y+4*Math.sin(t*2)+j.y*.6,vehicle(k,o),{s:S});
+    s+=waves(x,Y+20,170,t);
+  }else{
+    o.prop=t;
+    const yy=Y+10*Math.sin(t*1.8)+j.y;
+    s+=place(x,yy,vehicle(k,o),{s:S,rot:-3*Math.sin(t*1.8)});
+  }
+  return s;
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let chars='',pops='',cap='',sky=sideClouds(t),talk='',back2='';
+  const o={noSun:true,noClouds:true,noFlowers:true};
+  if(i===0){
+    const u=eout(prog(lt,1.0,2.6)), x=lerp(1500,1010,u);
+    chars=shadow(x,522,110)+place(x,520,car({rot:(x-1010)/27*57.3}),{s:.85});
+    chars+=lulu(560,lt,t,1.0,[1.4,2.4,3.4]);
+    pops=pop('Things That Go',640,132,104,NAVY,lt,.3)+pop('with '+LULU,640,236,84,NAVY,lt,.7,-2);
+  }else if(i<=5){
+    const k=i-1;
+    back2=hero(k,lt,t);
+    chars+=lulu(230,lt,t,.9,[TB+.15,TY]);
+    talk=wow(430,300,320,420,lt,TY);
+    pops=pop(NAME[k],640,165,124,COL[k],lt,TW);
+    cap=caption(CAP[k],lt,TC);
+  }else{
+    const X=[150,390,615,870,1110];
+    back2+=trainTrack(510,750,522)+water(870,540,125,22);
+    for(let k=0;k<5;k++){
+      const t0=.4+k*.5, g=lt>t0?back(prog(lt,t0,t0+.35)):0, j=jumps(lt,[3.4+k*.35],.5,16);
+      if(g<=0)continue;
+      if(k===0)chars+=shadow(X[k],522,80)+place(X[k],520+j.y,car(),{s:.62*g,sx:j.sx,sy:j.sy});
+      if(k===1)chars+=shadow(X[k],522,90)+place(X[k],520+j.y,bus(),{s:.5*g,sx:j.sx,sy:j.sy});
+      if(k===2)chars+=place(X[k],520+j.y,train({puff:t}),{s:.38*g,sx:j.sx,sy:j.sy});
+      if(k===3)chars+=place(X[k],536+j.y+3*Math.sin(t*2),sailboat({rock:3*Math.sin(t*1.6)}),{s:.55*g});
+      if(k===4)chars+=place(X[k],450+j.y+6*Math.sin(t*1.8),plane({prop:t}),{s:.5*g});
+      pops+=pop(NAME[k],X[k]+(k===2?25:0),340,44,COL[k],lt,t0+.2);
+    }
+    pops+=pop('All together!',640,160,96,NAVY,lt,.2);
+    cap=caption('Things that go! Well done!',lt,4.6);
+  }
+  svg.innerHTML=bg(t,0,'',o)+sky+back2+chars+talk+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(130,110,1.3,.95)+cloud(560,390,.8,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(230,662,120)+place(230,658,duck({wing:22}),{s:1.8});
+  s+=shadow(620,668,130)+place(620,668,car(),{s:1.0});
+  s+=shadow(1020,672,170)+place(1020,672,bus(),{s:.95});
+  s+=label('Things That Go',800,190,104,'#E63946',-3);
+  s+=label('with '+LULU,800,310,84,NAVY,-2);
+  s+=place(1090,420,plane({prop:.3}),{s:.55,rot:-6});
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

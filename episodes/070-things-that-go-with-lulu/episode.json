@@ -1,0 +1,100 @@
+{
+  "number": 70,
+  "slug": "things-that-go-with-lulu",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "Things That Go with Lulu | Learn First Words for Kids",
+  "description": "Lulu the little duck sees five things that go: a car, a bus, a train, a boat and a plane.\n\nSay each name out loud as it drives, sails or flies in.\n\nA short, gentle first-words video for children aged 3 to 6.",
+  "duration": 47,
+  "seed": 70,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 1.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 2.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 5.4,
+      "type": "pop"
+    },
+    {
+      "t": 8.2,
+      "type": "boing_low"
+    },
+    {
+      "t": 9.4,
+      "type": "pop"
+    },
+    {
+      "t": 12.4,
+      "type": "pop"
+    },
+    {
+      "t": 15.2,
+      "type": "boing_low"
+    },
+    {
+      "t": 16.4,
+      "type": "pop"
+    },
+    {
+      "t": 19.4,
+      "type": "pop"
+    },
+    {
+      "t": 22.2,
+      "type": "boing_low"
+    },
+    {
+      "t": 23.4,
+      "type": "pop"
+    },
+    {
+      "t": 26.4,
+      "type": "pop"
+    },
+    {
+      "t": 29.2,
+      "type": "boing_high"
+    },
+    {
+      "t": 30.4,
+      "type": "pop"
+    },
+    {
+      "t": 33.4,
+      "type": "pop"
+    },
+    {
+      "t": 36.2,
+      "type": "boing_high"
+    },
+    {
+      "t": 37.4,
+      "type": "pop"
+    },
+    {
+      "t": 44.6,
+      "type": "ding"
+    }
+  ],
+  "check_times": [
+    2.5,
+    8.5,
+    9.6,
+    15.4,
+    16.6,
+    22.4,
+    23.6,
+    29.4,
+    30.6,
+    36.4,
+    37.6,
+    43.8,
+    46
+  ]
+}

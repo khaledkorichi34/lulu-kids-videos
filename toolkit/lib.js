@@ -1680,3 +1680,103 @@ function iceBlock(x,y,rot=0,s=1){
   <rect x="-30" y="-15" width="26" height="6" rx="3" fill="#fff" opacity=".75"/>
   <circle cx="22" cy="-8" r="4" fill="#fff" opacity=".6"/></g>`;
 }
+
+/* ---------- things that go (episode 70) ---------- */
+// All vehicles face LEFT (they drive in from the right). Use place(...,{flip:true}) to face right.
+// wheel(x,y,r,rot): dark wheel with a light hub and one spoke mark that turns with rot (degrees).
+function wheel(x,y,r,rot=0){
+  return `<g transform="translate(${x},${y}) rotate(${rot})"><circle r="${r}" fill="#2D2A3E"/><circle r="${r*.45}" fill="#D9DCE6"/>
+  <rect x="${-r*.1}" y="${-r*.8}" width="${r*.2}" height="${r*.35}" rx="${r*.1}" fill="#6B6880"/></g>`;
+}
+// car({rot}): little red car, origin at the middle of the ground under it (about 250 wide, 140 tall).
+// rot = wheel turn in degrees.
+function car(o={}){
+  const r=o.rot||0;
+  return `<path d="M-62,-82 Q-52,-138 0,-138 L34,-138 Q70,-136 84,-82 Z" fill="#C92A2A"/>
+  <path d="M-46,-86 Q-40,-124 -6,-124 L-6,-86 Z" fill="#BDE7FF"/><path d="M6,-86 L6,-124 L30,-124 Q60,-122 70,-86 Z" fill="#BDE7FF"/>
+  <rect x="-125" y="-92" width="250" height="66" rx="28" fill="#E63946"/>
+  <rect x="-108" y="-70" width="200" height="8" rx="4" fill="#fff" opacity=".35"/>
+  <ellipse cx="-116" cy="-64" rx="9" ry="12" fill="#FFE066"/><rect x="112" y="-70" width="12" height="16" rx="5" fill="#FF8C8C"/>
+  <rect x="-132" y="-40" width="34" height="12" rx="6" fill="#D9DCE6"/><rect x="100" y="-40" width="32" height="12" rx="6" fill="#D9DCE6"/>
+  ${wheel(-72,-26,27,r)}${wheel(72,-26,27,r)}`;
+}
+// bus({rot}): big yellow bus, origin at the middle of the ground under it (about 350 wide, 180 tall).
+function bus(o={}){
+  const r=o.rot||0;
+  let w='';[-60,0,60,120].forEach(x=>{w+=`<rect x="${x-24}" y="-156" width="48" height="46" rx="10" fill="#BDE7FF"/>`;});
+  return `<rect x="-175" y="-178" width="350" height="150" rx="26" fill="#FFC928"/>
+  <rect x="-175" y="-60" width="350" height="18" fill="#F28C28"/>
+  <path d="M-168,-150 Q-168,-164 -150,-164 L-126,-164 L-126,-96 L-168,-96 Z" fill="#BDE7FF"/>
+  <rect x="-112" y="-158" width="40" height="120" rx="8" fill="#FFE58A"/><rect x="-94" y="-156" width="4" height="116" fill="#E0A800"/>
+  ${w}
+  <rect x="-160" y="-172" width="300" height="8" rx="4" fill="#fff" opacity=".35"/>
+  <ellipse cx="-170" cy="-72" rx="8" ry="11" fill="#FFF3B0"/>
+  <rect x="-182" y="-40" width="40" height="12" rx="6" fill="#D9DCE6"/><rect x="146" y="-40" width="36" height="12" rx="6" fill="#D9DCE6"/>
+  ${wheel(-110,-28,30,r)}${wheel(110,-28,30,r)}`;
+}
+// trainTrack(x0,x1,y): brown sleepers and two grey rails on the ground (y = ground line).
+function trainTrack(x0,x1,y){
+  let s='';for(let x=x0+10;x<x1;x+=40)s+=`<rect x="${x}" y="${y-4}" width="18" height="14" rx="3" fill="#9C6B3F"/>`;
+  return s+`<rect x="${x0}" y="${y-6}" width="${x1-x0}" height="6" rx="3" fill="#8D8FA0"/>`;
+}
+// train({rot, puff}): blue engine (front at the left) with two carriages (green, red), origin on the
+// ground under the engine's cab; spans about x -230..310 and 215 tall (smoke above that).
+// puff = time in seconds (0 = no smoke): three soft smoke puffs rise from the chimney, up to about 290 high.
+function train(o={}){
+  const r=o.rot||0, p=o.puff||0;
+  let smoke='';
+  if(p>0)for(let k=0;k<3;k++){const u=((p*.7+k/3)%1), op=Math.sin(u*Math.PI)*.85;
+    smoke+=`<circle cx="${-150+u*40}" cy="${-205-u*80}" r="${14+u*20}" fill="#fff" opacity="${op.toFixed(2)}"/>`;}
+  const carriage=(x,col,dark)=>`<rect x="${x-62}" y="-150" width="124" height="112" rx="16" fill="${col}"/>
+  <rect x="${x-70}" y="-160" width="140" height="18" rx="9" fill="${dark}"/>
+  <rect x="${x-46}" y="-132" width="38" height="38" rx="9" fill="#BDE7FF"/><rect x="${x+8}" y="-132" width="38" height="38" rx="9" fill="#BDE7FF"/>
+  ${wheel(x-34,-22,20,r)}${wheel(x+34,-22,20,r)}`;
+  return `${smoke}
+  <rect x="-20" y="-58" width="60" height="10" rx="5" fill="#6B6880"/><rect x="140" y="-58" width="40" height="10" rx="5" fill="#6B6880"/>
+  ${carriage(100,'#5CC85A','#3E9B45')}${carriage(240,'#FF7B7B','#E63946')}
+  <rect x="-168" y="-196" width="30" height="64" rx="8" fill="#2D2A6E"/><rect x="-176" y="-206" width="46" height="16" rx="8" fill="#2D2A6E"/>
+  <rect x="-196" y="-140" width="150" height="96" rx="40" fill="#3FA9F5"/>
+  <rect x="-80" y="-200" width="104" height="158" rx="14" fill="#2F8FD8"/>
+  <rect x="-90" y="-212" width="124" height="18" rx="9" fill="#2D2A6E"/>
+  <rect x="-62" y="-180" width="66" height="54" rx="10" fill="#BDE7FF"/>
+  <rect x="-186" y="-122" width="100" height="8" rx="4" fill="#fff" opacity=".35"/>
+  <circle cx="-196" cy="-96" r="12" fill="#FFE066"/>
+  <path d="M-206,-44 L-170,-44 L-170,-20 L-226,-20 Z" fill="#E63946"/>
+  ${wheel(-150,-28,24,r)}${wheel(-92,-28,24,r)}${wheel(-22,-34,30,r)}`;
+}
+// sailboat({rock}): little blue sailboat with a white sail and a red flag, front at the left.
+// Origin at the waterline middle; the hull reaches 18 below and the mast about 250 above. rock = tilt in degrees.
+function sailboat(o={}){
+  return `<g transform="rotate(${o.rock||0})">
+  <rect x="-4" y="-248" width="8" height="210" rx="4" fill="#8A5A2B"/>
+  <path d="M4,-246 L40,-236 L4,-224 Z" fill="#E63946"/>
+  <path d="M10,-226 Q86,-150 116,-56 L10,-56 Z" fill="#fff"/><path d="M10,-200 Q60,-140 82,-80 L10,-80 Z" fill="#F1F3FA"/>
+  <path d="M-10,-214 L-10,-60 L-104,-60 Z" fill="#FFD23F"/>
+  <path d="M-150,-46 L150,-46 Q126,16 80,18 L-90,18 Q-136,14 -150,-46 Z" fill="#3FA9F5"/>
+  <rect x="-152" y="-52" width="304" height="14" rx="7" fill="#2D7FC9"/>
+  <path d="M-124,-18 L124,-18" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".8"/>
+  <circle cx="-80" cy="-28" r="6" fill="#FFF3D6"/><circle cx="80" cy="-28" r="6" fill="#FFF3D6"/></g>`;
+}
+// waves(x,y,w,t): little white wave curls on water around x (w = half width), moving gently with t.
+function waves(x,y,w,t){
+  let s='';for(let k=-2;k<=2;k++){const xx=x+k*w*.4+10*Math.sin(t*1.5+k);
+    s+=`<path d="M${xx-22},${y} Q${xx-11},${y-9} ${xx},${y} Q${xx+11},${y-9} ${xx+22},${y}" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".85"/>`;}
+  return s;
+}
+// plane({prop}): friendly little propeller plane, front at the left, origin at the centre of its body
+// (about 330 wide, 170 tall). prop = time in seconds (spins the propeller).
+function plane(o={}){
+  const p=o.prop||0, ry=Math.abs(Math.cos(p*25))*36+4;
+  let win='';[-40,-6,28,62].forEach(x=>{win+=`<circle cx="${x}" cy="-10" r="10" fill="#BDE7FF"/>`;});
+  return `<path d="M-10,-24 L40,-70 L74,-70 L46,-24 Z" fill="#2F8FD8"/>
+  <path d="M110,-12 L150,-78 L178,-78 L166,-6 Z" fill="#E63946"/>
+  <ellipse cx="0" cy="0" rx="160" ry="38" fill="#FFFFFF"/>
+  <path d="M-150,10 Q0,40 150,8 Q140,30 100,34 L-110,34 Q-146,28 -150,10 Z" fill="#E6E9F5"/>
+  <rect x="-130" y="8" width="270" height="9" rx="4.5" fill="#3FA9F5"/>
+  <path d="M-128,-14 Q-118,-34 -94,-30 L-94,-6 Z" fill="#BDE7FF"/>
+  ${win}
+  <path d="M-30,8 L-70,70 L-34,70 L30,8 Z" fill="#3FA9F5"/>
+  <path d="M120,4 L164,32 L180,32 L156,2 Z" fill="#E63946"/>
+  <circle cx="-162" cy="0" r="12" fill="#FFC928"/>
+  <ellipse cx="-168" cy="0" rx="5" ry="${ry.toFixed(1)}" fill="#6B6880" opacity=".8"/>`;
+}
