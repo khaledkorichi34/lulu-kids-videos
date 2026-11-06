@@ -1310,5 +1310,26 @@
     "videoId": "sYBR-u9V1x4",
     "tiktokPostId": 418630373,
     "published": "2026-11-06"
+  },
+  {
+    "number": 74,
+    "slug": "twinkle-star-in-the-snow",
+    "format": "rhyme",
+    "ages": "2-6",
+    "title": "Twinkle, Twinkle, Little Star in the Snow with Lulu | Nursery Rhyme",
+    "topic": "Sing-along: Twinkle, Twinkle, Little Star (2 verses) on a snowy winter night; Lulu in a pink woolly hat by a snowman who waves on every 'twinkle'; the star rises on 'Up above', diamonds sparkle; verse 2: soft snow falls and Penguin waddles in; ending: everyone waves, star closes its eyes, 'Good night, little star!'",
+    "cast": [
+      "duck",
+      "snowman",
+      "penguin",
+      "star",
+      "woolly hat",
+      "snowflakes",
+      "snow drift"
+    ],
+    "rhyme": "twinkle",
+    "videoId": "_RbDQiuDaH4",
+    "tiktokPostId": 418903396,
+    "published": "2026-11-06"
   }
 ]
