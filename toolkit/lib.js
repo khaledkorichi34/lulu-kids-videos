@@ -1850,3 +1850,74 @@ function sapling(x,y,h,t=0){
   ${cr>0?`<g transform="translate(0,${-h}) scale(${cr})"><circle cx="-34" cy="6" r="30" fill="#3E9E3E"/><circle cx="34" cy="6" r="30" fill="#3E9E3E"/><circle cx="0" cy="-14" r="40" fill="#52BA52"/><circle cx="-14" cy="-26" r="9" fill="#6FCF6F" opacity=".7"/></g>`:''}
   </g>`;
 }
+
+/* ---------- warm clothes: woolly hat, scarf, mitten, coat, snow boots (episode 73) ---------- */
+// woollyHat(x,y,s,col): knitted bobble hat, origin at the middle of the bottom of its cuff
+// (about 150 wide and 165 tall with the pompom at s=1). On Lulu (inside her place()): woollyHat(42,-138,.62).
+function woollyHat(x,y,s=1,col='#3FA9F5'){
+  const dk=mix(col,'#1d2433',.25);
+  let rib='';for(let k=0;k<7;k++)rib+=`<rect x="${-66+k*19}" y="-34" width="9" height="30" rx="4.5" fill="${dk}" opacity=".45"/>`;
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <circle cx="0" cy="-138" r="27" fill="#FFFFFF"/><circle cx="-8" cy="-146" r="10" fill="#F4F9FF"/>
+  <path d="M-64,-26 Q-66,-120 0,-122 Q66,-120 64,-26 Z" fill="${col}"/>
+  <path d="M-62,-72 Q0,-84 62,-72 L63,-56 Q0,-68 -63,-56 Z" fill="#FFFFFF" opacity=".9"/>
+  <ellipse cx="-30" cy="-100" rx="14" ry="7" fill="#fff" opacity=".3" transform="rotate(-30 -30 -100)"/>
+  <rect x="-74" y="-38" width="148" height="38" rx="16" fill="${dk}"/>${rib}</g>`;
+}
+// scarf(x,y,s,col): long striped scarf tied in a loop with two hanging ends and a fringe,
+// origin at the bottom of the fringe (about 190 wide and 250 tall at s=1).
+function scarf(x,y,s=1,col='#E63946'){
+  const st='#FFFFFF';
+  let fr='';for(let k=0;k<5;k++){fr+=`<rect x="${-54+k*9}" y="-14" width="5" height="16" rx="2.5" fill="${col}"/><rect x="${14+k*9}" y="-22" width="5" height="16" rx="2.5" fill="${col}"/>`;}
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-90,-200 Q-96,-250 0,-250 Q96,-250 90,-200 Q90,-160 0,-160 Q-90,-160 -90,-200 Z" fill="${col}"/>
+  <path d="M-62,-206 Q0,-190 62,-206 Q60,-222 0,-224 Q-60,-222 -62,-206 Z" fill="${mix(col,'#7a0f1a',.35)}"/>
+  <path d="M-58,-176 L-14,-176 L-8,-12 L-56,-12 Z" fill="${col}"/>
+  <path d="M8,-176 L52,-176 L62,-20 L14,-20 Z" fill="${mix(col,'#ffffff',.08)}"/>
+  <path d="M-57,-120 L-11,-120 L-10,-100 L-56,-100 Z M-56,-62 L-9,-62 L-9,-42 L-56,-42 Z" fill="${st}"/>
+  <path d="M10,-128 L55,-128 L57,-108 L11,-108 Z M12,-72 L59,-72 L60,-52 L13,-52 Z" fill="${st}"/>
+  <path d="M-30,-196 L30,-196 L34,-162 L-34,-162 Z" fill="${mix(col,'#7a0f1a',.15)}"/>${fr}</g>`;
+}
+// mitten(x,y,s,col,flip): one knitted mitten, thumb on the viewer's left (flip:true puts it on the right),
+// origin at the middle of the bottom of the cuff (about 120 wide and 175 tall at s=1). A small white heart on the back,
+// a light ribbed cuff.
+function mitten(x,y,s=1,col='#FF5D8F',flip=false){
+  const dk=mix(col,'#1d2433',.22);
+  return `<g transform="translate(${x},${y}) scale(${s*(flip?-1:1)},${s})">
+  <ellipse cx="-44" cy="-96" rx="18" ry="32" fill="${col}" transform="rotate(-28 -44 -96)"/>
+  <path d="M-40,-42 Q-46,-172 4,-174 Q52,-172 48,-42 Z" fill="${col}"/>
+  <path d="M4,-100 C4,-112 -14,-112 -12,-96 C-11,-86 4,-78 4,-74 C4,-78 19,-86 20,-96 C22,-112 4,-112 4,-100 Z" fill="#fff"/>
+  <ellipse cx="22" cy="-148" rx="10" ry="6" fill="#fff" opacity=".3" transform="rotate(30 22 -148)"/>
+  <rect x="-50" y="-46" width="104" height="46" rx="14" fill="${mix(col,'#ffffff',.55)}"/>
+  ${[-34,-14,6,26].map(rx=>`<rect x="${rx}" y="-40" width="8" height="34" rx="4" fill="${col}" opacity=".35"/>`).join('')}</g>`;
+}
+// coat(x,y,s,col): warm puffy winter coat with a hood behind the collar, toggle buttons and two pockets,
+// origin at the middle of its bottom hem (about 270 wide and 280 tall at s=1).
+function coat(x,y,s=1,col='#7B5CFF'){
+  const dk=mix(col,'#1d2433',.25), lt=mix(col,'#ffffff',.18);
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-62,-262 Q0,-300 62,-262 L50,-236 Q0,-262 -50,-236 Z" fill="${dk}"/>
+  <path d="M-80,-242 Q-130,-232 -134,-160 L-136,-40 Q-114,-26 -96,-40 L-92,-150 Z" fill="${dk}"/>
+  <path d="M80,-242 Q130,-232 134,-160 L136,-40 Q114,-26 96,-40 L92,-150 Z" fill="${dk}"/>
+  <rect x="-140" y="-50" width="48" height="28" rx="12" fill="#FFFFFF"/><rect x="92" y="-50" width="48" height="28" rx="12" fill="#FFFFFF"/>
+  <path d="M-84,-244 Q0,-266 84,-244 L100,-14 Q0,6 -100,-14 Z" fill="${col}"/>
+  <path d="M-92,-150 Q0,-136 92,-150 M-96,-80 Q0,-66 96,-80" stroke="${dk}" stroke-width="5" fill="none" opacity=".45" stroke-linecap="round"/>
+  <path d="M-46,-252 L0,-200 L46,-252 Q0,-240 -46,-252 Z" fill="#FFFFFF"/>
+  <path d="M0,-200 L0,-8" stroke="${dk}" stroke-width="5" opacity=".6"/>
+  ${[-170,-120,-70].map(yy=>`<rect x="-16" y="${yy}" width="32" height="12" rx="6" fill="#F6C026"/>`).join('')}
+  <rect x="-80" y="-70" width="50" height="40" rx="10" fill="${dk}" opacity=".55"/><rect x="30" y="-70" width="50" height="40" rx="10" fill="${dk}" opacity=".55"/>
+  <ellipse cx="-50" cy="-210" rx="16" ry="8" fill="${lt}" opacity=".7" transform="rotate(-20 -50 -210)"/></g>`;
+}
+// boots(x,y,s,col): a pair of snow boots with white fluffy tops, toes pointing right,
+// origin on the ground between them (about 250 wide and 190 tall at s=1).
+function boots(x,y,s=1,col='#F28C28'){
+  const dk=mix(col,'#1d2433',.3);
+  const one=bx=>`<g transform="translate(${bx},0)">
+  <path d="M-48,-150 L22,-150 L24,-62 Q74,-62 80,-26 L80,-12 L-50,-12 Z" fill="${col}"/>
+  <rect x="-54" y="-16" width="138" height="16" rx="8" fill="${dk}"/>
+  <path d="M-46,-110 L22,-110 M-46,-80 L23,-80" stroke="${dk}" stroke-width="5" opacity=".35" stroke-linecap="round"/>
+  <ellipse cx="-34" cy="-124" rx="7" ry="16" fill="#fff" opacity=".3"/>
+  <rect x="-56" y="-184" width="86" height="40" rx="20" fill="#FFFFFF"/>
+  <circle cx="-40" cy="-172" r="9" fill="#F4F9FF"/><circle cx="8" cy="-174" r="10" fill="#F4F9FF"/></g>`;
+  return `<g transform="translate(${x},${y}) scale(${s})">${one(-90)}${one(60)}</g>`;
+}

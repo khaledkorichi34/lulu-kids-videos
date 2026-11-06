@@ -1,0 +1,98 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 73 - Warm Clothes with Lulu (learning, first words).
+   A snowy day. Title (Lulu in her woolly hat), one scene per warm thing (hat, scarf, mittens, coat, boots):
+   the name pops in, the thing floats in from the right, a caption, it bounces, Lulu hops and says "Warm!", then all five together. */
+const SC=[0,5,12,19,26,33,40,48], DUR=48;
+const NAVY='#2D2A6E';
+const NAME=['Hat','Scarf','Mittens','Coat','Boots'];
+const COL=['#2F8FD8','#E63946','#FF5D8F','#7B5CFF','#F28C28'];
+const CAP=['A cosy woolly hat!','A long, soft scarf!','Two warm mittens!','A big, warm coat!','Boots for the snow!'];
+const TW=.4, TA=.6, TS=2.0, TC=2.2, TB=3.2, TY=4.4;   // name, float-in start/stop, caption, bounce, "Warm!"
+
+const sideClouds=t=>cloud(125+10*Math.sin(t*.3),96,.9,.95)+cloud(1160+12*Math.sin(t*.25+1),112,.9,.95);
+function snowfall(t){
+  let s='';
+  for(let k=0;k<14;k++){
+    const y=((t*38+k*61)%460)-20, x=(k*97+40)%1280+18*Math.sin(t*.8+k);
+    s+=snowflake(x,y,.45+(k%3)*.15,t*25+k*30,.85*clamp(1-(y-360)/80));
+  }
+  return s;
+}
+// one warm thing, drawn with its origin at (x,y) and scale s
+function item(k,x,y,s){
+  if(k===0)return woollyHat(x,y,s,'#3FA9F5');
+  if(k===1)return scarf(x,y,s,'#E63946');
+  if(k===2)return mitten(x-60*s,y,s,'#FF5D8F')+mitten(x+60*s,y,s,'#FF5D8F',true);
+  if(k===3)return coat(x,y,s,'#7B5CFF');
+  return boots(x,y,s,'#F28C28');
+}
+function lulu(x,lt,t,s,hopAt,hatOn){
+  const j=jumps(lt,hopAt,.55,24), w=j.y<0?30*Math.abs(Math.sin(lt*10)):12+8*Math.sin(lt*3);
+  return shadow(x,522,52*s/.9,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w})+(hatOn?woollyHat(42,-138,.62,'#3FA9F5'):''),{s,sx:j.sx,sy:j.sy});
+}
+function warm(x,y,tx,ty,lt,t0){
+  if(lt<t0)return '';
+  const g=back(prog(lt,t0,t0+.35));
+  return `<g transform="translate(${x},${y}) scale(${g}) translate(${-x},${-y})">${speech(x,y,130,62,tx,ty,'Warm!',54,'#FF5D8F')}</g>`;
+}
+// one warm thing in its own scene: it floats down from the sky, bobs gently, bounces at TB
+function hero(k,lt,t){
+  const X=800, Y=[500,520,500,525,520][k], S=[1.4,1.05,1.15,.95,1.15][k], W=[110,100,120,130,150][k];
+  const u=eout(prog(lt,TA,TS)), x=lerp(1560,X,u), y=Y-30*Math.sin(Math.PI*u)+(u>=1?5*Math.sin((lt-TS)*2.4):0);
+  const j=jumps(lt,[TB],.55,18);
+  const lift=Math.max(0,522-(y+j.y));
+  return shadow(x,532,W,lift*.6)+place(x,y+j.y,item(k,0,0,1),{s:S,sx:j.sx,sy:j.sy,rot:-8*Math.sin(Math.PI*u)});
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let chars='',pops='',cap='',sky=sideClouds(t)+snowfall(t),talk='',back2='';
+  const o={noSun:true,noClouds:true,noFlowers:true};
+  if(i===0){
+    chars+=lulu(640,lt,t,1.15,[1.4,2.4,3.4],true);
+    pops=pop('Warm Clothes',640,132,104,NAVY,lt,.3)+pop('with '+LULU,640,236,84,NAVY,lt,.7,-2);
+  }else if(i<=5){
+    const k=i-1;
+    back2=hero(k,lt,t);
+    chars+=lulu(230,lt,t,.9,[TB+.15,TY],false);
+    talk=warm(440,300,320,420,lt,TY);
+    pops=pop(NAME[k],640,165,124,COL[k],lt,TW);
+    cap=caption(CAP[k],lt,TC);
+  }else{
+    const X=[170,405,640,875,1110], S=[.7,.6,.62,.55,.55];
+    for(let k=0;k<5;k++){
+      const t0=.4+k*.5, g=lt>t0?back(prog(lt,t0,t0+.35)):0, j=jumps(lt,[3.4+k*.35],.5,16);
+      if(g<=0)continue;
+      chars+=shadow(X[k],524,70)+place(X[k],518+j.y,item(k,0,0,1),{s:S[k]*g,sx:j.sx,sy:j.sy});
+      pops+=pop(NAME[k],X[k],330,46,COL[k],lt,t0+.2);
+    }
+    pops+=pop('All together!',640,160,96,NAVY,lt,.2);
+    cap=caption('Warm clothes! Well done!',lt,4.6);
+  }
+  svg.innerHTML=bg(t,0,'',o)+snowHills(1)+sky+back2+chars+talk+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(130,110,1.3,.95);
+  for(let k=0;k<8;k++)s+=snowflake(300+k*130,(k%2?30:58),.6,k*25,.95);
+  s+=snowflake(60,250,.7,10,.95)+snowflake(180,330,.6,40,.95)+snowflake(40,420,.6,70,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#EAF3FA"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#FFFFFF"/>`;
+  s+=shadow(250,662,120)+place(250,658,duck({wing:22})+woollyHat(42,-138,.62,'#3FA9F5'),{s:1.8});
+  s+=place(640,640,coat(0,0,1,'#7B5CFF'),{s:.75});
+  s+=place(1040,652,boots(0,0,1,'#F28C28'),{s:.85});
+  s+=place(1120,470,mitten(0,0,1,'#FF5D8F',true),{s:.7,rot:12});
+  s+=label('Warm Clothes',800,200,110,'#E63946',-3);
+  s+=label('with '+LULU,800,320,84,NAVY,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
