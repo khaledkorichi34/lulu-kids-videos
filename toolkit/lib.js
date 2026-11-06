@@ -1921,3 +1921,21 @@ function boots(x,y,s=1,col='#F28C28'){
   <circle cx="-40" cy="-172" r="9" fill="#F4F9FF"/><circle cx="8" cy="-174" r="10" fill="#F4F9FF"/></g>`;
   return `<g transform="translate(${x},${y}) scale(${s})">${one(-90)}${one(60)}</g>`;
 }
+
+/* ---------- footprints in the snow (episode 75) ---------- */
+// footprint(x,y,s,rot,o): little three-toed bird / penguin footprint pressed into the snow, centred at (x,y),
+// toes pointing right at rot 0 (about 40 wide and 18 tall at s=1, flattened for the ground). o = opacity.
+function footprint(x,y,s=1,rot=0,o=1){
+  if(o<=0)return '';
+  return `<g transform="translate(${x},${y}) scale(${s},${s*.5}) rotate(${rot})" opacity="${o}" fill="#B3C7DE">
+  <ellipse cx="-10" cy="0" rx="9" ry="8"/>
+  <path d="M-8,-4 L18,-17 Q22,-15 19,-11 L-2,0 Z"/><path d="M-6,-3 L22,-2 Q24,1 21,3 L-6,3 Z"/><path d="M-8,4 L18,17 Q22,15 19,11 L-2,0 Z"/></g>`;
+}
+// footTrail(x0,x1,y,u,gap,s): a walking trail of footprints from x0 to x1 (toes pointing right), alternating
+// a little above and below y. u = 0..1 how far along the trail the prints have appeared (they fade in one by one).
+function footTrail(x0,x1,y,u=1,gap=48,s=1){
+  let out='';const n=Math.max(1,Math.floor((x1-x0)/gap));
+  for(let k=0;k<=n;k++){const q=clamp((u*(n+1)-k)/1);if(q<=0)break;
+    out+=footprint(x0+k*gap,y+(k%2?9:-9)*s,s,0,q);}
+  return out;
+}

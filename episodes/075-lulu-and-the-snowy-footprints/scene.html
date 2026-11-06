@@ -1,0 +1,127 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 75 - Lulu and the Snowy Footprints. It snowed in the night. Lulu finds little footprints in the snow
+   and follows them (step, step, step) past the snowman, who waves. The footprints stop at a big snow drift:
+   who is there? Penguin peeks out and waddles over: peek-a-boo! Hello, Penguin! Penguin slides on the snow
+   (whee!). The sun goes down, soft snow falls, and Lulu and Penguin sleep side by side. Good night. */
+const DUR=55, SC=[0,5,12,19,26,33,40,47,55];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', BLUE='#2979E8', GOLD='#FFE58A', ORANGE='#FF9F1C', TEAL='#19B8A6';
+const TY=556;          // the footprint trail runs along this line, in front of the characters' feet
+const DX=930;          // the snow drift
+
+function snowfall(t,o=1,count=22){
+  if(o<=0)return '';
+  let s='';for(let k=0;k<count;k++){const x0=(k*97+30)%1280, sp=30+(k%5)*7, y=((t*sp+k*61)%640)-30, x=x0+18*Math.sin(t*.9+k);
+    s+=snowflake(x,y,.5+(k%3)*.18,t*20+k*30,o*.9);}
+  return s;
+}
+const shade=(x,w)=>`<ellipse cx="${x}" cy="522" rx="${w}" ry="${w*.18}" fill="#7F93B0" opacity=".25"/>`;
+
+const lulu=(lt,t,o={})=>{
+  const x=o.x!=null?o.x:470, j=jumps(lt,o.hops||[],o.d||.6,o.h||22), w=o.wave?20+20*Math.sin(lt*9):(o.wing!=null?o.wing:-25+6*Math.sin(lt*3));
+  return shade(x,58*(1-clamp(-j.y/260)*.5))+place(x,520+j.y,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),{s:1,sx:j.sx*(o.sx||1),sy:j.sy*(o.sy||1),rot:o.rot||0});
+};
+// Penguin: s .9, flip = facing left (towards Lulu)
+const peng=(lt,t,o={})=>{
+  const x=o.x, j=jumps(lt,o.hops||[],.55,o.h||20);
+  return (o.noShade?'':shade(x,50))+place(x,520+j.y+(o.dy||0),penguin({eye:o.eye!=null?o.eye:blink(t,.8),flap:o.flap||0,asleep:o.asleep}),{s:.9,sx:j.sx,sy:j.sy*(o.sy||1),flip:o.flip,rot:o.rot||0});
+};
+const snowmanAt=(x,t,o={})=>shade(x,62)+place(x,520,snowman({eye:o.eye!=null?o.eye:blink(t,.8),arm:o.arm||0,asleep:o.asleep}),{s:.9});
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,fall=0,props='',chars='',pops='',cap='',behind='',front='';
+  switch(i){
+  case 0:{
+    // title: a snowy morning
+    props=footTrail(760,1300,TY,1);
+    chars=lulu(lt,t,{x:500,hops:[2.6],h:16,wave:lt>1&&lt<2.4});
+    pops=pop(`${LULU}<tspan fill="${NAVY}"> and the Snowy Footprints</tspan>`,640,170,64,PINK,lt,.4,-2);
+    break;}
+  case 1:{
+    // Lulu finds little footprints
+    props=footTrail(440,1300,TY,eio(prog(lt,.4,2.6)));
+    chars=lulu(lt,t,{x:320,hops:[1.0],h:20,rot:lt>3.6?6*Math.sin(clamp((lt-3.6)/1.2)*Math.PI):0});
+    cap=lt<3.6?caption('Look! Little footprints!',lt,.3):caption('Who made them?',lt,3.6);
+    pops=pop('Footprints!',700,165,96,BLUE,lt,1.0,-3);
+    break;}
+  case 2:{
+    // Lulu follows the footprints, step, step, step; the snowman waves
+    const u=eio(prog(lt,.3,4.4)), x=lerp(140,600,u), walking=lt>.3&&lt<4.4;
+    props=footTrail(220,1300,TY,1)+snowmanAt(1060,t,{arm:lt>4.2?.5+.5*Math.sin((lt-4.2)*5):0});
+    chars=lulu(lt,t,{x,rot:walking?4*Math.sin(lt*10):0,hops:[5.2],h:16});
+    cap=lt<4.2?caption('Lulu follows the footprints.',lt,.3):caption('Hello, Snowman!',lt,4.2);
+    pops=pop('Step!',300,165,84,TEAL,lt,.8,-4)+pop('Step!',590,165,84,PURPLE,lt,1.8,3)+pop('Step!',880,165,84,ORANGE,lt,2.8,-3);
+    break;}
+  case 3:{
+    // the footprints stop at a big snow drift. Who is there?
+    const wig=lt>3.6&&lt<4.6?.04*Math.sin((lt-3.6)*Math.PI*6):0;
+    const peek=110*Math.sin(Math.PI*prog(lt,4.8,6.4));
+    props=footTrail(120,700,TY,1)+peng(lt,t,{x:DX,dy:-peek,flip:true,noShade:true})+place(DX,520,snowDrift(0,0,1),{sx:1+wig,sy:1-wig});
+    chars=lulu(lt,t,{x:420,hops:[3.2],h:18});
+    cap=lt<3.4?caption('The footprints stop here.',lt,.3):caption('Who is there?',lt,3.4);
+    pops=pop('Who is there?',640,165,84,PURPLE,lt,3.4,-3);
+    break;}
+  case 4:{
+    // Penguin waddles out from behind the drift: peek-a-boo!
+    const u=eio(prog(lt,.4,2.6)), x=lerp(DX,620,u), walking=lt>.4&&lt<2.6;
+    props=footTrail(120,700,TY,1)+peng(lt,t,{x,flip:true,rot:walking?5*Math.sin(lt*11):0,flap:walking?.4*Math.sin(lt*11):(lt>3.6&&lt<5.2?.5+.5*Math.sin(lt*9):0),hops:[5.4],h:18})+snowDrift(DX,520,1);
+    chars=lulu(lt,t,{x:330,wave:lt>3.6&&lt<5.2,hops:[5.6],h:18});
+    cap=lt<3.6?caption('Peek-a-boo! It is Penguin!',lt,.3):caption('Hello, Penguin!',lt,3.6);
+    pops=pop('Peek-a-boo!',640,165,92,PINK,lt,.6,-3);
+    break;}
+  case 5:{
+    // Penguin slides on the snow: whee!
+    const down=eio(prog(lt,1.0,1.5)), up=eio(prog(lt,5.0,5.6)), lie=down*(1-up);
+    const x=lerp(470,940,eout(prog(lt,1.5,4.8)));
+    const groove=lt>1.5?`<rect x="${500}" y="517" width="${Math.max(0,x+40-500)}" height="12" rx="6" fill="#C9DCEE" opacity=".9"/>`:'';
+    props=groove;
+    chars=lulu(lt,t,{x:230,hops:[2.0,2.6],h:20,wave:lt>1.8&&lt<3.4})+peng(lt,t,{x,rot:90*lie,dy:-51*lie,flap:lie>.5?-.6:0,hops:lt<1?[.3]:[5.9],h:16,noShade:lie>.2});
+    cap=lt<3.6?caption('Penguin slides on the snow.',lt,.3):caption('Whee! What fun!',lt,3.6);
+    pops=pop('Whee!',760,165,110,BLUE,lt,1.6,-4);
+    break;}
+  case 6:{
+    // the sun goes down; bye-bye, snowy day
+    n=lerp(0,.45,eio(prog(lt,.3,6))); fall=.6*prog(lt,1.5,3.5);
+    behind=sun(t,1150,lerp(250,560,eio(prog(lt,.3,6))));
+    props=footTrail(260,1300,TY,1)+snowmanAt(170,t,{eye:lt>4?.45:undefined});
+    chars=lulu(lt,t,{eye:lt>3.6?.5:undefined})+peng(lt,t,{x:760,flip:true,eye:lt>3.8?.5:undefined});
+    cap=lt<3.4?caption('The sun goes down.',lt,.3):caption('Bye-bye, snowy day!',lt,3.4);
+    pops=pop('Yawn!',470,170,96,PURPLE,lt,4.2,-3);
+    break;}
+  case 7:{
+    // night: Lulu and Penguin sleep side by side
+    n=lerp(.45,1,eio(prog(lt,0,4))); fall=.35*(1-prog(lt,3,6));
+    const asleep=lt>1.4, br=k=>1+.025*Math.sin(lt*2.2+k);
+    props=footTrail(260,1300,TY,1)+snowmanAt(170,t,{asleep,eye:.45});
+    chars=lulu(lt,t,{asleep,eye:.45,sy:br(0),rot:asleep?-3:0})+peng(lt,t,{x:700,flip:true,asleep,eye:.45,sy:br(1),rot:asleep?-3:0});
+    for(let k=0;k<3;k++){let q=lt-2.0-k*.9;if(q>0){q%=2.7;
+      pops+=`<text x="${430-q*24+8*Math.sin(q*3)}" y="${320-q*30}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}
+    cap=caption('Good night, Lulu and Penguin.',lt,.5);
+    pops+=pop('The End',640,150,112,GOLD,lt,4.2,-3,NAVY);
+    break;}
+  }
+  const back_=bg(t,n,(i<6?cloud(95+6*Math.sin(t*.3),255,.7,.95)+cloud(1185+6*Math.sin(t*.25+1),245,.7,.95):'')+behind,{noSun:true,noFlowers:true,noMoon:i<7,noClouds:true})+snowHills(1,n);
+  svg.innerHTML=back_+props+chars+nightTint(n)+snowfall(t,fall*(1-n*.3))+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,'',{noSun:true,noFlowers:true,noClouds:true});
+  s+=cloud(160,70,.9,1)+cloud(1120,80,.9,1);
+  s+=snowHills(1,0);
+  s+=footTrail(470,800,660,1,56,1.3);
+  s+=`<ellipse cx="380" cy="664" rx="80" ry="14" fill="#7F93B0" opacity=".25"/>`+place(380,662,duck({wing:20}),{s:1.3});
+  s+=`<ellipse cx="960" cy="664" rx="70" ry="12" fill="#7F93B0" opacity=".25"/>`+place(960,662,penguin({flap:.8}),{s:1.2,flip:true});
+  for(let k=0;k<12;k++)s+=snowflake((k*173+60)%1280,250+(k*97)%300,.6+(k%3)*.25,k*25,.9);
+  s+=label(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,640,140,92,PINK,-2);
+  s+=label(`<tspan fill="${BLUE}">Snowy Footprints</tspan>`,640,250,96,BLUE,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
