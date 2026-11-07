@@ -1939,3 +1939,26 @@ function footTrail(x0,x1,y,u=1,gap=48,s=1){
     out+=footprint(x0+k*gap,y+(k%2?9:-9)*s,s,0,q);}
   return out;
 }
+
+/* ---------- burrow (episode 76) ---------- */
+// burrowBack(x,y,s) and burrowFront(x,y,s): a bunny's burrow, a soft earth mound with a dark round hole
+// in the ground in front of it, origin at the middle of the hole (about 300 wide and 90 tall at s=1).
+// Draw burrowBack, then a bunny coming up out of the hole (clip it with burrowClip so the part below the
+// ground stays hidden), then burrowFront (the front lip of the hole).
+function burrowBack(x,y,s=1){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-150,6 Q-120,-88 0,-92 Q120,-88 150,6 Z" fill="#A8743F"/>
+  <path d="M-110,-30 Q-60,-70 0,-72 Q60,-70 110,-30" stroke="#8A5A2B" stroke-width="6" fill="none" stroke-linecap="round" opacity=".5"/>
+  <ellipse cx="-70" cy="-50" rx="9" ry="5" fill="#C99A63"/><ellipse cx="80" cy="-40" rx="7" ry="4" fill="#C99A63"/>
+  <ellipse cx="0" cy="0" rx="74" ry="22" fill="#4A2A12"/>
+  <ellipse cx="0" cy="4" rx="56" ry="14" fill="#331B0A"/></g>`;
+}
+function burrowFront(x,y,s=1){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-74,0 Q0,30 74,0 Q78,12 60,18 Q0,36 -60,18 Q-78,12 -74,0 Z" fill="#8A5A2B"/>
+  <path d="M-40,20 Q0,30 40,20" stroke="#6E4420" stroke-width="4" fill="none" stroke-linecap="round"/></g>`;
+}
+// burrowClip(id,x,y,s): clipPath that shows only what is above the hole's middle line (for a bunny inside it)
+function burrowClip(id,x,y,s=1){
+  return `<clipPath id="${id}"><rect x="${x-400*s}" y="${y-600*s}" width="${800*s}" height="${600*s+8*s}"/></clipPath>`;
+}

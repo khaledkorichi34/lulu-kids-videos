@@ -1,0 +1,115 @@
+{
+  "number": 76,
+  "slug": "animal-homes-with-lulu",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "Animal Homes with Lulu | Learn First Words for Kids",
+  "description": "Lulu the little duck visits five animal homes: a nest for a bird, a hive for a bee, a pond for a fish, a tree for an owl and a burrow for a bunny.\n\nSay the name of each home out loud.\n\nA short, gentle first-words video for children aged 3 to 6.",
+  "duration": 48,
+  "seed": 76,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 1.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 2.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 5.4,
+      "type": "pop"
+    },
+    {
+      "t": 8.6,
+      "type": "boing_high"
+    },
+    {
+      "t": 9.6,
+      "type": "pop"
+    },
+    {
+      "t": 12.4,
+      "type": "pop"
+    },
+    {
+      "t": 15.6,
+      "type": "boing_high"
+    },
+    {
+      "t": 16.6,
+      "type": "pop"
+    },
+    {
+      "t": 19.4,
+      "type": "pop"
+    },
+    {
+      "t": 22.6,
+      "type": "boing_low"
+    },
+    {
+      "t": 23.6,
+      "type": "pop"
+    },
+    {
+      "t": 26.4,
+      "type": "pop"
+    },
+    {
+      "t": 29.6,
+      "type": "boing_high"
+    },
+    {
+      "t": 30.6,
+      "type": "pop"
+    },
+    {
+      "t": 33.4,
+      "type": "pop"
+    },
+    {
+      "t": 36.6,
+      "type": "boing_high"
+    },
+    {
+      "t": 37.6,
+      "type": "pop"
+    },
+    {
+      "t": 44.6,
+      "type": "ding"
+    }
+  ],
+  "check_times": [
+    2.5,
+    7.0,
+    9.03,
+    9.9,
+    11.6,
+    14.0,
+    16.03,
+    16.9,
+    18.6,
+    21.0,
+    21.35,
+    23.03,
+    23.15,
+    23.9,
+    24.85,
+    25.6,
+    28.0,
+    30.03,
+    30.9,
+    32.6,
+    35.0,
+    36.95,
+    37.03,
+    37.9,
+    39.6,
+    42.6,
+    43.8,
+    46.5
+  ]
+}

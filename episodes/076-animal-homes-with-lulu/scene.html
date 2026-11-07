@@ -1,0 +1,159 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 76 - Animal Homes with Lulu (learning, first words).
+   Title, then one scene per home (nest, hive, pond, tree, burrow): the name pops in, the home grows in,
+   its animal arrives, a caption, a bounce, Lulu hops and says "Hello!", then all five homes together. */
+const SC=[0,5,12,19,26,33,40,48], DUR=48;
+const NAVY='#2D2A6E';
+const NAME=['Nest','Hive','Pond','Tree','Burrow'];
+const COL=['#C0702A','#E0A526','#2F8FD8','#3E9E3E','#8A5A2B'];
+const CAP=['A nest for a bird!','A hive for a bee!','A pond for a fish!','A tree for an owl!','A burrow for a bunny!'];
+const TW=.4, TH=.6, TA=1.4, TS=2.6, TC=2.4, TB=3.6, TY=4.6;   // name, home grows, animal arrives (start/stop), caption, bounce, "Hello!"
+
+const sideClouds=t=>cloud(125+10*Math.sin(t*.3),96,.9,.95)+cloud(1160+12*Math.sin(t*.25+1),112,.9,.95);
+
+function lulu(x,lt,t,s,hopAt){
+  const j=jumps(lt,hopAt,.55,24), w=j.y<0?30*Math.abs(Math.sin(lt*10)):12+8*Math.sin(lt*3);
+  return shadow(x,522,52*s/.9,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy});
+}
+function hello(x,y,tx,ty,lt,t0){
+  if(lt<t0)return '';
+  const g=back(prog(lt,t0,t0+.35));
+  return `<g transform="translate(${x},${y}) scale(${g}) translate(${-x},${-y})">${speech(x,y,150,62,tx,ty,'Hello!',54,'#FF5D8F')}</g>`;
+}
+const grow=(x,y,g,inner)=>g>0?`<g transform="translate(${x},${y}) scale(${g}) translate(${-x},${-y})">${inner}</g>`:'';
+
+/* each home scene: returns the drawing (home + animal), lt = time in scene, a = arrival 0..1, b = bounce */
+function homeScene(k,lt,t){
+  const g=back(prog(lt,TH,TH+.5)), a=eio(prog(lt,TA,TS)), j=jumps(lt,[TB],.55,22);
+  let s='';
+  if(k===0){ // bird flies down into a nest on top of a bush
+    const X=830, Y=520;
+    s+=grow(X,Y,g,bush(X,Y,.85));
+    const nx=X, ny=Y-118;
+    s+=grow(X,Y,g,nestBack(nx,ny,.62));
+    if(lt>TA){
+      const bx=lerp(1360,nx,a), by=lerp(250,ny-10,a)-60*Math.sin(Math.PI*a);
+      const fl=a<1?40*Math.abs(Math.sin(lt*14)):(j.y<0?30:6+6*Math.sin(lt*3));
+      s+=place(bx,by+j.y*.6,bird({eye:blink(t,.8),wing:fl}),{s:.5,sx:j.sx,sy:j.sy});
+    }
+    s+=grow(X,Y,g,nestFront(nx,ny,.62));
+  }else if(k===1){ // three bees fly round the hive, then into the door
+    const X=830, Y=520;
+    s+=shadow(X,524,110)+grow(X,Y,g,hive(X,Y,.95));
+    if(lt>TA){
+      for(let b=0;b<3;b++){
+        const ph=b*2.1, r=150+b*18, ang=lt*1.6+ph;
+        let bx=X+r*Math.cos(ang), by=330+60*Math.sin(ang*1.3)+b*20;
+        const arr=eout(prog(lt,TA+b*.2,TS+b*.2));
+        bx=lerp(1380+b*80,bx,arr);
+        // after the bounce the bees go in through the door one by one
+        const inn=eio(prog(lt,TB+.6+b*.5,TB+1.1+b*.5)), dx=X, dy=Y-88*.95;
+        bx=lerp(bx,dx,inn); by=lerp(by,dy,inn);
+        const sc=.42*(1-inn*.85);
+        if(inn<1)s+=place(bx,by,bee({flap:Math.abs(Math.sin(lt*22+b))}),{s:sc,flip:arr>=1&&inn<=0&&Math.sin(ang)<0});
+      }
+    }
+  }else if(k===2){ // a fish jumps out of the pond
+    const X=830, Y=540;
+    s+=grow(X,Y,g,pond(X,Y,250));
+    s+=grow(X,Y,g,reed(X+225,Y-10,120,t,0)+reed(X+250,Y-6,95,t,1)+reed(X-235,Y-8,105,t,2));
+    const jumpF=(t0)=>{const u=prog(lt,t0,t0+1.1);return u>0&&u<1?u:null;};
+    let u=null; for(const t0 of [TA+.4,TB,TY+.7]){if(u==null)u=jumpF(t0);}
+    if(u!=null){
+      const fx=lerp(X-130,X+130,u), fy=Y+20-230*4*u*(1-u), rot=lerp(-55,55,u);
+      s+=`<clipPath id="water"><rect x="0" y="0" width="1280" height="${Y}"/></clipPath>`;
+      s+=`<g clip-path="url(#water)">${place(fx,fy,fish({eye:blink(t,.3),tail:Math.sin(lt*16)}),{s:.75,rot})}</g>`;
+    }
+    // ripples where the fish goes in and out
+    for(const t0 of [TA+.4,TB,TY+.7]){
+      for(const [ox,dt] of [[-130,0],[130,1.0]]){
+        const r=prog(lt,t0+dt,t0+dt+.8);
+        if(r>0&&r<1)s+=`<ellipse cx="${X+ox}" cy="${Y-2}" rx="${20+60*r}" ry="${5+12*r}" fill="none" stroke="#fff" stroke-width="5" opacity="${1-r}"/>`;
+      }
+    }
+  }else if(k===3){ // owl flies to a branch in the tree
+    const X=930, Y=520;
+    s+=grow(X,Y,g,tree(X,Y,.85)+branch(X-40,350,X-200,344));
+    if(lt>TA){
+      const ox=lerp(1380,X-170,a), oy=lerp(200,338,a)-50*Math.sin(Math.PI*a);
+      const w=a<1?30+30*Math.sin(lt*14):(j.y<0?40:4);
+      s+=place(ox,oy+j.y*.6,owl({eye:blink(t,1.4),wing:w}),{s:.55,sx:j.sx,sy:j.sy});
+    }
+  }else{ // a bunny comes up out of its burrow and hops beside it
+    const X=800, Y=528;
+    s+=grow(X,Y,g,burrowBack(X,Y,1));
+    const up=eout(prog(lt,TA,TS));
+    const out=prog(lt,TB,TB+.7);
+    if(lt>TA){
+      if(out<=0){
+        s+=burrowClip('bclip',X,Y,1)+`<g clip-path="url(#bclip)">${place(X,Y+6+(1-up)*150,bunny({eye:blink(t,.5),ear:6*Math.sin(lt*4)}),{s:.62})}</g>`;
+      }
+    }
+    s+=grow(X,Y,g,burrowFront(X,Y,1));
+    if(out>0){
+      const bx=lerp(X,X+190,eio(out)), by=lerp(Y+6,520,out)-110*4*out*(1-out);
+      s+=shadow(bx,522,40,520-by)+place(bx,by,bunny({eye:blink(t,.5),ear:out<1?10:4*Math.sin(lt*4)}),{s:.62});
+    }
+  }
+  return s;
+}
+
+/* small homes for the last scene, origin on the ground */
+function smallHome(k,x,lt,t){
+  if(k===0)return bush(x,520,.55)+nestBack(x,445,.5)+place(x,438,bird({eye:blink(t,.8),wing:6}),{s:.38})+nestFront(x,445,.5);
+  if(k===1){let s=hive(x,520,.65);for(let b=0;b<2;b++)s+=place(x+(b?95:-95)+12*Math.sin(lt*2+b),380+10*Math.cos(lt*2.6+b),bee({flap:Math.abs(Math.sin(lt*22+b))}),{s:.28,flip:!!b});return s;}
+  if(k===2){const u=(lt%2.2)/1.1;let s=pond(x,532,112)+reed(x+100,526,80,t,0);
+    if(u<1)s+=`<clipPath id="w2"><rect x="0" y="0" width="1280" height="532"/></clipPath><g clip-path="url(#w2)">${place(lerp(x-60,x+60,u),548-140*4*u*(1-u),fish({tail:Math.sin(lt*16)}),{s:.45,rot:lerp(-55,55,u)})}</g>`;
+    return s;}
+  if(k===3)return tree(x,520,.5)+place(x-45,423,owl({eye:blink(t,1.4)}),{s:.36});
+  return burrowBack(x-20,528,.62)+burrowFront(x-20,528,.62)+place(x+78,520,bunny({eye:blink(t,.5)}),{s:.45});
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let chars='',pops='',cap='',talk='',homes='';
+  const o={noSun:true,noClouds:true,noFlowers:true};
+  if(i===0){
+    homes+=tree(1080,520,.6)+bush(200,520,.6);
+    chars+=lulu(640,lt,t,1.15,[1.4,2.4,3.4]);
+    pops=pop('Animal Homes',640,132,104,NAVY,lt,.3)+pop('with '+LULU,640,236,84,NAVY,lt,.7,-2);
+  }else if(i<=5){
+    const k=i-1;
+    homes=homeScene(k,lt,t);
+    chars+=lulu(230,lt,t,.9,[TB+.15,TY]);
+    talk=hello(440,300,320,420,lt,TY);
+    pops=pop(NAME[k],640,160,124,COL[k],lt,TW);
+    cap=caption(CAP[k],lt,TC);
+  }else{
+    const X=[170,405,640,875,1110];
+    for(let k=0;k<5;k++){
+      const t0=.4+k*.5, g=lt>t0?back(prog(lt,t0,t0+.35)):0, j=jumps(lt,[3.4+k*.35],.5,16);
+      if(g<=0)continue;
+      homes+=`<g transform="translate(${X[k]},${520+j.y}) scale(${g*j.sx},${g*j.sy}) translate(${-X[k]},-520)">${smallHome(k,X[k],lt,t)}</g>`;
+      pops+=pop(NAME[k],X[k],585,50,COL[k],lt,t0+.2);
+    }
+    pops+=pop('All together!',640,160,96,NAVY,lt,.2);
+    cap=caption('Animal homes! Well done!',lt,4.6);
+  }
+  svg.innerHTML=bg(t,0,'',o)+sideClouds(t)+homes+chars+talk+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,'',{noSun:true,noClouds:true,noFlowers:true})+cloud(130,110,1.3,.95)+cloud(1150,100,1.1,.95);
+  s+=tree(1090,560,.75)+branch(1050,360,900,354)+place(930,350,owl({wing:20}),{s:.55});
+  s+=bush(170,600,.7)+nestBack(170,505,.5)+place(170,498,bird({wing:20}),{s:.42})+nestFront(170,505,.5);
+  s+=burrowBack(640,640,.9)+burrowFront(640,640,.9)+place(780,640,bunny({}),{s:.7});
+  s+=shadow(420,662,90)+place(420,658,duck({wing:22}),{s:1.25});
+  s+=label('Animal Homes',600,200,112,'#C0702A',-3);
+  s+=label('with '+LULU,600,320,84,NAVY,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
