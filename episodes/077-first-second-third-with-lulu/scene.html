@@ -1,0 +1,112 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 77 - First, Second, Third with Lulu (learning, ordinal numbers).
+   Five friends line up behind a little flag (the front of the line is on the left).
+   One scene per place: the word pops in, the friend hops in from the right, a badge (1st..5th) pops above them.
+   Then two "Who is ...?" questions and a recap where everyone bounces in order. All characters face left. */
+const SC=[0,5,12,19,26,33,40,47,54,62], DUR=62;
+const NAVY='#2D2A6E';
+const X=[250,450,650,850,1050];                 // spots in the line, 1st on the left (next to the flag)
+const WORD=['First','Second','Third','Fourth','Fifth'];
+const BADGE=['1st','2nd','3rd','4th','5th'];
+const COL=['#FF5D8F','#FF8C1A','#19B8A6','#7B5CFF','#2F8FD8'];
+const NAME=['Lulu','Bunny','Pip','Puppy','Turtle'];
+const TW=.3, TA=.8, TS=2.6, TB=2.8, TC=3.0, TJ=4.3;   // word, arrive start/stop, badge, caption, bounce
+const BY=234;                                      // badge centre y
+
+const sideClouds=t=>cloud(150+10*Math.sin(t*.3),80,.85,.95)+cloud(1160+12*Math.sin(t*.25+1),110,.85,.95);
+
+function flag(t){
+  const w=6*Math.sin(t*3);
+  return `<rect x="96" y="318" width="9" height="204" rx="4" fill="#8A5A2B"/><circle cx="100" cy="314" r="9" fill="#FFD23F"/>`+
+    `<path d="M105,326 Q140,${320+w} 176,${340+w*.6} Q140,${360+w} 105,372 Z" fill="#FF4F6D"/>`;
+}
+
+/* one friend, facing left; k = which friend; j = jump {y,sx,sy}; moving = walking/hopping */
+function friend(k,x,t,lt,j,moving){
+  const s=.82;
+  let inner;
+  if(k===0)inner=duck({eye:blink(t,0),wing:j.y<0?28:10+6*Math.sin(lt*3)});
+  else if(k===1)inner=bunny({eye:blink(t,.6),ear:6*Math.sin(lt*4)});
+  else if(k===2)inner=kitten({eye:blink(t,1.2),tail:Math.sin(lt*3)});
+  else if(k===3)inner=puppy({eye:blink(t,1.8),tail:Math.sin(lt*8),ear:Math.sin(lt*4)});
+  else inner=turtle({eye:blink(t,2.4),step:moving?lt*9:0});
+  return shadow(x,522,48,-j.y)+place(x,520+j.y,inner,{s,sx:j.sx,sy:j.sy,flip:true});
+}
+const still={y:0,sx:1,sy:1};
+
+/* the friend arriving in scene k: hops in from the right (turtle walks) */
+function arriving(k,lt,t){
+  const a=prog(lt,TA,TS), u=k===4?a:eio(a);
+  const x=lerp(1400,X[k],u);
+  let j;
+  if(a<1&&k!==4){const hops=[];for(let h=TA;h<TS-.2;h+=.45)hops.push(h);j=jumps(lt,hops,.42,26);}
+  else j=jumps(lt,[TJ],.55,18);
+  return friend(k,x,t,lt,j,a>0&&a<1);
+}
+
+function badge(k,x,lt,t0,big=1){
+  const u=prog(lt,t0,t0+.4);if(u<=0)return '';
+  const g=back(u)*big;
+  return `<g transform="translate(${x},${BY}) scale(${g})"><circle r="40" fill="${COL[k]}" stroke="#fff" stroke-width="6"/>`+
+    `<text y="14" text-anchor="middle" font-size="38" fill="#fff">${BADGE[k]}</text></g>`;
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let chars='',pops='',cap='',back_='';
+  const o={noSun:true,noClouds:true,noFlowers:true};
+  if(i===0){
+    const j=jumps(lt,[1.4,2.4,3.4],.55,24);
+    chars=shadow(640,522,62,-j.y)+place(640,520+j.y,duck({eye:blink(t,0),wing:j.y<0?28:12}),{s:.95,sx:j.sx,sy:j.sy});
+    pops=pop('First, Second, Third',640,128,92,NAVY,lt,.3)+pop('with '+LULU,640,228,80,NAVY,lt,.7,-2);
+  }else if(i<=5){
+    const k=i-1;
+    for(let m=0;m<k;m++){chars+=friend(m,X[m],t,lt,still,false);pops+=badge(m,X[m],5,0);}
+    chars+=arriving(k,lt,t);
+    pops+=badge(k,X[k],lt,TB);
+    pops+=pop(WORD[k],640,150,120,COL[k],lt,TW);
+    cap=caption(NAME[k]+' is '+WORD[k].toLowerCase()+'!',lt,TC);
+  }else if(i<=7){
+    const q=i===6?2:4;                             // Who is third? / Who is fifth?
+    const glow=prog(lt,3.0,3.4);
+    for(let m=0;m<5;m++){
+      const j=m===q?jumps(lt,[3.0,3.8],.55,18):still;
+      chars+=friend(m,X[m],t,lt,j,false);
+      pops+=badge(m,X[m],5,0,m===q?1+.25*glow*(1+.08*Math.sin(lt*6)):1);
+    }
+    if(glow>0)for(let s=0;s<6;s++){
+      const a=s/6*Math.PI*2+lt*1.5, r=120;
+      back_+=sparkle(X[q]+r*Math.cos(a),430+70*Math.sin(a),1.4*glow,glow);
+    }
+    pops+=pop('Who is '+WORD[q].toLowerCase()+'?',640,150,104,NAVY,lt,.3);
+    cap=caption(NAME[q]+' is '+WORD[q].toLowerCase()+'!',lt,3.2);
+  }else{
+    for(let m=0;m<5;m++){
+      const t0=.6+m*.8;
+      chars+=friend(m,X[m],t,lt,jumps(lt,[t0],.55,18),false);
+      pops+=badge(m,X[m],5,0);
+      pops+=pop(WORD[m],X[m],595,46,COL[m],lt,t0);
+    }
+    pops+=pop('Well done!',640,150,110,NAVY,lt,4.8);
+  }
+  svg.innerHTML=bg(t,0,'',o)+(i===0?cloud(1160+12*Math.sin(t*.25+1),110,.85,.95):sideClouds(t))+flag(t)+back_+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,'',{noSun:true,noClouds:true,noFlowers:true})+flag(0);
+  const XT=[250,450,650,850,1050];
+  for(let m=0;m<5;m++)s+=friend(m,XT[m],1.5,0,still,false).replace('translate('+XT[m]+',520)','translate('+XT[m]+',540)');
+  for(let m=0;m<5;m++)s+=`<g transform="translate(0,20)">${badge(m,XT[m],5,0)}</g>`;
+  s+=label('First, Second, Third',640,150,96,NAVY,-2);
+  s+=label('with '+LULU,640,620,96,NAVY,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
