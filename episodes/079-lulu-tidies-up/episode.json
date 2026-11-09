@@ -1,0 +1,105 @@
+{
+  "number": 79,
+  "slug": "lulu-tidies-up",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu Tidies Up | Bedtime Story for Kids",
+  "description": "Lulu the duck and Pip the kitten play all day, and now the toys are everywhere!\nTime to tidy up: the ball, three blocks and the xylophone go into the toy box. Hooray!\nThe sun goes down. Good night, Lulu. Good night, Pip.\nA calm bedtime story for children aged 3 to 6.",
+  "duration": 55,
+  "seed": 79,
+  "lullaby_from": 47.0,
+  "sfx": [
+    {
+      "t": 0.4,
+      "type": "pop"
+    },
+    {
+      "t": 5.6,
+      "type": "ding"
+    },
+    {
+      "t": 6.4,
+      "type": "ding"
+    },
+    {
+      "t": 7.2,
+      "type": "ding"
+    },
+    {
+      "t": 8.9,
+      "type": "pop"
+    },
+    {
+      "t": 13.4,
+      "type": "sparkle"
+    },
+    {
+      "t": 20.0,
+      "type": "boing_high"
+    },
+    {
+      "t": 21.2,
+      "type": "pop"
+    },
+    {
+      "t": 27.8,
+      "type": "pop"
+    },
+    {
+      "t": 29.1,
+      "type": "pop"
+    },
+    {
+      "t": 30.4,
+      "type": "pop"
+    },
+    {
+      "t": 33.6,
+      "type": "ding"
+    },
+    {
+      "t": 34.2,
+      "type": "ding"
+    },
+    {
+      "t": 36.2,
+      "type": "pop"
+    },
+    {
+      "t": 36.8,
+      "type": "sparkle"
+    },
+    {
+      "t": 43.8,
+      "type": "sparkle"
+    },
+    {
+      "t": 51.6,
+      "type": "pop"
+    }
+  ],
+  "check_times": [
+    1.0,
+    3.0,
+    5.8,
+    9.0,
+    13.5,
+    15.0,
+    17.5,
+    20.6,
+    23.0,
+    27.4,
+    28.4,
+    30.1,
+    31.5,
+    34.0,
+    35.0,
+    35.6,
+    37.8,
+    41.0,
+    44.5,
+    48.5,
+    52.0,
+    54.0
+  ]
+}
