@@ -1,0 +1,105 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script src="../../toolkit/rhymes.js"></script>
+<script>
+/* Episode 78 - Row, Row, Row Your Boat on a sunny river (sing-along).
+   Verse 1: Lulu rows with Bunny past green trees and lily pads; a shiny bubble floats up and pops on every "merrily".
+   Bunny dreams of carrots on "Life is but a dream".
+   Verse 2: Little Bird flies down and sits on the front of the boat.
+   Verse 3: a rainbow grows across the sky. Ending: everyone waves, "Bye-bye, river!" */
+const BPM=96, START=5.0;
+const LINES=rhymeTimes(RHYMES.row,START,3,4,BPM);
+const END=rhymeEnd(LINES);
+const DUR=61, SC=[0,DUR];
+const SPB=60/BPM;
+const V2=LINES[4].t0, V3=LINES[8].t0;
+const WATER=500, BX=600;
+const BIRD_IN=V2-3.4, BIRD_X=BX+194;
+const BUB_X=[130,240,910,1030];
+
+function render(t){
+  const li=currentLine(LINES,t);
+  const singing=t>START-.4&&t<END+.3;
+  const p=t<END+.5?beatPulse(LINES,t):0;
+  const flow=singing?1:(t<START?prog(t,1,START-.4):1-.7*prog(t,END,END+2));
+  const by=585+4*Math.sin(t*2.1);
+  let far='',chars='',front='',sky='',pops='',cap='';
+
+  // green trees and reeds on the far bank, lily pads on the water, all drift past
+  const sx=t*30*(t<END?1:.6);
+  for(let k=0;k<5;k++){const x=((k*330+160-sx)%1650+1650)%1650-160;far+=tree(x,WATER+8,.42+(k%2)*.06);}
+  for(let k=0;k<6;k++){const x=((k*275+20-t*38)%1650+1650)%1650-120;far+=reed(x,WATER+8,95+(k%3)*20,t,k);}
+  for(let k=0;k<3;k++){const x=((k*560+300-t*42)%1680+1680)%1680-200;
+    far+=`<g transform="translate(${x.toFixed(1)},${WATER+48}) scale(.7)">${lilyPad(0,0)}</g>`;}
+
+  // a shiny bubble floats up from the water on every "merrily" and pops
+  for(const Lx of LINES)if(Lx.index===2){
+    [0,3,6,9].forEach((wi,k)=>{const w=Lx.words[wi], u=t-w.t0;if(u<0||u>2.9)return;
+      const x=BUB_X[k]+18*Math.sin(u*3+k), r=36+(k%2)*6;
+      if(u<2.4){const y=lerp(WATER+40,300-(k%2)*30,eout(u/2.4)), o=prog(u,0,.3);
+        sky+=soapBubble(x,y,r*lerp(.4,1,prog(u,0,.5)),o,t+k);
+        if(u<.5)far+=`<ellipse cx="${BUB_X[k]}" cy="${WATER+44}" rx="${20+40*u}" ry="${5+8*u}" fill="none" stroke="#fff" stroke-width="3" opacity="${(1-u*2).toFixed(2)}"/>`;}
+      else sky+=bubblePop(x,300-(k%2)*30,r,(u-2.4)/.5);
+    });
+  }
+
+  // Little Bird flies down for verse 2 and sits on the front of the boat
+  let birdS='';
+  if(t>BIRD_IN){
+    const u=eio(prog(t,BIRD_IN,BIRD_IN+2.8)), flying=u<1;
+    const bx=lerp(1380,BIRD_X,u), byy=lerp(260,by-72,u)-(flying?40*Math.sin(u*Math.PI):0)-(flying?0:4*p);
+    const wing=flying?-40*Math.sin(t*16):(t>END+.6?-40*Math.abs(Math.sin((t-END)*6)):-8*p);
+    birdS=place(bx,byy,bird({eye:blink(t,1.3),wing}),{s:.56,flip:true});
+  }
+
+  // Lulu rows, one stroke every one and a half beats; Bunny sits at the back and sways
+  const ph=singing?2*Math.PI*(t-START)/(3*SPB):0;
+  const row=Math.sin(ph)*flow;
+  const oa=38+16*row;
+  const wave=t>END+.6?Math.sin((t-END)*6)*28*prog(t,END+.6,END+1):0;
+  chars+=boatBack(BX,by);
+  chars+=place(BX-140,by-48-4*p,bunny({eye:blink(t,2.2),ear:t>END+.6?10*Math.sin((t-END)*6):6*p}),{s:.78,rot:2*Math.sin(t*1.6)});
+  chars+=place(BX+10,by-58-5*p,duck({eye:blink(t,0),wing:t>END+.6?-60+wave:-10-22*row}),{s:.95,rot:3*row});
+  front+=boatFront(BX,by)+oar(BX+138,by-66,oa)+birdS;
+  const bladeX=BX+138+100*Math.sin(oa*Math.PI/180);
+  front+=`<ellipse cx="${bladeX.toFixed(1)}" cy="${by+14}" rx="${30+10*row}" ry="7" fill="#fff" opacity="${(.5*flow).toFixed(2)}"/>`;
+  for(let k=0;k<3;k++){const q=((t*.9+k/3)%1);front+=`<path d="M${BX-220-q*140},${by-4+q*10} q-20,-6 -40,0" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity="${((1-q)*.6*flow).toFixed(2)}"/>`;}
+
+  // a dream bubble on "Life is but a dream": Bunny dreams of carrots
+  for(const Lx of LINES)if(Lx.index===3&&t>=Lx.t0-.2&&t<Lx.t1+.7){
+    const o=prog(t,Lx.t0-.2,Lx.t0+.3)*(1-prog(t,Lx.t1+.1,Lx.t1+.7));
+    sky+=`<g opacity="${o.toFixed(2)}"><circle cx="452" cy="392" r="9" fill="#fff"/><circle cx="436" cy="356" r="14" fill="#fff"/>
+      <ellipse cx="420" cy="250" rx="112" ry="78" fill="#fff"/><ellipse cx="420" cy="250" rx="98" ry="64" fill="#FFF1D6"/>
+      <g transform="rotate(${-14+4*Math.sin(t*3)} 385 300)">${carrot(385,300,.95)}</g><g transform="rotate(${14-4*Math.sin(t*3)} 455 300)">${carrot(455,300,.95)}</g>${sparkle(420,212,.8)}</g>`;
+  }
+
+  // title card, then the words of the song, then goodbye
+  const to=1-prog(t,3.9,4.5);
+  if(to>0)pops=`<g opacity="${to}">`+pop('Row, Row, Row',640,165,96,'#FF5D8F',t,.4,-2,'#fff')+pop('Your Boat',640,285,112,'#2F9E44',t,1.0,2,'#fff')+`</g>`;
+  cap=t<END+.6?karaoke(LINES,t,'#2F9E44'):caption('Bye-bye, river!',t-END,.6);
+
+  // verse 3: a rainbow grows across the sky behind the hills and stays
+  const ru=eio(prog(t,V3-.5,V3+3.5));
+  const behind=ru>0?rainbow(930,470,300,ru,.85):'';
+  const cl=cloud(170+12*Math.sin(t*.3),96,.8,1)+cloud(700+10*Math.sin(t*.25),70,.6,.9);
+  svg.innerHTML=bg(t,0,behind,{noFlowers:true,noClouds:true})+cl+stream(t,WATER,0,38*flow+6)+far+chars+front+sky+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,rainbow(930,470,300,1,.85),{noFlowers:true,noClouds:true})+stream(0,WATER,0,0);
+  for(let k=0;k<4;k++)s+=tree(140+k*330,WATER+8,.42+(k%2)*.06);
+  s+=`<g transform="translate(160,${WATER+48}) scale(.7)">${lilyPad(0,0)}</g><g transform="translate(1080,${WATER+48}) scale(.7)">${lilyPad(0,0)}</g>`;
+  const by=590;
+  s+=soapBubble(160,420,30,1,0)+soapBubble(1080,400,34,1,2);
+  s+=boatBack(BX,by)+place(BX-140,by-48,bunny({}),{s:.78})+place(BX+10,by-58,duck({wing:-20}),{s:.95});
+  s+=boatFront(BX,by)+oar(BX+138,by-66,40)+place(BIRD_X,by-72,bird({}),{s:.56,flip:true});
+  s+=label('Row, Row, Row',590,170,110,'#FF5D8F',-3,'#fff')+label('Your Boat',590,305,128,'#2F9E44',-2,'#fff');
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
