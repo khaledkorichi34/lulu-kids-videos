@@ -1,0 +1,154 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 81 - Who am I? A pond riddle.  Title, three clues (I live in the water; I have fins and a tail;
+   my body is covered in scales (a tail flicks up out of the pond)), "Who am I?", the reveal (a fish jumps
+   out of the pond: fish live in rivers, lakes and seas), fact 1 under the water (a fish breathes under
+   water with its gills, bubbles), fact 2 (many fish swim together: a group of fish is called a school),
+   goodbye at the pond. */
+const SC=[0,5.5,12.5,19.5,26.5,32.5,42,50,58,64], DUR=64;
+const NAVY='#2D2A6E', PURPLE='#7B5CFF', ORANGE='#E76F2E', BLUE='#1C7FC4', TEAL='#19B8A6', PINK='#FF5D8F';
+const PX=800, WL=548, PW=280;                         // pond centre x, water line, half width (x 520..1080)
+const FC='#FF9F1C';
+const CLIPW=`<defs><clipPath id="aw"><rect x="0" y="0" width="1280" height="${WL+2}"/></clipPath></defs>`;
+const above=inner=>CLIPW+`<g clip-path="url(#aw)">${inner}</g>`;
+const lulu=(x,lt,t,hops,h=20,s=.95,wave=false)=>{
+  const j=jumps(lt,hops,.6,h), w=wave?20+20*Math.sin(lt*9):0;
+  return shadow(x,522,56*s/.95,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy});
+};
+const F=(t,o={})=>fish(Object.assign({eye:blink(t,1.3),col:FC,tail:Math.sin(t*7)},o));
+const qmark=(t,x=900)=>label('?',x,455+4*Math.sin(t*3),110,'#fff',0,BLUE,.12);
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.4)):0;
+function scene(t){
+  let s=pond(PX,WL,PW)+reed(1110,525,150,t,0)+reed(1150,530,120,t,1)+reed(510,528,110,t,2);
+  for(let k=0;k<3;k++){const q=((t*.45+k/3)%1);s+=bubble(PX-120+k*110,WL-6-q*60,5+q*4,(1-q)*.9);}
+  return s;
+}
+function ripples(x,lt,t0){
+  let s='';const u=lt-t0;if(u<0)return '';
+  for(let k=0;k<2;k++){const q=u*.7-k*.35;if(q>0&&q<1)s+=`<ellipse cx="${x}" cy="${WL}" rx="${20+q*90}" ry="${4+q*14}" fill="none" stroke="#fff" stroke-width="3.5" opacity="${(1-q)*.8}"/>`;}
+  return s;
+}
+// a fish jumping out of the pond from x0 to x1, from time t0 for dur seconds, h px high
+function fishJump(lt,t,t0,dur,x0,x1,h,sc=1.1){
+  const u=prog(lt,t0,t0+dur);if(u<=0||u>=1)return '';
+  const x=lerp(x0,x1,u), y=WL+30-Math.sin(Math.PI*u)*h;
+  const rot=Math.atan(-h*Math.PI*Math.cos(Math.PI*u)/(x1-x0))*180/Math.PI;
+  return above(place(x,y,F(t),{s:sc,rot}));
+}
+function icon(x,y,g,inner){
+  if(g<=0)return '';
+  return `<g transform="translate(${x},${y}) scale(${g})"><defs><clipPath id="ic"><circle r="88"/></clipPath></defs>
+  <circle r="92" fill="#fff" stroke="#FFD23F" stroke-width="7"/><g clip-path="url(#ic)">${inner}</g></g>`;
+}
+function waterIcon(t){
+  let s=`<rect x="-100" y="-100" width="200" height="200" fill="#7DD3FA"/>`;
+  for(let k=0;k<4;k++){const y=-60+k*42, d=12*Math.sin(t*2+k);s+=`<path d="M-110,${y} q25,-18 50,0 t50,0 t50,0 t50,0 t50,0" transform="translate(${d},0)" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round" opacity=".85"/>`;}
+  return s;
+}
+function finIcon(t){
+  const w=8*Math.sin(t*5);
+  return `<rect x="-100" y="-100" width="200" height="200" fill="#CFF0FF"/>
+  <path d="M40,0 L-60,${-62+w} Q-35,0 -60,${62+w} Z" fill="${FC}"/>
+  <path d="M-46,${-34+w*.6} L20,-4 M-40,${w*.4} L24,0 M-46,${34+w*.6} L20,4" stroke="#E07F00" stroke-width="5" stroke-linecap="round"/>
+  <ellipse cx="100" cy="0" rx="70" ry="60" fill="${FC}"/>`;
+}
+function scaleIcon(){
+  let s=`<rect x="-100" y="-100" width="200" height="200" fill="#FFB347"/>`;
+  for(let r=0;r<7;r++)for(let c=0;c<7;c++){const x=-120+c*40+(r%2)*20, y=-100+r*32;
+    s+=`<path d="M${x-20},${y} A20,20 0 0,0 ${x+20},${y}" fill="#FFD27A" stroke="#E07F00" stroke-width="4"/>`;}
+  return s;
+}
+function sparkles(x,y,lt,t0){
+  const u=prog(lt,t0,t0+1.2);if(u<=0||u>=1)return '';
+  let s='';for(let k=0;k<6;k++){const a=k*Math.PI/3+.4, d=40+u*110;s+=sparkle(x+Math.cos(a)*d,y+Math.sin(a)*d*.7,1.3,1-u);}
+  return s;
+}
+// the school of fish in fact 2: offsets from the group centre and colour shade
+const SCHOOL=[[-230,-60],[-150,30],[-70,-100],[-60,90],[20,-20],[90,-110],[110,80],[180,0],[250,-80],[260,90]];
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let back_='',props='',chars='',pops='',cap='';
+  const o={noFlowers:true,noSun:true,noClouds:true};
+  back_=bg(t,0,cloud(130+8*Math.sin(t*.3),90,.75,.95),o);
+  if(i===0){
+    props=scene(t)+ripples(840,lt,2.4)+qmark(t);
+    chars=lulu(280,lt,t,[1.3,2.3],30,1.1,true);
+    pops=pop('Who am I?',640,165,120,PURPLE,lt,.3,-3);
+    cap=caption('A new riddle with '+LULU,lt,1.8,'A new riddle with Lulu');
+  }else if(i>=1&&i<=3){
+    const N=i;
+    props=scene(t)+qmark(t);
+    if(N===3){ // a tail flicks up out of the pond, waves, and goes down again
+      const u=eio(prog(lt,2.4,3.2))-eio(prog(lt,5.6,6.3)), y=lerp(WL+130,WL+28,u);
+      if(u>0)props+=above(place(680,y,F(t,{tail:Math.sin(lt*9)*1.4,eye:1}),{s:1.2,rot:90}));
+      props+=ripples(680,lt,2.4);
+    }
+    if(N===1)props+=icon(1110,330,grow(lt,2.4),waterIcon(t));
+    if(N===2)props+=icon(1110,330,grow(lt,2.4),finIcon(t));
+    if(N===3)props+=icon(1110,330,grow(lt,2.4),scaleIcon());
+    chars=lulu(250,lt,t,[3.2]);
+    pops=pop('Clue '+N,560,150,100,ORANGE,lt,.3);
+    cap=caption(['','I live in the water.','I have fins and a tail.','My body is covered in scales.'][N],lt,1.2);
+  }else if(i===4){
+    props=scene(t)+qmark(t)+ripples(760,lt,3.6);
+    chars=lulu(250,lt,t,[]);
+    pops=pop('water',380,165,60,BLUE,lt,.3)+pop('fins',640,165,60,ORANGE,lt,.9)+pop('scales',900,165,60,'#D97706',lt,1.5);
+    cap=caption('Who am I? Can you guess?',lt,2.2);
+  }else if(i===5){
+    // the fish jumps out of the pond, then stays and peeks out of the water
+    props=scene(t)+fishJump(lt,t,.5,1.6,680,900,240,1.2)+splash(905,WL,prog(lt,2.0,2.8),.7,30);
+    const up=eout(prog(lt,3.0,3.6));
+    if(up>0)props+=ripples(820,lt,3.0)+above(place(820,lerp(WL+90,WL+8,up)+4*Math.sin(lt*3),F(t),{s:1.25,rot:-25}));
+    props+=sparkles(820,440,lt,3.4);
+    chars=lulu(250,lt,t,[3.8,4.5],30,.95,lt>3.6);
+    pops=pop('A fish!',560,165,110,ORANGE,lt,1.4,-3);
+    cap=lt<5.5?caption('I am a fish!',lt,2.0):caption('Fish live in rivers, lakes and seas.',lt,5.5);
+  }else if(i===6){
+    // under the water: the fish breathes with its gills
+    back_=underwater(t);
+    const fy=330+8*Math.sin(lt*1.6), gl=prog(lt,3.6,4.2);
+    props=place(640,fy,F(t,{gill:.35+.65*gl*(.6+.4*Math.sin(lt*6))}),{s:2.2});
+    for(let k=0;k<4;k++){const q=((lt*.5+k/4)%1);props+=bubble(742+12*Math.sin(q*9+k),fy+10-q*170,6+q*8,(1-q)*.9);}
+    if(gl>0)props+=`<circle cx="650" cy="${fy}" r="${62}" fill="none" stroke="#FFE45C" stroke-width="7" opacity="${gl*(.7+.3*Math.sin(lt*6))}"/>`;
+    pops=pop('Fact 1',400,150,100,'#fff',lt,.3,0,BLUE)+(lt>3.8?pop('Gills!',650,520,70,ORANGE,lt,3.8,-3):'');
+    cap=lt<4.0?caption('A fish breathes under the water.',lt,1.0):caption('It breathes with its gills.',lt,4.0);
+  }else if(i===7){
+    // a school of fish swims in and stays together
+    back_=underwater(t);
+    const gx=lerp(-420,640,eout(prog(lt,.3,3.3)))+20*Math.sin(lt*1.2), gy=330+10*Math.sin(lt*.9);
+    SCHOOL.forEach(([dx,dy],k)=>{props+=place(gx+dx+6*Math.sin(lt*2+k),gy+dy+5*Math.sin(lt*2.4+k*1.7),F(t+k*.13,{col:k%2?'#FFB347':FC,tail:Math.sin(t*7+k)}),{s:.72});});
+    pops=pop('Fact 2',640,150,100,'#fff',lt,.3,0,BLUE)+(lt>4.4?pop('A school!',640,520,70,ORANGE,lt,4.4,-3):'');
+    cap=lt<4.0?caption('Many fish swim together.',lt,1.0):caption('A group of fish is a school.',lt,4.0);
+  }else{
+    props=heart(640,330+6*Math.sin(t*3),1.4,'#FF7FB0',.85*prog(lt,2,2.5))+heart(600,275+6*Math.sin(t*3+1),1,'#FF9AA2',.85*prog(lt,2.3,2.8));
+    props+=scene(t)+fishJump(lt,t,1.2,1.4,720,880,190)+splash(885,WL,prog(lt,2.5,3.3),.6,28)+fishJump(lt,t,3.4,1.4,900,740,170)+splash(735,WL,prog(lt,4.7,5.5),.6,28);
+    chars=lulu(330,lt,t,[1.0,1.8],26,.95,true);
+    pops=pop('Bye bye!',560,160,110,PURPLE,lt,.4,-2);
+    cap=caption('Bye bye, little fish!',lt,1.6);
+  }
+  svg.innerHTML=back_+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(140,110,1.1,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=pond(960,650,300)+reed(1220,630,170,0,0)+reed(700,640,120,0,2);
+  s+=`<defs><clipPath id="tw"><rect width="1280" height="652"/></clipPath></defs><g clip-path="url(#tw)">`+place(960,690,fish({tail:.8,col:FC}),{s:1.8,rot:90})+'</g>';
+  s+=`<ellipse cx="960" cy="650" rx="120" ry="20" fill="none" stroke="#fff" stroke-width="5" opacity=".8"/>`;
+  s+=label('?',1110,470,170,'#fff',0,BLUE,.12);
+  s+=shadow(165,702,85)+place(160,698,duck({wing:22}),{s:1.25});
+  s+=label('Who',560,190,150,'#FF5D8F',-3)+label('am I?',580,350,150,PURPLE,-3);
+  s+=label('A new riddle with '+LULU,560,440,60,NAVY);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

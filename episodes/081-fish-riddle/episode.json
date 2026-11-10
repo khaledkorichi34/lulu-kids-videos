@@ -1,0 +1,120 @@
+{
+  "number": 81,
+  "slug": "fish-riddle",
+  "format": "curious",
+  "ages": "6-10",
+  "title": "Who Am I? A Pond Riddle with Lulu | Riddle for Kids",
+  "description": "Lulu the little duck has a new riddle for you!\nRead three clues and guess who is hiding in the pond.\nThen dive under the water to see how fish breathe and swim together in a school.\nA gentle riddle video for children aged 6 to 10.",
+  "duration": 64,
+  "seed": 81,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.3,
+      "type": "sparkle"
+    },
+    {
+      "t": 1.3,
+      "type": "boing_high"
+    },
+    {
+      "t": 2.3,
+      "type": "boing_high"
+    },
+    {
+      "t": 5.8,
+      "type": "pop"
+    },
+    {
+      "t": 7.9,
+      "type": "ding"
+    },
+    {
+      "t": 12.8,
+      "type": "pop"
+    },
+    {
+      "t": 14.9,
+      "type": "ding"
+    },
+    {
+      "t": 19.8,
+      "type": "pop"
+    },
+    {
+      "t": 21.9,
+      "type": "boing_high"
+    },
+    {
+      "t": 26.8,
+      "type": "pop"
+    },
+    {
+      "t": 27.4,
+      "type": "pop"
+    },
+    {
+      "t": 28.0,
+      "type": "pop"
+    },
+    {
+      "t": 33.0,
+      "type": "boing_high"
+    },
+    {
+      "t": 33.9,
+      "type": "pop"
+    },
+    {
+      "t": 34.6,
+      "type": "pop"
+    },
+    {
+      "t": 35.9,
+      "type": "sparkle"
+    },
+    {
+      "t": 42.3,
+      "type": "pop"
+    },
+    {
+      "t": 45.8,
+      "type": "ding"
+    },
+    {
+      "t": 50.3,
+      "type": "pop"
+    },
+    {
+      "t": 54.4,
+      "type": "ding"
+    },
+    {
+      "t": 58.4,
+      "type": "pop"
+    },
+    {
+      "t": 59.2,
+      "type": "boing_high"
+    },
+    {
+      "t": 61.4,
+      "type": "boing_high"
+    }
+  ],
+  "check_times": [
+    22.8,
+    26.0,
+    30.0,
+    33.8,
+    37.0,
+    40.0,
+    44.0,
+    47.0,
+    52.0,
+    56.0,
+    59.9,
+    62.1,
+    3.5
+  ]
+}

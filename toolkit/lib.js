@@ -416,7 +416,8 @@ function oar(px,py,a){
   <rect x="-5" y="-62" width="10" height="170" rx="5" fill="#8A5A2B"/>
   <ellipse cx="0" cy="100" rx="14" ry="28" fill="#A8743F"/><circle cx="0" cy="-62" r="9" fill="#6E4520"/></g>`;
 }
-// fish({eye, col, tail}): round little fish facing right, origin at its centre (about 130 wide, 80 tall)
+// fish({eye, col, tail, gill}): round little fish facing right, origin at its centre (about 130 wide, 80 tall)
+// gill = 0..1 opacity of a curved gill line behind the eye (episode 81).
 function fish(o={}){
   const e=o.eye==null?1:o.eye, c=o.col||'#FF9F1C', w=o.tail||0;
   return `
@@ -426,7 +427,7 @@ function fish(o={}){
   <ellipse cx="6" cy="14" rx="30" ry="16" fill="#FFE2B0" opacity=".8"/>
   <path d="M-6,4 Q-18,18 -4,22" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7"/>
   <g transform="translate(24,-8) scale(1,${e})"><circle r="7" fill="#1d2433"/><circle cx="2.3" cy="-2.4" r="2.4" fill="#fff"/></g>
-  <circle cx="22" cy="12" r="6" fill="#FF9AA2" opacity=".9"/>
+  <circle cx="22" cy="12" r="6" fill="#FF9AA2" opacity=".9"/>${o.gill?`<path d="M2,-22 Q14,0 2,22" stroke="#B5530A" stroke-width="4.5" fill="none" stroke-linecap="round" opacity="${o.gill}"/>`:''}
   <path d="M38,6 Q44,11 48,5" stroke="#7a3d00" stroke-width="3" fill="none" stroke-linecap="round"/>`;
 }
 // reed(x,y,h,t,i): cattail reed at the water's edge, sways gently
@@ -1989,4 +1990,25 @@ function mug(x,y,s=1,t=0,steam=1){
   <ellipse cx="0" cy="-108" rx="60" ry="13" fill="#E64C86"/>
   <ellipse cx="0" cy="-106" rx="52" ry="9" fill="#8A5A33"/>
   <circle cx="-26" cy="-60" r="9" fill="#fff" opacity=".85"/><circle cx="8" cy="-44" r="7" fill="#fff" opacity=".85"/><circle cx="30" cy="-74" r="8" fill="#fff" opacity=".85"/></g>`;
+}
+
+
+/* ---------- under the water (episode 81) ---------- */
+// seaweed(x,y,h,t,i,col): wavy seaweed growing up from the sand at (x,y), h tall, sways gently
+function seaweed(x,y,h,t,i=0,col='#3FA34D'){
+  const w=10*Math.sin(t*1.4+i*1.7);
+  return `<path d="M${x},${y} Q${x-18+w},${y-h*.33} ${x+w*1.4},${y-h*.55} T${x+w*2},${y-h}" stroke="${col}" stroke-width="16" fill="none" stroke-linecap="round"/>
+  <ellipse cx="${x+w*.7-12}" cy="${y-h*.4}" rx="16" ry="7" fill="${col}" transform="rotate(-30 ${x+w*.7-12} ${y-h*.4})"/>
+  <ellipse cx="${x+w*1.6+12}" cy="${y-h*.72}" rx="16" ry="7" fill="${col}" transform="rotate(30 ${x+w*1.6+12} ${y-h*.72})"/>`;
+}
+// underwater(t): full-stage underwater background: blue water, soft light rays, sandy floor from about
+// y=560, pebbles and swaying seaweed at the left and right edges (keeps x=260..1020 clear for the action).
+function underwater(t){
+  let s=`<defs><linearGradient id="uw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6FD0F7"/><stop offset="1" stop-color="#1D79B8"/></linearGradient></defs>
+  <rect width="1280" height="720" fill="url(#uw)"/>`;
+  for(let k=0;k<4;k++){const x=180+k*300+20*Math.sin(t*.4+k);s+=`<path d="M${x},0 L${x+90},0 L${x-60},560 L${x-170},560Z" fill="#fff" opacity=".07"/>`;}
+  s+=`<path d="M0,575 Q320,545 640,568 T1280,560 L1280,720 L0,720Z" fill="#F2D89B"/><path d="M0,620 Q400,600 800,618 T1280,610 L1280,720 L0,720Z" fill="#E8C985"/>`;
+  [[90,598,14],[150,606,9],[1150,596,13],[1210,606,8],[520,580,7]].forEach(([x,y,r])=>{s+=`<ellipse cx="${x}" cy="${y}" rx="${r*1.4}" ry="${r}" fill="#B7A27A"/>`;});
+  s+=seaweed(60,590,260,t,0)+seaweed(130,600,180,t,1,'#5CC85C')+seaweed(200,595,120,t,2)+seaweed(1100,592,220,t,3,'#5CC85C')+seaweed(1180,600,280,t,4)+seaweed(1240,596,150,t,5,'#5CC85C');
+  return s;
 }
