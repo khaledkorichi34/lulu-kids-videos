@@ -1,0 +1,176 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 82 - Lulu and the Flying Hat. On a snowy day Lulu wears her purple woolly hat. Whoosh! The wind
+   blows it away. Pip the kitten comes to help: is it in the tree? Little Bird says no. Is it behind the bush?
+   No. Look, it is on the snowman! Hee hee! Pip hops and the hat floats back onto Lulu's head. Thank you, Pip!
+   The sun goes down and Lulu and Pip sleep by the snowman. Good night. */
+const DUR=64, SC=[0,5,11,17,23,30,37,44,51,57,64];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', BLUE='#2979E8', GOLD='#FFE58A', ORANGE='#FF9F1C', TEAL='#19B8A6';
+const HAT='#7B5CFF';
+const shade=(x,w)=>`<ellipse cx="${x}" cy="522" rx="${w}" ry="${w*.18}" fill="#7F93B0" opacity=".25"/>`;
+
+function snowfall(t,o=1,count=22){
+  if(o<=0)return '';
+  let s='';for(let k=0;k<count;k++){const x0=(k*97+30)%1280, sp=30+(k%5)*7, y=((t*sp+k*61)%640)-30, x=x0+18*Math.sin(t*.9+k);
+    s+=snowflake(x,y,.5+(k%3)*.18,t*20+k*30,o*.9);}
+  return s;
+}
+// soft white wind swirls blowing to the right, u = 0..1 strength
+function wind(t,u){
+  if(u<=0)return '';
+  let s='';for(let k=0;k<5;k++){const x=((t*520+k*290)%1600)-200, y=250+k*52;
+    s+=`<path d="M${x},${y} q60,-26 120,0 t120,0 q30,-30 0,-44" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round" opacity="${.75*u}"/>`;}
+  return s;
+}
+function snowyBush(x,y,s=1){
+  return bush(x,y,s)+`<g transform="translate(${x},${y}) scale(${s})" fill="#fff">
+  <ellipse cx="0" cy="-142" rx="52" ry="15"/><ellipse cx="-62" cy="-130" rx="40" ry="12"/><ellipse cx="62" cy="-130" rx="40" ry="12"/>
+  <ellipse cx="-118" cy="-94" rx="30" ry="9"/><ellipse cx="118" cy="-94" rx="30" ry="9"/></g>`;
+}
+function snowyTree(x,y,s=1){
+  return tree(x,y,s)+`<g transform="translate(${x},${y}) scale(${s})" fill="#fff">
+  <ellipse cx="0" cy="-384" rx="62" ry="16"/><ellipse cx="-66" cy="-402" rx="46" ry="12"/><ellipse cx="66" cy="-402" rx="46" ry="12"/>
+  <ellipse cx="-118" cy="-322" rx="34" ry="10"/><ellipse cx="118" cy="-322" rx="34" ry="10"/></g>`;
+}
+
+// Lulu: s 1, hat = true wears the purple woolly hat
+const lulu=(lt,t,o={})=>{
+  const x=o.x!=null?o.x:470, j=jumps(lt,o.hops||[],o.d||.6,o.h||22), w=o.wave?20+20*Math.sin(lt*9):(o.wing!=null?o.wing:-25+6*Math.sin(lt*3));
+  return shade(x,58*(1-clamp(-j.y/260)*.5))+place(x,520+j.y,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep})+(o.hat?woollyHat(42,-138,.62,HAT):''),{s:1,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0});
+};
+// Pip the kitten: s .85
+const pip=(lt,t,o={})=>{
+  const x=o.x, j=jumps(lt,o.hops||[],o.d||.6,o.h||20);
+  return (o.noShade?'':shade(x,46*(1-clamp(-j.y/260)*.5)))+place(x,520+j.y+(o.dy||0),kitten({eye:o.eye!=null?o.eye:blink(t,1.3),tail:o.tail!=null?o.tail:Math.sin(t*3),asleep:o.asleep,tilt:o.tilt||0}),{s:.85,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0});
+};
+// snowman: s .9; hat = 0..1 shows the purple hat on its head
+const SM_HAT=[0,-238];
+const snowmanAt=(x,t,o={})=>shade(x,62)+place(x,520,snowman({eye:o.eye!=null?o.eye:blink(t,.8),arm:o.arm||0,asleep:o.asleep})+(o.hat?woollyHat(SM_HAT[0],SM_HAT[1],.5,HAT):''),{s:.9});
+// a loose hat in world coordinates (x,y = middle of the cuff bottom), turned by rot
+const looseHat=(x,y,s,rot)=>place(x,y,woollyHat(0,0,s,HAT),{rot});
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,fall=0,props='',chars='',pops='',cap='',behind='',front='';
+  switch(i){
+  case 0:{
+    // title
+    props=snowmanAt(1080,t);
+    chars=lulu(lt,t,{x:470,hat:true,hops:[2.8],h:16,wave:lt>1&&lt<2.6});
+    pops=pop(`${LULU}<tspan fill="${NAVY}"> and the Flying Hat</tspan>`,640,170,70,PINK,lt,.4,-2);
+    break;}
+  case 1:{
+    // Lulu loves her purple woolly hat
+    props=snowmanAt(1080,t);
+    chars=lulu(lt,t,{x:470,hat:true,hops:[1.2,3.8],h:18,wave:lt>2&&lt<3.4});
+    cap=lt<3?caption('Lulu has a purple hat.',lt,.3):caption('It is warm and cosy.',lt,3);
+    pops=pop('Cosy!',470,170,100,PURPLE,lt,3.2,-3);
+    break;}
+  case 2:{
+    // Whoosh! The wind blows the hat away
+    const u=prog(lt,1.0,3.6);                         // hat flight
+    const hx=lerp(512,1420,eio(u)), hy=382-Math.sin(u*Math.PI)*170-u*40;
+    const lean=lt>.6&&lt<3.8?-4:0;
+    props=snowmanAt(1080,t);
+    chars=lulu(lt,t,{x:470,hat:lt<1.0,rot:lean,eye:lt>1.2&&lt<2?.6:undefined,wing:lt>1.2?10:undefined,hops:[4.4],h:14});
+    front=lt>=1.0&&u<1?looseHat(hx,hy,.62,u*540):'';
+    cap=lt<3.2?caption('Whoosh! The wind blows.',lt,.4):caption('Oh! Where is my hat?',lt,3.2);
+    pops=pop('Whoosh!',360,165,110,BLUE,lt,.5,-4);
+    behind=wind(t,prog(lt,.2,.8)*(1-prog(lt,3.6,4.4)));
+    break;}
+  case 3:{
+    // Pip the kitten comes to help
+    const u=eio(prog(lt,.3,2.6)), x=lerp(1400,800,u), walking=lt>.3&&lt<2.6;
+    props=snowmanAt(1080,t);
+    chars=lulu(lt,t,{x:430,hops:[3.4],h:18,wave:lt>3.0&&lt<4.6})+pip(lt,t,{x,rot:walking?5*Math.sin(lt*11):0,hops:[4.2],h:24});
+    cap=lt<3?caption('Pip comes to help.',lt,.3):caption('Let\'s look for the hat!',lt,3);
+    pops=pop('Hello, Pip!',620,165,90,ORANGE,lt,1.2,-3);
+    break;}
+  case 4:{
+    // Is it in the tree? Little Bird: Tweet! Not here.
+    const flap=lt>3.0&&lt<4.6?30*Math.sin(lt*16):0;
+    props=snowyTree(1000,520,.9)+branch(990,300,840,286)+place(860,280,bird({eye:blink(t,.5),wing:flap}),{s:.55,flip:true});
+    chars=lulu(lt,t,{x:330,hops:[1.0],h:16,rot:lt>1.4?-6:0})+pip(lt,t,{x:560,tilt:lt>1.4?-8:0,hops:[1.6],h:18});
+    cap=lt<3?caption('Is it in the tree?',lt,.3):caption('Tweet! Not here.',lt,3);
+    pops=pop('Tweet!',420,165,100,BLUE,lt,3.1,-4);
+    break;}
+  case 5:{
+    // Is it behind the bush? Pip pops up: not here.
+    const go=eio(prog(lt,.4,2.0)), back_=eio(prog(lt,4.6,6.2));
+    const px=lerp(560,880,go)-lerp(0,320,back_);
+    const behindBush=go>.98&&back_<.02;
+    const pipS=pip(lt,t,{x:px,hops:behindBush?[2.4,3.4]:[],h:70,d:.7,noShade:behindBush});
+    props=(behindBush?pipS:'')+snowyBush(880,530,.95);
+    chars=lulu(lt,t,{x:330,hops:[5.4],h:14})+(behindBush?'':pipS);
+    cap=lt<3?caption('Is it behind the bush?',lt,.3):caption('No, not here.',lt,3.4);
+    pops=pop('Not here!',420,165,92,PURPLE,lt,3.4,-3);
+    break;}
+  case 6:{
+    // Look! The hat is on the snowman!
+    const u=eio(prog(lt,.3,2.4)), walking=lt>.3&&lt<2.4;
+    props=snowmanAt(960,t,{hat:true,arm:lt>3.8?.5+.5*Math.sin((lt-3.8)*5):0});
+    chars=lulu(lt,t,{x:lerp(140,440,u),rot:walking?4*Math.sin(lt*10):0,hops:[2.8,4.6],h:20})+pip(lt,t,{x:lerp(-40,660,u),rot:walking?5*Math.sin(lt*11):0,hops:[3.0],h:20});
+    cap=lt<3.6?caption('Look! On the snowman!',lt,.6):caption('Hee hee! Silly hat!',lt,3.6);
+    pops=pop('There it is!',560,165,92,PINK,lt,2.6,-3);
+    break;}
+  case 7:{
+    // Pip hops, the hat floats back onto Lulu's head. Thank you, Pip!
+    const PX=760;
+    const u=eio(prog(lt,1.3,3.0));
+    // from the snowman's head (world) to Lulu's head (x 440)
+    const sx0=960+SM_HAT[0]*.9, sy0=520+SM_HAT[1]*.9, ex=440+42, ey=520-138;
+    const hx=lerp(sx0,ex,u), hy=lerp(sy0,ey,u)-Math.sin(u*Math.PI)*110, hs=lerp(.45,.62,u);
+    const onLulu=lt>=3.0, onSnow=lt<1.3;
+    props=snowmanAt(960,t,{hat:onSnow,arm:lt>4.4&&lt<6?.5+.5*Math.sin((lt-4.4)*5):0});
+    chars=lulu(lt,t,{x:440,hat:onLulu,hops:[3.4],h:16,wave:lt>3.8&&lt<5.4})+pip(lt,t,{x:PX,hops:[.8],h:56,d:.7});
+    front=(!onSnow&&!onLulu?looseHat(hx,hy,hs,Math.sin(u*Math.PI)*-30):'');
+    if(lt>3.6){for(let k=0;k<3;k++){const q=lt-3.6-k*.35;if(q>0&&q<2.4)props+=heart(560+k*70,330-q*55,1.1,['#FF5D8F','#FF8FB3','#FF5D8F'][k],Math.sin(Math.PI*q/2.4));}}
+    cap=lt<3.2?caption('Pip helps. Hop!',lt,.3):caption('Thank you, Pip!',lt,3.4);
+    pops=pop('Hooray!',420,165,100,ORANGE,lt,3.4,-4);
+    break;}
+  case 8:{
+    // the sun goes down
+    n=lerp(0,.45,eio(prog(lt,.3,5.6))); fall=.5*prog(lt,1.5,3.5);
+    behind=sun(t,1150,lerp(250,560,eio(prog(lt,.3,5.6))));
+    props=snowmanAt(180,t,{eye:lt>3.8?.45:undefined});
+    chars=lulu(lt,t,{x:470,hat:true,eye:lt>3.4?.5:undefined})+pip(lt,t,{x:760,eye:lt>3.6?.5:undefined});
+    cap=lt<3.2?caption('The sun goes down.',lt,.3):caption('Bye-bye, snowy day!',lt,3.2);
+    pops=pop('Yawn!',470,170,96,PURPLE,lt,3.8,-3);
+    break;}
+  case 9:{
+    // night: Lulu (in her hat) and Pip sleep by the snowman
+    n=lerp(.45,1,eio(prog(lt,0,4))); fall=.3*(1-prog(lt,3,6));
+    const asleep=lt>1.4, br=k=>1+.025*Math.sin(lt*2.2+k);
+    props=snowmanAt(180,t,{asleep,eye:.45});
+    chars=lulu(lt,t,{x:470,hat:true,asleep,eye:.45,sy:br(0),rot:asleep?-3:0})+pip(lt,t,{x:740,asleep,eye:.45,sy:br(1),tail:.3});
+    for(let k=0;k<3;k++){let q=lt-2.0-k*.9;if(q>0){q%=2.7;
+      pops+=`<text x="${590-q*24+8*Math.sin(q*3)}" y="${320-q*30}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}
+    cap=caption('Good night, Lulu and Pip.',lt,.5);
+    pops+=pop('The End',640,150,112,GOLD,lt,3.8,-3,NAVY);
+    break;}
+  }
+  const back_=bg(t,n,(i<8?cloud(95+6*Math.sin(t*.3),255,.7,.95)+cloud(1185+6*Math.sin(t*.25+1),245,.7,.95):'')+behind,{noSun:true,noFlowers:true,noMoon:i<9,noClouds:true})+snowHills(1,n);
+  svg.innerHTML=back_+props+chars+front+nightTint(n)+snowfall(t,fall*(1-n*.3))+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,'',{noSun:true,noFlowers:true,noClouds:true});
+  s+=cloud(160,70,.9,1)+cloud(1120,80,.9,1);
+  s+=snowHills(1,0);
+  s+=wind(.3,.8);
+  s+=`<ellipse cx="380" cy="664" rx="80" ry="14" fill="#7F93B0" opacity=".25"/>`+place(380,662,duck({wing:20}),{s:1.3});
+  s+=place(640,420,woollyHat(0,0,1,HAT),{rot:-18});
+  s+=`<ellipse cx="960" cy="664" rx="70" ry="12" fill="#7F93B0" opacity=".25"/>`+place(960,662,kitten({tail:.5}),{s:1.15});
+  [[60,250],[230,350],[1230,300],[1120,200],[760,330],[150,450],[1210,420]].forEach((p,k)=>{s+=snowflake(p[0],p[1],.6+(k%3)*.25,k*25,.9);});
+  s+=label(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,640,130,92,PINK,-2);
+  s+=label(`<tspan fill="${PURPLE}">Flying Hat</tspan>`,640,240,104,PURPLE,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

@@ -1,0 +1,28 @@
+{
+  "number": 82,
+  "slug": "lulu-and-the-flying-hat",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and the Flying Hat | Bedtime Story for Kids",
+  "description": "Whoosh! The wind blows Lulu the duck's purple woolly hat away.\nPip the kitten helps her look: in the tree? Behind the bush? There it is, on the snowman!\nThe sun goes down and Lulu and Pip sleep by the snowman. Good night.\nA calm bedtime story for children aged 3 to 6.",
+  "duration": 64,
+  "seed": 82,
+  "lullaby_from": 51.0,
+  "sfx": [
+    {"t": 0.4, "type": "pop"},
+    {"t": 8.2, "type": "sparkle"},
+    {"t": 11.5, "type": "pop"},
+    {"t": 18.2, "type": "pop"},
+    {"t": 21.2, "type": "boing_high"},
+    {"t": 26.1, "type": "ding"},
+    {"t": 32.4, "type": "boing_low"},
+    {"t": 33.4, "type": "boing_low"},
+    {"t": 39.6, "type": "sparkle"},
+    {"t": 44.8, "type": "boing_high"},
+    {"t": 47.0, "type": "pop"},
+    {"t": 47.4, "type": "sparkle"},
+    {"t": 54.8, "type": "pop"},
+    {"t": 61.0, "type": "sparkle"}
+  ],
+  "check_times": [1.0, 3.0, 8.5, 12.4, 13.5, 14.8, 18.5, 21.2, 24.0, 26.5, 29.0, 31.0, 32.75, 33.75, 35.5, 39.0, 41.0, 43.0, 44.7, 45.6, 46.2, 48.0, 50.0, 53.0, 56.0, 59.0, 62.5]
+}
