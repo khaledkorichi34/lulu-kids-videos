@@ -1962,3 +1962,31 @@ function burrowFront(x,y,s=1){
 function burrowClip(id,x,y,s=1){
   return `<clipPath id="${id}"><rect x="${x-400*s}" y="${y-600*s}" width="${800*s}" height="${600*s+8*s}"/></clipPath>`;
 }
+
+/* ---------- crayon and mug (episode 80) ---------- */
+// crayon(x,y,len,col,dark): a fat crayon lying on the ground, tip pointing right, origin at the middle of
+// its bottom edge (stand it on y=520). len = whole length including the tip (about 140 to 480); 56 thick.
+// col = crayon colour, dark = a darker shade of it for the wrapper stripes and the tip end.
+function crayon(x,y,len,col='#E63946',dark='#B5222D'){
+  const L=len/2, tip=Math.min(70,len*.3), h=56, b=L-tip;
+  return `<g transform="translate(${x},${y})">
+  <path d="M${b},${-h+6} L${L-6},${-h/2-6} Q${L+2},${-h/2} ${L-6},${-h/2+6} L${b},-6 Z" fill="${col}"/>
+  <path d="M${b+tip*.62},${-h*.5-h*.19} L${L-6},${-h/2-6} Q${L+2},${-h/2} ${L-6},${-h/2+6} L${b+tip*.62},${-h*.5+h*.19} Z" fill="${dark}"/>
+  <rect x="${-L}" y="${-h}" width="${b+L}" height="${h}" rx="14" fill="${col}"/>
+  <rect x="${-L+18}" y="${-h+8}" width="${Math.max(20,b+L-48)}" height="9" rx="4.5" fill="#fff" opacity=".35"/>
+  <rect x="${-L+22}" y="${-h}" width="10" height="${h}" fill="${dark}"/><rect x="${b-30}" y="${-h}" width="10" height="${h}" fill="${dark}"/></g>`;
+}
+// mug(x,y,s,t): a pink mug of warm cocoa with three soft steam curls rising from it (t = time, animates
+// the steam), origin at the middle of its bottom. About 150 wide with the handle and 110 tall at s=1;
+// the steam reaches about 120*s above the rim. steam = 0..1 how much steam shows.
+function mug(x,y,s=1,t=0,steam=1){
+  let st='';
+  if(steam>0)for(let k=0;k<3;k++){const u=((t*.45+k/3)%1), op=Math.sin(u*Math.PI)*.8*steam, sx=-30+k*30, yy=-118-u*90;
+    st+=`<path d="M${sx},${yy+40} q-12,-14 0,-26 q12,-12 0,-26" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round" opacity="${op.toFixed(2)}"/>`;}
+  return `<g transform="translate(${x},${y}) scale(${s})">${st}
+  <path d="M50,-82 q44,0 44,32 q0,32 -44,32" stroke="#E64C86" stroke-width="16" fill="none" stroke-linecap="round"/>
+  <path d="M-60,-108 L60,-108 L54,-14 Q52,0 36,0 L-36,0 Q-52,0 -54,-14 Z" fill="#FF7FB0"/>
+  <ellipse cx="0" cy="-108" rx="60" ry="13" fill="#E64C86"/>
+  <ellipse cx="0" cy="-106" rx="52" ry="9" fill="#8A5A33"/>
+  <circle cx="-26" cy="-60" r="9" fill="#fff" opacity=".85"/><circle cx="8" cy="-44" r="7" fill="#fff" opacity=".85"/><circle cx="30" cy="-74" r="8" fill="#fff" opacity=".85"/></g>`;
+}

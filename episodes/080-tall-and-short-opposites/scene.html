@@ -1,0 +1,125 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 80 - Tall and Short: tall/short, long/short, hot/cold, wet/dry. Title, one scene per pair, finale. */
+const SC=[0,4.5,14,23.5,33,42.5,49];
+const DUR=SC[SC.length-1];
+const CA='#FF5D8F', CB='#19B8A6', INK='#2D2A6E';
+const XL=320, XR=960, WY=160;
+const T1=.5, C1=.8, T2=3.6, C2=3.9, C3=6.7;
+const PAIRS=[['tall','short','The giraffe is tall','The turtle is short'],
+             ['long','short','The red crayon is long','The blue crayon is short'],
+             ['hot','cold','The cocoa is hot','The snowman is cold'],
+             ['wet','dry','Frog is wet','Bunny is dry']];
+const cap1=s=>s[0].toUpperCase()+s.slice(1);
+
+function hearts(lt,t0){
+  let s='';
+  for(let k=0;k<9;k++){const q=lt-(t0+k*.4);if(q>0){const y=610-q*120,x=110+k*132+25*Math.sin(q*2+k),o=clamp((y-50)/140)*clamp(q*3)*.9;
+    if(y>40)s+=heart(x,y,1+(k%3)*.25,['#FF5D8F','#FF9F1C','#FFFFFF'][k%3],o);}}
+  return s;
+}
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.4)):0;
+function words(p,lt){
+  const pl=lt>C3?1+.06*Math.sin((lt-C3)*6):1;
+  const w=(txt,x,col,t0,rot)=>{const s=pop(txt,x,WY,130,col,lt,t0,rot);return s&&pl!==1?`<g transform="translate(${x},${WY-45}) scale(${pl}) translate(${-x},${-(WY-45)})">${s}</g>`:s;};
+  return w(p[0],XL,CA,T1,-4)+w(p[1],XR,CB,T2,4);
+}
+function caps(p,lt){
+  if(lt>=C3)return caption(`${cap1(p[0])} and ${p[1]}!`,lt,C3);
+  if(lt>=C2)return caption(p[3],lt,C2);
+  return caption(p[2],lt,C1);
+}
+const bob=(lt,t0,k)=>lt>t0?jumps(lt,[t0+k*.25],.5,22):{y:0,sx:1,sy:1};
+const lulu=(t,lt,x,s,off,flipBefore=true)=>shadow(x,522,52*s/.85)+place(x,520,duck({eye:blink(t,off),wing:lt>C3?24*Math.abs(Math.sin(lt*9)):0}),{s,flip:flipBefore&&lt<T2});
+// umbrella canopy surface: where a raindrop at x stops (or null if it misses this umbrella)
+function canopyStop(x,ux,uy,s){const w=125*s, dx=x-ux; if(Math.abs(dx)>w)return null;
+  const rim=uy-170*s, top=uy-250*s; return rim-(rim-top)*Math.sqrt(1-(dx/w)*(dx/w));}
+function rain(t,umbs){
+  let s='';
+  for(let k=0;k<32;k++){
+    const x=20+k*40+((k*37)%17), ph=((k*0.613)%1);
+    for(let r=0;r<2;r++){
+      const u=((t*1.1+ph+r*.5)%1), y=u*560-30;
+      let stop=512; umbs.forEach(U=>{const c=canopyStop(x,U[0],U[1],U[2]); if(c!=null)stop=Math.min(stop,c);});
+      if(y<stop-6)s+=raindrop(x,y,.8,y<220?.45:.85);
+    }
+  }
+  return s;
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={noSun:true,noClouds:true},night=0,behind='',over='';
+  if(i===0){
+    o={noSun:true,noClouds:true};
+    const j=jumps(lt,[1.4,2.4],.6,30);
+    chars=shadow(200,524,90)+place(170,520,giraffe({eye:blink(t,.4),neck:4*Math.sin(lt*1.5)}),{s:.55});
+    chars+=shadow(1080,524,60)+place(1080,520,turtle({eye:blink(t,.9),step:lt*2}),{s:.8,flip:true});
+    chars+=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:20+20*Math.sin(lt*9),eye:blink(t,0)}),{s:1.1,sx:j.sx,sy:j.sy});
+    pops=pop('Even more opposites with',640,128,80,INK,lt,.3)+pop(LULU,640,262,140,'#FF5D8F',lt,.7,-3);
+  }else if(i<=4){
+    const p=PAIRS[i-1];
+    if(i===1){ // a tall giraffe and a short turtle
+      const gA=grow(lt,T1), gB=grow(lt,T2), jB=bob(lt,C3+.45,0);
+      const nod=lt>C3+.2?8*Math.sin((lt-C3-.2)*5)*clamp((C3+1.6-lt)*2):0;
+      if(gA>0)chars+=shadow(XL,524,100*gA)+place(XL-30,520,giraffe({eye:blink(t,.2),neck:nod}),{s:.6*gA});
+      if(gB>0)chars+=shadow(XR,524,64*gB,-jB.y)+place(XR,520+jB.y,turtle({eye:blink(t,.7),step:Math.sin(lt*2)}),{s:.85*gB,sx:jB.sx,sy:jB.sy,flip:true});
+      chars+=lulu(t,lt,650,.85,.3);
+    }else if(i===2){ // a long red crayon and a short blue crayon
+      const gA=grow(lt,T1), gB=grow(lt,T2), jA=bob(lt,C3+.2,0), jB=bob(lt,C3+.2,1);
+      if(gA>0)chars+=shadow(XL-20,524,200*gA,-jA.y)+place(XL-20,520+jA.y,crayon(0,0,440,'#E63946','#B5222D'),{s:gA});
+      if(gB>0)chars+=shadow(XR,524,70*gB,-jB.y)+place(XR,520+jB.y,crayon(0,0,150,'#3FA9F5','#1F7BC2'),{s:gB});
+      chars+=lulu(t,lt,670,.85,.6);
+    }else if(i===3){ // a hot cup of cocoa and a cold snowman
+      const gA=grow(lt,T1), gB=grow(lt,T2), jA=bob(lt,C3+.2,0);
+      if(gA>0)chars+=shadow(XL,524,70*gA,-jA.y)+place(XL,520+jA.y,mug(0,0,1,t,clamp((lt-T1-.3)*2)),{s:1.15*gA});
+      if(gB>0){
+        chars+=`<ellipse cx="${XR}" cy="522" rx="${150*gB}" ry="${20*gB}" fill="#FFFFFF"/><ellipse cx="${XR}" cy="518" rx="${110*gB}" ry="${12*gB}" fill="#F4F9FF"/>`;
+        let fl='';for(let k=0;k<7;k++){const u=((lt*.18+k/7)%1), fx=XR-140+k*45+18*Math.sin(lt*1.3+k), fy=240+u*270;
+          fl+=snowflake(fx,fy,.7,lt*40+k*20,Math.sin(u*Math.PI)*gB);}
+        chars+=fl+place(XR,522,snowman({eye:blink(t,.5),arm:lt>C3?.5+.5*Math.sin(lt*7):0}),{s:.85*gB});
+      }
+      chars+=lulu(t,lt,650,.85,.1);
+    }else{ // rain: Frog is wet in the puddle, Bunny is dry under an umbrella, Lulu has her umbrella too
+      const gB=grow(lt,T2-.6), jA=bob(lt,C3+.2,0), ub=[1010,470,.95*gB];
+      props=`<rect width="1280" height="720" fill="#5A6C8C" opacity=".18"/>`+puddle(XL,526,150);
+      chars+=shadow(XL,522,58,-jA.y)+place(XL,520+jA.y,frog({eye:blink(t,.4)}),{s:.85,sx:jA.sx,sy:jA.sy});
+      chars+=shadow(XR,522,44)+place(XR,520,bunny({eye:blink(t,.8),ear:lt>C3?6*Math.sin(lt*6):0}),{s:.8});
+      if(gB>0)chars+=umbrella(ub[0],ub[1],ub[2],1,0);
+      chars+=shadow(640,522,52)+place(640,520,duck({eye:blink(t,.5)}),{s:.85,flip:lt<T2})+umbrella(670,458,.95,1,0);
+      chars+=rain(t,gB>0?[[670,458,.95],ub]:[[670,458,.95]]);
+    }
+    pops=words(p,lt);
+    cap=caps(p,lt);
+  }else{
+    o={noClouds:true};
+    const j=jumps(lt,[2.6,3.7,4.8],.6,35), jb=jumps(lt,[2.9,4.0,5.1],.55,30);
+    props=hearts(lt,2.4);
+    chars=shadow(300,522,46,-jb.y)+place(300,520+jb.y,bunny({eye:blink(t,.4)}),{s:.85,sx:jb.sx,sy:jb.sy});
+    chars+=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:25+25*Math.sin(lt*10),eye:blink(t,0)}),{s:1.05,sx:j.sx,sy:j.sy});
+    chars+=shadow(960,522,56,-jb.y)+place(960,520+jb.y,frog({eye:blink(t,1.1)}),{s:.85,sx:jb.sx,sy:jb.sy});
+    pops=pop('Well done!',640,170,120,'#FF9F1C',lt,.4,-3);
+    cap=caption('Opposites are fun!',lt,1.6);
+  }
+  svg.innerHTML=bg(t,night,behind,o)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(230,664,120)+place(200,660,giraffe({}),{s:.78});
+  s+=shadow(1080,664,80)+place(1080,660,turtle({}),{s:1.05,flip:true});
+  s+=shadow(640,662,130)+place(640,658,duck({wing:22}),{s:1.75});
+  s+=label('tall',150,215,120,CA,-5)+label('short',1080,450,110,CB,4);
+  s+=label('Opposites',640,110,96,INK)+label(LULU,640,215,90,'#FF5D8F',-3);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
