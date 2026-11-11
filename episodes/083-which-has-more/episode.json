@@ -1,0 +1,104 @@
+{
+  "number": 83,
+  "slug": "which-has-more",
+  "format": "learning",
+  "ages": "3-7",
+  "title": "Which Has More? Counting with Lulu | Learn Numbers for Kids",
+  "description": "Lulu counts two groups and finds which one has more: apples, balls, strawberries and oranges.\n\nCount along out loud, and find the time when both groups are the same.\n\nA short, gentle numbers video for children aged 3 to 7.",
+  "duration": 55,
+  "seed": 83,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.7,
+      "type": "sparkle"
+    },
+    {
+      "t": 8.15,
+      "type": "pop"
+    },
+    {
+      "t": 10.05,
+      "type": "pop"
+    },
+    {
+      "t": 12.1,
+      "type": "sparkle"
+    },
+    {
+      "t": 18.6,
+      "type": "pop"
+    },
+    {
+      "t": 22.7,
+      "type": "pop"
+    },
+    {
+      "t": 23.1,
+      "type": "sparkle"
+    },
+    {
+      "t": 31.25,
+      "type": "pop"
+    },
+    {
+      "t": 33.15,
+      "type": "pop"
+    },
+    {
+      "t": 34.1,
+      "type": "sparkle"
+    },
+    {
+      "t": 40.6,
+      "type": "pop"
+    },
+    {
+      "t": 43.6,
+      "type": "pop"
+    },
+    {
+      "t": 45.1,
+      "type": "sparkle"
+    },
+    {
+      "t": 51.0,
+      "type": "sparkle"
+    },
+    {
+      "t": 51.1,
+      "type": "boing_high"
+    }
+  ],
+  "check_times": [
+    1.5,
+    3.5,
+    6.0,
+    8.45,
+    10.35,
+    12.5,
+    12.85,
+    15.0,
+    17.0,
+    18.9,
+    23.0,
+    23.5,
+    23.85,
+    26.0,
+    28.0,
+    31.55,
+    33.45,
+    34.5,
+    34.85,
+    37.0,
+    39.0,
+    40.9,
+    43.9,
+    45.5,
+    45.85,
+    48.0,
+    50.0,
+    51.8,
+    53.5
+  ]
+}

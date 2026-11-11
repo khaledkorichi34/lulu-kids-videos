@@ -1,0 +1,120 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 83 - Which Has More? Two groups, count each side, compare. Title, four questions, finale. */
+const SC=[0,4.5,15.5,26.5,37.5,48.5,55];
+const DUR=SC[SC.length-1];
+const INK='#2D2A6E', CA='#FF5D8F', CB='#19B8A6';
+const XL=300, XR=980, WY=165, BY=385;
+const C1=.5, LC=2.0, RC=5.0, STEP=.55, A=7.6;
+const WORDS=['zero','one','two','three','four','five'];
+const Cap=s=>s[0].toUpperCase()+s.slice(1);
+// item kinds: draw(x, ground y, bounce) and spacing
+const KINDS={
+  apple:{sp:105, draw:(x,y)=>apple(x,y,.55)},
+  ball:{sp:88, draw:(x,y,r)=>ball(x,y,34,0)},
+  strawberry:{sp:78, draw:(x,y)=>strawberry(x,y,.48)},
+  orange:{sp:130, draw:(x,y)=>orange(x,y,.6)}
+};
+const QS=[{k:'apple',n:[3,1]},{k:'ball',n:[2,4]},{k:'strawberry',n:[5,3]},{k:'orange',n:[2,2]}];
+const xs=(cx,n,sp)=>Array.from({length:n},(_,k)=>cx+(k-(n-1)/2)*sp);
+
+function badge(x,y,num,col,lt,t0){
+  const u=prog(lt,t0,t0+.3);if(u<=0)return '';
+  const s=back(u);
+  return `<g transform="translate(${x},${y}) scale(${s})"><circle r="27" fill="#fff" stroke="${col}" stroke-width="6"/><text y="12" text-anchor="middle" font-size="34" fill="${col}">${num}</text></g>`;
+}
+function hearts(lt,t0){
+  let s='';
+  for(let k=0;k<9;k++){const q=lt-(t0+k*.4);if(q>0){const y=610-q*120,x=110+k*132+25*Math.sin(q*2+k),o=clamp((y-50)/140)*clamp(q*3)*.9;
+    if(y>40)s+=heart(x,y,1+(k%3)*.25,['#FF5D8F','#FF9F1C','#FFFFFF'][k%3],o);}}
+  return s;
+}
+function ring(cx,w,lt,t0){ // soft glow and sparkles around the winning group
+  const u=prog(lt,t0,t0+.4);if(u<=0)return '';
+  let s=`<ellipse cx="${cx}" cy="470" rx="${w*back(u)}" ry="${95*back(u)}" fill="#FFF3B0" opacity=".55"/>`;
+  for(let k=0;k<6;k++){const a=k/6*6.283+lt*.8;s+=sparkle(cx+Math.cos(a)*(w+10),465+Math.sin(a)*85,1+.3*Math.sin(lt*5+k),u);}
+  return s;
+}
+function group(Q,side,lt){
+  const K=KINDS[Q.k], n=Q.n[side], cx=side?XR:XL, X=xs(cx,n,K.sp);
+  const tIn=side?.9:.4, tCount=side?RC:LC, col=side?CB:CA;
+  const L=Q.n[0],R=Q.n[1], win=L===R||(side?R>L:L>R);
+  let s='',b='';
+  X.forEach((x,k)=>{
+    const g=back(prog(lt,tIn+k*.18,tIn+k*.18+.4));if(g<=0)return;
+    const j=lt>A&&win?jumps(lt,[A+.2+k*.12,A+1.4+k*.12],.5,26):{y:0,sx:1,sy:1};
+    s+=shadow(x,524,30*g,-j.y)+place(x,520+j.y,K.draw(0,0,lt*20),{s:g,sx:j.sx,sy:j.sy});
+    b+=badge(x,BY,k+1,col,lt,tCount+k*STEP);
+  });
+  s+=b;
+  return s;
+}
+function question(Q,t,lt){
+  const L=Q.n[0],R=Q.n[1], same=L===R;
+  const K=KINDS[Q.k];
+  let props='',chars='',pops='',cap='';
+  if(lt>A){
+    if(same){props+=ring(XL,(L-1)*K.sp/2+90,lt,A)+ring(XR,(R-1)*K.sp/2+90,lt,A);}
+    else{const w=L>R?0:1;props+=ring(w?XR:XL,(Q.n[w]-1)*K.sp/2+90,lt,A);}
+  }
+  chars+=group(Q,0,lt)+group(Q,1,lt);
+  // Lulu in the middle looks at the side being counted, jumps at the answer
+  const lookR=lt>=RC-.3&&lt<A;
+  const j=jumps(lt,[A+.3,A+1.5],.6,30);
+  chars+=shadow(640,522,50,-j.y)+place(640,520+j.y,duck({eye:blink(t,.3),wing:lt>A?22+22*Math.sin(lt*10):0}),{s:.75,sx:j.sx,sy:j.sy,flip:!lookR&&lt<A});
+  const pl=(x,num,col,t0)=>pop(String(num),x,WY,140,col,lt,t0);
+  pops+=pl(XL,L,CA,LC+L*STEP)+pl(XR,R,CB,RC+R*STEP);
+  if(lt>A){
+    if(same)pops+=pop('same',640,WY-10,80,'#FF9F1C',lt,A,-3);
+  }
+  if(lt>=A){
+    if(same)cap=caption(`${Cap(WORDS[L])} and ${WORDS[R]} are the same!`,lt,A);
+    else{const big=Math.max(L,R),sm=Math.min(L,R);cap=caption(`${Cap(WORDS[big])} is more than ${WORDS[sm]}!`,lt,A);}
+  }else cap=caption('Which has more?',lt,C1);
+  return [props,chars,pops,cap];
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={noSun:true,noFlowers:true,noClouds:true};
+  if(i===0){
+    const j=jumps(lt,[1.4,2.4],.6,30);
+    chars=shadow(330,524,26)+place(330,520,apple(0,0,.55),{s:1})+shadow(430,524,26)+place(430,520,apple(0,0,.55),{s:1});
+    chars+=shadow(900,524,26)+place(900,520,apple(0,0,.55),{s:1});
+    chars+=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:20+20*Math.sin(lt*9),eye:blink(t,0)}),{s:1,sx:j.sx,sy:j.sy});
+    pops=pop('Which has more?',640,128,86,INK,lt,.3)+pop(LULU,640,262,120,'#FF5D8F',lt,.8,-3);
+  }else if(i<=4){
+    [props,chars,pops,cap]=question(QS[i-1],t,lt);
+  }else{
+    o={noSun:true,noClouds:true};
+    const j=jumps(lt,[2.6,3.7,4.8],.6,35), jb=jumps(lt,[2.9,4.0,5.1],.55,30);
+    props=hearts(lt,2.4);
+    chars=shadow(300,522,46,-jb.y)+place(300,520+jb.y,bunny({eye:blink(t,.4)}),{s:.85,sx:jb.sx,sy:jb.sy});
+    chars+=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:25+25*Math.sin(lt*10),eye:blink(t,0)}),{s:1.05,sx:j.sx,sy:j.sy});
+    chars+=shadow(960,522,56,-jb.y)+place(960,520+jb.y,frog({eye:blink(t,1.1)}),{s:.85,sx:jb.sx,sy:jb.sy});
+    pops=pop('Well done!',640,170,120,'#FF9F1C',lt,.4,-3);
+    cap=caption('Great counting!',lt,1.6);
+  }
+  svg.innerHTML=bg(t,0,'',o)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=`<ellipse cx="225" cy="600" rx="210" ry="90" fill="#FFF3B0" opacity=".55"/>`;
+  [100,225,350].forEach(x=>{s+=shadow(x,644,44)+apple(x,640,.8);});
+  s+=shadow(1080,644,44)+apple(1080,640,.8);
+  s+=shadow(660,662,110)+place(660,658,duck({wing:22}),{s:1.45});
+  s+=label("3",225,410,140,CA)+label('1',1080,410,140,CB);
+  s+=label('Which has more?',640,120,100,INK)+label(LULU,640,230,90,'#FF5D8F',-3);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
