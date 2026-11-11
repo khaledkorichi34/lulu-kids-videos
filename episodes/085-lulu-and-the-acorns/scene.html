@@ -1,0 +1,171 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 85 - Lulu and the Acorns. On an autumn day Squirrel runs by. She is busy: she needs acorns
+   for winter. Lulu says: I can help! Lulu finds one acorn in the leaves, two by the rock, and three when
+   one drops from the tree (plop!). Squirrel carries each one to the basket. One, two, three acorns!
+   Thank you, Lulu! The sun goes down and Lulu and Squirrel sleep under the tree. Good night. */
+const DUR=58, SC=[0,5,11,17,24,31,38,45,51,58];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', BLUE='#2979E8', GOLD='#FFE58A', ORANGE='#FF9F1C', TEAL='#19B8A6', BROWN='#A65D2A';
+const BX=150;                                   // basket x (scenes 3 to 6)
+const SLOT=[-30,0,30];                          // acorn places in the basket
+
+// Lulu (s 1); flip = faces left
+const lulu=(lt,t,o={})=>{
+  const x=o.x, j=jumps(lt,o.hops||[],o.d||.6,o.h||22), w=o.wave?20+20*Math.sin(lt*9):(o.wing!=null?o.wing:-20+6*Math.sin(lt*3));
+  return shadow(x,522,58,-j.y)+place(x,520+j.y,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),{s:1,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0,flip:o.flip});
+};
+// Squirrel (s .85); run = true bobs and moves the legs; flip = faces left
+const sq=(lt,t,o={})=>{
+  const x=o.x, j=jumps(lt,o.hops||[],.45,o.h||26), bob=o.run?-Math.abs(Math.sin(lt*10))*10:0;
+  return shadow(x,522,48,-(j.y+bob))+place(x,520+j.y+bob,squirrel({eye:o.eye!=null?o.eye:blink(t,1.3),tail:o.tail!=null?o.tail:Math.sin(t*2.2)*.6,acorn:o.acorn,step:o.run?lt*18:0,asleep:o.asleep,dig:o.dig||0}),{s:.85,sx:j.sx,sy:j.sy*(o.sy||1),flip:o.flip});
+};
+// basket with n acorns in it (acorns drawn first so the basket front hides their bottoms)
+function basket(x,n,lt,hop){
+  let s='';
+  for(let k=0;k<n;k++){const hy=hop?hop(k):0; s+=acorn(x+SLOT[k],468+hy,.95,(k-1)*8);}
+  return shadow(x,522,66,0)+s+picnicBasket(x,520,.8,0);
+}
+// a few autumn leaves drifting down; o = opacity
+function leaves(t,o=1){
+  if(o<=0)return '';
+  let s='';
+  for(let k=0;k<7;k++){const x0=(k*181+60)%1280, sp=34+(k%3)*9, y=((t*sp+k*97)%600)-40, x=x0+30*Math.sin(t*.8+k);
+    s+=`<g opacity="${o}">${autumnLeaf(x,y,.9,t*40+k*50,AUTUMN[k%3])}</g>`;}
+  return s;
+}
+// carry: squirrel at home x H facing right runs to the acorn at A, picks it up, runs back and drops it in the basket
+// times: go a..b, pick b..c, back c..d, drop d..d+.5
+function carry(lt,t,A,a,b,c,d,n){
+  const PK=A-50, H=300;
+  let x=H, flip=false, acornHeld=false, run=false;
+  if(lt<a){x=H;}
+  else if(lt<b){x=lerp(H,PK,eio(prog(lt,a,b)));run=true;}
+  else if(lt<c){x=PK;acornHeld=lt>b+.25;}
+  else if(lt<d){x=lerp(PK,H,eio(prog(lt,c,d)));flip=true;acornHeld=true;run=true;}
+  else {x=H;flip=lt<d+1.4;}
+  let fly='';
+  const u=prog(lt,d,d+.5);
+  if(lt>=d&&u<1){const sx=H-51, sy=478, ex=BX+SLOT[n-1], ey=468;
+    fly=acorn(lerp(sx,ex,u),lerp(sy,ey,u)-Math.sin(u*Math.PI)*70,.95,u*360);}
+  const inBasket=lt>=d+.5?n:n-1;
+  return {sq:sq(lt,t,{x,flip,acorn:acornHeld,run,hops:lt>d+.6?[d+.7]:[],h:22}), fly, inBasket, onGround:lt<b+.25};
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,lf=1,props='',chars='',pops='',cap='',behind='',front='';
+  switch(i){
+  case 0:{
+    // title
+    props=autumnTree(1010,520,.9)+leafPile(780,522,1,.6);
+    chars=lulu(lt,t,{x:470,hops:[2.8],h:16,wave:lt>1&&lt<2.6});
+    pops=pop(`${LULU}<tspan fill="${NAVY}"> and the Acorns</tspan>`,600,170,74,PINK,lt,.4,-2);
+    break;}
+  case 1:{
+    // Squirrel runs by. She is busy, busy!
+    const u=prog(lt,.3,2.4), x=lerp(1400,820,eio(u)), run=lt>.3&&lt<2.4;
+    props=autumnTree(1010,520,.9);
+    chars=lulu(lt,t,{x:430,hops:[3.0],h:18,wave:lt>3.4&&lt<5})+sq(lt,t,{x,flip:true,run,hops:[4.2],h:24,tail:run?Math.sin(lt*12)*.8:undefined});
+    cap=lt<3?caption('Squirrel runs by.',lt,.3):caption('She is busy, busy!',lt,3);
+    pops=pop('Hello, Squirrel!',600,165,84,ORANGE,lt,2.6,-3);
+    break;}
+  case 2:{
+    // Squirrel needs acorns for winter. Lulu: I can help!
+    props=autumnTree(1010,520,.9);
+    chars=lulu(lt,t,{x:430,hops:[3.4,4.1],h:22,wing:lt>3.3?16:undefined})+sq(lt,t,{x:820,flip:true,dig:lt>.8&&lt<2.6?.15:0});
+    cap=lt<3.1?caption('She needs acorns for winter.',lt,.3):caption('Lulu says, I can help!',lt,3.1);
+    pops=pop('I can help!',470,165,96,PINK,lt,3.3,-3);
+    break;}
+  case 3:{
+    // Look in the leaves! One acorn!
+    const c=carry(lt,t,560,2.2,3.0,3.4,4.4,1);
+    const wob=lt>1.0&&lt<1.8?1+.06*Math.sin((lt-1)*24):1;
+    let puff='';for(let k=0;k<4;k++){const q=prog(lt,1.1,2.4);if(q>0&&q<1)puff+=autumnLeaf(760+(k-1.5)*50*q*2,460-Math.sin(q*Math.PI)*90-k*6,.9,q*300+k*60,AUTUMN[k%3]);}
+    const pa=prog(lt,1.2,1.9), ax=lerp(740,560,pa), ay=lerp(470,520,pa)-Math.sin(pa*Math.PI)*80;
+    const groundAcorn=(lt>=1.2&&c.onGround)?acorn(ax,ay,1.15,pa*300):'';
+    props=basket(BX,c.inBasket,lt)+groundAcorn+leafPile(760,522,1,.7*wob)+puff;
+    chars=c.sq+lulu(lt,t,{x:1000,flip:true,hops:[.8,5.0],h:18});
+    front=c.fly;
+    cap=lt<4.4?caption('Look in the leaves!',lt,.3):caption('One acorn!',lt,4.4);
+    pops=pop('One!',560,165,110,ORANGE,lt,4.6,-4);
+    break;}
+  case 4:{
+    // Look by the rock! Two acorns!
+    const c=carry(lt,t,560,2.2,3.0,3.4,4.4,2);
+    const pa=prog(lt,1.0,2.0), ax=lerp(790,560,eout(pa));
+    const groundAcorn=(lt>=1.0&&c.onGround)?acorn(ax,520,1.15,-pa*420):'';
+    props=basket(BX,c.inBasket,lt)+groundAcorn+rock(800,522,.8);
+    chars=c.sq+lulu(lt,t,{x:1010,flip:true,hops:[5.0],h:18,rot:lt>.4&&lt<1.4?6:0});
+    front=c.fly;
+    cap=lt<4.4?caption('Look by the rock!',lt,.3):caption('Two acorns!',lt,4.4);
+    pops=pop('Two!',560,165,110,TEAL,lt,4.6,-4);
+    break;}
+  case 5:{
+    // Plop! One falls from the tree. Three acorns!
+    const c=carry(lt,t,700,2.2,3.0,3.4,4.4,3);
+    const pa=prog(lt,.9,1.5), ay=lerp(350,520,pa*pa);
+    const bounce=lt>1.5&&lt<1.9?-Math.sin((lt-1.5)/.4*Math.PI)*16:0;
+    const groundAcorn=(lt>=.9&&c.onGround)?acorn(700,ay+bounce,1.15,0):'';
+    props=autumnTree(820,520,.9)+basket(BX,c.inBasket,lt)+groundAcorn;
+    chars=c.sq+lulu(lt,t,{x:1080,flip:true,hops:[1.6,5.0],h:18});
+    front=c.fly;
+    cap=lt<4.4?caption('Plop! From the tree.',lt,.3):caption('Three acorns!',lt,4.4);
+    pops=lt<4.4?pop('Plop!',420,165,100,BROWN,lt,1.5,-4):pop('Three!',420,165,110,PURPLE,lt,4.6,-4);
+    break;}
+  case 6:{
+    // one, two, three acorns. Thank you, Lulu!
+    const hop=k=>{const q=lt-.8-k*.8;return q>0&&q<.5?-Math.sin(q/.5*Math.PI)*34:0;};
+    let hearts='';
+    if(lt>3.6){for(let k=0;k<3;k++){const q=lt-3.6-k*.35;if(q>0&&q<2.6)hearts+=heart(470+k*80,330-q*50,1.1,['#FF5D8F','#FF8FB3','#FF5D8F'][k],Math.sin(Math.PI*q/2.6));}}
+    let nums='';
+    ['1','2','3'].forEach((d,k)=>{const q=lt-.8-k*.8;if(q>0)nums+=pop(d,BX+SLOT[k]*2,385,58,[ORANGE,TEAL,PURPLE][k],lt,.8+k*.8,0);});
+    props=hearts+basket(BX,3,lt,hop)+nums;
+    chars=sq(lt,t,{x:330,hops:[3.8,4.5],h:26})+lulu(lt,t,{x:640,flip:true,hops:[4.0],h:18,wave:lt>4.4&&lt<6});
+    cap=lt<3.4?caption('One, two, three acorns!',lt,.3):caption('Thank you, Lulu!',lt,3.4);
+    pops=pop('Hooray!',800,165,100,ORANGE,lt,3.6,-4);
+    break;}
+  case 7:{
+    // the sun goes down
+    n=lerp(0,.45,eio(prog(lt,.3,5.6))); lf=1-prog(lt,0,1.5);
+    behind=sun(t,1150,lerp(250,560,eio(prog(lt,.3,5.6))));
+    props=autumnTree(200,520,.9)+basket(400,3,lt);
+    chars=lulu(lt,t,{x:620,eye:lt>3.4?.5:undefined})+sq(lt,t,{x:830,flip:true,eye:lt>3.6?.5:undefined,tail:.2});
+    cap=lt<3.2?caption('The sun goes down.',lt,.3):caption('Bye-bye, busy day!',lt,3.2);
+    pops=pop('Yawn!',620,170,96,PURPLE,lt,3.8,-3);
+    break;}
+  case 8:{
+    // night: Lulu and Squirrel sleep under the tree
+    n=lerp(.45,1,eio(prog(lt,0,4))); lf=0;
+    const asleep=lt>1.4, br=k=>1+.025*Math.sin(lt*2.2+k);
+    props=autumnTree(200,520,.9)+basket(400,3,lt);
+    chars=lulu(lt,t,{x:620,asleep,eye:.45,sy:br(0),rot:asleep?-3:0})+sq(lt,t,{x:830,flip:true,asleep,eye:.45,sy:br(1),tail:.2});
+    for(let k=0;k<3;k++){let q=lt-2.0-k*.9;if(q>0){q%=2.7;
+      pops+=`<text x="${730-q*24+8*Math.sin(q*3)}" y="${320-q*30}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}
+    cap=caption('Good night, Lulu and Squirrel.',lt,.5);
+    pops+=pop('The End',640,150,112,GOLD,lt,3.8,-3,NAVY);
+    break;}
+  }
+  const back_=bg(t,n,(i<7?cloud(95+6*Math.sin(t*.3),255,.7,.95):'')+behind,{noSun:true,noFlowers:true,noMoon:i<8,noClouds:true});
+  svg.innerHTML=back_+props+leaves(t,lf*(i<7?.9:.9))+chars+front+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,'',{noSun:true,noFlowers:true,noClouds:true});
+  s+=cloud(160,70,.9,1);
+  s+=autumnTree(1130,700,1.05);
+  [[60,300],[250,380],[700,340],[1000,420],[150,470]].forEach((p,k)=>{s+=autumnLeaf(p[0],p[1],1.2,k*70,AUTUMN[k%3]);});
+  s+=`<ellipse cx="330" cy="664" rx="80" ry="14" fill="#1c4d1c" opacity=".22"/>`+place(330,662,duck({wing:20}),{s:1.3});
+  s+=place(640,662,`${acorn(-36,-62,1.2,-8)+acorn(0,-62,1.2,0)+acorn(36,-62,1.2,8)}`+picnicBasket(0,0,1,0),{s:1.05});
+  s+=`<ellipse cx="900" cy="664" rx="70" ry="12" fill="#1c4d1c" opacity=".22"/>`+place(900,662,squirrel({acorn:true,tail:.3}),{s:1.35,flip:true});
+  s+=label(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,640,130,92,PINK,-2);
+  s+=label(`<tspan fill="${ORANGE}">Acorns</tspan>`,640,240,110,ORANGE,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

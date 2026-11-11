@@ -1,0 +1,104 @@
+{
+  "number": 85,
+  "slug": "lulu-and-the-acorns",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and the Acorns | Bedtime Story for Kids",
+  "description": "Squirrel is busy on an autumn day: she needs acorns for winter. Lulu the duck helps!\nThey find one acorn in the leaves, two by the rock and three under the tree. Thank you, Lulu!\nThe sun goes down and Lulu and Squirrel sleep under the tree. Good night.\nA calm bedtime story for children aged 3 to 6.",
+  "duration": 58,
+  "seed": 85,
+  "lullaby_from": 51.0,
+  "sfx": [
+    {
+      "t": 0.4,
+      "type": "pop"
+    },
+    {
+      "t": 7.6,
+      "type": "sparkle"
+    },
+    {
+      "t": 14.3,
+      "type": "pop"
+    },
+    {
+      "t": 18.0,
+      "type": "boing_low"
+    },
+    {
+      "t": 18.2,
+      "type": "pop"
+    },
+    {
+      "t": 21.9,
+      "type": "ding"
+    },
+    {
+      "t": 25.0,
+      "type": "pop"
+    },
+    {
+      "t": 28.9,
+      "type": "ding"
+    },
+    {
+      "t": 32.5,
+      "type": "boing_low"
+    },
+    {
+      "t": 35.9,
+      "type": "ding"
+    },
+    {
+      "t": 38.8,
+      "type": "pop"
+    },
+    {
+      "t": 39.6,
+      "type": "pop"
+    },
+    {
+      "t": 40.4,
+      "type": "pop"
+    },
+    {
+      "t": 41.6,
+      "type": "sparkle"
+    },
+    {
+      "t": 54.8,
+      "type": "sparkle"
+    }
+  ],
+  "check_times": [
+    1.0,
+    3.0,
+    7.8,
+    9.5,
+    14.5,
+    18.3,
+    19.0,
+    20.5,
+    21.6,
+    22.6,
+    25.4,
+    26.8,
+    27.6,
+    28.6,
+    29.5,
+    32.0,
+    32.6,
+    34.6,
+    35.6,
+    37.5,
+    39.5,
+    41.0,
+    42.5,
+    44.5,
+    47.0,
+    50.0,
+    53.0,
+    56.0,
+    57.5
+  ]
+}
