@@ -30,19 +30,21 @@ function shadow(x,y,w,lift=0){
 }
 
 /* ---------- characters (origin at feet) ---------- */
+// duck({wing,eye,asleep,body,belly,wingCol}): Lulu by default. body/belly/wingCol = optional colours
+// (episode 87 draws a white Mummy Duck with body '#FFFFFF', belly '#F1F4F8', wingCol '#DDE3EC').
 function duck(o={}){
-  const wing=o.wing||0, e=o.eye==null?1:o.eye;
+  const wing=o.wing||0, e=o.eye==null?1:o.eye, B=o.body||'#FFD23F', BL=o.belly||'#FFE785', W=o.wingCol||'#F5B301';
   const eye=o.asleep
     ?`<path d="M47,-119 Q56,-110 65,-119" stroke="#3a2a1a" stroke-width="4.5" fill="none" stroke-linecap="round"/>`
     :`<g transform="translate(56,-120) scale(1,${e})"><circle r="8.5" fill="#2b1d12"/><circle cx="2.8" cy="-3" r="3" fill="#fff"/></g>`;
   return `
   <ellipse cx="-16" cy="-5" rx="17" ry="8" fill="#FF8C1A"/><ellipse cx="18" cy="-5" rx="17" ry="8" fill="#FF8C1A"/>
-  <path d="M-48,-82 Q-98,-108 -74,-50 Z" fill="#FFD23F"/>
-  <ellipse cx="0" cy="-56" rx="62" ry="50" fill="#FFD23F"/>
-  <ellipse cx="8" cy="-40" rx="40" ry="28" fill="#FFE785" opacity=".75"/>
-  <path d="M34,-150 Q28,-174 45,-160 Q52,-178 56,-152 Z" fill="#FFD23F"/>
-  <circle cx="42" cy="-114" r="40" fill="#FFD23F"/>
-  <g transform="rotate(${wing} 14 -66)"><ellipse cx="-10" cy="-56" rx="30" ry="21" fill="#F5B301"/></g>
+  <path d="M-48,-82 Q-98,-108 -74,-50 Z" fill="${B}"/>
+  <ellipse cx="0" cy="-56" rx="62" ry="50" fill="${B}"/>
+  <ellipse cx="8" cy="-40" rx="40" ry="28" fill="${BL}" opacity=".75"/>
+  <path d="M34,-150 Q28,-174 45,-160 Q52,-178 56,-152 Z" fill="${B}"/>
+  <circle cx="42" cy="-114" r="40" fill="${B}"/>
+  <g transform="rotate(${wing} 14 -66)"><ellipse cx="-10" cy="-56" rx="30" ry="21" fill="${W}"/></g>
   <ellipse cx="88" cy="-104" rx="21" ry="10" fill="#FF8C1A"/>
   <path d="M70,-104 Q88,-98 107,-104" stroke="#D96B00" stroke-width="2.5" fill="none" stroke-linecap="round"/>
   <circle cx="38" cy="-95" r="9" fill="#FF9AA2" opacity=".75"/>
@@ -2011,4 +2013,17 @@ function underwater(t){
   [[90,598,14],[150,606,9],[1150,596,13],[1210,606,8],[520,580,7]].forEach(([x,y,r])=>{s+=`<ellipse cx="${x}" cy="${y}" rx="${r*1.4}" ry="${r}" fill="#B7A27A"/>`;});
   s+=seaweed(60,590,260,t,0)+seaweed(130,600,180,t,1,'#5CC85C')+seaweed(200,595,120,t,2)+seaweed(1100,592,220,t,3,'#5CC85C')+seaweed(1180,600,280,t,4)+seaweed(1240,596,150,t,5,'#5CC85C');
   return s;
+}
+
+/* ---------- webbed foot (episode 87) ---------- */
+// webFoot(x,y,s,rot,legLen): big orange duck foot for close-ups: the leg comes down from (x,y) and
+// the webbed foot (three toes joined by skin) spreads out below it. About 170 wide and legLen+110 tall
+// at s=1. rot = rotation in degrees around the top of the leg (for paddling).
+function webFoot(x,y,s=1,rot=0,legLen=70){
+  const L=legLen;
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})">
+  <rect x="-11" y="0" width="22" height="${L+8}" rx="11" fill="#F27A12"/>
+  <path d="M-10,${L} L-84,${L+86} Q-58,${L+70} -40,${L+92} Q-20,${L+78} 0,${L+106} Q20,${L+78} 40,${L+92} Q58,${L+70} 84,${L+86} L10,${L} Z" fill="#FF8C1A"/>
+  <path d="M0,${L+4} L-80,${L+84} M0,${L+4} L0,${L+102} M0,${L+4} L80,${L+84}" stroke="#D96B00" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <ellipse cx="-30" cy="${L+52}" rx="14" ry="6" fill="#FFB061" opacity=".7" transform="rotate(-40 -30 ${L+52})"/></g>`;
 }

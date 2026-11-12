@@ -1,0 +1,162 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 87 - Did you know? Duck facts. Lulu is a duck, so she shares facts about ducks.
+   Title (Lulu swims on the pond), fact 1 (ducks have webbed feet, close-up of a foot),
+   under the water: the feet paddle (paddle, paddle!), fact 2 (duck feathers are waterproof: rain rolls off),
+   Lulu dips under the water and comes up (her feathers keep her warm and dry),
+   fact 3 (baby ducks are called ducklings: Mummy Duck and three ducklings, peep peep),
+   ducklings follow their mum in a line, recap (webbed feet, waterproof, ducklings), bye bye. */
+const SC=[0,5.5,12.5,19,26,32.5,39,45.5,52,58], DUR=58;
+const NAVY='#2D2A6E', PURPLE='#7B5CFF', ORANGE='#E76F2E', GOLD='#FFE58A', BLUE='#1B7FD6';
+const PCX=640, WL=560, PRX=600, PRY=54;   // pond: centre, water line, radii (x 40..1240)
+const CLIPDEF=`<defs><clipPath id="aw"><rect x="0" y="0" width="1280" height="${WL+2}"/></clipPath></defs>`;
+const water=()=>`<ellipse cx="${PCX}" cy="${WL+4}" rx="${PRX}" ry="${PRY}" fill="#3FA3E0"/>
+  <ellipse cx="${PCX-10}" cy="${WL}" rx="${PRX*.93}" ry="${PRY*.8}" fill="#7DD3FA"/>
+  <ellipse cx="${PCX-330}" cy="${WL-18}" rx="70" ry="6" fill="#fff" opacity=".5"/>
+  <ellipse cx="${PCX+330}" cy="${WL+22}" rx="50" ry="5" fill="#fff" opacity=".4"/>`;
+const ripple=(x,lt,ph=0,w=70)=>{let s='';for(let k=0;k<2;k++){const q=((lt+ph+k*.9)%1.8)/1.8;
+  s+=`<ellipse cx="${x}" cy="${WL+4}" rx="${w*(.7+.6*q)}" ry="${11*(.7+.6*q)}" fill="none" stroke="#fff" stroke-width="3.5" opacity="${(1-q)*.7}"/>`;}return s;};
+// Lulu on the grass
+const lulu=(x,lt,t,o={})=>{
+  const j=jumps(lt,o.hops||[],.6,o.h||24), w=o.wave?20+20*Math.sin(lt*9):(o.wing||0), s=o.s||.95;
+  return shadow(x,522,58*s,-j.y)+place(x,520+j.y,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy,flip:o.flip});
+};
+// Lulu swimming on the pond (bottom of her body under the water); dip = 0..1 goes under
+const swim=(x,lt,t,o={})=>{
+  const w=o.wave?20+20*Math.sin(lt*9):6*Math.sin(lt*2), bob=3*Math.sin(lt*2.4), d=o.dip||0;
+  return ripple(x,lt,0,74)+`<g clip-path="url(#aw)">${place(x,WL+26+bob+d*190,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w}),{s:1,rot:2*Math.sin(lt*1.6)+d*25,flip:o.flip})}</g>`;
+};
+const MUM={body:'#FFFFFF',belly:'#EEF2F7',wingCol:'#DCE3EC'};
+const mum=(x,lt,t,o={})=>{
+  const st=o.walk?Math.abs(Math.sin(lt*6))*6:0;
+  return shadow(x,522,70)+place(x,520-st,duck(Object.assign({eye:blink(t,1.1),wing:o.wing||0},MUM)),{s:1.15,rot:o.walk?3*Math.sin(lt*6):0,flip:o.flip});
+};
+const duckling=(x,lt,t,k,o={})=>{
+  const j=jumps(lt,o.hops||[],.4,o.h||18), st=o.walk?Math.abs(Math.sin(lt*8+k))*5:0;
+  return shadow(x,522,28,-j.y)+place(x,520+j.y-st,duck({eye:blink(t,.5+k*.7),wing:o.wing||0}),{s:.45,sx:j.sx,sy:j.sy,rot:o.walk?4*Math.sin(lt*8+k):0,flip:o.flip});
+};
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.4)):0;
+let WIN=0;
+function closeWin(x,y,r,g,inner,bgc){
+  if(g<=0)return '';
+  const id='w'+(WIN++);
+  return `<g transform="translate(${x},${y}) scale(${g})"><defs><clipPath id="${id}"><circle r="${r}"/></clipPath></defs>
+  <g clip-path="url(#${id})"><circle r="${r}" fill="${bgc}"/>${inner}</g>
+  <circle r="${r}" fill="none" stroke="#fff" stroke-width="9"/></g>`;
+}
+// rain from a cloud at cx: drops fall onto Lulu's head (x, top y) and roll off her feathers to the ground
+function rainOff(cx,lx,lt,t0,t1){
+  let s='';if(lt<t0)return s;
+  for(let m=0;m<8;m++){const dx=[-70,-40,-10,20,50,-55,-25,35][m], ph=m*.27, x=cx+dx, st=t0+ph;
+    if(lt<st)continue;const cyc=1.3, q=((lt-st)%cyc)/cyc, born=lt-((lt-st)%cyc);if(born>t1)continue;
+    const off=x-(lx+20), side=off<0?-1:1, hitY=362+Math.abs(off)*.25;
+    if(q<.45){s+=raindrop(x,lerp(310,hitY,q/.45),.9,1);}
+    else{const u=(q-.45)/.55, px=x+side*95*eout(u), py=hitY+(516-hitY)*u*u;
+      s+=raindrop(px,py,.8,clamp((1-u)*3));}}
+  return s;}
+const hearts=(lt,t0,x,y)=>{let s='';for(let k=0;k<3;k++){const q=lt-t0-k*.5;if(q>0&&q<2.4){const u=q/2.4;
+  s+=heart(x+k*40+10*Math.sin(q*4+k),y-90*u,1,['#FF5D8F','#FF9F1C',PURPLE][k%3],Math.sin(Math.PI*u));}}return s;};
+
+function render(t){
+  WIN=0;
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={noSun:true},full=null;
+  if(i===0){
+    // title: Lulu swims on the pond and waves
+    props=CLIPDEF+water()+lilyPad(1070,WL-4);
+    chars=swim(lerp(260,560,eio(prog(lt,0,2.2))),lt,t,{wave:lt>2.4});
+    pops=pop('Did you know?',640,165,96,PURPLE,lt,.3,-3);
+    cap=caption('Fun duck facts with Lulu',lt,2.0);
+  }else if(i===1){
+    // fact 1: webbed feet (close-up window)
+    const g=grow(lt,1.2), r=Math.sin(lt*3)*6;
+    props=closeWin(820,375,135,g,`<rect x="-150" y="70" width="300" height="90" fill="#7CCB5E"/>`+webFoot(0,-121,1.3,r,60),'#BFE8FF');
+    chars=lulu(330,lt,t,{hops:[.6,4.8],h:22});
+    pops=pop('Fact 1',640,160,100,ORANGE,lt,.3);
+    cap=lt<3.6?caption('Ducks have webbed feet.',lt,.6):caption('Skin joins their toes together.',lt,3.6);
+  }else if(i===2){
+    // under the water: the feet paddle like flippers
+    const WS=330, x=lerp(420,780,eio(prog(lt,.3,6.3)));
+    full=underwater(t)+`<defs>${skyGrad('sk2','#5EC2FF','#DDF5FF')}</defs><rect width="1280" height="${WS}" fill="url(#sk2)"/>`
+      +cloud(((200+t*14)%1500)-110,110,1,1)+cloud(((900+t*9)%1500)-110,70,.8,1);
+    const a=Math.sin(lt*7)*20;
+    const feet=webFoot(x-34,WS+26,.8,10+a,40)+webFoot(x+30,WS+26,.8,-10-a,40);
+    let bub='';for(let k=0;k<6;k++){const q=((lt*.8+k/6)%1);bub+=bubble(x-120-k*30+10*Math.sin(q*6+k),WS+170-q*150,6+3*(k%2),Math.sin(Math.PI*q));}
+    chars=place(x,WS+44,duck({eye:blink(t,0),wing:6*Math.sin(lt*2)}),{s:1})
+      +`<rect x="0" y="${WS}" width="1280" height="${720-WS}" fill="#3FA3E0" opacity=".35"/>`+feet
+      +`<rect x="0" y="${WS-4}" width="1280" height="8" fill="#fff" opacity=".55"/>`+bub;
+    pops=lt>3.6?pop('Paddle, paddle!',640,165,90,GOLD,lt,3.6,-3,NAVY):'';
+    cap=lt<3.6?caption('Webbed feet push the water.',lt,.4):caption('They help ducks swim fast!',lt,3.6);
+  }else if(i===3){
+    // fact 2: waterproof feathers, the rain rolls off Lulu
+    props=rainCloud(640,250,.9,blink(t,2));
+    props+=rainOff(640,600,lt,1.0,5.8);
+    chars=lulu(600,lt,t,{});
+    pops=pop('Fact 2',640,135,90,ORANGE,lt,.3);
+    o.noFlowers=false;
+    cap=lt<3.6?caption('Duck feathers are waterproof.',lt,.6):caption('The rain rolls right off!',lt,3.6);
+  }else if(i===4){
+    // Lulu dips under the water and pops back up
+    props=CLIPDEF+water()+lilyPad(1070,WL-4);
+    const d=lt<1.6?0:lt<2.3?eio(prog(lt,1.6,2.0)):1-eout(prog(lt,2.6,3.1));
+    chars=swim(560,lt,t,{dip:d,wave:lt>4.4});
+    chars+=splash(560,WL,(lt-1.9)/.7,.9,70)+splash(560,WL,(lt-3.0)/.7,.9,70);
+    if(lt>3.4)chars+=sparkle(470,400,.7,Math.sin(Math.PI*prog(lt,3.4,5.4)))+sparkle(700,380,.6,Math.sin(Math.PI*prog(lt,3.6,5.6)));
+    pops=lt>3.1?pop('Splash!',640,165,96,BLUE,lt,3.1,-3):'';
+    cap=lt<3.6?caption('Lulu dips under the water.',lt,.4):caption('Her feathers keep her warm and dry.',lt,3.6);
+  }else if(i===5){
+    // fact 3: ducklings
+    chars=mum(320,lt,t,{wing:lt>4.6?12:0});
+    [620,760,900].forEach((x,k)=>{const t0=1.0+k*.6;if(lt>t0-.4){const xx=lerp(x+260,x,eout(prog(lt,t0-.4,t0+.6)));
+      chars+=duckling(xx,lt,t,k,{flip:true,hops:[t0-.4,t0+.1,4.0+k*.25],h:18});}});
+    pops=pop('Fact 3',640,160,100,ORANGE,lt,.3)+(lt>4.0?pop('Peep, peep!',780,300,64,GOLD,lt,4.0,-4,NAVY):'');
+    cap=lt<3.6?caption('Baby ducks are called ducklings.',lt,.6):caption('Ducklings say peep, peep!',lt,3.6);
+  }else if(i===6){
+    // ducklings follow their mum in a line
+    const x=lerp(440,800,prog(lt,.2,6.0));
+    chars=mum(x,lt,t,{walk:lt<6.0});
+    [150,250,350].forEach((dx,k)=>{chars+=duckling(x-dx-40,lt,t,k,{walk:lt<6.0});});
+    chars+=lulu(1110,lt,t,{flip:true,wave:lt>3.8,s:.85});
+    pops=lt>3.6?pop('In a line!',640,165,96,GOLD,lt,3.6,-3,NAVY):'';
+    cap=lt<3.6?caption('Ducklings follow their mum in a line.',lt,.4):caption('Follow, follow, one by one!',lt,3.6);
+  }else if(i===7){
+    const b=k=>1+.05*Math.sin(t*4+k*2), X=[300,640,980], Y=390, sky='#BFE8FF';
+    const gr='<rect x="-130" y="50" width="260" height="120" fill="#7CCB5E"/>';
+    props=closeWin(X[0],Y,118,grow(lt,.4)*b(0),gr+webFoot(0,-110,.8,Math.sin(t*3)*6,70),sky);
+    let dr='';for(let m=0;m<3;m++){const q=((t*.7+m/3)%1);dr+=raindrop(-50+m*50,lerp(-110,-40,q),.8,Math.sin(Math.PI*q));}
+    props+=closeWin(X[1],Y,118,grow(lt,1.4)*b(1),gr+dr+place(-10,95,duck({eye:blink(t,.8)}),{s:.75}),sky);
+    props+=closeWin(X[2],Y,118,grow(lt,2.4)*b(2),gr+place(-50,60,duck({eye:blink(t,1.6)}),{s:.4})+place(40,60,duck({eye:blink(t,2.2)}),{s:.4}),sky);
+    pops=pop('webbed feet',X[0],230,44,GOLD,lt,.4,0,NAVY)+pop('waterproof',X[1],230,44,GOLD,lt,1.4,0,NAVY)+pop('ducklings',X[2],230,44,GOLD,lt,2.4,0,NAVY);
+    cap=caption('Ducks are amazing!',lt,3.6);
+  }else{
+    props=CLIPDEF+water()+lilyPad(1070,WL-4);
+    const x=lerp(380,700,eio(prog(lt,.4,3.4)));
+    chars=swim(x,lt,t,{wave:lt>.8});
+    chars+=hearts(lt,3.2,x+60,420);
+    pops=pop('Bye bye!',640,165,100,GOLD,lt,.4,-3,NAVY);
+    cap=caption('Bye bye from Lulu!',lt,1.4);
+  }
+  if(o.noFlowers===undefined)o.noFlowers=(i!==3);
+  svg.innerHTML=(full!=null?full:bg(t,0,'',o))+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#6CC6FF','#CFF0FF')}${CLIP}${CLIPDEF.replace(/<\/?defs>/g,'')}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(140,120,1,1)+cloud(1130,110,.9,1);
+  s+=`<path d="M0,500 Q300,430 640,480 T1280,470 L1280,720 L0,720Z" fill="#8FD86E"/>`;
+  s+=`<ellipse cx="640" cy="640" rx="620" ry="60" fill="#3FA3E0"/><ellipse cx="630" cy="636" rx="580" ry="48" fill="#7DD3FA"/>`;
+  s+=place(830,660,duck(Object.assign({wing:10},MUM)),{s:1.25});
+  s+=place(1010,650,duck({}),{s:.5})+place(1110,650,duck({}),{s:.5});
+  s+=place(300,680,duck({wing:24}),{s:1.5});
+  s+=label('Did you know?',640,175,120,PURPLE,-3);
+  s+=label('Fun duck facts',640,295,100,'#fff',-2,ORANGE);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
