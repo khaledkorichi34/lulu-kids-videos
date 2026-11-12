@@ -1,0 +1,178 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 88 - Lulu and the Bird Feeder. On a snowy day Little Bird looks for seeds, but the snow is deep.
+   Lulu has a bird feeder and Pip the kitten brings a bag of seeds: pour, pour! Up on the tree it goes.
+   Now wait quietly. Tweet! Little Bird comes: peck, peck, peck. Friends come too: one, two, three birds.
+   Tweet, tweet! Thank you! The sun goes down, bye-bye birds, and Lulu and Pip sleep under the tree. */
+const DUR=58, SC=[0,5,11,18,24,31,38,44,51,58];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', BLUE='#2979E8', GOLD='#FFE58A', ORANGE='#FF9F1C', TEAL='#19B8A6', RED='#E63946';
+const HAT='#FF5D8F';
+const TX=1060, FX=840, FY=334, FS=.9;          // tree x, hanging feeder ring, feeder scale
+const GFX=640, GFY=520-112*FS;                   // feeder standing on the snow
+const shade=(x,w)=>`<ellipse cx="${x}" cy="522" rx="${w}" ry="${w*.18}" fill="#7F93B0" opacity=".25"/>`;
+const BIRD={blue:{}, red:{col:'#E63946',dark:'#B5222F',belly:'#FFD6D9'}, yellow:{col:'#FFC93C',dark:'#E0A400',belly:'#FFF2C2'}};
+
+function snowfall(t,o=1,count=18){
+  if(o<=0)return '';
+  let s='';for(let k=0;k<count;k++){const x0=(k*97+30)%1280, sp=26+(k%5)*6, y=((t*sp+k*61)%640)-30, x=x0+18*Math.sin(t*.9+k);
+    s+=snowflake(x,y,.45+(k%3)*.16,t*20+k*30,o*.85);}
+  return s;
+}
+function snowyTree(x,y,s=1){
+  return tree(x,y,s)+`<g transform="translate(${x},${y}) scale(${s})" fill="#fff">
+  <ellipse cx="0" cy="-384" rx="62" ry="16"/><ellipse cx="-66" cy="-402" rx="46" ry="12"/><ellipse cx="66" cy="-402" rx="46" ry="12"/>
+  <ellipse cx="-118" cy="-322" rx="34" ry="10"/><ellipse cx="118" cy="-322" rx="34" ry="10"/></g>`;
+}
+const treeAndBranch=()=>snowyTree(TX,520,.9)+branch(1030,300,820,288);
+const hungFeeder=fill=>`<line x1="${FX}" y1="291" x2="${FX}" y2="${FY-6}" stroke="#B98A5A" stroke-width="4"/>`+birdFeeder(FX,FY,FS,fill);
+// a few seeds lying on the snow under the feeder
+const groundSeeds=o=>{let s='';for(let k=0;k<9;k++){const x=545+k*22+(k%2)*6, y=517+(k%3)*2;s+=`<ellipse cx="${x}" cy="${y}" rx="6" ry="4" fill="${k%2?'#8A5A2B':'#C9A26B'}" opacity="${o}"/>`;}return s;};
+
+// Lulu: s 1 with a pink woolly hat
+const lulu=(lt,t,o={})=>{
+  const x=o.x!=null?o.x:330, j=jumps(lt,o.hops||[],o.d||.6,o.h||20), w=o.wave?20+20*Math.sin(lt*9):(o.wing!=null?o.wing:-25+6*Math.sin(lt*3));
+  return shade(x,58*(1-clamp(-j.y/260)*.5))+place(x,520+j.y,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep})+woollyHat(42,-138,.62,HAT),{s:1,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0});
+};
+// Pip the kitten: s .85
+const pip=(lt,t,o={})=>{
+  const x=o.x, j=jumps(lt,o.hops||[],o.d||.6,o.h||20);
+  return shade(x,46*(1-clamp(-j.y/260)*.5))+place(x,520+j.y,kitten({eye:o.eye!=null?o.eye:blink(t,1.3),tail:o.tail!=null?o.tail:Math.sin(t*3),asleep:o.asleep,tilt:o.tilt||0}),{s:.85,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0});
+};
+// a little bird (s .45): peck = 0..1 tips it forward, fly = flapping wings
+const birdy=(x,y,t,kind,o={})=>{
+  const wing=o.fly?40*Math.sin(t*18):(o.wing||0);
+  const rot=(o.peck||0)*28*(o.flip?-1:1);
+  return (o.noShade||y<500?'':shade(x,24))+`<g opacity="${o.op==null?1:o.op}">`+place(x,y,bird(Object.assign({eye:blink(t,o.off||0),wing},BIRD[kind])),{s:.45,rot,flip:o.flip})+'</g>';
+};
+const peckAt=(lt,a,period=.7)=>lt<a?0:Math.max(0,Math.sin((lt-a)*Math.PI*2/period));
+// flight from (x0,y0) to (x1,y1) over a..b with a soft arc up
+const fly=(lt,a,b,x0,y0,x1,y1,arc=60)=>{const u=eio(prog(lt,a,b));return [lerp(x0,x1,u),lerp(y0,y1,u)-Math.sin(u*Math.PI)*arc,u];};
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,fall=.6,props='',chars='',pops='',cap='',behind='',front='';
+  switch(i){
+  case 0:{
+    // title
+    props=treeAndBranch();
+    chars=lulu(lt,t,{x:470,hops:[2.8],h:16,wave:lt>1&&lt<2.6})+birdy(760,520,t,'blue',{peck:peckAt(lt,1.5)});
+    pops=pop(`${LULU}<tspan fill="${NAVY}"> and the Bird Feeder</tspan>`,520,170,64,PINK,lt,.4,-2);
+    break;}
+  case 1:{
+    // Little Bird looks for seeds, but the snow is deep
+    const bx=lerp(820,700,eio(prog(lt,2.4,3.2)));
+    props=treeAndBranch();
+    chars=lulu(lt,t,{x:330,rot:lt>3.6?-5:0})+birdy(bx,520,t,'blue',{flip:true,peck:lt<2.2?peckAt(lt,.6):peckAt(lt,3.6)});
+    cap=lt<3.2?caption('Little Bird looks for seeds.',lt,.3):caption('But the snow is deep.',lt,3.2);
+    pops=pop('Peck, peck?',560,165,92,BLUE,lt,.8,-3);
+    break;}
+  case 2:{
+    // Lulu has a bird feeder; Pip brings seeds. Pour!
+    const pu=eio(prog(lt,.3,2.6)), px=lerp(1400,900,pu), walking=lt>.3&&lt<2.6;
+    const up=eio(prog(lt,3.0,3.8)), down=eio(prog(lt,6.0,6.7)), tip=up*(1-down);
+    const bagX=lerp(px+80,720,tip), bagY=lerp(520-58*.8,330,tip), bagR=-120*eio(prog(lt,3.4,4.0))*(1-down);
+    const fill=prog(lt,4.2,6.0);
+    let seeds='';
+    if(lt>4.0&&lt<6.2)for(let k=0;k<10;k++){const q=((lt-4.0)*1.6+k/10)%1; const mx=681, my=352;
+      seeds+=`<ellipse cx="${lerp(mx,600+k*9,q)}" cy="${my+q*q*140}" rx="5" ry="4" fill="${k%2?'#8A5A2B':'#C9A26B'}"/>`;}
+    props=treeAndBranch()+birdFeeder(GFX,GFY,FS,fill);
+    chars=lulu(lt,t,{x:330,hops:[.6,4.8],h:18,wave:lt>1&&lt<2.4})+pip(lt,t,{x:px,rot:walking?5*Math.sin(lt*11):0,hops:[3.0],h:20});
+    front=seeds+seedBag(bagX,bagY,.8,bagR,true);
+    cap=lt<3.4?caption('Lulu has a bird feeder.',lt,.3):caption('Pip brings seeds. Pour!',lt,3.4);
+    pops=lt<3.6?pop('Hello, Pip!',470,165,88,ORANGE,lt,1.6,-3):pop('Pour, pour!',430,165,92,PURPLE,lt,4.0,-3);
+    break;}
+  case 3:{
+    // up on the tree it goes; now wait quietly
+    const u=eio(prog(lt,1.0,2.6));
+    const fx=lerp(GFX,FX,u), fy=lerp(GFY,FY,u)-Math.sin(u*Math.PI)*70;
+    props=treeAndBranch()+(u>=1?hungFeeder(1):birdFeeder(fx,fy,FS,1));
+    chars=lulu(lt,t,{x:330,hops:[.7],h:30,wave:lt>2.7&&lt<3.6})+pip(lt,t,{x:530,hops:[.9],h:26,tilt:lt>3.4?-8:0});
+    cap=lt<3.4?caption('Up on the tree it goes!',lt,.3):caption('Now we wait. Shh!',lt,3.4);
+    pops=lt<3.4?pop('Up!',640,165,104,TEAL,lt,1.0,-3):pop('Shh...',430,165,96,PURPLE,lt,3.6,-3);
+    break;}
+  case 4:{
+    // Little Bird flies to the feeder: peck, peck, peck
+    const [bx,by,u]=fly(lt,.4,2.6,-60,230,800,FY+83,40);
+    props=treeAndBranch()+hungFeeder(1-.25*prog(lt,3.6,7));
+    chars=lulu(lt,t,{x:300,hops:[2.9],h:16,eye:lt<2.6?undefined:undefined})+pip(lt,t,{x:510,hops:[3.1],h:16})
+      +birdy(bx,by,t,'blue',{fly:u<1,peck:u>=1?peckAt(lt,3.6):0,noShade:true});
+    cap=lt<3.4?caption('Tweet! Seeds for me?',lt,.4):caption('Peck, peck, peck. Yum!',lt,3.4);
+    pops=pop('Tweet!',430,165,100,BLUE,lt,2.4,-4);
+    break;}
+  case 5:{
+    // friends come too: one, two, three birds
+    const [rx,ry,ru]=fly(lt,.4,2.0,1400,140,690,520,30), [yx,yy,yu]=fly(lt,1.0,2.6,-80,150,570,520,20);
+    props=treeAndBranch()+hungFeeder(.75)+groundSeeds(1);
+    chars=lulu(lt,t,{x:250,hops:[3.0],h:14})+pip(lt,t,{x:410,hops:[3.8],h:14})
+      +birdy(800,FY+83,t,'blue',{peck:peckAt(lt,.2,.9),noShade:true})
+      +birdy(rx,ry,t,'red',{fly:ru<1,flip:true,peck:ru>=1?peckAt(lt,2.4,.8):0,off:.7})
+      +birdy(yx,yy,t,'yellow',{fly:yu<1,peck:yu>=1?peckAt(lt,3.0,.75):0,off:1.4});
+    cap=lt<3.0?caption('Friends come too!',lt,.4):caption('One, two, three birds!',lt,3.0);
+    pops=pop('1',570,170,100,ORANGE,lt,3.2,0)+pop('2',690,170,100,RED,lt,3.9,0)+pop('3',800,170,100,BLUE,lt,4.6,0);
+    break;}
+  case 6:{
+    // happy birds: tweet, tweet! thank you!
+    for(let k=0;k<3;k++){const q=lt-1.6-k*.4;if(q>0&&q<2.6)props+=heart(300+k*60,330-q*45,1.0,['#FF5D8F','#FF8FB3','#FF5D8F'][k],Math.sin(Math.PI*q/2.6));}
+    props=treeAndBranch()+hungFeeder(.6)+groundSeeds(.7)+props;
+    let notes='';for(let k=0;k<4;k++){const q=lt-.8-k*.6;if(q>0&&q<2.4){const bx=[800,690,570,800][k], by=[FY+20,430,430,FY+20][k];
+      notes+=musicNote(bx+20+q*20,by-q*40,.7,[BLUE,RED,ORANGE,TEAL][k],Math.sin(Math.PI*q/2.4));}}
+    chars=lulu(lt,t,{x:250,hops:[1.4,4.0],h:18})+pip(lt,t,{x:410,hops:[1.8,4.4],h:18})
+      +birdy(800,FY+83,t,'blue',{wing:lt>.6?20*Math.sin(lt*6):0,noShade:true})
+      +birdy(690,520,t,'red',{flip:true,wing:lt>.6?20*Math.sin(lt*6+1):0,off:.7})
+      +birdy(570,520,t,'yellow',{wing:lt>.6?20*Math.sin(lt*6+2):0,off:1.4});
+    front=notes;
+    cap=lt<3.2?caption('Tweet, tweet! Thank you!',lt,.3):caption('Happy birds, happy friends.',lt,3.2);
+    pops=pop('Tweet, tweet!',380,165,92,TEAL,lt,.6,-3);
+    break;}
+  case 7:{
+    // the sun goes down; bye-bye, birds (they fly up into the tree)
+    n=lerp(0,.45,eio(prog(lt,.3,5.6))); fall=.4;
+    behind=sun(t,150,lerp(260,560,eio(prog(lt,.3,5.6))));
+    const fo=k=>1-prog(lt,3.4+k*.3,4.4+k*.3);
+    const [ax,ay,au]=fly(lt,2.2,4.0,800,FY+83,1010,250,30), [bx,by,bu]=fly(lt,2.5,4.3,690,520,1080,230,40), [cx,cy,cu]=fly(lt,2.8,4.6,570,520,1130,280,50);
+    const birds=birdy(ax,ay,t,'blue',{fly:au>0&&au<1,op:fo(0),noShade:true})+birdy(bx,by,t,'red',{fly:bu>0&&bu<1,flip:bu===0,op:fo(1),noShade:bu>0})+birdy(cx,cy,t,'yellow',{fly:cu>0&&cu<1,op:fo(2),noShade:cu>0});
+    props=birds+treeAndBranch()+hungFeeder(.5);
+    chars=lulu(lt,t,{x:280,eye:lt>4.2?.5:undefined,wave:lt>2.4&&lt<3.8})+pip(lt,t,{x:440,eye:lt>4.4?.5:undefined});
+    cap=lt<3.2?caption('The sun goes down.',lt,.3):caption('Bye-bye, little birds!',lt,3.2);
+    pops=pop('Yawn!',380,170,96,PURPLE,lt,4.6,-3);
+    break;}
+  case 8:{
+    // night: Lulu and Pip sleep under the tree
+    n=lerp(.45,1,eio(prog(lt,0,4))); fall=.3*(1-prog(lt,3,6));
+    behind=moon(240,lerp(300,120,eio(prog(lt,0,4))));
+    const asleep=lt>1.4, br=k=>1+.025*Math.sin(lt*2.2+k);
+    props=treeAndBranch()+hungFeeder(.5);
+    chars=lulu(lt,t,{x:470,asleep,eye:.45,sy:br(0),rot:asleep?-3:0})+pip(lt,t,{x:720,asleep,eye:.45,sy:br(1),tail:.3});
+    for(let k=0;k<3;k++){let q=lt-2.0-k*.9;if(q>0){q%=2.7;
+      pops+=`<text x="${590-q*24+8*Math.sin(q*3)}" y="${320-q*30}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}
+    cap=caption('Good night, Lulu and Pip.',lt,.5);
+    pops+=pop('The End',640,150,112,GOLD,lt,3.8,-3,NAVY);
+    break;}
+  }
+  const back_=bg(t,n,(i<7?cloud(95+6*Math.sin(t*.3),255,.7,.95):'')+behind,{noSun:true,noFlowers:true,noMoon:true,noClouds:true})+snowHills(1,n);
+  svg.innerHTML=back_+props+chars+front+nightTint(n)+snowfall(t,fall*(1-n*.3))+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,'',{noSun:true,noFlowers:true,noClouds:true});
+  s+=cloud(150,70,.9,1);
+  s+=snowHills(1,0);
+  s+=snowyTree(1130,560,.9)+branch(1100,340,890,328);
+  s+=`<line x1="910" y1="331" x2="910" y2="368" stroke="#B98A5A" stroke-width="4"/>`+birdFeeder(910,374,.9,.9);
+  s+=place(845,457,bird(BIRD.blue),{s:.5})+place(985,457,bird(BIRD.red),{s:.5,flip:true});
+  s+=`<ellipse cx="300" cy="664" rx="80" ry="14" fill="#7F93B0" opacity=".25"/>`+place(300,662,duck({wing:20})+woollyHat(42,-138,.62,HAT),{s:1.3});
+  s+=`<ellipse cx="620" cy="664" rx="70" ry="12" fill="#7F93B0" opacity=".25"/>`+place(620,662,kitten({tail:.5}),{s:1.1});
+  s+=place(470,640,bird(BIRD.yellow),{s:.6});
+  [[60,250],[230,330],[760,300],[540,350],[150,450]].forEach((p,k)=>{s+=snowflake(p[0],p[1],.6+(k%3)*.25,k*25,.9);});
+  s+=label(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,560,120,92,PINK,-2);
+  s+=label(`<tspan fill="${TEAL}">Bird Feeder</tspan>`,560,230,104,TEAL,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

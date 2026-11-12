@@ -1,0 +1,29 @@
+{
+  "number": 88,
+  "slug": "lulu-and-the-bird-feeder",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and the Bird Feeder | Bedtime Story for Kids",
+  "description": "It is a snowy day and Little Bird looks for seeds. Lulu the duck has a bird feeder!\nPip the kitten brings seeds, and up on the tree it goes. One, two, three birds come to eat. Tweet, tweet!\nThe sun goes down and Lulu and Pip sleep under the tree. Good night.\nA calm bedtime story for children aged 3 to 6.",
+  "duration": 58,
+  "seed": 88,
+  "lullaby_from": 51.0,
+  "sfx": [
+    {"t": 0.4, "type": "pop"},
+    {"t": 5.8, "type": "pop"},
+    {"t": 12.6, "type": "pop"},
+    {"t": 15.2, "type": "sparkle"},
+    {"t": 19.0, "type": "boing_high"},
+    {"t": 20.6, "type": "ding"},
+    {"t": 26.6, "type": "pop"},
+    {"t": 29.0, "type": "sparkle"},
+    {"t": 34.2, "type": "ding"},
+    {"t": 34.9, "type": "ding"},
+    {"t": 35.6, "type": "ding"},
+    {"t": 38.6, "type": "sparkle"},
+    {"t": 39.6, "type": "pop"},
+    {"t": 48.6, "type": "pop"},
+    {"t": 54.8, "type": "sparkle"}
+  ],
+  "check_times": [1.0, 3.0, 6.5, 9.5, 12.8, 14.0, 15.5, 16.8, 19.5, 20.0, 22.5, 25.5, 27.0, 29.0, 31.8, 33.0, 34.5, 36.5, 39.5, 41.0, 42.5, 45.5, 47.0, 48.0, 50.0, 53.0, 56.0, 57.5]
+}

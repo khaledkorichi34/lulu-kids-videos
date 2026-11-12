@@ -2027,3 +2027,33 @@ function webFoot(x,y,s=1,rot=0,legLen=70){
   <path d="M0,${L+4} L-80,${L+84} M0,${L+4} L0,${L+102} M0,${L+4} L80,${L+84}" stroke="#D96B00" stroke-width="7" stroke-linecap="round" fill="none"/>
   <ellipse cx="-30" cy="${L+52}" rx="14" ry="6" fill="#FFB061" opacity=".7" transform="rotate(-40 -30 ${L+52})"/></g>`;
 }
+
+/* ---------- bird feeder and seed bag (episode 88) ---------- */
+// birdFeeder(x,y,s,fill): open wooden tray feeder hanging from two ropes, origin at the little ring at the
+// top (about 190 wide and 112 tall at s=1). The tray spans x-92..x+92, its top edge at y+90*s and its bottom at
+// y+112*s (standing on the ground: y = 408). fill = 0..1 how many seeds lie in the tray.
+// A small bird (s .45) perches on the tray at (x +-50, y+92*s).
+function birdFeeder(x,y,s=1,fill=0){
+  let seeds='';const n=Math.round(clamp(fill)*22);
+  for(let k=0;k<n;k++){const sx=-70+((k*37)%141), sy=86-(k%3)*5-(k>11?4:0);
+    seeds+=`<ellipse cx="${sx}" cy="${sy}" rx="7" ry="5" fill="${k%2?'#8A5A2B':'#C9A26B'}" transform="rotate(${(k*47)%180} ${sx} ${sy})"/>`;}
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M0,0 L-80,90 M0,0 L80,90" stroke="#B98A5A" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <circle cx="0" cy="0" r="8" fill="none" stroke="#8A5A2B" stroke-width="4"/>
+  ${seeds}
+  <rect x="-92" y="88" width="184" height="24" rx="6" fill="#B07A45"/>
+  <rect x="-92" y="88" width="184" height="9" rx="4" fill="#C98F55"/>
+  <path d="M-12,99 a6,6 0 0 1 12,0 a6,6 0 0 1 12,0 q0,8 -12,14 q-12,-6 -12,-14z" transform="translate(0,-2)" fill="#FF5D8F"/></g>`;
+}
+// seedBag(x,y,s,rot,open): small round brown sack of seeds, origin at its CENTRE (about 100 wide and 120 tall
+// at s=1); its mouth is at (0,-56) before turning. rot turns it about its centre (rot -120 points the mouth
+// down and to the left, for pouring). open = true shows the seeds in the open mouth.
+function seedBag(x,y,s=1,rot=0,open=true){
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})">
+  <path d="M-30,-40 Q-60,-20 -52,22 Q-46,58 0,58 Q46,58 52,22 Q60,-20 30,-40 Z" fill="#D9A866"/>
+  <ellipse cx="-22" cy="4" rx="12" ry="24" fill="#E8C08A" opacity=".8"/>
+  <path d="M-30,-40 L-36,-56 L36,-56 L30,-40 Z" fill="#C8955A"/>
+  ${open?`<ellipse cx="0" cy="-56" rx="36" ry="9" fill="#8A5A2B"/><circle cx="-12" cy="-58" r="4" fill="#C9A26B"/><circle cx="8" cy="-57" r="4" fill="#C9A26B"/>`:''}
+  <rect x="-33" y="-44" width="66" height="7" rx="3" fill="#8A5A2B"/>
+  <circle cx="0" cy="18" r="16" fill="#FFF3D6"/><ellipse cx="0" cy="18" rx="6" ry="8" fill="#8A5A2B"/></g>`;
+}
