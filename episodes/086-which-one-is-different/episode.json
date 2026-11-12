@@ -1,0 +1,112 @@
+{
+  "number": 86,
+  "slug": "which-one-is-different",
+  "format": "learning",
+  "ages": "3-7",
+  "title": "Which One Is Different? with Lulu | Learning Video for Kids",
+  "description": "Lulu looks at four things in a row and finds the one that is not like the others: a banana with apples, a puppy with kittens, a red block with blue blocks, and a big ball with small balls.\n\nLook carefully and say the answer out loud!\n\nA short, gentle thinking video for children aged 3 to 7.",
+  "duration": 55,
+  "seed": 86,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.7,
+      "type": "sparkle"
+    },
+    {
+      "t": 6.7,
+      "type": "pop"
+    },
+    {
+      "t": 9.7,
+      "type": "ding"
+    },
+    {
+      "t": 9.95,
+      "type": "boing_high"
+    },
+    {
+      "t": 17.7,
+      "type": "pop"
+    },
+    {
+      "t": 20.7,
+      "type": "ding"
+    },
+    {
+      "t": 20.95,
+      "type": "boing_high"
+    },
+    {
+      "t": 28.7,
+      "type": "pop"
+    },
+    {
+      "t": 31.7,
+      "type": "ding"
+    },
+    {
+      "t": 31.95,
+      "type": "boing_high"
+    },
+    {
+      "t": 39.7,
+      "type": "pop"
+    },
+    {
+      "t": 42.7,
+      "type": "ding"
+    },
+    {
+      "t": 42.95,
+      "type": "boing_high"
+    },
+    {
+      "t": 51.0,
+      "type": "sparkle"
+    },
+    {
+      "t": 51.1,
+      "type": "boing_high"
+    }
+  ],
+  "check_times": [
+    1.5,
+    3.5,
+    5.5,
+    7.1,
+    9.0,
+    10.1,
+    10.45,
+    11.7,
+    13.5,
+    15.1,
+    16.5,
+    18.1,
+    20.0,
+    21.1,
+    21.45,
+    22.7,
+    24.5,
+    26.1,
+    27.5,
+    29.1,
+    31.0,
+    32.1,
+    32.45,
+    33.7,
+    35.5,
+    37.1,
+    38.5,
+    40.1,
+    42.0,
+    43.1,
+    43.45,
+    44.7,
+    46.5,
+    48.1,
+    50.0,
+    51.8,
+    53.5
+  ]
+}

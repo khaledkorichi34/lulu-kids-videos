@@ -1,0 +1,96 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 86 - Which One Is Different? Four rows of four things, one is not like the others.
+   Title, four questions (kind of fruit, kind of animal, colour, size), finale. */
+const SC=[0,4.5,15.5,26.5,37.5,48.5,55];
+const DUR=SC[SC.length-1];
+const INK='#2D2A6E';
+const XS=[430,610,790,970];         // the four things
+const LX=175;                        // Lulu stands at the left and looks at the row
+const IN=.4, A=5.2, WHY=8.0;         // things appear, answer, reason
+const BLUE='#4D96FF', RED='#FF595E';
+const QS=[
+  {odd:2, name:'banana', why:'It is not an apple.',
+   draw:(k,lt,t)=>k===2?banana(0,0,.78):apple(0,0,.9)},
+  {odd:3, name:'puppy', why:'It is a puppy!',
+   draw:(k,lt,t)=>k===3?puppy({eye:blink(t,k*.7),tail:Math.sin(lt*7)}):kitten({eye:blink(t,k*.7),tail:Math.sin(lt*2+k)}),
+   s:k=>.7},
+  {odd:1, name:'red block', why:'It is red, not blue.',
+   draw:(k)=>toyBlock(0,0,k===1?RED:BLUE,0,1.7)},
+  {odd:0, name:'big ball', why:'It is big, not small.',
+   draw:(k)=>k===0?ball(0,0,72,0):ball(0,0,36,0)}
+];
+function ring(x,lt,t0){ // soft yellow glow and sparkles around the different one
+  const u=prog(lt,t0,t0+.4);if(u<=0)return '';
+  let s=`<ellipse cx="${x}" cy="470" rx="${92*back(u)}" ry="${100*back(u)}" fill="#FFF3B0" opacity=".6"/>`;
+  for(let k=0;k<6;k++){const a=k/6*6.283+lt*.8;s+=sparkle(x+Math.cos(a)*100,460+Math.sin(a)*92,1+.3*Math.sin(lt*5+k),u);}
+  return s;
+}
+function hearts(lt,t0){
+  let s='';
+  for(let k=0;k<9;k++){const q=lt-(t0+k*.4);if(q>0){const y=610-q*120,x=110+k*132+25*Math.sin(q*2+k),o=clamp((y-50)/140)*clamp(q*3)*.9;
+    if(y>40)s+=heart(x,y,1+(k%3)*.25,['#FF5D8F','#FF9F1C','#FFFFFF'][k%3],o);}}
+  return s;
+}
+function question(Q,t,lt){
+  let props='',chars='',pops='',cap='';
+  if(lt>A)props+=ring(XS[Q.odd],lt,A);
+  XS.forEach((x,k)=>{
+    const g=back(prog(lt,IN+k*.3,IN+k*.3+.4));if(g<=0)return;
+    const j=(lt>A&&k===Q.odd)?jumps(lt,[A+.2,A+1.3,A+2.4],.5,34):{y:0,sx:1,sy:1};
+    const sc=Q.s?Q.s(k):1;
+    chars+=shadow(x,524,40*g,-j.y)+place(x,520+j.y,Q.draw(k,lt,t),{s:g*sc,sx:j.sx,sy:j.sy});
+  });
+  const j=jumps(lt,[A+.3,A+1.5],.6,30);
+  chars+=shadow(LX,522,48,-j.y)+place(LX,520+j.y,duck({eye:blink(t,.3),wing:lt>A?22+22*Math.sin(lt*10):0}),{s:.72,sx:j.sx,sy:j.sy});
+  if(lt<A){
+    pops+=pop('?',640,175,150,'#7B5CFF',lt,2.2,0);
+    cap=caption('Which one is different?',lt,1.0);
+  }else{
+    pops+=pop(Q.name,640,165,104,'#FF9F1C',lt,A,-3);
+    cap=lt<WHY?caption(`The ${Q.name} is different!`,lt,A):caption(Q.why,lt,WHY);
+  }
+  return [props,chars,pops,cap];
+}
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={noSun:true,noFlowers:true,noClouds:true};
+  if(i===0){
+    const j=jumps(lt,[1.4,2.4],.6,30);
+    [330,450,830].forEach(x=>{chars+=shadow(x,524,30)+place(x,520,apple(0,0,.7),{s:1});});
+    chars+=shadow(990,524,30)+place(990,520,banana(0,0,.7),{s:1});
+    chars+=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:20+20*Math.sin(lt*9),eye:blink(t,0)}),{s:1,sx:j.sx,sy:j.sy});
+    pops=pop('Which one is different?',640,120,76,INK,lt,.3)+pop(LULU,640,238,110,'#FF5D8F',lt,.8,-3);
+  }else if(i<=4){
+    [props,chars,pops,cap]=question(QS[i-1],t,lt);
+  }else{
+    const j=jumps(lt,[2.6,3.7,4.8],.6,35), jb=jumps(lt,[2.9,4.0,5.1],.55,30);
+    props=hearts(lt,2.4);
+    chars=shadow(330,522,50,-jb.y)+place(330,520+jb.y,kitten({eye:blink(t,.4),tail:Math.sin(lt*3)}),{s:.8,sx:jb.sx,sy:jb.sy});
+    chars+=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:25+25*Math.sin(lt*10),eye:blink(t,0)}),{s:1.05,sx:j.sx,sy:j.sy});
+    chars+=shadow(950,522,70,-jb.y)+place(950,520+jb.y,puppy({eye:blink(t,1.1),tail:Math.sin(lt*8)}),{s:.8,sx:jb.sx,sy:jb.sy,flip:true});
+    pops=pop('Well done!',640,170,120,'#FF9F1C',lt,.4,-3);
+    cap=caption('You found them all!',lt,1.6);
+  }
+  svg.innerHTML=bg(t,0,'',o)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=`<ellipse cx="1060" cy="600" rx="150" ry="110" fill="#FFF3B0" opacity=".65"/>`;
+  [470,650,830].forEach(x=>{s+=shadow(x,644,44)+apple(x,640,1);});
+  s+=shadow(1060,644,60)+banana(1060,640,.75);
+  s+=sparkle(950,520,1.4)+sparkle(1170,520,1.4)+sparkle(1060,470,1.2);
+  s+=shadow(210,662,100)+place(210,658,duck({wing:22}),{s:1.35});
+  s+=label('Which one is different?',640,120,84,INK)+label(LULU,640,228,90,'#FF5D8F',-3);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
