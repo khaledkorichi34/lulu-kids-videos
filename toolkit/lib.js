@@ -1292,11 +1292,12 @@ function splash(x,y,u,s=1,half=80){
 }
 
 /* ---------- elephant (episode 42) ---------- */
-// elephant({eye, trunk, ear, step, tail, reach}): friendly grey elephant facing right, origin at its feet
+// elephant({eye, trunk, ear, step, tail, reach, asleep}): friendly grey elephant facing right, origin at its feet
 // (about 210 tall to the top of the head and 300 wide at s=1; the body spans x -130..140).
 // trunk = 0 hangs down (tip near the ground at x~160), 1 raised up and curled (tip at about (150,-245)).
 // ear = -1..1 ear flap, step = walking phase in radians, tail = -1..1 swish.
 // reach = extra trunk length in px when raised (to peek over a bush). The trunk tip is trunkTip(trunk, reach).
+// asleep = true closes the eye (added in episode 90).
 function trunkTip(u,r=0){
   return [lerp(162,150,u),lerp(-30,-246-r,u)];
 }
@@ -1309,7 +1310,9 @@ function elephant(o={}){
   const [tx,ty]=trunkTip(u,o.reach||0);
   const c1x=lerp(158,182,u), c1y=lerp(-96,-150-(o.reach||0)*.5,u);
   const tip=`M${tx},${ty} q${lerp(14,-14,u)},${lerp(4,-6,u)} ${lerp(14,-20,u)},${lerp(-10,14,u)}`;
-  const eye=`<g transform="translate(106,-166) scale(1,${e})"><circle r="8" fill="#2b1d12"/><circle cx="2.6" cy="-2.8" r="2.8" fill="#fff"/></g>`;
+  const eye=o.asleep
+    ?`<path d="M97,-166 Q106,-158 115,-166" stroke="#2b1d12" stroke-width="4.5" fill="none" stroke-linecap="round"/>`
+    :`<g transform="translate(106,-166) scale(1,${e})"><circle r="8" fill="#2b1d12"/><circle cx="2.6" cy="-2.8" r="2.8" fill="#fff"/></g>`;
   return `
   ${leg(-80,Math.PI,D)}${leg(30,0,D)}
   <g transform="rotate(${tl*16} -118 -118)"><path d="M-118,-118 Q-138,-100 -134,-70" stroke="${D}" stroke-width="7" fill="none" stroke-linecap="round"/>
@@ -2056,4 +2059,27 @@ function seedBag(x,y,s=1,rot=0,open=true){
   ${open?`<ellipse cx="0" cy="-56" rx="36" ry="9" fill="#8A5A2B"/><circle cx="-12" cy="-58" r="4" fill="#C9A26B"/><circle cx="8" cy="-57" r="4" fill="#C9A26B"/>`:''}
   <rect x="-33" y="-44" width="66" height="7" rx="3" fill="#8A5A2B"/>
   <circle cx="0" cy="18" r="16" fill="#FFF3D6"/><ellipse cx="0" cy="18" rx="6" ry="8" fill="#8A5A2B"/></g>`;
+}
+
+/* ---------- thirsty flower (episode 90) ---------- */
+// thirstyFlower(x,y,h,col,droop,t,i,o): garden flower standing on the ground at (x,y), stem height h.
+// droop = 0 stands up straight and bright, 1 hangs its head down to the right (thirsty), anything between
+// animates it perking up. col must be a hex colour. o = {s, face, asleep}: a small face on the centre when
+// it stands up (droop < .3). Standing, the head centre is at (x, y-h*s); the petals reach about 40 px further.
+function thirstyFlower(x,y,h,col,droop,t,i=0,o={}){
+  const d=clamp(droop), s=o.s||1, sw=Math.sin(t*1.3+i*1.7)*2.5*(1-d);
+  const hx=d*h*.42, hy=-h*(1-.38*d), c=mix(col,'#B9A88C',d*.4), pk=1-.15*d;
+  let head='';
+  for(let k=0;k<6;k++){const a=k*Math.PI/3;head+=`<circle cx="${(Math.cos(a)*22).toFixed(1)}" cy="${(Math.sin(a)*22).toFixed(1)}" r="17" fill="${c}"/>`;}
+  head+=`<circle r="15" fill="${mix('#FFB703','#C9A04A',d*.5)}"/>`;
+  if(o.face&&d<.3){
+    head+=o.asleep?`<path d="M-9,-3 Q-6,0 -3,-3 M3,-3 Q6,0 9,-3" stroke="#7a4b00" stroke-width="2.5" fill="none" stroke-linecap="round"/>`
+      :`<circle cx="-6" cy="-3" r="2.8" fill="#7a4b00"/><circle cx="6" cy="-3" r="2.8" fill="#7a4b00"/>`;
+    head+=`<path d="M-6,5 Q0,10 6,5" stroke="#7a4b00" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+  }
+  return `<g transform="translate(${x},${y}) scale(${s}) rotate(${sw})">
+  <path d="M0,0 Q${6+d*4},${-h*(1-.05*d)} ${hx.toFixed(1)},${hy.toFixed(1)}" stroke="${mix('#2F9E44','#7C9A3C',d*.5)}" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <ellipse cx="17" cy="${-h*.32}" rx="18" ry="8" fill="${mix('#3FA34D','#8FA04A',d*.5)}" transform="rotate(${-28+d*50} 17 ${-h*.32})"/>
+  <ellipse cx="-17" cy="${-h*.26}" rx="18" ry="8" fill="${mix('#47AD47','#8FA04A',d*.5)}" transform="rotate(${28-d*50} -17 ${-h*.26})"/>
+  <g transform="translate(${hx.toFixed(1)},${hy.toFixed(1)}) rotate(${d*105}) scale(${pk})">${head}</g></g>`;
 }

@@ -1,0 +1,145 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 90 - Lulu and the Little Elephant. It is a hot, sunny day and Lulu's flowers are thirsty: oh no!
+   Little Elephant comes by: hello! I can help! She fills her trunk at the pond (slurp!), then sprays the
+   flowers (whoosh!) and they stand up again: hooray! A splash for Lulu too (hee hee!) and a little rainbow
+   in the water. Thank you, Little Elephant! The sun goes down, and the friends sleep by the flowers. */
+const DUR=57, SC=[0,5,11,18,24,31,38,44,50,57];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', BLUE='#2979E8', GOLD='#FFE58A', ORANGE='#FF9F1C', TEAL='#19B8A6', GREY='#6E7C95';
+const ES=.8;                                            // elephant scale
+const FL=[[690,'#FF7FB0',125],[800,'#FFD23F',140],[910,'#B58CFF',120]];  // flower x, colour, stem height
+const LX=1085;                                          // Lulu's place on the right of the flowers
+
+const flowers=(t,dr,o={})=>FL.map(([x,c,h],k)=>shadow(x,522,26)+thirstyFlower(x,520,h,c,typeof dr==='function'?dr(k):dr,t,k,o)).join('');
+const lulu=(lt,t,o={})=>{
+  const x=o.x!=null?o.x:LX, j=jumps(lt,o.hops||[],o.d||.6,o.h||20), w=o.wave?20+20*Math.sin(lt*9):(o.wing!=null?o.wing:-25+6*Math.sin(lt*3));
+  return shadow(x,522,58,-j.y)+place(x,520+j.y,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),{s:1,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0,flip:o.flip});
+};
+const ele=(lt,t,o={})=>{
+  const x=o.x, j=jumps(lt,o.hops||[],o.d||.7,o.h||14);
+  return shadow(x,522,120,-j.y)+place(x,520+j.y,elephant({eye:o.eye!=null?o.eye:blink(t,.5),trunk:o.trunk||0,ear:o.ear!=null?o.ear:Math.sin(t*1.6),
+    tail:Math.sin(t*2.2),step:o.step||0,asleep:o.asleep}),{s:ES,flip:o.flip,sx:j.sx,sy:j.sy*(o.sy||1)});
+};
+// water spray: drops leave the trunk tip (x0,y0) from a to b and land around (x1,y1)
+function spray(lt,a,b,x0,y0,x1,y1,spread=150,arc=70,N=24){
+  let s='';
+  for(let k=0;k<N;k++){
+    const q=(((lt-a)*1.25+k/N)%1+1)%1, born=lt-q/1.25;
+    if(born<a||born>b)continue;
+    const xl=x1+spread*(((k*37)%11)/10-.5), x=lerp(x0,xl,q), y=lerp(y0,y1,q)-Math.sin(Math.PI*q)*arc, r=9+(k%3)*2.5, op=q>.85?(1-q)/.15:1;
+    s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="#7DD3FA" opacity="${(op*.95).toFixed(2)}"/><circle cx="${(x-2).toFixed(1)}" cy="${(y-2).toFixed(1)}" r="${r*.35}" fill="#fff" opacity="${(op*.8).toFixed(2)}"/>`;
+  }
+  return s;
+}
+const ripple=(x,y,lt)=>{let s='';for(let k=0;k<2;k++){const q=((lt*.8+k*.5)%1);s+=`<ellipse cx="${x}" cy="${y}" rx="${14+q*46}" ry="${4+q*10}" fill="none" stroke="#fff" stroke-width="3" opacity="${(1-q)*.8}"/>`;}return s;};
+const TIP=[400+150*ES,520-246*ES];                      // raised trunk tip when Little Elephant stands at x=400
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',pops='',cap='',behind='',front='',noSun=false,noClouds=false;
+  switch(i){
+  case 0:{
+    // title
+    props=flowers(t,.55);
+    chars=ele(lt,t,{x:200,trunk:lt>1.2?.5+.5*Math.sin(lt*2):0})+lulu(lt,t,{x:470,hops:[2.6],h:16,wave:lt>1&&lt<2.4});
+    pops=pop(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,560,120,74,PINK,lt,.4,-2)
+        +pop(`<tspan fill="${GREY}">Little Elephant</tspan>`,560,205,84,GREY,lt,.9,-2);
+    break;}
+  case 1:{
+    // a hot, sunny day: the flowers are thirsty
+    const d=lerp(.55,1,eio(prog(lt,.5,3.0)));
+    props=flowers(t,d);
+    chars=lulu(lt,t,{x:470,rot:lt>3.4?-6:0,wing:lt>3.4?-40:undefined});
+    cap=lt<3.2?caption('It is a hot, sunny day.',lt,.3):caption('The flowers are thirsty.',lt,3.2);
+    pops=pop('Oh no!',470,165,100,PURPLE,lt,3.6,-3);
+    break;}
+  case 2:{
+    // Little Elephant walks in: hello! I can help!
+    const u=eio(prog(lt,.2,3.0)), walking=lt>.2&&lt<3.0;
+    props=flowers(t,1);
+    chars=ele(lt,t,{x:lerp(-260,300,u),step:walking?lt*7:0,trunk:lt>4.4?.6+.3*Math.sin(lt*3):0,hops:[4.0]})+lulu(lt,t,{x:560,hops:[3.2],h:18,wave:lt>3.2&&lt<4.6});
+    cap=lt<3.6?caption('Here comes Little Elephant.',lt,.4):caption('I can help!',lt,3.6);
+    pops=pop('Hello!',560,165,100,PINK,lt,3.0,-3);
+    break;}
+  case 3:{
+    // at the pond: Little Elephant fills her trunk
+    const dip=lt>.6&&lt<4.6, tr=lt<.6?.25*(1-lt/.6):(lt<4.6?.02*Math.sin(lt*6):.35*eio(prog(lt,4.6,5.4)));
+    props=pond(270,505,165)+reed(95,512,110,t,0)+reed(125,516,80,t,1)+reed(450,508,90,t,2);
+    if(dip)props+=ripple(350,505,lt);
+    chars=ele(lt,t,{x:480,flip:true,trunk:tr})+lulu(lt,t,{x:820,flip:true,hops:[5.0],h:16});
+    cap=lt<3.0?caption('She goes to the pond.',lt,.3):caption('She fills her trunk.',lt,3.0);
+    pops=pop('Slurp!',640,165,100,BLUE,lt,1.4,-3);
+    break;}
+  case 4:{
+    // whoosh! water for the flowers; they stand up again
+    const tr=eio(prog(lt,.2,1.2));
+    const dr=k=>1-eout(prog(lt,2.3+k*.7,3.5+k*.7));
+    props=flowers(t,dr,{face:true});
+    chars=ele(lt,t,{x:400,trunk:tr})+lulu(lt,t,{hops:[5.0,5.7],h:22,wave:lt>5&&lt<6.6});
+    front=spray(lt,1.3,5.4,TIP[0]+4,TIP[1]+4,800,390,250,80);
+    cap=lt<3.8?caption('Water for the flowers!',lt,.4):caption('The flowers drink. Hooray!',lt,3.8);
+    pops=pop('Whoosh!',640,165,100,TEAL,lt,1.5,-3);
+    break;}
+  case 5:{
+    // a splash for Lulu too; a little rainbow
+    const ru=eio(prog(lt,3.2,4.6));
+    behind=rainbow(760,505,260,ru,.85);
+    props=flowers(t,0,{face:true});
+    chars=ele(lt,t,{x:400,trunk:lt<2.8?1:1-.6*eio(prog(lt,2.8,3.6))})+lulu(lt,t,{hops:[1.5,2.2],h:20,wing:lt>1.4&&lt<3?30+15*Math.sin(lt*12):undefined});
+    front=spray(lt,.2,2.4,TIP[0]+4,TIP[1]+4,LX,340,60,110,20);
+    cap=lt<3.2?caption('A splash for Lulu too!',lt,.3):caption('Look! A little rainbow!',lt,3.2);
+    pops=lt<3.2?pop('Hee hee!',640,165,96,ORANGE,lt,1.4,-3):pop('Wow!',640,165,100,PURPLE,lt,3.6,-3);
+    break;}
+  case 6:{
+    // thank you, Little Elephant!
+    for(let k=0;k<3;k++){const q=lt-1.2-k*.45;if(q>0&&q<2.8)props+=heart(700+k*100,360-q*45,1.0,['#FF5D8F','#FF8FB3','#FF5D8F'][k],Math.sin(Math.PI*q/2.8));}
+    props+=flowers(t,0,{face:true});
+    chars=ele(lt,t,{x:400,trunk:lt>.6?.55+.4*Math.sin(lt*3):0,hops:[3.6]})+lulu(lt,t,{hops:[.8,3.8],h:20,wave:lt>1.4&&lt<3.4});
+    cap=caption('Thank you, Little Elephant!',lt,.3);
+    pops=pop('Thank you!',600,165,96,PINK,lt,.9,-3);
+    break;}
+  case 7:{
+    // the sun goes down
+    n=lerp(0,.45,eio(prog(lt,.3,5.4))); noSun=true;
+    behind=sun(t,150,lerp(250,560,eio(prog(lt,.3,5.4))));
+    props=flowers(t,0,{face:true,asleep:lt>4.4});
+    chars=ele(lt,t,{x:400,eye:lt>4.0?.5:undefined})+lulu(lt,t,{eye:lt>4.2?.5:undefined,wave:lt>2.6&&lt<3.9});
+    cap=lt<3.0?caption('The sun goes down.',lt,.3):caption('Bye-bye, sunny day.',lt,3.0);
+    pops=pop('Yawn!',640,170,96,PURPLE,lt,4.2,-3);
+    break;}
+  case 8:{
+    // night: the friends sleep by the flowers
+    n=lerp(.45,1,eio(prog(lt,0,4))); noSun=true; noClouds=lt>0;
+    behind=moon(250,lerp(330,120,eio(prog(lt,0,4))));
+    const asleep=lt>1.2, br=k=>1+.025*Math.sin(lt*2.2+k);
+    props=flowers(t,0,{face:true,asleep:true});
+    chars=ele(lt,t,{x:400,asleep,eye:.45,sy:br(0),ear:.2*Math.sin(lt*1.2)})+lulu(lt,t,{asleep,eye:.45,sy:br(1),rot:asleep?-3:0});
+    for(let k=0;k<3;k++){let q=lt-2.0-k*.9;if(q>0){q%=2.7;
+      pops+=`<text x="${(1000-q*24+8*Math.sin(q*3)).toFixed(1)}" y="${(330-q*30).toFixed(1)}" font-size="${(28+q*11).toFixed(1)}" fill="#fff" opacity="${(Math.sin(Math.PI*q/2.7)*.95).toFixed(2)}">z</text>`;}}
+    cap=caption('Good night, little friends.',lt,.5);
+    pops+=pop('The End',640,150,112,GOLD,lt,3.6,-3,NAVY);
+    break;}
+  }
+  svg.innerHTML=bg(t,n,behind,{noSun,noFlowers:true,noMoon:true,noClouds})+props+chars+front+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,rainbow(700,505,300,1,.85),{noFlowers:true});
+  s+=FL.map(([x,c,h],k)=>shadow(x+50,662,34)+thirstyFlower(x+50,660,h,c,0,0,k,{s:1.25,face:true})).join('');
+  s+=shadow(300,664,150)+place(300,662,elephant({trunk:1}),{s:1.05});
+  const tx=300+150*1.05, ty=662-246*1.05;
+  for(let k=0;k<12;k++){const q=(k+.5)/12, xl=880+((k*37)%11-5)*30, x=lerp(tx,xl,q), y=lerp(ty,470,q)-Math.sin(Math.PI*q)*90;
+    s+=`<circle cx="${x}" cy="${y}" r="${8+(k%3)*2}" fill="#7DD3FA"/><circle cx="${x-3}" cy="${y-3}" r="3" fill="#fff" opacity=".8"/>`;}
+  s+=shadow(1165,664,70)+place(1165,662,duck({wing:25}),{s:1.2,flip:true});
+  s+=label(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,560,115,92,PINK,-2);
+  s+=label(`<tspan fill="${GREY}">Little Elephant</tspan>`,560,225,104,GREY,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
