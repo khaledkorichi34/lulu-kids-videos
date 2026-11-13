@@ -1,0 +1,120 @@
+{
+  "number": 89,
+  "slug": "count-down-with-lulu",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "Count Down from 5 to 1 with Lulu | Counting for Kids",
+  "description": "Count backwards from 5 to 1 with Lulu the little duck!\n5 balloons, 4 ladybirds, 3 turtles, 2 owls and 1 big pumpkin. Count each group out loud together, then say 5, 4, 3, 2, 1... Hooray!\nA short, gentle counting video for children aged 3 to 6.",
+  "duration": 44,
+  "seed": 89,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 1.6,
+      "type": "boing_high"
+    },
+    {
+      "t": 2.6,
+      "type": "boing_high"
+    },
+    {
+      "t": 5.95,
+      "type": "pop"
+    },
+    {
+      "t": 6.65,
+      "type": "pop"
+    },
+    {
+      "t": 7.35,
+      "type": "pop"
+    },
+    {
+      "t": 8.05,
+      "type": "pop"
+    },
+    {
+      "t": 8.75,
+      "type": "pop"
+    },
+    {
+      "t": 9.9,
+      "type": "ding"
+    },
+    {
+      "t": 13.65,
+      "type": "pop"
+    },
+    {
+      "t": 14.35,
+      "type": "pop"
+    },
+    {
+      "t": 15.05,
+      "type": "pop"
+    },
+    {
+      "t": 15.75,
+      "type": "pop"
+    },
+    {
+      "t": 16.9,
+      "type": "ding"
+    },
+    {
+      "t": 20.65,
+      "type": "pop"
+    },
+    {
+      "t": 21.35,
+      "type": "pop"
+    },
+    {
+      "t": 22.05,
+      "type": "pop"
+    },
+    {
+      "t": 23.2,
+      "type": "ding"
+    },
+    {
+      "t": 26.95,
+      "type": "pop"
+    },
+    {
+      "t": 27.65,
+      "type": "pop"
+    },
+    {
+      "t": 28.8,
+      "type": "ding"
+    },
+    {
+      "t": 32.55,
+      "type": "pop"
+    },
+    {
+      "t": 33.7,
+      "type": "ding"
+    },
+    {
+      "t": 39.8,
+      "type": "sparkle"
+    }
+  ],
+  "check_times": [
+    3.5,
+    10.17,
+    12.1,
+    17.17,
+    19.1,
+    23.47,
+    25.4,
+    29.07,
+    31.0,
+    33.97,
+    35.9,
+    40.2,
+    42.5
+  ]
+}
