@@ -1,0 +1,120 @@
+{
+  "number": 91,
+  "slug": "rainbow-colours-with-lulu",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "Rainbow Colours with Lulu | Learn Colours for Kids",
+  "description": "Lulu the little duck builds a rainbow, one colour at a time: red, orange, yellow, green, blue and purple.\n\nMeet a red apple, an orange, a yellow banana, a green frog, a blue bird and purple grapes, then see the whole rainbow together.\n\nA short, gentle colours video for children aged 3 to 6.",
+  "duration": 51,
+  "seed": 91,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 1.6,
+      "type": "boing_high"
+    },
+    {
+      "t": 5.4,
+      "type": "pop"
+    },
+    {
+      "t": 5.9,
+      "type": "boing_high"
+    },
+    {
+      "t": 8.2,
+      "type": "sparkle"
+    },
+    {
+      "t": 11.4,
+      "type": "pop"
+    },
+    {
+      "t": 11.9,
+      "type": "boing_high"
+    },
+    {
+      "t": 14.2,
+      "type": "sparkle"
+    },
+    {
+      "t": 17.4,
+      "type": "pop"
+    },
+    {
+      "t": 17.9,
+      "type": "boing_high"
+    },
+    {
+      "t": 20.2,
+      "type": "sparkle"
+    },
+    {
+      "t": 23.4,
+      "type": "pop"
+    },
+    {
+      "t": 23.9,
+      "type": "boing_high"
+    },
+    {
+      "t": 26.2,
+      "type": "sparkle"
+    },
+    {
+      "t": 29.4,
+      "type": "pop"
+    },
+    {
+      "t": 29.9,
+      "type": "boing_high"
+    },
+    {
+      "t": 32.2,
+      "type": "sparkle"
+    },
+    {
+      "t": 35.4,
+      "type": "pop"
+    },
+    {
+      "t": 35.9,
+      "type": "boing_high"
+    },
+    {
+      "t": 38.2,
+      "type": "sparkle"
+    },
+    {
+      "t": 41.8,
+      "type": "sparkle"
+    },
+    {
+      "t": 44.6,
+      "type": "sparkle"
+    },
+    {
+      "t": 48.6,
+      "type": "ding"
+    }
+  ],
+  "check_times": [
+    3.5,
+    8.4,
+    9.6,
+    14.4,
+    15.6,
+    20.4,
+    21.6,
+    26.4,
+    27.6,
+    32.4,
+    33.6,
+    38.4,
+    39.6,
+    44.5,
+    46.5,
+    48.0,
+    50
+  ]
+}

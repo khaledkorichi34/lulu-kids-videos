@@ -1,0 +1,102 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 91 - Rainbow Colours with Lulu (learning, colours in rainbow order).
+   Title, then one scene per rainbow colour (red apple, orange orange, yellow banana, green frog,
+   blue bird, purple grapes): a little rainbow in the corner gets its next band, the colour word pops in,
+   the thing appears on the grass, a caption, it bounces, Lulu hops and says "Wow!".
+   Ending: a big rainbow grows band by band while each thing hops and its colour name appears. */
+const SC=[0,5,11,17,23,29,35,41,51], DUR=51;
+const NAVY='#2D2A6E';
+const NAME=['Red','Orange','Yellow','Green','Blue','Purple'];
+const BAND=['#FF5D5D','#FF9F1C','#FFD93B','#5CC85A','#3FA9F5','#7B5CFF'];   // same as lib rainbow()
+const COL=['#E63946','#FF8C1A','#E8A600','#2FA84A','#2979E8','#7B5CFF'];   // text colours (readable)
+const CAP=['Red, like an apple!','Orange, like an orange!','Yellow, like a banana!','Green, like a frog!','Blue, like a bird!','Purple, like grapes!'];
+const FS=[1.25,1.2,1.3,1.3,1.05,1.15];   // size in its own scene
+const FW=[100,70,110,75,70,70];          // half width at s=1 (for the shadow)
+const TR=.3, TW=.4, TA=.9, TC=2.0, TB=3.2, TY=4.4;
+
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.35)):0;
+
+// rainbow with each band at its own progress us[k] (0..1)
+function bands(x,y,r,us){
+  let s='';BAND.forEach((c,k)=>{const R=r-9-k*18, L=Math.PI*R, u=clamp(us[k]||0);if(u<=0)return;
+    s+=`<path d="M${x-R},${y} A${R},${R} 0 0 1 ${x+R},${y}" stroke="${c}" stroke-width="19" fill="none" stroke-dasharray="${L} ${L}" stroke-dashoffset="${L*(1-u)}"/>`;});
+  return s;
+}
+function thing(k,t,lt){
+  if(k===0)return apple(0,0,1);
+  if(k===1)return orange(0,0,1);
+  if(k===2)return banana(0,0,1);
+  if(k===3)return frog({eye:blink(t,.7)});
+  if(k===4)return bird({eye:blink(t,1.3),wing:lt!=null?8*Math.sin(lt*4):0});
+  return grapes(0,0,1);
+}
+function lulu(x,lt,t,s,hopAt){
+  const j=jumps(lt,hopAt,.55,24), w=j.y<0?30*Math.abs(Math.sin(lt*10)):12+8*Math.sin(lt*3);
+  return shadow(x,522,52*s/.9,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy});
+}
+function wow(x,y,tx,ty,lt,t0){
+  if(lt<t0)return '';
+  const g=back(prog(lt,t0,t0+.35));
+  return `<g transform="translate(${x},${y}) scale(${g}) translate(${-x},${-y})">${speech(x,y,112,62,tx,ty,'Wow!',54,'#FF5D8F')}</g>`;
+}
+function twinkles(x,y,lt,t0){
+  if(lt<t0||lt>t0+1.6)return '';
+  const u=prog(lt,t0,t0+1.6), o=Math.sin(u*Math.PI);
+  let s='';[[-1,-.2],[1,-.4],[-.7,-1],[.8,-1.1]].forEach(([a,b],m)=>{s+=sparkle(x+a*(150+40*u),y+b*120-30*u,1.4+.4*Math.sin(lt*8+m),o);});
+  return s;
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let chars='',pops='',cap='',behind='',back2='',talk='';
+  const sky=cloud(140+10*Math.sin(t*.3),100,.9,.95);
+  const o={noSun:true,noClouds:true,noFlowers:i===7};
+  if(i===0){
+    behind=bands(760,440,200,BAND.map((c,k)=>prog(lt,.6+k*.25,1.4+k*.25)));
+    chars=lulu(330,lt,t,1.1,[1.6,2.6]);
+    pops=pop('Rainbow Colours',640,115,84,NAVY,lt,.3)+pop('with '+LULU,640,215,80,NAVY,lt,.8,-3);
+  }else if(i<=6){
+    const k=i-1, X=790, S=FS[k], g=grow(lt,TA), j=jumps(lt,[TB],.55,22);
+    behind=bands(1120,440,150,BAND.map((c,m)=>m<k?1:m===k?eio(prog(lt,TR,TR+1)):0));
+    chars+=lulu(260,lt,t,.9,[TB+.15,TY]);
+    if(g>0)chars+=shadow(X,522,FW[k]*S*.9,-j.y)+place(X,520+j.y,thing(k,t,lt),{s:S*g,sx:j.sx,sy:j.sy});
+    back2=twinkles(X,520-90*S,lt,TB);
+    talk=wow(470,300,350,420,lt,TY);
+    pops=pop(NAME[k],640,165,124,COL[k],lt,TW);
+    cap=caption(CAP[k],lt,TC);
+  }else{
+    const X=[115,320,530,750,960,1165], S=[.7,.7,.6,.8,.62,.62];
+    const T0=k=>.8+k*.7;
+    behind=bands(640,500,300,BAND.map((c,k)=>eio(prog(lt,T0(k),T0(k)+.7))));
+    for(let k=0;k<6;k++){
+      const g=grow(lt,.2+k*.1), j=jumps(lt,[T0(k)+.05,7.7],.5,20);
+      if(g>0)chars+=shadow(X[k],522,FW[k]*S[k]*.9,-j.y)+place(X[k],520+j.y,thing(k,t,lt),{s:S[k]*g,sx:j.sx,sy:j.sy});
+      pops+=pop(NAME[k],X[k],580,44,COL[k],lt,T0(k)+.2);
+    }
+    pops+=pop('Rainbow colours!',640,150,88,NAVY,lt,.2);
+    cap=lt<7.6?caption('A rainbow of colours!',lt,5.0):caption('Well done!',lt,7.6);
+  }
+  svg.innerHTML=bg(t,0,behind,o)+sky+back2+chars+talk+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(130,110,1.3,.95);
+  s+=rainbow(880,560,400,1,1);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(250,662,120)+place(250,658,duck({wing:22}),{s:1.8});
+  s+=apple(560,690,.75)+place(1180,690,frog({}),{s:.85});
+  s+=label('Rainbow',880,270,140,'#E63946',-3);
+  s+=label('Colours',880,410,140,'#2979E8',-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
