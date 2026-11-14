@@ -64,13 +64,13 @@ function frog(o={}){
   <circle cx="-42" cy="-58" r="8" fill="#FF9AA2" opacity=".7"/><circle cx="42" cy="-58" r="8" fill="#FF9AA2" opacity=".7"/>`;
 }
 function bunny(o={}){
-  const e=o.eye==null?1:o.eye, ear=o.ear||0;
+  const e=o.eye==null?1:o.eye, ear=o.ear||0, turn=o.turn||0;   // turn (episode 92): both ears lean left (<0) or right (>0), degrees
   const eye=x=>`<g transform="translate(${x},-118) scale(1,${e})"><circle r="6.5" fill="#3a2a3a"/><circle cx="2" cy="-2.2" r="2.3" fill="#fff"/></g>`;
   const earG=(x,r)=>`<g transform="rotate(${r} ${x} -140)"><ellipse cx="${x}" cy="-184" rx="15" ry="46" fill="#fff"/><ellipse cx="${x}" cy="-182" rx="7" ry="32" fill="#FFB3C7"/></g>`;
   return `
   <circle cx="46" cy="-30" r="15" fill="#fff"/>
   <ellipse cx="-22" cy="-5" rx="21" ry="9" fill="#E9DDF5"/><ellipse cx="22" cy="-5" rx="21" ry="9" fill="#E9DDF5"/>
-  ${earG(-17,-8-ear)}${earG(17,8+ear)}
+  ${earG(-17,-8-ear+turn)}${earG(17,8+ear+turn)}
   <ellipse cx="0" cy="-48" rx="46" ry="48" fill="#fff"/>
   <ellipse cx="0" cy="-38" rx="26" ry="27" fill="#FFE3EC"/>
   <circle cx="0" cy="-112" r="40" fill="#fff"/>

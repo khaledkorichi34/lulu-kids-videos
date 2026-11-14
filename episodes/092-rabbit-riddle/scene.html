@@ -1,0 +1,159 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 92 - Who am I? A burrow riddle.  Title, three clues (I have two long ears; I like to eat grass
+   and leaves; I live in a burrow under the ground (two long ears peek out of the hole)), "Who am I?", the
+   reveal (a rabbit comes up and hops on its strong back legs), fact 1 (a rabbit can turn its ears to
+   listen: a bird sings on the left, a bee buzzes on the right), fact 2 (many rabbits live together, their
+   home of tunnels is a warren), goodbye. */
+const SC=[0,5.5,12.5,19.5,26.5,32.5,42,50,58,64], DUR=64;
+const NAVY='#2D2A6E', PURPLE='#7B5CFF', ORANGE='#E76F2E', BROWN='#8A5A2B', GREEN='#2E9E48', PINK='#FF5D8F';
+const BX=820, BY=535, BS=1.1;                       // burrow hole centre and scale (mound x 655..985, top 434)
+const lulu=(x,lt,t,hops,h=20,s=.95,wave=false)=>{
+  const j=jumps(lt,hops,.6,h), w=wave?20+20*Math.sin(lt*9):0;
+  return shadow(x,522,56*s/.95,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy});
+};
+const R=(t,o={})=>bunny(Object.assign({eye:blink(t,.7)},o));
+const qmark=(t,x=BX,y=395)=>label('?',x,y+4*Math.sin(t*3),110,'#fff',0,BROWN,.12);
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.4)):0;
+const burrow=inner=>burrowBack(BX,BY,BS)+burrowClip('bc',BX,BY,BS)+`<g clip-path="url(#bc)">${inner}</g>`+burrowFront(BX,BY,BS);
+function grass(x,y,s=1){
+  let g='';[-24,-12,0,12,24].forEach((d,k)=>{const h=34+(k%2)*14;g+=`<path d="M${d-6},0 Q${d},${-h} ${d+3+k%3*3},${-h-6} Q${d+2},${-h*.5} ${d+6},0 Z" fill="${k%2?'#4CB85A':'#3FA34D'}"/>`;});
+  return `<g transform="translate(${x},${y}) scale(${s})">${g}</g>`;
+}
+function scene(t){ return grass(560,528,1)+grass(1130,535,1.1)+grass(120,545,.9); }
+function icon(x,y,g,inner){
+  if(g<=0)return '';
+  return `<g transform="translate(${x},${y}) scale(${g})"><defs><clipPath id="ic"><circle r="88"/></clipPath></defs>
+  <circle r="92" fill="#fff" stroke="#FFD23F" stroke-width="7"/><g clip-path="url(#ic)">${inner}</g></g>`;
+}
+function earIcon(t){
+  const w=4*Math.sin(t*3);
+  return `<rect x="-100" y="-100" width="200" height="200" fill="#D9F2FF"/>
+  <g transform="rotate(${-12+w} -30 80)"><ellipse cx="-30" cy="-5" rx="26" ry="80" fill="#fff"/><ellipse cx="-30" cy="0" rx="13" ry="58" fill="#FFB3C7"/></g>
+  <g transform="rotate(${12-w} 30 80)"><ellipse cx="30" cy="-5" rx="26" ry="80" fill="#fff"/><ellipse cx="30" cy="0" rx="13" ry="58" fill="#FFB3C7"/></g>`;
+}
+function grassIcon(t){
+  return `<rect x="-100" y="-100" width="200" height="200" fill="#E6F8D8"/><rect x="-100" y="40" width="200" height="60" fill="#8ED16B"/>
+  ${grass(-40,60,2.2)}${grass(45,62,1.9)}${leaf(-35,-45,.24,-25)}${leaf(40,-30,.22,30,"#6CC24A")}`;
+}
+function holeIcon(t){
+  return `<rect x="-100" y="-100" width="200" height="200" fill="#CDEBFF"/><rect x="-100" y="10" width="200" height="90" fill="#A8743F"/>
+  <rect x="-100" y="0" width="200" height="16" fill="#6CC24A"/>
+  <path d="M-60,16 L-60,50 Q-60,70 -40,70 L60,70" stroke="#4A2A12" stroke-width="24" fill="none" stroke-linecap="round"/>
+  <ellipse cx="-60" cy="14" rx="24" ry="8" fill="#331B0A"/>`;
+}
+function sparkles(x,y,lt,t0){
+  const u=prog(lt,t0,t0+1.2);if(u<=0||u>=1)return '';
+  let s='';for(let k=0;k<6;k++){const a=k*Math.PI/3+.4, d=40+u*110;s+=sparkle(x+Math.cos(a)*d,y+Math.sin(a)*d*.7,1.3,1-u);}
+  return s;
+}
+// sound waves going out from (x,y) toward dir (+1 right, -1 left)
+function waves(x,y,dir,lt,t0,t1){
+  if(lt<t0||lt>t1)return '';let s='';
+  for(let k=0;k<3;k++){const q=((lt-t0)*.9+k/3)%1, r=20+q*70;
+    s+=`<path d="M${x+dir*r*.5},${y-r*.6} Q${x+dir*r},${y} ${x+dir*r*.5},${y+r*.6}" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round" opacity="${(1-q)*.9}"/>`;}
+  return s;
+}
+const WAR=[300,640,980];   // fact 2: three burrow holes of one warren
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let back_='',props='',chars='',pops='',cap='';
+  const o={noFlowers:true,noSun:true,noClouds:true};
+  back_=bg(t,0,cloud(130+8*Math.sin(t*.3),90,.75,.95),o);
+  if(i===0){
+    const peek=eio(prog(lt,2.2,2.8))-eio(prog(lt,4.2,4.8));
+    props=scene(t)+burrow(peek>0?place(BX,BY+120-peek*40,R(t,{ear:4*Math.sin(lt*5)}),{s:.75}):'')+qmark(t);
+    chars=lulu(280,lt,t,[1.3,2.3],30,1.1,true);
+    pops=pop('Who am I?',640,165,120,PURPLE,lt,.3,-3);
+    cap=caption('A new riddle with '+LULU,lt,1.8,'A new riddle with Lulu');
+  }else if(i>=1&&i<=3){
+    const N=i;
+    let inside='';
+    if(N===3){ // two long ears peek out of the hole, wiggle, and go down again
+      const u=eio(prog(lt,2.4,3.2))-eio(prog(lt,5.6,6.3));
+      if(u>0)inside=place(BX,lerp(BY+190,BY+122,u),R(t,{ear:6*Math.sin(lt*6)}),{s:.75});
+    }
+    props=scene(t)+burrow(inside)+qmark(t);
+    if(N===1)props+=icon(1110,300,grow(lt,2.4),earIcon(t));
+    if(N===2)props+=icon(1110,300,grow(lt,2.4),grassIcon(t));
+    if(N===3)props+=icon(1110,300,grow(lt,2.4),holeIcon(t));
+    chars=lulu(250,lt,t,[3.2]);
+    pops=pop('Clue '+N,560,150,100,ORANGE,lt,.3);
+    cap=caption(['','I have two long ears.','I like to eat grass and leaves.','I live in a burrow under the ground.'][N],lt,1.2);
+  }else if(i===4){
+    props=scene(t)+burrow('')+qmark(t);
+    chars=lulu(250,lt,t,[]);
+    pops=pop('ears',380,165,60,PINK,lt,.3)+pop('grass',640,165,60,GREEN,lt,.9)+pop('burrow',900,165,60,BROWN,lt,1.5);
+    cap=caption('Who am I? Can you guess?',lt,2.2);
+  }else if(i===5){
+    // the rabbit comes up out of the burrow, then hops out onto the grass
+    const up=eout(prog(lt,.4,1.2)), out=lt>=4.2;
+    let inside='';
+    if(!out)inside=place(BX,lerp(BY+180,BY+2,up),R(t,{ear:5*Math.sin(lt*5)}),{s:.75});
+    props=scene(t)+burrow(inside)+sparkles(BX,400,lt,1.0);
+    if(out){ // three hops to the right, then stands
+      const j=jumps(lt,[4.2,4.9,5.6],.6,60), x=lerp(BX,1080,eio(prog(lt,4.2,6.2)));
+      const y=lerp(BY,525,prog(lt,4.2,4.8));
+      props+=shadow(x,y+2,52,-j.y)+place(x,y+j.y,R(t),{s:.75,sx:j.sx,sy:j.sy});
+    }
+    chars=lulu(250,lt,t,[2.0,2.7],30,.95,lt>1.6);
+    pops=pop('A rabbit!',560,165,110,PINK,lt,1.2,-3);
+    cap=lt<4.6?caption('I am a rabbit!',lt,1.6):caption('Rabbits hop on strong back legs.',lt,4.6);
+  }else if(i===6){
+    // a rabbit can turn its ears: a bird sings on the left, then a bee buzzes on the right
+    const L=eio(prog(lt,2.0,2.6))-eio(prog(lt,4.6,5.0)), Rt=eio(prog(lt,5.0,5.6));
+    props=scene(t)+bush(250,530,1.1)+place(250,425+4*Math.sin(lt*4),bird({eye:blink(t,.4),wing:lt>1.2&&lt<4.6?20*Math.sin(lt*14):0}),{s:.7});
+    for(let k=0;k<3;k++){const q=((lt-1.2)*.45+k/3)%1;if(lt>1.2&&lt<4.6)props+=musicNote(lerp(320,520,q),lerp(380,300,q)-14*Math.sin(q*9),.9,'#FFD23F',(1-q)*.95*Math.min(1,(lt-1.2)*2));}
+    if(lt>4.4){const bx=lerp(1350,1060,eout(prog(lt,4.4,5.4)))+10*Math.sin(lt*3);props+=place(bx,330+14*Math.sin(lt*4),bee({flap:Math.sin(lt*40)}),{s:.8});}
+    chars=shadow(700,522,80)+place(700,520,R(t,{turn:-34*L+34*Rt}),{s:1.05});
+    props+=waves(250,360,1,lt,1.4,4.4)+waves(1060,330,-1,lt,5.4,8);
+    pops=pop('Fact 1',420,150,100,'#fff',lt,.3,0,ORANGE)+(lt>5.2?pop('Listen!',1000,170,80,PURPLE,lt,5.2,-3):'');
+    cap=lt<4.6?caption('A rabbit can turn its ears.',lt,1.0):caption('It listens for sounds all around.',lt,4.6);
+  }else if(i===7){
+    // many rabbits live together: three holes, a rabbit comes up out of each, then the tunnels show
+    const tu=prog(lt,4.0,5.0);
+    if(tu>0){ // tunnels under the ground join the holes
+      props+=`<rect x="${WAR[0]-90}" y="552" width="${WAR[2]-WAR[0]+180}" height="70" rx="24" fill="#C99A63" opacity="${tu}"/>`;
+      props+=`<path d="M${WAR[0]},545 Q${WAR[0]},592 ${WAR[0]+60},592 L${WAR[2]-60},592 Q${WAR[2]},592 ${WAR[2]},545 M${WAR[1]},545 L${WAR[1]},592" stroke="#4A2A12" stroke-width="30" fill="none" stroke-linecap="round" opacity="${tu*.85}"/>`;
+    }
+    WAR.forEach((x,k)=>{
+      const u=eout(prog(lt,.8+k*.8,1.5+k*.8));
+      const r=u>0?place(x,lerp(540+170,540+2,u),R(t+k*.4,{ear:4*Math.sin(lt*5+k)}),{s:.62}):'';
+      props+=burrowBack(x,540,.85)+burrowClip('wc'+k,x,540,.85)+`<g clip-path="url(#wc${k})">${r}</g>`+burrowFront(x,540,.85);
+    });
+    pops=lt<4.2?pop('Fact 2',640,150,100,'#fff',lt,.3,0,ORANGE):pop('A warren!',640,160,100,BROWN,lt,4.2,-3);
+    cap=lt<4.0?caption('Many rabbits live together.',lt,1.0):caption('Their home of tunnels is a warren.',lt,4.0);
+  }else{
+    props=heart(640,330+6*Math.sin(t*3),1.4,'#FF7FB0',.85*prog(lt,2,2.5))+heart(600,275+6*Math.sin(t*3+1),1,'#FF9AA2',.85*prog(lt,2.3,2.8));
+    props+=scene(t)+burrowBack(1080,535,.8)+burrowFront(1080,535,.8);
+    const j=jumps(lt,[1.2,2.0,3.4,4.2],.6,40);
+    props+=shadow(860,522,56,-j.y)+place(860,520+j.y,R(t,{ear:6*Math.sin(lt*4)}),{s:.8,sx:j.sx,sy:j.sy});
+    chars=lulu(400,lt,t,[1.0,1.8],26,.95,true);
+    pops=pop('Bye bye!',560,160,110,PURPLE,lt,.4,-2);
+    cap=caption('Bye bye, little rabbit!',lt,1.6);
+  }
+  svg.innerHTML=back_+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(140,110,1.1,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=burrowBack(960,660,1.5)+burrowClip('tc',960,660,1.5)+`<g clip-path="url(#tc)">${place(960,660+95,bunny({ear:6}),{s:1.05})}</g>`+burrowFront(960,660,1.5);
+  s+=grass(700,670,1.3)+grass(1230,660,1.2);
+  s+=label('?',1150,420,170,'#fff',0,BROWN,.12);
+  s+=shadow(165,702,85)+place(160,698,duck({wing:22}),{s:1.25});
+  s+=label('Who',560,190,150,'#FF5D8F',-3)+label('am I?',580,350,150,PURPLE,-3);
+  s+=label('A new riddle with '+LULU,560,440,60,NAVY);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

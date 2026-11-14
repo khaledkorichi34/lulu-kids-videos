@@ -1,0 +1,126 @@
+{
+  "number": 92,
+  "slug": "rabbit-riddle",
+  "format": "curious",
+  "ages": "6-10",
+  "title": "Who Am I? A Burrow Riddle with Lulu | Riddle for Kids",
+  "description": "Lulu the little duck has a new riddle for you!\nRead three clues and guess who lives in the burrow.\nThen see how rabbits turn their ears to listen and live together in a warren.\nA gentle riddle video for children aged 6 to 10.",
+  "duration": 64,
+  "seed": 92,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.3,
+      "type": "sparkle"
+    },
+    {
+      "t": 2.3,
+      "type": "boing_high"
+    },
+    {
+      "t": 5.8,
+      "type": "pop"
+    },
+    {
+      "t": 7.9,
+      "type": "ding"
+    },
+    {
+      "t": 12.8,
+      "type": "pop"
+    },
+    {
+      "t": 14.9,
+      "type": "ding"
+    },
+    {
+      "t": 19.8,
+      "type": "pop"
+    },
+    {
+      "t": 21.9,
+      "type": "boing_high"
+    },
+    {
+      "t": 26.8,
+      "type": "pop"
+    },
+    {
+      "t": 27.4,
+      "type": "pop"
+    },
+    {
+      "t": 28.0,
+      "type": "pop"
+    },
+    {
+      "t": 32.9,
+      "type": "boing_high"
+    },
+    {
+      "t": 33.5,
+      "type": "sparkle"
+    },
+    {
+      "t": 36.7,
+      "type": "boing_high"
+    },
+    {
+      "t": 42.3,
+      "type": "pop"
+    },
+    {
+      "t": 44.0,
+      "type": "ding"
+    },
+    {
+      "t": 46.4,
+      "type": "buzz"
+    },
+    {
+      "t": 50.8,
+      "type": "pop"
+    },
+    {
+      "t": 51.6,
+      "type": "pop"
+    },
+    {
+      "t": 52.4,
+      "type": "pop"
+    },
+    {
+      "t": 54.0,
+      "type": "sparkle"
+    },
+    {
+      "t": 58.4,
+      "type": "pop"
+    },
+    {
+      "t": 59.2,
+      "type": "boing_high"
+    },
+    {
+      "t": 61.4,
+      "type": "boing_high"
+    }
+  ],
+  "check_times": [
+    1.6,
+    2.6,
+    16.0,
+    24.0,
+    28.5,
+    34.0,
+    37.0,
+    37.7,
+    38.4,
+    45.0,
+    47.5,
+    52.8,
+    55.5,
+    59.5,
+    61.0
+  ]
+}
