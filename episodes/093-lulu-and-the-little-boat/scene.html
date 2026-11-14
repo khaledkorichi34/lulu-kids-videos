@@ -1,0 +1,150 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 93 - Lulu and the Little Boat. Lulu has a little toy boat with a white sail (ta-da!).
+   She puts it on the pond (splash!) and it floats. She blows (puff, puff!) and the boat sails away,
+   but it stops far out in the middle of the pond: oh no! Frog hops onto his lily pad (ribbit!) and
+   gives the boat a little push. It sails back to Lulu: thank you, Frog! The sun goes down and the
+   friends sleep by the pond, the little boat floating close by. */
+const DUR=56, SC=[0,5,11,17,24,30,37,43,49,56];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', ORANGE='#F27A12', TEAL='#19B8A6', GOLD='#FFE58A', BLUE='#1B7FD6', GREEN='#16A34A';
+const PCX=780, WL=560, PRX=440, PRY=52;     // the pond: x 340..1220, y 508..612
+const PADX=1080;                             // lily pad
+const LX=110;                                // Lulu on the grass, facing the pond
+const BS=.4;                                 // boat scale (hull +-60, mast top 100 above the water)
+const GX=300, GY=516;                        // boat on the grass
+const NEAR=490, FAR=860;                     // boat near the shore / far out in the pond
+const CLIPDEF=`<defs><clipPath id="aw"><rect x="0" y="0" width="1280" height="${WL+2}"/></clipPath></defs>`;
+const water=n=>`<ellipse cx="${PCX}" cy="${WL+4}" rx="${PRX}" ry="${PRY}" fill="${mix('#3FA3E0','#1E3C66',n)}"/>
+  <ellipse cx="${PCX-10}" cy="${WL}" rx="${PRX*.92}" ry="${PRY*.8}" fill="${mix('#7DD3FA','#35598E',n)}"/>
+  <ellipse cx="${PCX-200}" cy="${WL-18}" rx="60" ry="6" fill="#fff" opacity="${.5*(1-n*.6)}"/>
+  <ellipse cx="${PCX+120}" cy="${WL+24}" rx="50" ry="5" fill="#fff" opacity="${.4*(1-n*.6)}"/>`;
+const ripple=(x,lt,ph=0,w=70)=>{let s='';for(let k=0;k<2;k++){const q=((lt+ph+k*.9)%1.8)/1.8;
+  s+=`<ellipse cx="${x}" cy="${WL+4}" rx="${w*(.7+.6*q)}" ry="${11*(.7+.6*q)}" fill="none" stroke="#fff" stroke-width="3.5" opacity="${(1-q)*.7}"/>`;}return s;};
+const shore=(t,n)=>water(n)+lilyPad(PADX,WL-4)+reed(1196,550,95,t,0)+reed(1236,546,120,t,1);
+const lulu=(lt,t,o={})=>{
+  const x=o.x!=null?o.x:LX, j=jumps(lt,o.hops||[],.6,o.h||22), w=o.wave?20+20*Math.sin(lt*9):(o.wing!=null?o.wing:-20+6*Math.sin(lt*3));
+  return shadow(x,522,58,-j.y)+place(x,520+j.y,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),{s:1,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0,flip:o.flip});
+};
+// the toy boat floating on the pond (bobs gently), x = centre
+const boatOn=(x,lt,o={})=>(o.ripple===false?'':ripple(x,lt,.3,60))+`<g clip-path="url(#aw)">${place(x,WL+4+2*Math.sin(lt*2.2),sailboat({rock:(o.rock||0)+3*Math.sin(lt*1.7)}),{s:BS})}</g>`;
+const boatGrass=()=>shadow(GX,520,62)+place(GX,GY,sailboat({}),{s:BS});
+const frogAt=(x,y,t,o={})=>place(x,y,frog({eye:o.eye!=null?o.eye:blink(t,2.2)}),{s:.7,rot:o.rot||0,sx:o.sx||1,sy:o.sy||1});
+const frogPad=(t,o={})=>frogAt(PADX,WL-6,t,o);
+// puff: soft wind curls from Lulu's beak towards the boat
+const puff=(lt,a,b,x0,y0,len=260)=>{let s='';for(let k=0;k<5;k++){const q=(((lt-a)*.9+k/5)%1+1)%1, born=lt-q/.9;if(born<a||born>b)continue;
+  const x=x0+q*len, y=y0+8*Math.sin(q*9+k)+(k%2?10:-6), op=Math.sin(Math.PI*q)*.85;
+  s+=`<path d="M${x.toFixed(1)},${y.toFixed(1)} q14,-12 28,0 q14,12 28,0" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round" opacity="${op.toFixed(2)}"/>`;}return s;};
+const hearts=(lt,t0,x,y)=>{let s='';for(let k=0;k<4;k++){const q=lt-t0-k*.5;if(q>0&&q<2.4){const u=q/2.4;
+  s+=heart(x+k*44+10*Math.sin(q*4+k),y-90*u,1,[PINK,'#FF9F1C',PURPLE][k%3],Math.sin(Math.PI*u));}}return s;};
+const zzz=(lt,x,y,t0=2)=>{let s='';for(let k=0;k<3;k++){let q=lt-t0-k*.9;if(q>0){q%=2.7;
+  s+=`<text x="${(x+q*24+8*Math.sin(q*3)).toFixed(1)}" y="${(y-q*30).toFixed(1)}" font-size="${(28+q*11).toFixed(1)}" fill="#fff" opacity="${(Math.sin(Math.PI*q/2.7)*.95).toFixed(2)}">z</text>`;}}return s;};
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',pops='',cap='',behind='',front='',noSun=false,noClouds=false,noMoon=false;
+  switch(i){
+  case 0:{
+    // title
+    props=shore(t,0)+boatGrass()+frogPad(t);
+    chars=lulu(lt,t,{hops:[2.6],h:16,wave:lt>1&&lt<2.4});
+    pops=pop(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,640,120,74,PINK,lt,.4,-2)
+        +pop(`<tspan fill="${BLUE}">Little Boat</tspan>`,640,205,88,BLUE,lt,.9,-2);
+    break;}
+  case 1:{
+    // Lulu has a little boat with a white sail
+    const so=Math.sin(Math.PI*prog(lt,.8,2.4)), sp=sparkle(GX+50,390,1.4,so)+sparkle(GX-40,430,1,so)+sparkle(GX+80,470,.9,so);
+    props=shore(t,0)+boatGrass()+frogPad(t)+sp;
+    chars=lulu(lt,t,{hops:[.7,3.6],h:20,wave:lt>.7&&lt<2});
+    cap=lt<3.0?caption('Lulu has a little boat.',lt,.3):caption('It has a white sail.',lt,3.0);
+    pops=pop('Ta-da!',560,165,100,PINK,lt,.8,-3);
+    break;}
+  case 2:{
+    // into the water: splash! it floats
+    const u=eio(prog(lt,.6,2.0));
+    let b;
+    if(u<1){const x=lerp(GX,NEAR,u), y=lerp(GY,WL+4,u)-60*4*u*(1-u);
+      b=shadow(x,lerp(520,WL+6,u),62*(1-u*.4))+place(x,y,sailboat({rock:-12*Math.sin(Math.PI*u)}),{s:BS});}
+    else b=boatOn(NEAR,lt);
+    props=shore(t,0)+frogPad(t)+b+splash(NEAR,WL,prog(lt,2.0,2.8),.7,50);
+    chars=lulu(lt,t,{wing:lt>.4&&lt<1.6?25:undefined,hops:[3.4],h:18});
+    cap=lt<3.0?caption('Into the pond it goes.',lt,.3):caption('It floats!',lt,3.0);
+    pops=pop('Splash!',640,165,100,BLUE,lt,2.0,-3);
+    break;}
+  case 3:{
+    // Lulu blows: puff, puff! the boat sails away
+    const u=eio(prog(lt,1.4,5.8));
+    props=shore(t,0)+frogPad(t)+boatOn(lerp(NEAR,FAR,u),lt,{rock:-4*Math.sin(Math.PI*u)});
+    front=puff(lt,.6,4.6,LX+120,410,300);
+    chars=lulu(lt,t,{sy:lt>.5&&lt<4.6?1+.03*Math.sin(lt*6):1});
+    cap=lt<3.2?caption('Lulu blows. Puff, puff!',lt,.3):caption('The boat sails away.',lt,3.2);
+    pops=pop('Whee!',640,165,100,TEAL,lt,1.8,-3);
+    break;}
+  case 4:{
+    // it stops far out in the middle: oh no!
+    props=shore(t,0)+frogPad(t)+boatOn(FAR,lt);
+    chars=lulu(lt,t,{rot:lt>.8?-6:0,wing:lt>.8?-40:undefined});
+    cap=lt<3.0?caption('Oh no! The boat stops.',lt,.3):caption('It is too far away.',lt,3.0);
+    pops=pop('Oh no!',560,165,100,PURPLE,lt,.8,-3);
+    break;}
+  case 5:{
+    // Frog helps: ribbit! a little push
+    const hop=prog(lt,.8,1.6), push=eout(prog(lt,3.6,6.4));
+    let fr;
+    const FX2=995;
+    if(lt<3.0) fr=frogAt(PADX,WL-6-(hop>0&&hop<1?70*4*hop*(1-hop):0),t,{sy:hop>0&&hop<1?1.08:1});
+    else { const h=prog(lt,3.0,3.6), x=lerp(PADX,FX2,h), y=WL-6-(h>0&&h<1?40*4*h*(1-h):0);
+      fr=frogAt(x,y,t,{rot:lt>3.5&&lt<4.3?-10:0}); }
+    props=shore(t,0)+boatOn(lerp(FAR,FAR-110,push),lt)+fr;
+    chars=lulu(lt,t,{hops:[5.0],h:18});
+    cap=lt<3.0?caption('Ribbit! I can help!',lt,.3):caption('Frog gives it a push.',lt,3.0);
+    pops=lt<3.4?pop('Ribbit!',640,165,100,GREEN,lt,.9,-3):pop('Push!',640,165,100,ORANGE,lt,3.6,-3);
+    break;}
+  case 6:{
+    // the boat sails back to Lulu: thank you, Frog!
+    const u=eio(prog(lt,.2,3.2));
+    props=hearts(lt,3.4,LX+150,300)+shore(t,0)+boatOn(lerp(FAR-110,NEAR,u),lt)+frogPad(t);
+    chars=lulu(lt,t,{hops:[3.2,3.9],h:22,wave:lt>3.2&&lt<5.4});
+    cap=lt<3.2?caption('Here it comes!',lt,.3):caption('Thank you, Frog!',lt,3.2);
+    pops=pop('Hooray!',640,165,100,PINK,lt,3.3,-3);
+    break;}
+  case 7:{
+    // the sun goes down
+    n=lerp(0,.45,eio(prog(lt,.3,5.4))); noSun=true;
+    behind=sun(t,620,lerp(260,560,eio(prog(lt,.3,5.4))));
+    props=shore(t,n)+boatOn(NEAR,lt)+frogPad(t,{eye:lt>4.2?.5:undefined});
+    chars=lulu(lt,t,{eye:lt>4.0?.5:undefined,wave:lt>2.8&&lt<4.0});
+    cap=lt<3.0?caption('The sun goes down.',lt,.3):caption('Bye-bye, little boat.',lt,3.0);
+    pops=pop('Yawn!',640,165,96,PURPLE,lt,4.2,-3);
+    break;}
+  case 8:{
+    // night: the friends sleep by the pond
+    n=lerp(.45,1,eio(prog(lt,0,4))); noSun=true; noClouds=lt>0; noMoon=true;
+    behind=moon(260,lerp(330,120,eio(prog(lt,0,4))));
+    const asleep=lt>1.2, br=1+.025*Math.sin(lt*2.2);
+    props=shore(t,n)+boatOn(NEAR,lt*.6,{ripple:false})+frogPad(t,{eye:asleep?.12:.5,sy:1+.02*Math.sin(lt*2+1)});
+    chars=lulu(lt,t,{asleep,eye:.45,sy:br,rot:asleep?-3:0});
+    pops=zzz(lt,LX+80,330,2.0);
+    cap=caption('Good night, little friends.',lt,.5);
+    pops+=pop('The End',640,150,112,GOLD,lt,3.6,-3,NAVY);
+    break;}
+  }
+  svg.innerHTML=CLIPDEF+bg(t,n,behind,{noSun,noFlowers:true,noMoon,noClouds})+props+chars+front+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=CLIPDEF+bg(0,0,'',{noFlowers:true})+water(0)+lilyPad(PADX,WL-4)+reed(1196,550,95,0,0)+reed(1236,546,120,0,1);
+  s+=ripple(800,.4,.3,90)+`<g clip-path="url(#aw)">${place(800,WL+4,sailboat({rock:-3}),{s:.62})}</g>`;
+  s+=frogAt(PADX,WL-6,0,{});
+  s+=shadow(250,612,80)+place(250,610,duck({wing:25}),{s:1.4});
+  s+=label(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,640,115,92,PINK,-2);
+  s+=label(`<tspan fill="${BLUE}">Little Boat</tspan>`,640,225,108,BLUE,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
