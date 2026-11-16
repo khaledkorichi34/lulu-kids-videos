@@ -1,0 +1,128 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 94 - Baby Animals with Lulu (learning, first words).
+   Title, then one scene per animal family: the grown-up animal appears, its baby comes out from behind it,
+   the baby's name pops in, a caption ("A baby cat is a kitten!"), a bounce, Lulu hops and says "Aww!".
+   Cat/kitten, dog/puppy, sheep/lamb, duck/ducklings, frog/tadpoles, then all five babies together. */
+const SC=[0,5,12,19,26,33,40,48], DUR=48;
+const NAVY='#2D2A6E';
+const NAME=['Kitten','Puppy','Lamb','Duckling','Tadpole'];
+const COL=['#F28C28','#A86B3C','#7B5CFF','#E0A526','#3E9E3E'];
+const CAP=['A baby cat is a kitten!','A baby dog is a puppy!','A baby sheep is a lamb!','A baby duck is a duckling!','A baby frog is a tadpole!'];
+const TH=.4, TA=1.2, TS=2.4, TW=2.2, TC=2.6, TB=3.6, TY=4.6;   // grown-up appears, baby comes (start/stop), name, caption, bounce, "Aww!"
+
+const sideClouds=t=>cloud(125+10*Math.sin(t*.3),96,.9,.95)+cloud(1160+12*Math.sin(t*.25+1),112,.9,.95);
+
+function lulu(x,lt,t,s,hopAt){
+  const j=jumps(lt,hopAt,.55,24), w=j.y<0?30*Math.abs(Math.sin(lt*10)):12+8*Math.sin(lt*3);
+  return shadow(x,522,52*s/.9,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy});
+}
+function aww(x,y,tx,ty,lt,t0){
+  if(lt<t0)return '';
+  const g=back(prog(lt,t0,t0+.35));
+  return `<g transform="translate(${x},${y}) scale(${g}) translate(${-x},${-y})">${speech(x,y,130,62,tx,ty,'Aww!',54,'#FF5D8F')}</g>`;
+}
+const grow=(x,y,g,inner)=>g>0?`<g transform="translate(${x},${y}) scale(${g}) translate(${-x},${-y})">${inner}</g>`:'';
+const MUMDUCK={body:'#FFFFFF',belly:'#F1F4F8',wingCol:'#DDE3EC'};
+
+/* one family scene. Grown-up on the right facing left, baby comes out from behind it and stops facing it. */
+function familyScene(k,lt,t){
+  const g=back(prog(lt,TH,TH+.5)), a=eio(prog(lt,TA,TS)), jb=jumps(lt,[TB],.55,20), jm=jumps(lt,[TB+.25],.55,10);
+  const hop=a>0&&a<1?Math.abs(Math.sin(a*Math.PI*3))*-14:0;   // baby hops while it walks
+  let s='';
+  if(k===0){ // cat and kitten
+    const MX=960, BX=lerp(MX,700,a);
+    if(a>0)s+=shadow(BX,522,34,-jb.y-hop)+place(BX,520+jb.y+hop,kitten({eye:blink(t,.4),tail:Math.sin(lt*3),tilt:6*Math.sin(lt*2)}),{s:.55,sx:jb.sx,sy:jb.sy});
+    s+=grow(MX,520,g,shadow(MX,522,60)+place(MX,520+jm.y,kitten({eye:blink(t,1.3),tail:Math.sin(lt*2+1)}),{s:1.0,flip:true,sx:jm.sx,sy:jm.sy}));
+  }else if(k===1){ // dog and puppy
+    const MX=990, BX=lerp(MX,700,a), walking=a>0&&a<1;
+    if(a>0)s+=shadow(BX,522,40,-jb.y-hop)+place(BX,520+jb.y+hop,puppy({eye:blink(t,.4),tail:Math.sin(lt*12),ear:jb.y<0?1:0}),{s:.55,flip:walking,sx:jb.sx,sy:jb.sy});
+    s+=grow(MX,520,g,shadow(MX,522,80)+place(MX,520+jm.y,puppy({eye:blink(t,1.3),tail:Math.sin(lt*6)}),{s:1.1,flip:true,sx:jm.sx,sy:jm.sy}));
+  }else if(k===2){ // sheep and lamb
+    const MX=990, BX=lerp(MX,700,a), walking=a>0&&a<1;
+    if(a>0)s+=shadow(BX,522,44,-jb.y-hop)+place(BX,520+jb.y+hop,lamb({eye:blink(t,.4),ear:jb.y<0?20:6*Math.sin(lt*4)}),{s:.62,flip:walking,sx:jb.sx,sy:jb.sy});
+    s+=grow(MX,520,g,shadow(MX,522,95)+place(MX,520+jm.y,lamb({eye:blink(t,1.3),fluff:jm.y<0?1:0}),{s:1.2,flip:true,sx:jm.sx,sy:jm.sy}));
+  }else if(k===3){ // mother duck walks in from the right, three ducklings follow her in a line
+    const w=eio(prog(lt,TH,TS+.4));
+    const MX=lerp(1420,640,w);
+    for(let d=0;d<3;d++){
+      const dx=MX+170+d*115, jd=jumps(lt,[TB+d*.2],.5,18);
+      const bob=w>0&&w<1?Math.abs(Math.sin(lt*9+d))*-8:0;
+      if(dx<1400)s+=shadow(dx,522,26,-jd.y-bob)+place(dx,520+jd.y+bob,duck({eye:blink(t,.3+d*.7),wing:jd.y<0?30:8+6*Math.sin(lt*4+d)}),{s:.42,flip:true,sx:jd.sx,sy:jd.sy});
+    }
+    const wob=w>0&&w<1?3*Math.sin(lt*9):0;
+    s+=shadow(MX,522,62)+place(MX,520+jm.y,duck(Object.assign({eye:blink(t,1.3),wing:10+6*Math.sin(lt*3)},MUMDUCK)),{s:.95,flip:true,rot:wob,sx:jm.sx,sy:jm.sy});
+  }else{ // frog on a lily pad, tadpoles swim in the pond
+    const PX=830, PY=548;
+    s+=grow(PX,PY,g,pond(PX,PY,330)+reed(PX+330,PY-8,120,t,0)+reed(PX+352,PY-4,90,t,1));
+    s+=`<clipPath id="pondclip"><ellipse cx="${PX}" cy="${PY}" rx="${330*.89}" ry="${330*.126}"/></clipPath>`;
+    if(a>0){
+      let tp='';
+      for(let d=0;d<3;d++){
+        const ph=d*2.1, x=PX-170+d*120+30*Math.sin(lt*1.4+ph), y=PY+6+(d===1?-8:6)+3*Math.sin(lt*2+ph);
+        const fx=x+lerp(260,0,a);
+        tp+=place(fx,y+jb.y*.25,tadpole({eye:blink(t,.5+d),wig:Math.sin(lt*8+ph)}),{s:.6,flip:Math.cos(lt*1.4+ph)<0});
+      }
+      s+=`<g clip-path="url(#pondclip)" opacity="${clamp(a*2)}">${tp}</g>`;
+    }
+    s+=grow(PX,PY,g,lilyPad(PX+170,PY-12)+place(PX+150,PY-14+jm.y*2,frog({eye:blink(t,1.3)}),{s:.75,sx:jm.sx,sy:jm.sy}));
+  }
+  return s;
+}
+
+/* small families for the last scene, origin on the ground at x */
+function smallFamily(k,x,lt,t){
+  if(k===0)return place(x+35,520,kitten({eye:blink(t,1.3)}),{s:.5,flip:true})+place(x-45,520,kitten({eye:blink(t,.4),tail:Math.sin(lt*3)}),{s:.32});
+  if(k===1)return place(x+45,520,puppy({eye:blink(t,1.3),tail:Math.sin(lt*6)}),{s:.55,flip:true})+place(x-55,520,puppy({eye:blink(t,.4),tail:Math.sin(lt*12)}),{s:.32});
+  if(k===2)return place(x+45,520,lamb({eye:blink(t,1.3)}),{s:.6,flip:true})+place(x-55,520,lamb({eye:blink(t,.4)}),{s:.36});
+  if(k===3)return place(x-30,520,duck(Object.assign({eye:blink(t,1.3)},MUMDUCK)),{s:.5,flip:true})+place(x+45,520,duck({eye:blink(t,.3)}),{s:.25,flip:true})+place(x+90,520,duck({eye:blink(t,.9)}),{s:.25,flip:true});
+  return pond(x,532,105)+`<clipPath id="pc2"><ellipse cx="${x}" cy="532" rx="${105*.89}" ry="${105*.126}"/></clipPath><g clip-path="url(#pc2)">${place(x-40+8*Math.sin(lt*1.6),536,tadpole({eye:blink(t,.6),wig:Math.sin(lt*8)}),{s:.34})}</g>`+`<ellipse cx="${x+42}" cy="${523}" rx="46" ry="10" fill="#3FA34D"/><ellipse cx="${x+42}" cy="521" rx="46" ry="9" fill="#58C063"/>`+place(x+40,518,frog({eye:blink(t,1.3)}),{s:.4});
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let chars='',pops='',cap='',talk='',fam='';
+  const o={noSun:true,noClouds:true,noFlowers:true};
+  if(i===0){
+    fam+=place(1070,520,kitten({eye:blink(t,1.3),tail:Math.sin(lt*3)}),{s:.6,flip:true})+place(210,520,lamb({eye:blink(t,.4)}),{s:.7});
+    chars+=lulu(640,lt,t,1.15,[1.4,2.4,3.4]);
+    pops=pop('Baby Animals',640,132,104,NAVY,lt,.3)+pop('with '+LULU,640,236,84,NAVY,lt,.7,-2);
+  }else if(i<=5){
+    const k=i-1;
+    fam=familyScene(k,lt,t);
+    chars+=lulu(230,lt,t,.9,[TB+.15,TY]);
+    talk=aww(430,300,320,420,lt,TY);
+    pops=pop(NAME[k],640,160,124,COL[k],lt,TW);
+    cap=caption(CAP[k],lt,TC);
+  }else{
+    const X=[150,395,640,885,1130];
+    for(let k=0;k<5;k++){
+      const t0=.4+k*.5, g=lt>t0?back(prog(lt,t0,t0+.35)):0, j=jumps(lt,[3.4+k*.35],.5,16);
+      if(g<=0)continue;
+      fam+=`<g transform="translate(${X[k]},${520+j.y}) scale(${g*j.sx},${g*j.sy}) translate(${-X[k]},-520)">${smallFamily(k,X[k],lt,t)}</g>`;
+      pops+=pop(NAME[k],X[k],585,44,COL[k],lt,t0+.2);
+    }
+    pops+=pop('All together!',640,160,96,NAVY,lt,.2);
+    cap=caption('Baby animals! Well done!',lt,4.6);
+  }
+  svg.innerHTML=bg(t,0,'',o)+sideClouds(t)+fam+chars+talk+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,'',{noSun:true,noClouds:true,noFlowers:true})+cloud(130,110,1.3,.95)+cloud(1150,100,1.1,.95);
+  s+=shadow(1060,662,70)+place(1060,660,kitten({tail:.5}),{s:.75,flip:true});
+  s+=shadow(820,662,50)+place(820,660,puppy({tail:.5}),{s:.6});
+  s+=shadow(170,662,60)+place(170,660,lamb({}),{s:.75});
+  s+=shadow(430,662,90)+place(430,658,duck({wing:22}),{s:1.25});
+  s+=label('Baby Animals',640,200,112,'#F28C28',-3);
+  s+=label('with '+LULU,640,320,84,NAVY,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

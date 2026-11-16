@@ -1,0 +1,107 @@
+{
+  "number": 94,
+  "slug": "baby-animals-with-lulu",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "Baby Animals with Lulu | Learn First Words for Kids",
+  "description": "Lulu the little duck meets five animal families: a cat and her kitten, a dog and his puppy, a sheep and her lamb, a duck and her ducklings, and a frog with its tadpoles.\n\nSay the name of each baby animal out loud.\n\nA short, gentle first-words video for children aged 3 to 6.",
+  "duration": 48,
+  "seed": 94,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 1.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 2.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 7.2,
+      "type": "pop"
+    },
+    {
+      "t": 8.6,
+      "type": "boing_high"
+    },
+    {
+      "t": 9.6,
+      "type": "pop"
+    },
+    {
+      "t": 14.2,
+      "type": "pop"
+    },
+    {
+      "t": 15.6,
+      "type": "boing_high"
+    },
+    {
+      "t": 16.6,
+      "type": "pop"
+    },
+    {
+      "t": 21.2,
+      "type": "pop"
+    },
+    {
+      "t": 22.6,
+      "type": "boing_high"
+    },
+    {
+      "t": 23.6,
+      "type": "pop"
+    },
+    {
+      "t": 28.2,
+      "type": "pop"
+    },
+    {
+      "t": 29.6,
+      "type": "boing_high"
+    },
+    {
+      "t": 30.6,
+      "type": "pop"
+    },
+    {
+      "t": 35.2,
+      "type": "pop"
+    },
+    {
+      "t": 36.6,
+      "type": "boing_high"
+    },
+    {
+      "t": 37.6,
+      "type": "pop"
+    },
+    {
+      "t": 44.6,
+      "type": "ding"
+    }
+  ],
+  "check_times": [
+    1.0,
+    2.6,
+    6.8,
+    8.85,
+    10.6,
+    13.8,
+    15.85,
+    17.6,
+    20.8,
+    22.85,
+    24.6,
+    27.8,
+    29.85,
+    31.6,
+    34.8,
+    36.85,
+    38.6,
+    41.5,
+    43.6,
+    46.5
+  ]
+}
