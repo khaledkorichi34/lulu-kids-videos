@@ -1,0 +1,152 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 96 - Lulu and the Little Ladybird. The rain stops (drip, drop). Lulu finds a little ladybird
+   on the grass. Her home is up on the big pink flower, but her wings are wet and she cannot fly up (oh no!).
+   Lulu has an idea: she tips a big leaf up against the flower, a leaf bridge (ta-da!). The ladybird walks
+   up, step, step, step, and hops onto her flower. The sun dries her wings, she flutters: thank you, Lulu!
+   The sun goes down; the ladybird sleeps on her flower and Lulu sleeps on the grass below. */
+const DUR=55, SC=[0,5,11,17,23,29,36,42,48,55];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', ORANGE='#F27A12', TEAL='#19B8A6', GOLD='#FFE58A', BLUE='#1B7FD6', GREEN='#16A34A', RED='#E63946';
+const LX=200;                         // Lulu on the grass, facing right
+const FX=960, FH=85, FS=2.0;          // the big pink flower (head centre at y 350, petals up to y 272)
+const BX=470;                         // the ladybird on the grass
+const LS=.8, LSF=.72;                 // ladybird scale on the grass / up on the flower
+const P0=[560,516], P1=[868,366];     // leaf bridge: bottom end on the grass, top end by the flower head
+const BANG=Math.atan2(P1[1]-P0[1],P1[0]-P0[0]), BLEN=Math.hypot(P1[0]-P0[0],P1[1]-P0[1]);
+const BDEG=BANG*180/Math.PI;
+
+const bigFlower=(t,n=0)=>thirstyFlower(FX,520,FH,'#FF7FB0',0,t,0,{s:FS,face:true,asleep:n>.7});
+const fTop=t=>bigFlowerTop(FX,520,FH,FS,t,0);
+// the leaf: u = 0 lying flat on the grass (left end at P0), 1 tipped up as a bridge
+const bridge=u=>{const a=lerp(0,BDEG,u), c=[P0[0]+Math.cos(a*Math.PI/180)*BLEN/2, P0[1]+Math.sin(a*Math.PI/180)*BLEN/2];
+  return place(c[0],c[1]+(u<1?-4*(1-u):0),leaf(0,0,1,0),{rot:a,sx:BLEN/420,sy:lerp(.3,.46,u)});};
+// little raindrops resting on her shell (wet = 0..1)
+const wetDrops=w=>w<=0?'':raindrop(-28,-96,.9,w)+raindrop(14,-104,.8,w)+raindrop(40,-80,.7,w);
+// the ladybird at (x,y): o = {s, flip, rot, eye, wet, fly, asleep}
+const lady=(x,y,t,o={})=>{
+  const inner=ladybird({eye:o.eye!=null?o.eye:blink(t,1.3),wiggle:Math.sin(t*3),fly:o.fly,asleep:o.asleep})+wetDrops(o.wet||0);
+  return (o.noShadow?'':shadow(x,y+2,46*(o.s||LS)))+place(x,y,inner,{s:o.s||LS,flip:o.flip,rot:o.rot||0});
+};
+const ladyTop=(t,o={})=>{const [x,y]=fTop(t);return lady(x,y,t,Object.assign({s:LSF,noShadow:true},o));};
+const lulu=(lt,t,o={})=>{
+  const x=o.x!=null?o.x:LX, j=jumps(lt,o.hops||[],.6,o.h||22), w=o.wave?20+20*Math.sin(lt*9):(o.wing!=null?o.wing:-20+6*Math.sin(lt*3));
+  return shadow(x,522,58,-j.y)+place(x,520+j.y,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),{s:1,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0,flip:o.flip});
+};
+const garden=(t,n=0)=>bush(1150,530,.75)+flower(80,600,90,'#FFFFFF',t,1,.5)+flower(1210,610,90,'#FFD23F',t,2,.5,'#FF8C1A')+bigFlower(t,n);
+// drips falling from the flower petals and from the sky (rain stopping), u fades them out
+const drips=(lt,u)=>{let s='';const pts=[[890,380],[1030,370],[960,430],[300,90],[520,60],[760,120],[1100,240]];
+  pts.forEach((p,k)=>{const q=((lt*.9+k*.37)%1.4)/1.4, y=p[1]+q*(k<3?120:300);s+=raindrop(p[0],y,1.1,Math.sin(Math.PI*q)*u);});return s;};
+const hearts=(lt,t0,x,y)=>{let s='';for(let k=0;k<4;k++){const q=lt-t0-k*.5;if(q>0&&q<2.4){const u=q/2.4;
+  s+=heart(x+k*40+10*Math.sin(q*4+k),y-90*u,1,[PINK,'#FF9F1C',PURPLE][k%3],Math.sin(Math.PI*u));}}return s;};
+const zzz=(lt,x,y,t0=2)=>{let s='';for(let k=0;k<3;k++){let q=lt-t0-k*.9;if(q>0){q%=2.7;
+  s+=`<text x="${(x+q*24+8*Math.sin(q*3)).toFixed(1)}" y="${(y-q*30).toFixed(1)}" font-size="${(28+q*11).toFixed(1)}" fill="#fff" opacity="${(Math.sin(Math.PI*q/2.7)*.95).toFixed(2)}">z</text>`;}}return s;};
+const glowTop=(t,o)=>{const [x,y]=fTop(t);return sparkle(x-70,y+10,1.5,o)+sparkle(x+70,y+30,1.2,o)+sparkle(x,y-30,1.3,o);};
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',pops='',cap='',behind='',front='',noSun=false,noClouds=false,noMoon=false;
+  switch(i){
+  case 0:{
+    // title
+    props=garden(t)+bridge(0);
+    chars=lulu(lt,t,{hops:[2.6],h:16,wave:lt>1&&lt<2.4})+lady(BX,516,t,{flip:true,wet:1});
+    pops=pop(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,640,120,74,PINK,lt,.4,-2)
+        +pop(`<tspan fill="${RED}">Little Ladybird</tspan>`,600,205,84,RED,lt,.9,-2);
+    break;}
+  case 1:{
+    // the rain stops: drip, drop. who is that?
+    props=garden(t)+bridge(0)+drips(lt,1-prog(lt,3.2,4.4));
+    chars=lulu(lt,t,{hops:[4.0],h:18,rot:lt>3.4?6:0})+lady(BX,516,t,{flip:true,wet:1});
+    cap=lt<3.0?caption('The rain stops.',lt,.3):caption('Who is that?',lt,3.0);
+    pops=pop('Drip, drop!',600,165,96,BLUE,lt,.7,-3);
+    break;}
+  case 2:{
+    // hello, little ladybird! her home is up there
+    const so=Math.sin(Math.PI*prog(lt,3.4,5.8));
+    props=garden(t)+bridge(0)+glowTop(t,so);
+    chars=lulu(lt,t,{wave:lt>.5&&lt<2.4,hops:[.5],h:18})+lady(BX,516,t,{flip:lt<3.2,wet:1});
+    cap=lt<3.0?caption('Hello, little ladybird!',lt,.3):caption('Her home is up there.',lt,3.0);
+    pops=pop('Hello!',600,165,100,PINK,lt,.6,-3);
+    break;}
+  case 3:{
+    // her wings are wet, she cannot fly up: oh no!
+    const j=jumps(lt,[.9,3.4],.8,46);
+    props=garden(t)+bridge(0);
+    chars=lulu(lt,t,{rot:lt>2.2?-6:0,wing:lt>2.2?-40:undefined})+lady(BX,516+j.y,t,{wet:1,fly:j.y<-2?.5+.5*Math.sin(lt*30):undefined});
+    cap=lt<3.0?caption('Her wings are wet.',lt,.3):caption('She cannot fly up.',lt,3.0);
+    pops=pop('Oh no!',600,165,100,PURPLE,lt,2.0,-3);
+    break;}
+  case 4:{
+    // Lulu has an idea: a leaf bridge!
+    const u=back(prog(lt,2.2,3.4)), sp=Math.sin(Math.PI*prog(lt,3.2,5.2));
+    props=garden(t)+bridge(clamp(u,0,1.08))+sparkle(700,380,1.5,sp)+sparkle(800,330,1.2,sp)+sparkle(640,450,1.1,sp);
+    chars=lulu(lt,t,{hops:[.5,1.1],h:24,wing:lt>2.0&&lt<3.6?30:undefined})+lady(BX,516,t,{wet:1});
+    cap=lt<3.0?caption('Lulu has an idea!',lt,.3):caption('A leaf bridge!',lt,3.0);
+    pops=pop('Ta-da!',600,165,100,ORANGE,lt,3.0,-3);
+    break;}
+  case 5:{
+    // up the leaf: step, step, step, onto the flower
+    let ch;
+    const wk=1+.04*Math.sin(lt*14);
+    if(lt<1.4){const x=lerp(BX,P0[0],eio(prog(lt,.4,1.4)));ch=lady(x,516,t,{wet:1});}
+    else if(lt<5.0){const u=prog(lt,1.4,5.0), x=lerp(P0[0],P1[0],u), y=lerp(P0[1],P1[1],u)-2;
+      ch=lady(x,y,t,{wet:1,rot:BDEG,noShadow:true,s:LS*wk});}
+    else {const h=eio(prog(lt,5.0,5.6)), [tx,ty]=fTop(t), x=lerp(P1[0],tx,h), y=lerp(P1[1],ty,h)-70*4*h*(1-h), s=lerp(LS,LSF,h);
+      ch=lady(x,y,t,{wet:1,rot:BDEG*(1-h),noShadow:true,s});}
+    props=garden(t)+bridge(1);
+    chars=lulu(lt,t,{hops:[5.7],h:20})+ch;
+    cap=lt<3.4?caption('Step, step, step.',lt,.3):caption('Up, up, up she goes!',lt,3.4);
+    pops=pop('Up, up!',560,165,100,TEAL,lt,1.6,-3);
+    break;}
+  case 6:{
+    // the sun dries her wings, she flutters: thank you, Lulu!
+    const w=1-prog(lt,.4,2.2), fl=prog(lt,2.6,4.6), lift=-40*Math.sin(Math.PI*fl);
+    const sp=Math.sin(Math.PI*prog(lt,.3,2.6));
+    const [tx,ty]=fTop(t);
+    props=hearts(lt,3.2,FX-60,260)+garden(t)+bridge(1)+sparkle(tx-60,ty-40,1.3,sp)+sparkle(tx+60,ty-20,1.1,sp);
+    chars=lulu(lt,t,{hops:[3.4,4.0],h:22,wave:lt>3.4&&lt<5.6})
+      +lady(tx,ty+lift,t,{s:LSF,noShadow:true,wet:w,fly:fl>0&&fl<1?.5+.5*Math.sin(lt*30):undefined});
+    cap=lt<3.0?caption('The sun dries her wings.',lt,.3):caption('Thank you, Lulu!',lt,3.0);
+    pops=pop('Hooray!',560,165,100,PINK,lt,3.2,-3);
+    break;}
+  case 7:{
+    // the sun goes down
+    n=lerp(0,.45,eio(prog(lt,.3,5.4))); noSun=true; noMoon=true;
+    behind=sun(t,560,lerp(260,560,eio(prog(lt,.3,5.4))));
+    props=garden(t,n)+bridge(1);
+    chars=lulu(lt,t,{eye:lt>4.0?.5:undefined,wave:lt>2.8&&lt<4.0})+ladyTop(t,{eye:lt>4.2?.5:undefined});
+    cap=lt<3.0?caption('The sun goes down.',lt,.3):caption('Bye-bye, sunny day.',lt,3.0);
+    pops=pop('Yawn!',560,165,96,PURPLE,lt,4.2,-3);
+    break;}
+  case 8:{
+    // night: the ladybird sleeps on her flower, Lulu sleeps on the grass
+    n=lerp(.45,1,eio(prog(lt,0,4))); noSun=true; noClouds=lt>0; noMoon=true;
+    behind=moon(300,lerp(330,120,eio(prog(lt,0,4))));
+    const asleep=lt>1.2, br=1+.025*Math.sin(lt*2.2);
+    props=garden(t,n)+bridge(1);
+    chars=lulu(lt,t,{asleep,eye:.45,sy:br,rot:asleep?-3:0})+ladyTop(t,{asleep:lt>1.6,eye:.45});
+    pops=zzz(lt,LX+80,330,2.0);
+    cap=caption('Good night, little ladybird.',lt,.5);
+    pops+=pop('The End',600,150,112,GOLD,lt,3.6,-3,NAVY);
+    break;}
+  }
+  svg.innerHTML=bg(t,n,behind,{noSun,noFlowers:true,noMoon,noClouds})+props+chars+front+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,'',{noFlowers:true})+bush(1150,530,.75)+flower(80,600,90,'#FFFFFF',0,1,.5);
+  s+=thirstyFlower(FX,560,FH,'#FF7FB0',0,0,0,{s:FS,face:true});
+  s+=shadow(560,612,60)+place(560,610,ladybird({wiggle:.4}),{s:1.25,flip:true});
+  s+=shadow(250,612,80)+place(250,610,duck({wing:25}),{s:1.4});
+  s+=label(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,600,115,92,PINK,-2);
+  s+=label(`<tspan fill="${RED}">Little Ladybird</tspan>`,600,225,100,RED,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

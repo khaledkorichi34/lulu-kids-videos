@@ -341,10 +341,13 @@ function bigStar(x,y,r,col='#FFD93B',rot=0,face=false,e=1){
 /* ---------- ladybird (episode 8) ---------- */
 // ladybird({eye, wiggle}): small red ladybird seen from the side, facing right, origin at its feet
 // (about 130 wide and 90 tall, 110 with antennae). wiggle = antenna sway (-1..1)
+// fly = 0..1 (episode 96): when given, two thin see-through wings flutter up behind the shell (use .5+.5*Math.sin(t*k));
+// asleep = closed eye
 function ladybird(o={}){
-  const e=o.eye==null?1:o.eye, w=o.wiggle||0, D='#2b2b3a';
+  const e=o.asleep?.12:(o.eye==null?1:o.eye), w=o.wiggle||0, D='#2b2b3a';
   const leg=x=>`<path d="M${x},-16 L${x+6},-1" stroke="${D}" stroke-width="6" stroke-linecap="round"/>`;
-  return `
+  const wg=o.fly==null?'':[-14,10].map((x,k)=>`<ellipse cx="${x}" cy="-118" rx="22" ry="54" fill="#E8F4FF" opacity=".75" transform="rotate(${(-38+k*22-o.fly*26).toFixed(1)} ${x} -78)"/>`).join('');
+  return `${wg}
   ${leg(-34)}${leg(-6)}${leg(22)}
   <path d="M58,-56 Q${64+w*4},-82 ${78+w*6},-88" stroke="${D}" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="${78+w*6}" cy="${-88}" r="5" fill="${D}"/>
   <path d="M66,-52 Q${78+w*4},-72 ${92+w*6},-74" stroke="${D}" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="${92+w*6}" cy="-74" r="5" fill="${D}"/>
@@ -2082,4 +2085,12 @@ function thirstyFlower(x,y,h,col,droop,t,i=0,o={}){
   <ellipse cx="17" cy="${-h*.32}" rx="18" ry="8" fill="${mix('#3FA34D','#8FA04A',d*.5)}" transform="rotate(${-28+d*50} 17 ${-h*.32})"/>
   <ellipse cx="-17" cy="${-h*.26}" rx="18" ry="8" fill="${mix('#47AD47','#8FA04A',d*.5)}" transform="rotate(${28-d*50} -17 ${-h*.26})"/>
   <g transform="translate(${hx.toFixed(1)},${hy.toFixed(1)}) rotate(${d*105}) scale(${pk})">${head}</g></g>`;
+}
+
+/* ---------- ladybird's flower (episode 96) ---------- */
+// bigFlowerTop(x,y,h,s,t,i): the top of the petals of thirstyFlower(x,y,h,col,0,t,i,{s}) standing up straight,
+// following its gentle sway: returns [x,y] where a small friend can stand on the flower.
+function bigFlowerTop(x,y,h,s,t,i=0){
+  const a=Math.sin(t*1.3+i*1.7)*2.5*Math.PI/180, r=(h+36)*s;
+  return [x+Math.sin(a)*r, y-Math.cos(a)*r];
 }

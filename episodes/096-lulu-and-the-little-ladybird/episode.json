@@ -1,0 +1,26 @@
+{
+  "number": 96,
+  "slug": "lulu-and-the-little-ladybird",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and the Little Ladybird | Bedtime Story for Kids",
+  "description": "The rain stops and Lulu finds a little ladybird on the grass. Her home is up on a big flower, but her wings are wet.\nLulu makes a leaf bridge, and the ladybird walks up: step, step, step! The sun dries her wings. Thank you, Lulu!\nThe sun goes down and the two friends fall asleep.\nA calm bedtime story for children aged 3 to 6.",
+  "duration": 55,
+  "seed": 96,
+  "lullaby_from": 48.0,
+  "sfx": [
+    {"t": 0.4, "type": "pop"},
+    {"t": 5.7, "type": "pop"},
+    {"t": 11.6, "type": "pop"},
+    {"t": 18.1, "type": "boing_low"},
+    {"t": 20.6, "type": "boing_low"},
+    {"t": 25.2, "type": "boing_high"},
+    {"t": 26.0, "type": "sparkle"},
+    {"t": 34.6, "type": "boing_low"},
+    {"t": 36.4, "type": "sparkle"},
+    {"t": 39.2, "type": "ding"},
+    {"t": 46.2, "type": "pop"},
+    {"t": 51.6, "type": "sparkle"}
+  ],
+  "check_times": [1.5, 3.0, 6.5, 9.5, 12.5, 15.5, 18.3, 20.8, 22.0, 25.3, 26.5, 28.0, 30.0, 32.0, 34.2, 34.6, 35.5, 38.0, 39.5, 40.5, 43.0, 46.5, 50.0, 53.5]
+}
