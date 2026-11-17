@@ -1,0 +1,99 @@
+{
+  "number": 97,
+  "slug": "doubles-with-lulu",
+  "format": "learning",
+  "ages": "3-7",
+  "title": "Doubles with Lulu | Simple Sums for Kids",
+  "description": "Lulu adds doubles: one and one, two and two, three and three, four and four.\nThe same group appears twice, then everything is counted together with apples, strawberries, oranges and blocks.\n\nA short, gentle numbers video for children aged 3 to 7.",
+  "duration": 41,
+  "seed": 97,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.7,
+      "type": "sparkle"
+    },
+    {
+      "t": 5.72,
+      "type": "pop"
+    },
+    {
+      "t": 6.59,
+      "type": "pop"
+    },
+    {
+      "t": 8.17,
+      "type": "sparkle"
+    },
+    {
+      "t": 11.94,
+      "type": "pop"
+    },
+    {
+      "t": 13.03,
+      "type": "pop"
+    },
+    {
+      "t": 14.71,
+      "type": "sparkle"
+    },
+    {
+      "t": 18.66,
+      "type": "pop"
+    },
+    {
+      "t": 19.97,
+      "type": "pop"
+    },
+    {
+      "t": 21.92,
+      "type": "sparkle"
+    },
+    {
+      "t": 26.38,
+      "type": "pop"
+    },
+    {
+      "t": 27.91,
+      "type": "pop"
+    },
+    {
+      "t": 30.4,
+      "type": "sparkle"
+    },
+    {
+      "t": 33.3,
+      "type": "sparkle"
+    },
+    {
+      "t": 36.2,
+      "type": "boing_high"
+    }
+  ],
+  "check_times": [
+    2.5,
+    4.0,
+    6.6,
+    8.5,
+    9.8,
+    12.0,
+    13.2,
+    14.0,
+    15.0,
+    16.5,
+    19.0,
+    20.5,
+    21.0,
+    22.3,
+    23.5,
+    26.5,
+    28.0,
+    29.5,
+    30.8,
+    31.6,
+    33.6,
+    35.0,
+    36.4,
+    39.0
+  ]
+}

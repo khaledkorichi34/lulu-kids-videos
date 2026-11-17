@@ -1,0 +1,111 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 97 - Doubles with Lulu: four little doubles sums (1+1, 2+2, 3+3, 4+4).
+   A group of things appears on the left, the same group again on the right,
+   then every thing is counted with number badges and the answer pops in.
+   Title, one scene per sum, finale with all four doubles. */
+// TIMING-START
+const SUMS=[[1,'apples'],[2,'strawberries'],[3,'oranges'],[4,'blocks']];
+const OBJ=.22, BADGE=.27;
+function plan(a){
+  const p={a,N:2*a};
+  p.tL=k=>.4+k*OBJ; p.tA=.4+a*OBJ+.1; p.tPlus=p.tA+.3;
+  p.tR=k=>p.tPlus+.25+k*OBJ; p.tB=p.tPlus+.25+a*OBJ+.1;
+  p.tc0=Math.max(p.tB+.3,2.6);
+  p.tc=k=>p.tc0+k*BADGE; p.tr=p.tc0+(p.N-1)*BADGE+.3;
+  p.len=Math.ceil((p.tr+2.6)*2)/2;
+  return p;
+}
+const PLANS=SUMS.map(s=>plan(s[0]));
+const SC=[0,5];PLANS.forEach(p=>SC.push(SC[SC.length-1]+p.len));SC.push(SC[SC.length-1]+8);
+const DUR=SC[SC.length-1];
+// TIMING-END
+const CA='#FF5D8F', CB='#19B8A6', CR='#7B5CFF', INK='#2D2A6E';
+const XA=270, XP=460, XB=650, XEQ=790, XR=940, EY=170, LX=1130;
+const W=['zero','one','two','three','four','five','six','seven','eight'];
+const Wc=s=>s[0].toUpperCase()+s.slice(1);
+const NAME={apples:['apple','apples'],strawberries:['strawberry','strawberries'],oranges:['orange','oranges'],blocks:['block','blocks']};
+const SPACE={apples:150,strawberries:115,oranges:100,blocks:85};
+
+function badge(x,y,k,lt,t0){
+  const u=prog(lt,t0,t0+.3);if(u<=0)return '';
+  return `<g transform="translate(${x},${y}) scale(${back(u)})"><circle r="25" fill="#fff" stroke="${CR}" stroke-width="5"/><text y="12" text-anchor="middle" font-size="34" fill="${INK}">${k+1}</text></g>`;
+}
+function hearts(lt,t0){
+  let s='';
+  for(let k=0;k<9;k++){const q=lt-(t0+k*.4);if(q>0){const y=610-q*120,x=110+k*132+25*Math.sin(q*2+k),o=clamp((y-310)/120)*clamp(q*3)*.9;
+    if(y>310)s+=heart(x,y,1+(k%3)*.25,['#FF5D8F','#FF9F1C','#FFFFFF'][k%3],o);}}
+  return s;
+}
+// one thing standing on the ground at x, grown by g (0..1), lifted by j.y, k = its index (for colours)
+function thing(kind,x,g,jy,k){
+  if(g<=0)return '';
+  const y=520+jy;
+  if(kind==='apples')return shadow(x,522,48,-jy)+apple(x,y,.78*g);
+  if(kind==='strawberries')return shadow(x,522,38,-jy)+strawberry(x,y,.6*g);
+  if(kind==='oranges')return shadow(x,522,34,-jy)+orange(x,y,.55*g);
+  return shadow(x,522,34,-jy)+toyBlock(x,y,BLOCKS[[0,2,4,5][k%4]],0,1.1*g);
+}
+const xs=(n,c,sp)=>Array.from({length:n},(_,k)=>c+(k-(n-1)/2)*sp);
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={};
+  if(i===0){
+    o={noClouds:true};
+    const j=jumps(lt,[1.6,2.6],.6,30);
+    chars=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:20+20*Math.sin(lt*9),eye:blink(t,0)}),{s:1.1,sx:j.sx,sy:j.sy});
+    pops=pop('Doubles with',640,128,90,INK,lt,.3)+pop(LULU,640,262,140,'#FF5D8F',lt,.7,-3);
+    ['2','+','2','=','4'].forEach((c,k)=>{pops+=pop(c,440+k*100,680,92,[CA,INK,CB,INK,CR][k],lt,1.5+k*.3);});
+  }else if(i<=SUMS.length){
+    const [a,kind]=SUMS[i-1], p=PLANS[i-1], N=2*a;
+    o={noSun:true,noFlowers:true,noClouds:true};
+    const L=xs(a,XA,SPACE[kind]), R=xs(a,XB,SPACE[kind]);
+    const all=L.map((x,k)=>[x,p.tL(k),k]).concat(R.map((x,k)=>[x,p.tR(k),a+k]));
+    all.forEach(([x,t0,n])=>{
+      const g=lt>t0?back(prog(lt,t0,t0+.35)):0;
+      const j=jumps(lt,[p.tr+.2+n*.06],.5,22);
+      chars+=thing(kind,x,g,j.y,n%a);
+      pops+=badge(x,563,n,lt,p.tc(n));
+    });
+    // the second group sparkles as it copies the first one
+    R.forEach((x,k)=>{const t0=p.tR(k);if(lt>t0&&lt<t0+.6)props+=sparkle(x,520-90,.7,1-prog(lt,t0,t0+.6));});
+    // Lulu watches from the right and cheers when the answer appears
+    const lj=jumps(lt,[p.tr+.2],.55,18);
+    chars+=shadow(LX,522,50,-lj.y)+place(LX,520+lj.y,duck({eye:blink(t,.5),wing:lt>p.tr?28*Math.abs(Math.sin(lt*10)):0}),{s:.8,sx:lj.sx,sy:lj.sy,flip:true});
+    pops+=pop(String(a),XA,EY,150,CA,lt,p.tA)+pop('+',XP,EY,130,INK,lt,p.tPlus)+pop(String(a),XB,EY,150,CB,lt,p.tB)
+         +pop('=',XEQ,EY,130,INK,lt,p.tr-.15)+pop(String(N),XR,EY,170,CR,lt,p.tr,-4);
+    const nm=NAME[kind][a===1?0:1];
+    cap=lt<p.tr+.1?caption(`${Wc(W[a])} ${nm}, and ${W[a]} more!`,lt,.3):caption(`${Wc(W[a])} and ${W[a]} make ${W[N]}!`,lt,p.tr+.1);
+  }else{
+    const j=jumps(lt,[3.2,4.3,5.4],.6,25), jb=jumps(lt,[3.5,4.6,5.7],.55,22);
+    props=hearts(lt,3.0);o={noClouds:true};
+    chars=shadow(330,522,40,-jb.y)+place(330,520+jb.y,bunny({eye:blink(t,.4),ear:Math.sin(lt*3)*.5}),{s:.8,sx:jb.sx,sy:jb.sy});
+    chars+=shadow(640,522,56,-j.y)+place(640,520+j.y,duck({wing:25+25*Math.sin(lt*10),eye:blink(t,0)}),{s:.9,sx:j.sx,sy:j.sy});
+    chars+=shadow(940,522,44,-jb.y)+place(940,520+jb.y,frog({eye:blink(t,1.1)}),{s:.85,sx:jb.sx,sy:jb.sy,flip:true});
+    pops=pop('Well done!',640,120,110,'#FF9F1C',lt,.3,-3);
+    ['1 + 1 = 2','2 + 2 = 4','3 + 3 = 6','4 + 4 = 8'].forEach((e,k)=>{pops+=pop(e,190+k*300,245,62,[CA,CB,CR,'#FF9F1C'][k],lt,.9+k*.4);});
+    cap=caption('Doubles are fun!',lt,2.6);
+  }
+  svg.innerHTML=bg(t,0,'',o)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(110,90,1.0,.95);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(250,662,140)+place(232,658,duck({wing:22}),{s:2.0});
+  s+=label('2',540,250,190,CA,-5)+label('+',665,240,150,INK)+label('2',790,250,190,CB,4)+label('=',915,240,150,INK)+label('4',1060,255,210,CR,-4);
+  [610,700,880,970].forEach(x=>{s+=shadow(x,662,36)+strawberry(x,658,.55);});
+  s+=label('Doubles with',820,395,70,INK)+label(LULU,820,488,90,'#FF5D8F',-3);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
