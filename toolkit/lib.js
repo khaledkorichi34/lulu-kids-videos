@@ -2094,3 +2094,46 @@ function bigFlowerTop(x,y,h,s,t,i=0){
   const a=Math.sin(t*1.3+i*1.7)*2.5*Math.PI/180, r=(h+36)*s;
   return [x+Math.sin(a)*r, y-Math.cos(a)*r];
 }
+
+/* ---------- hedgehog (episode 99) ---------- */
+// hedgehog({eye, asleep, yawn, curled}): little brown hedgehog facing right, origin at its feet
+// (about 150 wide and 105 tall at s=1). Soft rounded spines on the back, cream face, dark nose.
+// yawn = 0..1 opens a small mouth. curled = true draws her curled up in a round ball (about 115 wide,
+// 95 tall) with only her sleepy face and nose peeking out at the lower right: for sleeping in a nest of leaves.
+const HEDGE_SPINES=(function(){
+  const sp=(cx,cy,rx,ry,a0,a1,n,len)=>{let d='';for(let k=0;k<=n;k++){
+    const a=(a0+(a1-a0)*k/n)*Math.PI/180, b=(a0+(a1-a0)*(k+.5)/n)*Math.PI/180;
+    const x=cx+Math.cos(a)*rx, y=cy-Math.sin(a)*ry;
+    d+=(k?'L':'M')+x.toFixed(1)+','+y.toFixed(1)+' ';
+    if(k<n)d+='L'+(cx+Math.cos(b)*(rx+len)).toFixed(1)+','+(cy-Math.sin(b)*(ry+len)).toFixed(1)+' ';}
+    return d+'Z';};
+  return {back:sp(-12,-44,62,42,205,25,14,20), ball:sp(0,-48,50,44,0,360,20,16)};
+})();
+function hedgehog(o={}){
+  const e=o.eye==null?1:o.eye, D='#7A4E2D', M='#9C6A42', F='#F3D6A8', P='#FF9AA2';
+  const shut=(x,y)=>`<path d="M${x-7},${y} Q${x},${y+7} ${x+7},${y}" stroke="#3a2a1a" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+  if(o.curled) return `
+  <path d="${HEDGE_SPINES.ball}" fill="${D}" stroke="${D}" stroke-width="7" stroke-linejoin="round"/>
+  <circle cx="0" cy="-48" r="48" fill="${M}"/>
+  <circle cx="-18" cy="-70" r="10" fill="#B07C50" opacity=".7"/>
+  <ellipse cx="26" cy="-26" rx="27" ry="21" fill="${F}"/>
+  ${shut(22,-30)}
+  <circle cx="16" cy="-17" r="6" fill="${P}" opacity=".8"/>
+  <circle cx="50" cy="-24" r="7" fill="#3a2a1a"/>`;
+  const eye=o.asleep?shut(42,-56)
+    :`<g transform="translate(42,-56) scale(1,${e})"><circle r="7" fill="#2b1d12"/><circle cx="2.2" cy="-2.4" r="2.4" fill="#fff"/></g>`;
+  const y=clamp(o.yawn||0), mouth=y>.05
+    ?`<ellipse cx="60" cy="-26" rx="${5+3*y}" ry="${2+8*y}" fill="#B5485D"/>`
+    :`<path d="M52,-27 Q58,-22 64,-28" stroke="#5a3418" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  return `
+  <ellipse cx="-36" cy="-5" rx="14" ry="7" fill="${D}"/><ellipse cx="24" cy="-5" rx="14" ry="7" fill="${D}"/>
+  <path d="${HEDGE_SPINES.back}" fill="${D}" stroke="${D}" stroke-width="7" stroke-linejoin="round"/>
+  <ellipse cx="-12" cy="-44" rx="60" ry="40" fill="${M}"/>
+  <circle cx="-40" cy="-62" r="9" fill="#B07C50" opacity=".7"/><circle cx="-6" cy="-72" r="7" fill="#B07C50" opacity=".7"/>
+  <path d="M10,-74 Q52,-74 70,-42 Q82,-34 84,-28 Q70,-12 40,-12 Q14,-12 8,-34 Z" fill="${F}"/>
+  <ellipse cx="0" cy="-26" rx="26" ry="18" fill="${F}"/>
+  <circle cx="20" cy="-74" r="10" fill="${F}"/><circle cx="20" cy="-74" r="5" fill="${P}"/>
+  <circle cx="84" cy="-31" r="7" fill="#3a2a1a"/><circle cx="86" cy="-34" r="2" fill="#fff" opacity=".7"/>
+  <circle cx="40" cy="-38" r="7.5" fill="${P}" opacity=".8"/>
+  ${eye}${mouth}`;
+}
