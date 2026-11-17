@@ -1,0 +1,138 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 98 - Did you know? Cat facts, with Lulu and Pip the kitten.
+   Title (Lulu and Pip say hello), fact 1 (cats have long whiskers, close-up of Pip's face, whiskers glow),
+   Pip comes close to a flower and her whiskers feel the soft petals, fact 2 (cats can purr, soft purr lines),
+   Pip sits with Lulu and purrs (hearts), fact 3 (newborn kittens have closed eyes, Mummy Cat and three
+   tiny kittens), after a week or two their eyes open (hello!), recap (whiskers, purr, kittens), bye bye. */
+const SC=[0,5.5,12.5,19,26,32.5,39,45.5,52,58], DUR=58;
+const NAVY='#2D2A6E', PURPLE='#7B5CFF', ORANGE='#E76F2E', GOLD='#FFE58A', PINK='#FF5D8F';
+const lulu=(x,lt,t,o={})=>{
+  const j=jumps(lt,o.hops||[],.6,o.h||24), w=o.wave?20+20*Math.sin(lt*9):(o.wing||0), s=o.s||.95;
+  return shadow(x,522,58*s,-j.y)+place(x,520+j.y,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy,flip:o.flip});
+};
+// gold glow over the kitten's whiskers (kitten coordinates)
+const WHISK='M-28,-104 L-52,-108 M-28,-98 L-52,-94 M28,-104 L52,-108 M28,-98 L52,-94';
+const glow=g=>g>0?`<path d="${WHISK}" stroke="#FFD23F" stroke-width="7" stroke-linecap="round" opacity="${g}"/><path d="${WHISK}" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>`:'';
+// Pip the kitten (orange), o.glow = whisker glow 0..1
+const pip=(x,lt,t,o={})=>{
+  const j=jumps(lt,o.hops||[],.55,o.h||22), s=o.s||1;
+  return shadow(x,522,48*s,-j.y)+place(x,520+j.y,kitten({eye:o.eye!=null?o.eye:blink(t,.7),tail:Math.sin(lt*2.2),asleep:o.asleep,tilt:o.tilt||0})+glow(o.glow||0),{s,sx:j.sx,sy:j.sy});
+};
+// Mummy Cat: the kitten drawing in soft grey
+const greyCat=k=>k.replace(/#FFA552/g,'#B5B0C6').replace(/#E9822F/g,'#8D88A3').replace(/#FFE2C2/g,'#F1EEF7');
+const mumCat=(x,lt,t,o={})=>shadow(x,522,62)+place(x,520,greyCat(kitten({eye:blink(t,1.4),tail:Math.sin(lt*1.6),tilt:o.tilt||0})),{s:1.2});
+const baby=(x,lt,t,k,o={})=>{
+  const j=jumps(lt,o.hops||[],.45,o.h||16);
+  const inner=kitten({eye:blink(t,.5+k*.8),asleep:o.asleep,tail:.4*Math.sin(lt*2+k),tilt:o.asleep?8*(k%2?1:-1):0});
+  return shadow(x,522,24,-j.y)+place(x,520+j.y,k===1?greyCat(inner):inner,{s:.55,sx:j.sx,sy:j.sy});
+};
+// soft purr lines on both sides of a body centred at (x,y)
+function purr(x,y,lt,s=1){
+  let p='';
+  for(let k=0;k<3;k++){const q=((lt*1.3+k/3)%1), r=(60+q*55)*s, o=Math.sin(Math.PI*q)*.8;
+    [-1,1].forEach(d=>{p+=`<path d="M${x+d*r},${y-26*s} Q${x+d*(r+14*s)},${y} ${x+d*r},${y+26*s}" stroke="#fff" stroke-width="${6*s}" fill="none" stroke-linecap="round" opacity="${o}"/>`;});}
+  return p;
+}
+const bed=(x,w)=>`<ellipse cx="${x}" cy="526" rx="${w}" ry="30" fill="#B79CFF"/><ellipse cx="${x}" cy="520" rx="${w-18}" ry="20" fill="#D8C9FF"/>`;
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.4)):0;
+let WIN=0;
+function closeWin(x,y,r,g,inner,bgc){
+  if(g<=0)return '';
+  const id='w'+(WIN++);
+  return `<g transform="translate(${x},${y}) scale(${g})"><defs><clipPath id="${id}"><circle r="${r}"/></clipPath></defs>
+  <g clip-path="url(#${id})"><circle r="${r}" fill="${bgc}"/>${inner}</g>
+  <circle r="${r}" fill="none" stroke="#fff" stroke-width="9"/></g>`;
+}
+const hearts=(lt,t0,x,y)=>{let s='';for(let k=0;k<3;k++){const q=lt-t0-k*.6;if(q>0&&q<2.4){const u=q/2.4;
+  s+=heart(x+(k-1)*36+10*Math.sin(q*4+k),y-90*u,1,[PINK,'#FF9F1C',PURPLE][k%3],Math.sin(Math.PI*u));}}return s;};
+
+function render(t){
+  WIN=0;
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={noSun:true};
+  if(i===0){
+    // title: Lulu walks in, Pip hops and waves her tail
+    chars=lulu(lerp(150,450,eio(prog(lt,0,2.2))),lt,t,{wave:lt>2.4})+pip(820,lt,t,{hops:[2.8,3.6],s:1});
+    pops=pop('Did you know?',640,165,96,PURPLE,lt,.3,-3);
+    cap=caption('Fun cat facts with Lulu',lt,2.0);
+  }else if(i===1){
+    // fact 1: whiskers, close-up of Pip's face
+    const g=grow(lt,1.2), gl=lt>3.6?.55+.45*Math.sin((lt-3.6)*5):0;
+    props=closeWin(820,375,135,g,`<rect x="-150" y="90" width="300" height="80" fill="#7CCB5E"/>`+place(0,224,kitten({eye:blink(t,.7)})+glow(gl),{s:1.8}),'#BFE8FF');
+    chars=lulu(330,lt,t,{hops:[.6,4.8],h:22});
+    pops=pop('Fact 1',640,160,100,ORANGE,lt,.3);
+    cap=lt<3.6?caption('Cats have long whiskers.',lt,.6):caption('Whiskers help cats feel things.',lt,3.6);
+  }else if(i===2){
+    // Pip comes close to a flower, her whiskers touch the petals
+    const x=lerp(380,592,eio(prog(lt,.3,2.6))), touch=lt>2.6?.55+.45*Math.sin((lt-2.6)*5):0;
+    props=flower(700,520,95,'#FF7FB0',t,0,1.3);
+    if(lt>3.0)props+=sparkle(745,360,.8,Math.sin(Math.PI*prog(lt,3.0,5.0)))+sparkle(660,330,.6,Math.sin(Math.PI*prog(lt,3.4,5.4)));
+    chars=pip(x,lt,t,{s:1.15,glow:touch,tilt:lt>2.6?-6:0});
+    chars+=lulu(1080,lt,t,{flip:true,s:.85,hops:[4.4]});
+    pops=lt>3.6?pop('Soft!',640,165,96,PINK,lt,3.6,-3):'';
+    cap=lt<3.0?caption('Pip comes close to a flower.',lt,.4):caption('Her whiskers feel the soft petals.',lt,3.0);
+  }else if(i===3){
+    // fact 2: purring
+    chars=(lt>1.6?purr(640,450,lt-1.6,1.1):'')+pip(640,lt,t,{s:1.2,asleep:lt>1.4});
+    pops=lt<3.6?pop('Fact 2',640,160,100,ORANGE,lt,.3):pop('Purr, purr!',640,165,96,GOLD,lt,3.6,-3,NAVY);
+    cap=lt<3.6?caption('Cats can purr.',lt,.6):caption('A purr is a soft, rumbly sound.',lt,3.6);
+  }else if(i===4){
+    // Pip sits with Lulu and purrs, hearts drawn before the characters
+    props=hearts(lt,2.0,640,420)+hearts(lt,4.0,640,420);
+    chars=lulu(500,lt,t,{wing:lt>1?14:0})+purr(780,450,lt,.9)+pip(780,lt,t,{asleep:true,tilt:-6});
+    pops=lt>3.6?pop('Purr, purr!',640,165,96,GOLD,lt,3.6,-3,NAVY):'';
+    cap=lt<3.6?caption('Pip sits with her friend Lulu.',lt,.4):caption('Happy cats often purr.',lt,3.6);
+  }else if(i===5){
+    // fact 3: newborn kittens with closed eyes, close to Mummy Cat
+    props=bed(660,330);
+    chars=mumCat(420,lt,t);
+    [600,720,840].forEach((x,k)=>{if(lt>.8+k*.4)chars+=`<g opacity="${prog(lt,.8+k*.4,1.2+k*.4)}">${baby(x,lt,t,k,{asleep:true})}</g>`;});
+    pops=pop('Fact 3',640,160,100,ORANGE,lt,.3);
+    cap=lt<3.6?caption('New kittens have closed eyes.',lt,.6):caption('They snuggle close to their mum.',lt,3.6);
+  }else if(i===6){
+    // the kittens open their eyes one by one
+    props=bed(660,330);
+    chars=mumCat(420,lt,t,{tilt:lt>3.8?6:0});
+    [600,720,840].forEach((x,k)=>{const o0=3.2+k*.5, op=lt>o0;chars+=baby(x,lt,t,k,{asleep:!op,hops:op?[5.0+k*.2]:[]});
+      if(op)chars+=sparkle(x+40,400,.6,Math.sin(Math.PI*prog(lt,o0,o0+1.2)));});
+    pops=lt>4.4?pop('Hello!',640,165,100,GOLD,lt,4.4,-3,NAVY):'';
+    cap=lt<3.0?caption('After a week or two...',lt,.4):caption('...their eyes open. Hello!',lt,3.0);
+  }else if(i===7){
+    const b=k=>1+.05*Math.sin(t*4+k*2), X=[300,640,980], Y=390, sky='#BFE8FF';
+    const gr='<rect x="-130" y="70" width="260" height="120" fill="#7CCB5E"/>';
+    props=closeWin(X[0],Y,118,grow(lt,.4)*b(0),gr+place(0,196,kitten({eye:blink(t,.7)})+glow(.6+.4*Math.sin(t*5)),{s:1.6}),sky);
+    props+=closeWin(X[1],Y,118,grow(lt,1.4)*b(1),gr+purr(0,40,t,.7)+place(0,90,kitten({asleep:true,tail:Math.sin(t*2)}),{s:.7}),sky);
+    props+=closeWin(X[2],Y,118,grow(lt,2.4)*b(2),gr+place(-45,80,kitten({eye:blink(t,1.6)}),{s:.45})+place(45,80,greyCat(kitten({eye:blink(t,2.2)})),{s:.45}),sky);
+    pops=pop('whiskers',X[0],230,44,GOLD,lt,.4,0,NAVY)+pop('purr',X[1],230,44,GOLD,lt,1.4,0,NAVY)+pop('kittens',X[2],230,44,GOLD,lt,2.4,0,NAVY);
+    cap=caption('Cats are amazing!',lt,3.6);
+  }else{
+    props=hearts(lt,3.0,640,430);
+    chars=lulu(lerp(300,480,eio(prog(lt,.4,2.4))),lt,t,{wave:lt>.8})+pip(800,lt,t,{hops:[1.6,2.4]});
+    pops=pop('Bye bye!',640,165,100,GOLD,lt,.4,-3,NAVY);
+    cap=caption('Bye bye from Lulu and Pip!',lt,1.4);
+  }
+  o.noFlowers=(i!==0&&i!==8);
+  svg.innerHTML=bg(t,0,'',o)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#6CC6FF','#CFF0FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(140,120,1,1)+cloud(1130,110,.9,1);
+  s+=`<path d="M0,520 Q300,450 640,500 T1280,490 L1280,720 L0,720Z" fill="#8FD86E"/>`;
+  s+=place(890,690,greyCat(kitten({tail:.4})),{s:1.35});
+  s+=place(1070,690,kitten({}),{s:.55})+place(1170,690,greyCat(kitten({})),{s:.5});
+  s+=place(380,700,kitten({tilt:-6})+glow(.8),{s:1.6});
+  s+=place(130,700,duck({wing:24}),{s:1.1});
+  s+=label('Did you know?',640,175,120,PURPLE,-3);
+  s+=label('Fun cat facts',640,295,100,'#fff',-2,ORANGE);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

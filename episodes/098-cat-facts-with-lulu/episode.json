@@ -1,0 +1,121 @@
+{
+  "number": 98,
+  "slug": "cat-facts-with-lulu",
+  "format": "curious",
+  "ages": "6-10",
+  "title": "Did You Know? Fun Cat Facts with Lulu | Facts for Kids",
+  "description": "Lulu the little duck and Pip the kitten share three fun facts about cats!\nCats feel things with their long whiskers, and happy cats often purr.\nNewborn kittens have closed eyes, and after a week or two they open.\nA gentle nature video for children aged 6 to 10.",
+  "duration": 58,
+  "seed": 98,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.3,
+      "type": "sparkle"
+    },
+    {
+      "t": 3.3,
+      "type": "boing_high"
+    },
+    {
+      "t": 4.1,
+      "type": "boing_high"
+    },
+    {
+      "t": 5.8,
+      "type": "pop"
+    },
+    {
+      "t": 6.7,
+      "type": "pop"
+    },
+    {
+      "t": 9.1,
+      "type": "sparkle"
+    },
+    {
+      "t": 15.5,
+      "type": "sparkle"
+    },
+    {
+      "t": 16.1,
+      "type": "pop"
+    },
+    {
+      "t": 19.3,
+      "type": "pop"
+    },
+    {
+      "t": 22.6,
+      "type": "ding"
+    },
+    {
+      "t": 29.6,
+      "type": "pop"
+    },
+    {
+      "t": 32.8,
+      "type": "pop"
+    },
+    {
+      "t": 42.2,
+      "type": "sparkle"
+    },
+    {
+      "t": 42.7,
+      "type": "sparkle"
+    },
+    {
+      "t": 43.2,
+      "type": "sparkle"
+    },
+    {
+      "t": 43.4,
+      "type": "ding"
+    },
+    {
+      "t": 45.9,
+      "type": "pop"
+    },
+    {
+      "t": 46.9,
+      "type": "pop"
+    },
+    {
+      "t": 47.9,
+      "type": "pop"
+    },
+    {
+      "t": 49.1,
+      "type": "ding"
+    },
+    {
+      "t": 52.4,
+      "type": "pop"
+    },
+    {
+      "t": 55.2,
+      "type": "sparkle"
+    }
+  ],
+  "check_times": [
+    3.0,
+    3.4,
+    7.5,
+    10.5,
+    14.0,
+    17.5,
+    21.0,
+    24.5,
+    28.2,
+    31.0,
+    34.0,
+    37.0,
+    41.0,
+    43.5,
+    44.5,
+    49.5,
+    54.0,
+    56.5
+  ]
+}
