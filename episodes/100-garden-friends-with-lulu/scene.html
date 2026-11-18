@@ -1,0 +1,132 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 100 - Garden Friends with Lulu (learning, first words).
+   Title, then one scene per little garden friend (bee, ladybird, snail, caterpillar, butterfly): the name pops in,
+   its plant grows in, the friend arrives, a caption, a bounce, Lulu hops and says "Hello!", then all five together. */
+const SC=[0,5,12,19,26,33,40,48], DUR=48;
+const NAVY='#2D2A6E';
+const NAME=['Bee','Ladybird','Snail','Caterpillar','Butterfly'];
+const COL=['#E0A526','#E63946','#C8693A','#3E9E3E','#7B5CFF'];
+const CAP=['The bee goes buzz!','The ladybird has spots!','The snail is slow!','The caterpillar eats leaves!','The butterfly can fly!'];
+const TW=.4, TH=.6, TA=1.4, TS=2.6, TC=2.4, TB=3.6, TY=4.6;
+
+const sideClouds=t=>cloud(125+10*Math.sin(t*.3),96,.9,.95)+cloud(1160+12*Math.sin(t*.25+1),112,.9,.95);
+
+function lulu(x,lt,t,s,hopAt){
+  const j=jumps(lt,hopAt,.55,24), w=j.y<0?30*Math.abs(Math.sin(lt*10)):12+8*Math.sin(lt*3);
+  return shadow(x,522,52*s/.9,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy});
+}
+function hello(x,y,tx,ty,lt,t0){
+  if(lt<t0)return '';
+  const g=back(prog(lt,t0,t0+.35));
+  return `<g transform="translate(${x},${y}) scale(${g}) translate(${-x},${-y})">${speech(x,y,150,62,tx,ty,'Hello!',54,'#FF5D8F')}</g>`;
+}
+const grow=(x,y,g,inner)=>g>0?`<g transform="translate(${x},${y}) scale(${g}) translate(${-x},${-y})">${inner}</g>`:'';
+
+function friendScene(k,lt,t){
+  const g=back(prog(lt,TH,TH+.5)), a=eio(prog(lt,TA,TS)), j=jumps(lt,[TB],.55,22);
+  let s='';
+  if(k===0){ // a bee flies in and buzzes round three flowers
+    const X=860;
+    s+=grow(X,520,g,flower(X-120,520,120,'#FF7FB0',t,0,1.1)+flower(X,520,160,'#FFFFFF',t,1,1.1)+flower(X+120,520,110,'#7B5CFF',t,2,1.1));
+    if(lt>TA){
+      const hx=X+40*Math.sin(lt*2.2), hy=290+18*Math.sin(lt*3.1);
+      const bx=lerp(1400,hx,a), by=lerp(250,hy,a)+(a<1?30*Math.sin(lt*6):0);
+      s+=place(bx,by+j.y*.6,bee({flap:Math.abs(Math.sin(lt*24))}),{s:.85,sx:j.sx,sy:j.sy});
+    }
+  }else if(k===1){ // a ladybird walks in by a bush and opens its wings
+    const X=840;
+    s+=grow(X+150,520,g,bush(X+150,520,.8));
+    if(lt>TA){
+      const lx=lerp(1380,X,a), walk=a<1?3*Math.sin(lt*14):0;
+      const fly=lt>TB-.2&&lt<TB+1.2?.5+.5*Math.sin(lt*20):null;
+      s+=shadow(lx,522,80,-j.y)+place(lx,520+j.y+walk*.3,ladybird({eye:blink(t,.6),wiggle:Math.sin(lt*3),fly}),{s:1.5,flip:true,sx:j.sx,sy:j.sy});
+    }
+  }else if(k===2){ // a snail slides in very slowly, leaving a shiny trail
+    const X=820;
+    s+=grow(1080,520,g,bush(1080,520,.7));
+    if(lt>TA-.6){
+      const u=prog(lt,TA-.6,6.6), sx=lerp(1010,X,u);
+      s+=`<path d="M${sx+30},521 L1010,521" stroke="#DCEFFF" stroke-width="7" stroke-linecap="round" opacity=".85"/>`;
+      s+=shadow(sx,522,90,-j.y)+place(sx,520+j.y,snail({eye:blink(t,.4),look:Math.sin(lt*2)}),{s:1.05,flip:true,sx:j.sx,sy:j.sy});
+    }
+  }else if(k===3){ // a caterpillar crawls in and munches a big leaf
+    const X=840;
+    s+=grow(620,500,g,leaf(620,500,.55,0));
+    if(lt>TA){
+      const cx=lerp(1380,X,a), munch=lt>TS+.1&&!(lt>TB-.1&&lt<TB+.6)?.5+.5*Math.sin(lt*12):0;
+      s+=shadow(cx,522,110,-j.y)+place(cx,520+j.y,caterpillar({eye:blink(t,.9),wig:a<1?Math.sin(lt*8):0,munch}),{s:1.05,flip:true,sx:j.sx,sy:j.sy});
+    }
+  }else{ // a butterfly flutters in and lands on a big flower
+    const X=860;
+    s+=grow(X,520,g,thirstyFlower(X,520,110,'#FF7FB0',0,t,0,{s:1.15}));
+    if(lt>TA){
+      const [fx,fy]=bigFlowerTop(X,520,110,1.15,t,0);
+      const bx=lerp(1380,fx,a), by=lerp(260,fy-62,a)-40*Math.sin(Math.PI*a*2);
+      const flap=a<1||(lt>TB-.1&&lt<TB+.6)?.5+.5*Math.sin(lt*16):.75+.25*Math.sin(lt*2.4);
+      s+=place(bx,by+j.y*.6,bigButterfly({eye:blink(t,1.2),flap}),{s:.7,sx:j.sx,sy:j.sy});
+    }
+  }
+  return s;
+}
+
+/* small friends for the last scene, origin on the ground */
+function smallFriend(k,x,lt,t){
+  if(k===0)return flower(x,520,110,'#FF7FB0',t,0,.9)+place(x+8*Math.sin(lt*2),385+8*Math.cos(lt*2.6),bee({flap:Math.abs(Math.sin(lt*24))}),{s:.55});
+  if(k===1)return place(x,520,ladybird({eye:blink(t,.6),wiggle:Math.sin(lt*3)}),{s:1,flip:true});
+  if(k===2)return place(x+10,520,snail({eye:blink(t,.4),look:Math.sin(lt*2)}),{s:.65,flip:true});
+  if(k===3)return place(x-15,520,caterpillar({eye:blink(t,.9),munch:0}),{s:.7});
+  return thirstyFlower(x,520,120,'#FF7FB0',0,t,1,{s:.8})+place(...bigFlowerTop(x,520,120,.8,t,1).map((v,i)=>i?v-40:v),bigButterfly({eye:blink(t,1.2),flap:.75+.25*Math.sin(lt*2.4)}),{s:.4});
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let chars='',pops='',cap='',talk='',props='';
+  const o={noSun:true,noClouds:true,noFlowers:true};
+  if(i===0){
+    props+=flower(1000,520,120,'#FF7FB0',t,0,1)+flower(1080,520,150,'#7B5CFF',t,1,1)+flower(1160,520,110,'#FFFFFF',t,2,1)+bush(200,520,.6);
+    props+=place(1080+30*Math.sin(t*1.7),330+15*Math.sin(t*2.3),bee({flap:Math.abs(Math.sin(t*24))}),{s:.55});
+    chars+=lulu(640,lt,t,1.15,[1.4,2.4,3.4]);
+    pops=pop('Garden Friends',640,132,104,NAVY,lt,.3)+pop('with '+LULU,640,236,84,NAVY,lt,.7,-2);
+  }else if(i<=5){
+    const k=i-1;
+    props=friendScene(k,lt,t);
+    chars+=lulu(230,lt,t,.9,[TB+.15,TY]);
+    talk=hello(440,300,320,420,lt,TY);
+    pops=pop(NAME[k],640,160,124,COL[k],lt,TW);
+    cap=caption(CAP[k],lt,TC);
+  }else{
+    const X=[160,385,600,845,1110];
+    for(let k=0;k<5;k++){
+      const t0=.4+k*.5, g=lt>t0?back(prog(lt,t0,t0+.35)):0, j=jumps(lt,[3.4+k*.35],.5,16);
+      if(g<=0)continue;
+      props+=`<g transform="translate(${X[k]},${520+j.y}) scale(${g*j.sx},${g*j.sy}) translate(${-X[k]},-520)">${smallFriend(k,X[k],lt,t)}</g>`;
+      pops+=pop(NAME[k],X[k],585,42,COL[k],lt,t0+.2);
+    }
+    pops+=pop('All together!',640,160,96,NAVY,lt,.2);
+    cap=caption('Garden friends! Well done!',lt,4.6);
+  }
+  svg.innerHTML=bg(t,0,'',o)+sideClouds(t)+props+chars+talk+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,'',{noSun:true,noClouds:true,noFlowers:true})+cloud(130,110,1.3,.95)+cloud(1150,100,1.1,.95);
+  s+=thirstyFlower(1080,640,190,'#FF7FB0',0,0,0,{s:1});
+  const [fx,fy]=bigFlowerTop(1080,640,190,1,0,0);
+  s+=place(fx,fy-60,bigButterfly({flap:1}),{s:.6});
+  s+=place(880,420,bee({flap:.5}),{s:.75});
+  s+=place(180,660,snail({}),{s:.85,flip:true});
+  s+=place(760,660,caterpillar({}),{s:.8});
+  s+=shadow(440,662,90)+place(440,658,duck({wing:22}),{s:1.25});
+  s+=label('Garden Friends',620,200,112,'#3E9E3E',-3);
+  s+=label('with '+LULU,620,320,84,NAVY,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
