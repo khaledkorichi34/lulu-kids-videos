@@ -1,0 +1,103 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script src="../../toolkit/rhymes.js"></script>
+<script>
+/* Episode 101 - Hot Cross Buns at Lulu's little bun stall (sing-along). Lulu stands by her striped
+   stall; during the title four warm buns pop onto the tray. On "One a penny" one bun hops (big 1),
+   on "two a penny" two buns hop (big 2). Verse 2: the hedgehog walks in. Verse 3: the frog hops in
+   and the blue bird lands on the stall roof. Ending: one bun hops to each friend - "A bun for every friend!" */
+const BPM=104, START=5.0;
+const LINES=rhymeTimes(RHYMES.hotcross,START,3,4,BPM);
+const END=rhymeEnd(LINES);                 // 37.31 s
+const DUR=43, SC=[0,DUR];
+const VS=[0,4,8].map(i=>LINES[i].t0);      // verse starts
+const SX=640, TOP=428;                     // stall centre, counter top
+const LX=285;                              // Lulu
+const BX=[530,603,677,750], BY=TOP-6;      // buns on the tray
+const HX=975, FX=1135, BDX=800, BDY=239;   // hedgehog, frog, bird on the roof
+const OUT=[1.6,2.0,2.4,2.8];
+const GIVE=[END+.5,END+.9,END+1.3,END+1.7];
+const DEST=[[LX+105,598,.85],[HX-95,598,.85],[FX-85,600,.85],[BDX-75,BDY,.6]];
+const HENTER=[VS[1]-2.6,VS[1]-.2];
+const FENTER=[VS[2]-3.4,VS[2]-1.0], FHOPS=[0,1,2].map(k=>FENTER[0]+k*.8);
+const BENTER=[VS[2]-2.2,VS[2]-.2];
+
+function lineAt(t){const li=currentLine(LINES,t);return li>=0&&t<LINES[li].t1+.05?LINES[li]:null;}
+
+function bunHop(t,i){
+  for(const L of LINES){if(L.index!==2)continue;
+    if(i===0){const j=jump(t,L.words[0].t0,.42,38);if(j)return j;}
+    if(i===1||i===2){const j=jump(t,L.words[4].t0,.42,38);if(j)return j;}}
+  return {y:0,sx:1,sy:1};
+}
+
+function render(t){
+  const p=t>START-.2&&t<END+.4?beatPulse(LINES,t):0;
+  const L=lineAt(t), li=L?L.index:-1;
+  let behind='',props='',chars='',front='',pops='',cap='';
+
+  if(t>END+2.4)[130,1000,1190].forEach((hx,k)=>{const q=((t-END-2.4)*.35+k*.33)%1;
+    behind+=heart(hx,360-q*110,1.4,'#FF8FB1',Math.sin(Math.PI*q)*.75);});
+
+  props+=bunStall(SX,520,1)+tray(SX,TOP,150);
+
+  BX.forEach((x,i)=>{
+    if(t<OUT[i])return;
+    const o=prog(t,OUT[i],OUT[i]+.35), g=prog(t,GIVE[i],GIVE[i]+.8);
+    if(g<=0){const h=bunHop(t,i), bob=(li===0||li===1||li===3)?4*p:0, s=lerp(.3,1,back(o))*.85;
+      front+=`<g transform="translate(${x},${BY+h.y-bob}) scale(${h.sx*s},${h.sy*s})">${bun(0,0,1,1,t+i*.37)}</g>`;return;}
+    const [dx,dy,ds]=DEST[i], u=eio(g);
+    const fb=bun(lerp(x,dx,eout(g)),lerp(BY,dy,u)-(i===0?120:200)*Math.sin(Math.PI*u),lerp(.85,ds,u),0,0);
+    if(i===3)front+=fb;else props+=fb;   // in flight the buns pass behind the friends, never over a face
+  });
+
+  for(const Lx of LINES){if(Lx.index!==2)continue;
+    const o=1-prog(t,Lx.t1+.1,Lx.t1+.5);
+    if(o>0&&t>=Lx.t0-.05)pops+=`<g opacity="${o.toFixed(2)}">`+pop('1',BX[0],175,130,'#FF5D8F',t,Lx.words[0].t0)+pop('2',(BX[1]+BX[2])/2,175,130,'#19B8A6',t,Lx.words[4].t0)+`</g>`;
+  }
+
+  // hedgehog walks in before verse 2
+  if(t>=HENTER[0]){const u=eio(prog(t,...HENTER)), x=lerp(1420,HX,u), walking=t<HENTER[1];
+    let y=520;if(walking)y-=Math.abs(Math.sin((t-HENTER[0])*9))*5;else if(t<END+.4)y-=5*p;
+    chars+=shadow(x,524,60,520-y)+place(x,y,hedgehog({eye:blink(t,.9)}),{s:.85,flip:true});}
+  // frog hops in before verse 3
+  if(t>=FENTER[0]){const u=prog(t,FENTER[0],FENTER[1]+.3), x=lerp(1420,FX,eio(u));
+    const j=t<FENTER[1]+.4?jumps(t,FHOPS,.7,60):(t<END+.4?{y:-6*p,sx:1,sy:1}:{y:0,sx:1,sy:1});
+    chars+=shadow(x,524,55,-j.y)+place(x,520+j.y,frog({eye:blink(t,1.7)}),{s:.85,sx:j.sx,sy:j.sy});}
+  // bird flies in and lands on the stall roof
+  if(t>=BENTER[0]){const u=eio(prog(t,...BENTER)), flying=t<BENTER[1];
+    const x=lerp(1340,BDX,u), y=lerp(330,BDY,u)-60*Math.sin(Math.PI*u)-(flying?0:(t<END+.4?4*p:0));
+    const wing=flying?-40*Math.abs(Math.sin(t*14)):(t>END+2&&t<END+3?-25*Math.abs(Math.sin(t*6)):0);
+    chars+=place(x,y,bird({eye:blink(t,2.3),wing}),{s:.6,flip:true});}
+
+  // Lulu: flaps on "Hot cross buns!", sways on "One a penny, two a penny"
+  let ly=520,rot=0,wing=0;
+  if(L){if(li===2)rot=6*Math.sin(Math.PI*prog(t,L.t0,L.t1));else wing=-30*p;ly-=5*p;}
+  if(t>END+2.2)wing=-20*Math.max(0,Math.sin((t-END)*4))*(1-prog(t,END+3,END+4));
+  chars+=shadow(LX,524,62,520-ly)+place(LX,ly,duck({eye:blink(t,0),wing}),{s:.9,rot});
+
+  const to=1-prog(t,3.9,4.5);
+  if(to>0)pops+=`<g opacity="${to}">`+pop('Hot Cross',640,115,96,'#FF5D8F',t,.4,-2,'#fff')+pop('Buns!',640,222,108,'#FF9F1C',t,1.0,2,'#fff')+`</g>`;
+  cap=t<END+.6?karaoke(LINES,t,'#E8742A'):caption('A bun for every friend!',t-END,.7);
+
+  svg.innerHTML=bg(t,0,'',{noFlowers:true,noClouds:true})+behind+props+chars+front+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,'',{noFlowers:true,noClouds:true});
+  s+=bunStall(SX,520,1)+tray(SX,TOP,150);
+  s+=shadow(LX,524,62,0)+place(LX,520,duck({wing:-30}),{s:.9,rot:4});
+  s+=shadow(HX,524,60,0)+place(HX,520,hedgehog({}),{s:.85,flip:true});
+  s+=shadow(FX,524,55,0)+place(FX,520,frog({}),{s:.85});
+  s+=place(BDX+40,BDY,bird({}),{s:.6,flip:true});
+  BX.forEach((x,i)=>{s+=bun(x,BY,.95,1,.3+i*.37);});
+  s+=label('Hot Cross',640,115,100,'#FF5D8F',-3,'#fff')+label('Buns!',560,222,112,'#FF9F1C',-2,'#fff');
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

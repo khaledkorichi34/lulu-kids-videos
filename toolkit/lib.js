@@ -2137,3 +2137,20 @@ function hedgehog(o={}){
   <circle cx="40" cy="-38" r="7.5" fill="${P}" opacity=".8"/>
   ${eye}${mouth}`;
 }
+
+/* ---------- bun stall (episode 101) ---------- */
+// bunStall(x,y,s): little market stall standing on the ground at (x,y), about 470 wide at s=1.
+// The counter top (put things on it) is at y-92*s; the striped awning hangs from y-275*s down to
+// about y-212*s (its scallops), on two wooden poles at x-215*s and x+215*s. Its flat roof top is at y-275*s.
+function bunStall(x,y,s=1){
+  let stripes='',awn='',scal='';
+  for(let i=0;i<10;i++){if(i%2===0)stripes+=`<rect x="${-220+i*44}" y="-78" width="44" height="78" fill="#FFD1DF"/>`;}
+  for(let i=0;i<10;i++){const x0=-250+i*50;
+    awn+=`<path d="M${x0},-275 L${x0+50},-275 L${x0+50},-232 L${x0},-232 Z" fill="${i%2?'#FFF6E0':'#FF5D8F'}"/>`;
+    scal+=`<path d="M${x0},-233 Q${x0+25},-200 ${x0+50},-233 Z" fill="${i%2?'#FFF6E0':'#FF5D8F'}"/>`;}
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <rect x="-223" y="-240" width="16" height="240" rx="6" fill="#9C6B3F"/><rect x="207" y="-240" width="16" height="240" rx="6" fill="#9C6B3F"/>
+  <rect x="-220" y="-78" width="440" height="78" fill="#FFF6E0"/>${stripes}
+  <rect x="-234" y="-96" width="468" height="20" rx="8" fill="#B8875A"/><rect x="-226" y="-96" width="452" height="6" rx="3" fill="#D9AE78"/>
+  ${awn}${scal}<rect x="-256" y="-281" width="512" height="10" rx="5" fill="#E04A7C"/></g>`;
+}
