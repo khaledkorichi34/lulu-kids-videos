@@ -1,0 +1,154 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 102 - Lulu and the Little Giraffe. Lulu has a red balloon. Whoosh, the wind blows it up into
+   the tree and it is stuck. Lulu hops, but she is too small. Little Giraffe walks in: I can help! She
+   stretches her long neck, takes the string and gives the balloon back. Thank you, Little Giraffe!
+   They play together, the sun goes down, and the two friends sleep under the moon. */
+const DUR=57, SC=[0,5,11,17,23,31,37,44,50,57];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', ORANGE='#F27A12', TEAL='#19B8A6', GOLD='#FFE58A', RED='#E63946', GBROWN='#C77A1E';
+const TX=260, TS=.9;                  // tree on the left (canopy x 110..410, y 151..351)
+const GS=.7;                          // giraffe scale
+const STUCK=[395,191], R=32;          // balloon centre when stuck in the tree
+const SE=[383,269];                   // string end while stuck (the giraffe takes it here)
+const PX=790;                         // x centre for pop words in the first scenes
+// balloon above Lulu: string end at her wing, balloon up and to the left
+const hold=x=>[x-30,462];
+const held=(x,y=0)=>[x-40,290+y];
+const balloonAt=(c,e)=>balloon(c[0],c[1],R,RED,e[0],e[1]);
+// mouth of a left-facing giraffe at (gx,520), neck angle nk
+function gMouth(gx,nk){const by=-205,px=58,py=by-25,a=nk*Math.PI/180,L=190,b=20*Math.PI/180;
+  const hx=px+Math.sin(b+a)*L, hy=py-Math.cos(b+a)*L, r=nk*.55*Math.PI/180;
+  const mx=hx+48*Math.cos(r)-8*Math.sin(r), my=hy+48*Math.sin(r)+8*Math.cos(r);
+  return [gx-mx*GS,520+my*GS];}
+const G=(x,t,o={})=>shadow(x,524,75)+place(x,520,giraffe({eye:o.eye!=null?o.eye:blink(t,.7),neck:o.neck||0,walk:o.walk}),{s:GS,flip:o.flip!==false});
+const lulu=(lt,t,o={})=>{
+  const x=o.x!=null?o.x:640, j=jumps(lt,o.hops||[],.6,o.h||22), w=o.wave?20+20*Math.sin(lt*9):(o.wing!=null?o.wing:-20+6*Math.sin(lt*3));
+  return shadow(x,522,58,-j.y)+place(x,520+j.y,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),{s:1,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0,flip:o.flip});
+};
+const jy=(lt,hops,h)=>jumps(lt,hops,.6,h).y;
+const scenery=t=>tree(TX,520,TS)+flower(1215,600,90,'#FFFFFF',t,1,.5)+flower(1150,615,90,'#B58CFF',t,3,.42)+flower(80,605,90,'#FF7FB0',t,0,.5);
+const hearts=(lt,t0,x,y)=>{let s='';for(let k=0;k<4;k++){const q=lt-t0-k*.5;if(q>0&&q<2.4){const u=q/2.4;
+  s+=heart(x+k*40+10*Math.sin(q*4+k),y-90*u,1,[PINK,'#FF9F1C',PURPLE][k%3],Math.sin(Math.PI*u));}}return s;};
+const zzz=(lt,x,y,t0=2)=>{let s='';for(let k=0;k<3;k++){let q=lt-t0-k*.9;if(q>0){q%=2.7;
+  s+=`<text x="${(x+q*24+8*Math.sin(q*3)).toFixed(1)}" y="${(y-q*30).toFixed(1)}" font-size="${(28+q*11).toFixed(1)}" fill="#fff" opacity="${(Math.sin(Math.PI*q/2.7)*.95).toFixed(2)}">z</text>`;}}return s;};
+const wind=(lt,a,b)=>{const u=prog(lt,a,b);if(u<=0||u>=1)return '';let s='';
+  for(let k=0;k<4;k++){const x=1300-u*1500+k*140, y=230+k*55, o=Math.sin(Math.PI*u)*.85;
+    s+=`<path d="M${x},${y} q60,-22 120,0 t120,0" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round" opacity="${o.toFixed(2)}"/>`;}return s;};
+const bob=t=>4*Math.sin(t*2.4);
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',pops='',cap='',behind='',front='',noSun=false,noClouds=false,noMoon=false;
+  switch(i){
+  case 0:{
+    // title: Lulu with her red balloon
+    const hop=[2.6], y=jy(lt,hop,16);
+    props=scenery(t)+balloonAt(held(640,y+bob(t)),[hold(640)[0],462+y]);
+    chars=lulu(lt,t,{hops:hop,h:16,wing:-20});
+    pops=pop(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,760,115,72,PINK,lt,.4,-2)
+        +pop(`<tspan fill="${GBROWN}">Little Giraffe</tspan>`,760,198,80,GBROWN,lt,.9,-2);
+    break;}
+  case 1:{
+    // Lulu has a red balloon. Whoosh! The wind blows it away, up into the tree
+    const u=eio(prog(lt,3.3,5.6));
+    let c,e;
+    if(u<=0){c=held(640,bob(t));e=hold(640);}
+    else{const a=held(640),cx=lerp(lerp(a[0],760,u),lerp(760,STUCK[0],u),u), cy=lerp(lerp(a[1],80,u),lerp(80,STUCK[1],u),u);
+      c=[cx,cy]; e=[cx-12+10*Math.sin(lt*8)*(1-u),cy+78];}
+    props=scenery(t)+balloonAt(c,e);
+    chars=lulu(lt,t,{hops:[1.0],h:16,wing:u>0?40:-20,eye:lt>3.4&&lt<4.4?1.15:undefined,rot:lt>4.4?-6:0});
+    front=wind(lt,2.9,5.2);
+    cap=lt<3.0?caption('Lulu has a red balloon.',lt,.3):caption('Whoosh! The wind blows.',lt,3.0);
+    pops=pop('Whoosh!',PX,165,100,TEAL,lt,3.1,-3);
+    break;}
+  case 2:{
+    // it is stuck in the tree. Lulu hops, but she is too small
+    const x=lerp(640,280,eio(prog(lt,0,1.2))), hop=[1.8,2.8,4.0];
+    props=scenery(t)+balloonAt([STUCK[0],STUCK[1]+bob(t)*.5],SE);
+    chars=lulu(lt,t,{x,hops:hop,h:36,wing:lt>1.6&&lt<4.8?35:undefined});
+    cap=lt<3.2?caption('It is stuck in the tree!',lt,.3):caption('Lulu is too small.',lt,3.2);
+    pops=pop('Oh no!',PX,165,100,PINK,lt,.5,-3);
+    break;}
+  case 3:{
+    // Little Giraffe walks in. Hello!
+    const u=prog(lt,0,3.4), gx=lerp(1420,541,u);
+    props=scenery(t)+balloonAt([STUCK[0],STUCK[1]+bob(t)*.5],SE);
+    chars=lulu(lt,t,{x:280,wave:lt>3.4&&lt<5.4,rot:lt<2?0:0})+G(gx,t,{walk:u<1?lt*6:null});
+    cap=lt<3.2?caption('Who is that?',lt,.3):caption('Hello, Little Giraffe!',lt,3.2);
+    pops=pop('Hello!',PX,165,100,ORANGE,lt,3.4,-3);
+    break;}
+  case 4:{
+    // I can help! She stretches her long neck, takes the string, and gives the balloon to Lulu
+    let nk=0;
+    if(lt<4.4) nk=20*eio(prog(lt,1.4,3.0)); else nk=lerp(20,40,eio(prog(lt,4.4,6.0)));
+    if(lt>6.2) nk=lerp(40,0,eio(prog(lt,6.4,7.6)));
+    const m=gMouth(541,nk), hop=[6.9], y=jy(lt,hop,20);
+    let c,e;
+    if(lt<3.0){c=[STUCK[0],STUCK[1]+bob(t)*.5];e=SE;}
+    else if(lt<6.0){const off=[STUCK[0]-SE[0],STUCK[1]-SE[1]];const k=prog(lt,3.0,3.3);
+      e=[lerp(SE[0],m[0],k),lerp(SE[1],m[1],k)];c=[e[0]+off[0],e[1]+off[1]];}
+    else{const k=eio(prog(lt,6.0,6.6)), m6=gMouth(541,40), h=hold(280), hc=held(280,y);
+      e=[lerp(m6[0],h[0],k),lerp(m6[1],h[1]+y,k)];c=[lerp(m6[0]+12,hc[0],k),lerp(m6[1]-78,hc[1],k)];}
+    props=scenery(t)+balloonAt(c,e);
+    chars=lulu(lt,t,{x:280,hops:hop,h:20,wing:lt>5.8?-20:undefined})+G(541,t,{neck:nk});
+    cap=lt<2.8?caption('I can help!',lt,.3):(lt<5.2?caption('She has a long neck.',lt,2.8):caption('Here you are, Lulu!',lt,5.2));
+    pops=pop('Stretch!',PX,165,96,PURPLE,lt,1.5,-3)+(lt>6.8?'':'');
+    if(lt>6.8)pops=pop('Yay!',PX,165,110,ORANGE,lt,6.9,-3);
+    break;}
+  case 5:{
+    // thank you, Little Giraffe!
+    const hop=[1.0,2.0], y=jy(lt,hop,20);
+    props=scenery(t)+hearts(lt,.8,360,320)+balloonAt(held(280,y+bob(t)),[hold(280)[0],462+y]);
+    chars=lulu(lt,t,{x:280,hops:hop,h:20,wing:-20})+G(541,t,{neck:5*Math.sin(lt*2.5)});
+    cap=caption('Thank you, Little Giraffe!',lt,.3);
+    pops=pop('Hooray!',PX,165,100,PINK,lt,1.2,-3);
+    break;}
+  case 6:{
+    // now they are friends. they play all day
+    const hop=[1.0,2.0,3.0,4.6,5.6], y=jy(lt,hop,24);
+    props=scenery(t)+balloonAt(held(520,y+bob(t)),[hold(520)[0],462+y]);
+    chars=lulu(lt,t,{x:520,hops:hop,h:24,wing:-20})+G(880,t,{neck:6*Math.sin(lt*3)});
+    cap=lt<3.4?caption('Now they are friends.',lt,.3):caption('They play all day.',lt,3.4);
+    pops=pop('Hee hee!',600,165,96,TEAL,lt,1.0,-3);
+    break;}
+  case 7:{
+    // the sun goes down
+    n=lerp(0,.45,eio(prog(lt,.3,5.4))); noSun=true; noMoon=true;
+    behind=sun(t,1000,lerp(200,560,eio(prog(lt,.3,5.4))));
+    props=scenery(t)+balloonAt(held(520,bob(t)),hold(520));
+    chars=lulu(lt,t,{x:520,eye:lt>4.0?.5:undefined,wing:-20})+G(880,t,{eye:lt>4.0?.5:undefined});
+    cap=lt<3.0?caption('The sun goes down.',lt,.3):caption('Bye-bye, sunny day.',lt,3.0);
+    pops=pop('Yawn!',600,165,96,PURPLE,lt,4.2,-3);
+    break;}
+  case 8:{
+    // night: the friends sleep under the moon
+    n=lerp(.45,1,eio(prog(lt,0,4))); noSun=true; noClouds=lt>0; noMoon=true;
+    behind=moon(1050,lerp(330,120,eio(prog(lt,0,4))));
+    const asleep=lt>1.2, br=1+.025*Math.sin(lt*2.2);
+    props=scenery(t)+balloonAt(held(520,bob(t)*.5),hold(520));
+    chars=lulu(lt,t,{x:520,asleep,eye:.45,sy:br,rot:asleep?-3:0,wing:-20})+G(880,t,{eye:asleep?.12:.45});
+    pops=zzz(lt,600,330,2.0);
+    cap=caption('Good night, friends.',lt,.5);
+    pops+=pop('The End',640,150,112,GOLD,lt,3.6,-3,NAVY);
+    break;}
+  }
+  svg.innerHTML=bg(t,n,behind,{noSun,noFlowers:true,noMoon,noClouds})+props+chars+front+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,'',{noFlowers:true,noSun:true})+tree(200,620,.95)+flower(1215,640,90,'#FFFFFF',0,1,.5);
+  s+=balloon(372,240,38,RED,360,330);
+  s+=shadow(300,622,70)+place(300,620,duck({wing:35}),{s:1.2});
+  s+=shadow(1080,624,80)+place(1080,620,giraffe({}),{s:.62,flip:true});
+  s+=label(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,760,115,92,PINK,-2);
+  s+=label(`<tspan fill="${GBROWN}">Little Giraffe</tspan>`,740,225,100,GBROWN,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
