@@ -1,0 +1,123 @@
+{
+  "number": 104,
+  "slug": "hedgehog-riddle",
+  "format": "curious",
+  "ages": "6-10",
+  "title": "Who Am I? A Prickly Riddle with Lulu | Riddle for Kids",
+  "description": "Lulu the little duck has a new riddle for you!\nRead three clues and guess who hides in the leaves.\nThen see how hedgehogs roll into a ball, look for food at night and sleep through winter.\nA gentle riddle video for children aged 6 to 10.",
+  "duration": 66,
+  "seed": 104,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.3,
+      "type": "sparkle"
+    },
+    {
+      "t": 2.3,
+      "type": "boing_high"
+    },
+    {
+      "t": 5.8,
+      "type": "pop"
+    },
+    {
+      "t": 7.9,
+      "type": "ding"
+    },
+    {
+      "t": 12.3,
+      "type": "pop"
+    },
+    {
+      "t": 14.4,
+      "type": "ding"
+    },
+    {
+      "t": 18.8,
+      "type": "pop"
+    },
+    {
+      "t": 20.9,
+      "type": "ding"
+    },
+    {
+      "t": 21.6,
+      "type": "boing_low"
+    },
+    {
+      "t": 25.3,
+      "type": "pop"
+    },
+    {
+      "t": 25.9,
+      "type": "pop"
+    },
+    {
+      "t": 26.5,
+      "type": "pop"
+    },
+    {
+      "t": 30.9,
+      "type": "sparkle"
+    },
+    {
+      "t": 31.7,
+      "type": "ding"
+    },
+    {
+      "t": 37.8,
+      "type": "pop"
+    },
+    {
+      "t": 39.6,
+      "type": "boing_low"
+    },
+    {
+      "t": 43.7,
+      "type": "boing_high"
+    },
+    {
+      "t": 45.3,
+      "type": "pop"
+    },
+    {
+      "t": 49.0,
+      "type": "pop"
+    },
+    {
+      "t": 52.8,
+      "type": "pop"
+    },
+    {
+      "t": 56.9,
+      "type": "sparkle"
+    },
+    {
+      "t": 60.4,
+      "type": "pop"
+    },
+    {
+      "t": 61.0,
+      "type": "boing_high"
+    },
+    {
+      "t": 61.8,
+      "type": "boing_high"
+    }
+  ],
+  "check_times": [
+    2.6,
+    15.0,
+    22.0,
+    27.0,
+    31.5,
+    33.0,
+    40.0,
+    42.0,
+    49.5,
+    53.5,
+    57.5,
+    62.0
+  ]
+}
