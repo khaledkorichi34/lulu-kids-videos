@@ -1,0 +1,33 @@
+{
+  "number": 105,
+  "slug": "lulu-and-the-long-scarf",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and the Long Scarf | Bedtime Story for Kids",
+  "description": "Brr! On a cold, snowy day Bunny and Pip the kitten are cold, and Lulu has a very long scarf.\nShe shares it: one end for Bunny, one end for Pip. Now three friends are warm and cosy!\nThe sun goes down and they fall asleep, all wrapped in one long scarf.\nA calm bedtime story for children aged 3 to 6.",
+  "duration": 59,
+  "seed": 105,
+  "lullaby_from": 52.0,
+  "sfx": [
+    {"t": 0.4, "type": "pop"},
+    {"t": 7.6, "type": "boing_low"},
+    {"t": 11.0, "type": "boing_high"},
+    {"t": 11.7, "type": "boing_high"},
+    {"t": 12.4, "type": "boing_high"},
+    {"t": 13.1, "type": "boing_high"},
+    {"t": 20.0, "type": "pop"},
+    {"t": 21.3, "type": "sparkle"},
+    {"t": 25.2, "type": "ding"},
+    {"t": 31.0, "type": "boing_high"},
+    {"t": 31.7, "type": "boing_high"},
+    {"t": 32.4, "type": "boing_high"},
+    {"t": 33.1, "type": "boing_high"},
+    {"t": 38.5, "type": "pop"},
+    {"t": 39.8, "type": "sparkle"},
+    {"t": 41.0, "type": "ding"},
+    {"t": 41.8, "type": "ding"},
+    {"t": 42.6, "type": "ding"},
+    {"t": 55.6, "type": "sparkle"}
+  ],
+  "check_times": [1.5, 3.0, 6.0, 9.0, 12.0, 14.5, 16.0, 18.0, 20.3, 20.8, 21.5, 23.0, 25.5, 28.5, 32.0, 34.5, 37.0, 39.0, 39.5, 40.5, 42.0, 43.5, 45.0, 48.0, 51.0, 54.0, 57.0]
+}

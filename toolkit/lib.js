@@ -2171,3 +2171,25 @@ function winterTree(x,y,s=1,snow=1){
   <path d="M-30,0 Q-40,-6 -48,0 M30,0 Q40,-6 48,0" stroke="#9C6B3F" stroke-width="12" stroke-linecap="round"/>
   <ellipse cx="-8" cy="-150" rx="7" ry="12" fill="#7E5230"/>${br}${sn}</g>`;
 }
+
+/* ---------- one long shared scarf (episode 105) ---------- */
+// scarfWrap(x,y,w,col): the part of a long red-and-white striped scarf wrapped round a neck, centred at (x,y),
+// w wide and 26 tall. Draw it inside the character's place() after the character. Neck centres used:
+// duck (Lulu) (32,-78) w 80; bunny (0,-74) w 84; kitten (0,-72) w 88.
+function scarfWrap(x,y,w=80,col='#E63946'){
+  const h=w/2;
+  return `<g transform="translate(${x},${y})"><rect x="${-h}" y="-13" width="${w}" height="26" rx="13" fill="${col}"/>
+  <rect x="${-w/4-4}" y="-13" width="8" height="26" fill="#fff"/><rect x="${w/4-4}" y="-13" width="8" height="26" fill="#fff"/>
+  <path d="M${-h+12},-6 Q0,-10 ${h-12},-6" stroke="#fff" stroke-width="3" fill="none" opacity=".35" stroke-linecap="round"/></g>`;
+}
+// scarfBand(ax,ay,bx,by,sag,col,loose): a length of the same scarf (22 wide, white stripes across) from (ax,ay)
+// to (bx,by), hanging down by sag in the middle. loose = true adds a little fringe at the (bx,by) end.
+function scarfBand(ax,ay,bx,by,sag=0,col='#E63946',loose=false){
+  const cx=(ax+bx)/2, cy=(ay+by)/2+sag*2, d=`M${ax.toFixed(1)},${ay.toFixed(1)} Q${cx.toFixed(1)},${cy.toFixed(1)} ${bx.toFixed(1)},${by.toFixed(1)}`;
+  let s=`<path d="${d}" stroke="${col}" stroke-width="22" fill="none" stroke-linecap="round"/>
+  <path d="${d}" stroke="#fff" stroke-width="22" fill="none" stroke-dasharray="8 26" stroke-dashoffset="-18"/>`;
+  if(loose){let dx=bx-cx, dy=by-cy; const L=Math.hypot(dx,dy)||1; dx/=L; dy/=L; const px=-dy, py=dx;
+    for(let k=-1.5;k<=1.5;k++){const x0=bx+px*k*6+dx*8, y0=by+py*k*6+dy*8;
+      s+=`<path d="M${x0.toFixed(1)},${y0.toFixed(1)} l${(dx*16).toFixed(1)},${(dy*16).toFixed(1)}" stroke="${col}" stroke-width="4.5" stroke-linecap="round"/>`;}}
+  return s;
+}

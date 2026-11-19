@@ -1,0 +1,151 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 105 - Lulu and the Long Scarf. On a cold, snowy day Lulu wears her very long red scarf.
+   Bunny hops in: Brr! Bunny is cold. Lulu shares one end of her scarf with Bunny (whoosh, ta-da!).
+   Thank you, Lulu! Then Pip the kitten comes: Brr! Pip is cold too. The other end goes round Pip.
+   There is room for three: one, two, three friends, warm and cosy. The sun goes down and the three
+   friends sleep together, all wrapped in one long scarf. Good night. */
+const DUR=59, SC=[0,5,11,17,24,31,38,46,52,59];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', BLUE='#2979E8', GOLD='#FFE58A', ORANGE='#FF9F1C', TEAL='#19B8A6', RED='#E63946';
+const LX=640, BX=868, PX=402;          // final places of Lulu, Bunny and Pip
+const shade=(x,w)=>`<ellipse cx="${x}" cy="522" rx="${w}" ry="${w*.18}" fill="#7F93B0" opacity=".25"/>`;
+
+function snowfall(t,o=1,count=22){
+  if(o<=0)return '';
+  let s='';for(let k=0;k<count;k++){const x0=(k*97+30)%1280, sp=30+(k%5)*7, y=((t*sp+k*61)%640)-30, x=x0+18*Math.sin(t*.9+k);
+    s+=snowflake(x,y,.5+(k%3)*.18,t*20+k*30,o*.9);}
+  return s;
+}
+function snowyBush(x,y,s=1){
+  return bush(x,y,s)+`<g transform="translate(${x},${y}) scale(${s})" fill="#fff">
+  <ellipse cx="0" cy="-142" rx="52" ry="15"/><ellipse cx="-62" cy="-130" rx="40" ry="12"/><ellipse cx="62" cy="-130" rx="40" ry="12"/>
+  <ellipse cx="-118" cy="-94" rx="30" ry="9"/><ellipse cx="118" cy="-94" rx="30" ry="9"/></g>`;
+}
+const scenery=()=>winterTree(130,520,.8,1)+snowyBush(1170,540,.6);
+const hearts=(lt,t0,x,y)=>{let s='';for(let k=0;k<4;k++){const q=lt-t0-k*.5;if(q>0&&q<2.4){const u=q/2.4;
+  s+=heart(x+k*40+10*Math.sin(q*4+k),y-90*u,1,[PINK,'#FF9F1C',PURPLE][k%3],Math.sin(Math.PI*u));}}return s;};
+const zzz=(lt,x,y,t0=2)=>{let s='';for(let k=0;k<3;k++){let q=lt-t0-k*.9;if(q>0){q%=2.7;
+  s+=`<text x="${(x+q*24+8*Math.sin(q*3)).toFixed(1)}" y="${(y-q*30).toFixed(1)}" font-size="${(28+q*11).toFixed(1)}" fill="#fff" opacity="${(Math.sin(Math.PI*q/2.7)*.95).toFixed(2)}">z</text>`;}}return s;};
+const arc=(a,b,u,h)=>[lerp(a[0],b[0],u),lerp(a[1],b[1],u)-h*Math.sin(Math.PI*u)];
+
+/* The three friends and the scarf.
+   o.l/o.b/o.p = {x, hops, h, eye, asleep, wing, wave, sy, shiver(0..1)} or null when not on stage.
+   o.ru / o.lu = 0..1 how far the right / left scarf end has flown to Bunny / Pip (1 = wrapped). */
+function friends(lt,t,o){
+  const L=o.l, B=o.b, P=o.p;
+  const jl=jumps(lt,L.hops||[],.6,L.h||18), lw=L.wave?20+20*Math.sin(lt*9):(L.wing!=null?L.wing:-25+6*Math.sin(lt*3));
+  let s='';
+  // left end: behind Lulu, hidden behind her back until it flies to Pip
+  const AL=[L.x,446+jl.y], hangL=[L.x-6,506+jl.y];
+  let jp={y:0,sx:1,sy:1}, pRight=null, px=0;
+  if(P){jp=jumps(lt,P.hops||[],.6,P.h||18); px=P.x+(P.shiver?3*Math.sin(lt*44)*P.shiver:0); pRight=[px+36,459+jp.y];}
+  const lu=o.lu||0;
+  if(lu<=0) s+=scarfBand(AL[0],AL[1],hangL[0],hangL[1],0,RED,true);
+  else if(lu<1) {const e=arc(hangL,pRight,eio(lu),150); s+=scarfBand(AL[0],AL[1],e[0],e[1],lerp(0,22,lu),RED,true);}
+  else s+=scarfBand(AL[0],AL[1],pRight[0],pRight[1],22,RED,false);
+  if(P) s+=shade(P.x,46*(1-clamp(-jp.y/260)*.5))+place(px,520+jp.y,kitten({eye:P.eye!=null?P.eye:blink(t,1.3),tail:P.asleep?.3:Math.sin(t*3),asleep:P.asleep,tilt:P.tilt||0})+(lu>=1?scarfWrap(0,-72,88,RED):''),{s:.85,sx:jp.sx,sy:jp.sy*(P.sy||1)});
+  // Lulu with the scarf round her neck
+  s+=shade(L.x,58*(1-clamp(-jl.y/260)*.5))+place(L.x,520+jl.y,duck({eye:L.eye!=null?L.eye:blink(t,0),wing:lw,asleep:L.asleep})+scarfWrap(32,-78,80,RED),{s:1,sx:jl.sx,sy:jl.sy*(L.sy||1)});
+  // right end: hangs on her chest until it flies to Bunny
+  const AR=[L.x+56,446+jl.y], hangR=[L.x+60,500+jl.y];
+  let jb={y:0,sx:1,sy:1}, bLeft=null, bx=0;
+  if(B){jb=jumps(lt,B.hops||[],.6,B.h||18); bx=B.x+(B.shiver?3*Math.sin(lt*44)*B.shiver:0); bLeft=[bx-36,453+jb.y];}
+  const ru=o.ru||0;
+  if(ru<=0) s+=scarfBand(AR[0],AR[1],hangR[0],hangR[1],0,RED,true);
+  else if(ru<1){const e=arc(hangR,bLeft,eio(ru),150); s+=scarfBand(AR[0],AR[1],e[0],e[1],lerp(0,22,ru),RED,true);}
+  else s+=scarfBand(AR[0],AR[1],bLeft[0],bLeft[1],22,RED,false);
+  if(B) s+=shade(B.x,48*(1-clamp(-jb.y/260)*.5))+place(bx,520+jb.y,bunny({eye:B.eye!=null?B.eye:blink(t,.6),ear:B.ear||0})+(ru>=1?scarfWrap(0,-74,84,RED):''),{s:.9,sx:jb.sx,sy:jb.sy*(B.sy||1)});
+  return s;
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,fall=.7,props='',chars='',pops='',cap='',behind='',noMoon=true;
+  switch(i){
+  case 0:{
+    // title
+    chars=friends(lt,t,{l:{x:LX,hops:[2.6],h:16}});
+    pops=pop(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,640,115,72,PINK,lt,.4,-2)
+        +pop(`<tspan fill="${RED}">Long Scarf</tspan>`,640,198,84,RED,lt,.9,-2);
+    break;}
+  case 1:{
+    // a cold, snowy day; Lulu has a long scarf
+    chars=friends(lt,t,{l:{x:LX,hops:[3.6],h:16}});
+    cap=lt<3.2?caption('It is a cold, snowy day.',lt,.3):caption('Lulu has a long scarf.',lt,3.2);
+    pops=lt<3.2?pop('Snow!',640,165,100,BLUE,lt,.5,-3):pop('So long!',640,165,100,RED,lt,3.4,-3);
+    break;}
+  case 2:{
+    // Bunny hops in, Brr! Bunny is cold
+    const u=prog(lt,0,2.7), bx=lerp(1420,BX,u);
+    chars=friends(lt,t,{l:{x:LX,wave:lt>2.8&&lt<3.9},b:{x:bx,hops:[0,.7,1.4,2.1],h:22,shiver:clamp((lt-3.2)*3),ear:lt>3.2?6:0}});
+    cap=lt<3.2?caption('Here comes Bunny!',lt,.3):caption('Brr! Bunny is cold.',lt,3.2);
+    pops=lt<3.2?pop('Hello!',640,165,100,ORANGE,lt,2.9,-3):pop('Brr!',640,165,110,BLUE,lt,3.3,-3);
+    break;}
+  case 3:{
+    // Lulu shares one end of her scarf with Bunny
+    const ru=prog(lt,3.0,4.3);
+    chars=friends(lt,t,{l:{x:LX,hops:[1.0],h:16,wing:lt>2.9&&lt<4.4?35:undefined},b:{x:BX,shiver:ru<1?1:0,ear:ru<1?6:0,hops:[4.6],h:14},ru});
+    cap=lt<3.0?caption('My scarf is very long!',lt,.3):caption("Let's share it, Bunny!",lt,3.0);
+    pops=lt<4.4?pop('Whoosh!',640,165,100,TEAL,lt,3.0,-3):pop('Ta-da!',640,165,110,PINK,lt,4.4,-3);
+    break;}
+  case 4:{
+    // Bunny is warm too. Thank you, Lulu!
+    props=hearts(lt,.8,700,330);
+    chars=friends(lt,t,{l:{x:LX,hops:[4.0],h:16},b:{x:BX,hops:[1.0,1.8],h:16},ru:1});
+    cap=lt<3.4?caption('Now Bunny is warm too.',lt,.3):caption('Thank you, Lulu!',lt,3.4);
+    pops=pop('Cosy!',640,165,100,ORANGE,lt,1.2,-3);
+    break;}
+  case 5:{
+    // Pip the kitten comes: Brr! Pip is cold too
+    const u=prog(lt,0,2.7), px=lerp(-150,PX,u);
+    chars=friends(lt,t,{l:{x:LX},b:{x:BX},p:{x:px,hops:[0,.7,1.4,2.1],h:22,shiver:clamp((lt-3.2)*3)},ru:1});
+    cap=lt<3.2?caption('Here comes Pip!',lt,.3):caption('Brr! Pip is cold too.',lt,3.2);
+    pops=lt<3.2?pop('Hello, Pip!',640,165,96,ORANGE,lt,2.9,-3):pop('Brr!',640,165,110,BLUE,lt,3.3,-3);
+    break;}
+  case 6:{
+    // the other end goes round Pip: room for three! one, two, three friends
+    const lu=prog(lt,.5,1.8);
+    chars=friends(lt,t,{l:{x:LX,hops:[3.8],h:14},b:{x:BX,hops:[4.6],h:14},p:{x:PX,shiver:lu<1?1:0,hops:[3.0],h:14},ru:1,lu});
+    cap=lt<3.0?caption('There is room for three!',lt,.3):caption('One, two, three friends!',lt,3.0);
+    pops=lt<3.0?pop('Whoosh!',640,165,100,TEAL,lt,.5,-3)
+       :pop('One',PX,165,84,PINK,lt,3.0,-3)+pop('Two',LX,165,84,PURPLE,lt,3.8,-3)+pop('Three',BX,165,84,ORANGE,lt,4.6,-3);
+    break;}
+  case 7:{
+    // the sun goes down
+    n=lerp(0,.45,eio(prog(lt,.3,5.4))); fall=.5;
+    behind=sun(t,1000,lerp(200,560,eio(prog(lt,.3,5.4))));
+    const sl=lt>4.0?.5:undefined;
+    chars=friends(lt,t,{l:{x:LX,eye:sl},b:{x:BX,eye:sl},p:{x:PX,eye:sl},ru:1,lu:1});
+    cap=lt<3.0?caption('The sun goes down.',lt,.3):caption('Warm and cosy friends.',lt,3.0);
+    pops=pop('Yawn!',640,165,100,PURPLE,lt,4.2,-3);
+    break;}
+  case 8:{
+    // night: the three friends sleep, all wrapped in one long scarf
+    n=lerp(.45,1,eio(prog(lt,0,4))); fall=.35; noMoon=false;
+    const asleep=lt>1.2, br=k=>1+.025*Math.sin(lt*2.2+k);
+    chars=friends(lt,t,{l:{x:LX,asleep,eye:.45,sy:br(0),wing:-25},b:{x:BX,eye:asleep?.12:.45,sy:br(1)},p:{x:PX,asleep,eye:.45,sy:br(2)},ru:1,lu:1});
+    pops=zzz(lt,720,330,2.0);
+    cap=caption('Good night, friends.',lt,.5);
+    pops+=pop('The End',640,150,112,GOLD,lt,3.6,-3,NAVY);
+    break;}
+  }
+  svg.innerHTML=bg(t,n,behind,{noSun:true,noFlowers:true,noMoon,noClouds:true})+snowHills(1,n)+scenery()+props+chars+nightTint(n)+snowfall(t,fall*(1-n*.3))+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,'',{noSun:true,noFlowers:true,noClouds:true})+snowHills(1,0)+scenery();
+  s+=heart(560,300,1.1,PINK,1)+heart(720,290,1,ORANGE,1);
+  s+=friends(9,0,{l:{x:LX,wing:-15,eye:1},b:{x:BX,eye:1},p:{x:PX,eye:1},ru:1,lu:1});
+  [[60,120],[250,330],[1230,300],[1120,90],[960,330],[330,90],[1210,420]].forEach((p,k)=>{s+=snowflake(p[0],p[1],.6+(k%3)*.25,k*25,.9);});
+  s+=label(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,640,120,92,PINK,-2);
+  s+=label(`<tspan fill="${RED}">Long Scarf</tspan>`,640,235,108,RED,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
