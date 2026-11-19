@@ -1,0 +1,126 @@
+{
+  "number": 103,
+  "slug": "four-seasons-with-lulu",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "The Four Seasons with Lulu | Learn First Words for Kids",
+  "description": "Lulu the little duck watches her tree through the four seasons: flowers grow in spring, summer is warm and sunny, leaves fall in autumn and it can snow in winter.\n\nSay the name of each season out loud.\n\nA short, gentle first-words video for children aged 3 to 6.",
+  "duration": 42,
+  "seed": 103,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 1.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 2.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 5.4,
+      "type": "pop"
+    },
+    {
+      "t": 5.8,
+      "type": "sparkle"
+    },
+    {
+      "t": 8.75,
+      "type": "boing_high"
+    },
+    {
+      "t": 12.4,
+      "type": "pop"
+    },
+    {
+      "t": 12.6,
+      "type": "sparkle"
+    },
+    {
+      "t": 13.4,
+      "type": "pop"
+    },
+    {
+      "t": 14.4,
+      "type": "pop"
+    },
+    {
+      "t": 15.75,
+      "type": "boing_high"
+    },
+    {
+      "t": 19.4,
+      "type": "pop"
+    },
+    {
+      "t": 22.75,
+      "type": "boing_high"
+    },
+    {
+      "t": 26.4,
+      "type": "pop"
+    },
+    {
+      "t": 27.6,
+      "type": "pop"
+    },
+    {
+      "t": 28.6,
+      "type": "pop"
+    },
+    {
+      "t": 29.75,
+      "type": "boing_high"
+    },
+    {
+      "t": 33.5,
+      "type": "pop"
+    },
+    {
+      "t": 34.1,
+      "type": "pop"
+    },
+    {
+      "t": 34.7,
+      "type": "pop"
+    },
+    {
+      "t": 35.3,
+      "type": "pop"
+    },
+    {
+      "t": 38.8,
+      "type": "ding"
+    },
+    {
+      "t": 39.4,
+      "type": "boing_high"
+    }
+  ],
+  "check_times": [
+    1.0,
+    3.6,
+    5.9,
+    7.0,
+    8.9,
+    9.6,
+    10.5,
+    13.0,
+    14.5,
+    15.9,
+    17.0,
+    20.5,
+    22.9,
+    24.0,
+    26.8,
+    28.0,
+    29.9,
+    31.0,
+    34.0,
+    35.8,
+    37.5,
+    39.6,
+    41.0
+  ]
+}

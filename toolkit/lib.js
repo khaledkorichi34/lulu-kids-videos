@@ -2154,3 +2154,20 @@ function bunStall(x,y,s=1){
   <rect x="-234" y="-96" width="468" height="20" rx="8" fill="#B8875A"/><rect x="-226" y="-96" width="452" height="6" rx="3" fill="#D9AE78"/>
   ${awn}${scal}<rect x="-256" y="-281" width="512" height="10" rx="5" fill="#E04A7C"/></g>`;
 }
+
+/* ---------- winter tree (episode 103) ---------- */
+// winterTree(x,y,s,snow): the round tree of episode 10 in winter: bare branches with soft snow on top,
+// origin at the foot of the trunk (branches cover about x-150..x+150, y-420..y-200 at s=1).
+// snow = 0..1 how much snow lies on the branches.
+function winterTree(x,y,s=1,snow=1){
+  const B=[['M0,-215 Q-50,-260 -120,-300',20],['M0,-215 Q55,-255 125,-285',20],['M0,-220 Q-8,-320 4,-420',22],
+    ['M-60,-262 Q-60,-320 -100,-370',12],['M60,-252 Q70,-310 110,-350',12],['M-2,-330 Q-40,-360 -50,-400',10],
+    ['M2,-310 Q40,-340 60,-395',10],['M-100,-292 Q-135,-300 -150,-330',9],['M100,-275 Q135,-280 150,-310',9]];
+  let br='',sn='';
+  B.forEach(([d,w])=>{br+=`<path d="${d}" stroke="#9C6B3F" stroke-width="${w}" fill="none" stroke-linecap="round"/>`;
+    if(snow>0)sn+=`<path d="${d}" stroke="#FFFFFF" stroke-width="${(w*.55).toFixed(1)}" fill="none" stroke-linecap="round" transform="translate(0,${-w*.45})" opacity="${snow}"/>`;});
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-30,0 Q-22,-110 -24,-230 L24,-230 Q22,-110 30,0 Z" fill="#9C6B3F"/>
+  <path d="M-30,0 Q-40,-6 -48,0 M30,0 Q40,-6 48,0" stroke="#9C6B3F" stroke-width="12" stroke-linecap="round"/>
+  <ellipse cx="-8" cy="-150" rx="7" ry="12" fill="#7E5230"/>${br}${sn}</g>`;
+}
