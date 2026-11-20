@@ -2193,3 +2193,17 @@ function scarfBand(ax,ay,bx,by,sag=0,col='#E63946',loose=false){
       s+=`<path d="M${x0.toFixed(1)},${y0.toFixed(1)} l${(dx*16).toFixed(1)},${(dy*16).toFixed(1)}" stroke="${col}" stroke-width="4.5" stroke-linecap="round"/>`;}}
   return s;
 }
+
+/* ---------- wooden bridge block (episode 107) ---------- */
+// woodBlock(x,y,rot,s,col): flat wooden block, 76 x 42 at s=1 (same size as iceBlock), origin at the
+// middle of its bottom edge (a block on the ground has y=520). rot turns it around its centre.
+// col = wood colour (default warm honey brown); a darker bottom edge, two grain lines and a knot.
+function woodBlock(x,y,rot=0,s=1,col='#D9954A'){
+  return `<g transform="translate(${x},${y-21*s}) rotate(${rot}) scale(${s})">
+  <rect x="-38" y="-21" width="76" height="42" rx="8" fill="${mix(col,'#000000',.22)}"/>
+  <rect x="-38" y="-21" width="76" height="36" rx="8" fill="${col}"/>
+  <path d="M-28,-9 Q-6,-13 14,-9 T30,-10" stroke="${mix(col,'#000000',.15)}" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M-30,4 Q-10,0 8,4" stroke="${mix(col,'#000000',.15)}" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <ellipse cx="22" cy="4" rx="5" ry="3.5" fill="${mix(col,'#000000',.2)}"/>
+  <rect x="-30" y="-17" width="22" height="5" rx="2.5" fill="#fff" opacity=".35"/></g>`;
+}
