@@ -1,0 +1,32 @@
+{
+  "number": 108,
+  "slug": "lulu-and-the-little-star",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and the Little Star | Bedtime Story for Kids",
+  "description": "The sun goes down and a little star falls into the grass. Plink!\nLulu hops up high, but the sky is too high. Then Owl wakes up and helps.\nOwl carries the little star back to the sky, and Lulu falls asleep under its soft glow.\nA calm bedtime story for children aged 3 to 6.",
+  "duration": 58,
+  "seed": 108,
+  "lullaby_from": 51.0,
+  "sfx": [
+    {"t": 0.4, "type": "pop"},
+    {"t": 8.2, "type": "sparkle"},
+    {"t": 12.0, "type": "ding"},
+    {"t": 13.0, "type": "sparkle"},
+    {"t": 14.4, "type": "pop"},
+    {"t": 18.0, "type": "boing_high"},
+    {"t": 20.6, "type": "boing_high"},
+    {"t": 24.8, "type": "boing_high"},
+    {"t": 25.7, "type": "boing_high"},
+    {"t": 26.6, "type": "boing_high"},
+    {"t": 27.6, "type": "boing_low"},
+    {"t": 31.4, "type": "pop"},
+    {"t": 34.8, "type": "boing_low"},
+    {"t": 39.4, "type": "sparkle"},
+    {"t": 45.6, "type": "sparkle"},
+    {"t": 48.4, "type": "ding"},
+    {"t": 48.4, "type": "boing_high"},
+    {"t": 54.6, "type": "sparkle"}
+  ],
+  "check_times": [2.5, 4.0, 7.0, 9.5, 12.5, 13.8, 14.6, 16.0, 18.3, 21.5, 25.3, 26.2, 27.0, 29.0, 31.6, 32.5, 33.5, 34.2, 36.5, 38.8, 40.5, 42.0, 43.5, 45.5, 46.5, 48.8, 50.0, 53.0, 56.0]
+}
