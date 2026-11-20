@@ -1,0 +1,92 @@
+{
+  "number": 106,
+  "slug": "make-five-with-lulu",
+  "format": "learning",
+  "ages": "3-7",
+  "title": "Make Five with Lulu | Simple Sums for Kids",
+  "description": "Lulu finds four ways to make five: four and one, three and two, two and three, one and four.\nTwo little groups of balls, apples, pears and strawberries are counted together, and they always make five.\n\nA short, gentle numbers video for children aged 3 to 7.",
+  "duration": 41,
+  "seed": 106,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.7,
+      "type": "sparkle"
+    },
+    {
+      "t": 6.38,
+      "type": "pop"
+    },
+    {
+      "t": 7.25,
+      "type": "pop"
+    },
+    {
+      "t": 8.98,
+      "type": "sparkle"
+    },
+    {
+      "t": 13.16,
+      "type": "pop"
+    },
+    {
+      "t": 14.25,
+      "type": "pop"
+    },
+    {
+      "t": 15.98,
+      "type": "sparkle"
+    },
+    {
+      "t": 19.94,
+      "type": "pop"
+    },
+    {
+      "t": 21.25,
+      "type": "pop"
+    },
+    {
+      "t": 22.98,
+      "type": "sparkle"
+    },
+    {
+      "t": 26.72,
+      "type": "pop"
+    },
+    {
+      "t": 28.25,
+      "type": "pop"
+    },
+    {
+      "t": 29.98,
+      "type": "sparkle"
+    },
+    {
+      "t": 33.3,
+      "type": "sparkle"
+    },
+    {
+      "t": 36.2,
+      "type": "boing_high"
+    }
+  ],
+  "check_times": [
+    2.5,
+    4.0,
+    7.4,
+    9.0,
+    10.5,
+    14.4,
+    16.0,
+    21.4,
+    23.0,
+    24.5,
+    28.4,
+    30.0,
+    31.6,
+    33.6,
+    35.0,
+    36.4,
+    39.0
+  ]
+}
