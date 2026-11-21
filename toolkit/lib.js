@@ -2207,3 +2207,20 @@ function woodBlock(x,y,rot=0,s=1,col='#D9954A'){
   <ellipse cx="22" cy="4" rx="5" ry="3.5" fill="${mix(col,'#000000',.2)}"/>
   <rect x="-30" y="-17" width="22" height="5" rx="2.5" fill="#fff" opacity=".35"/></g>`;
 }
+
+/* ---------- colour sorting bins (episode 109) ---------- */
+// binBack(x,y,col,s) and binFront(x,y,col,word,s): an open plastic toy bin, origin at the middle of its
+// bottom (about 300 wide, 120 tall at s=1). Draw binBack, then things inside it (their bottoms near
+// y-60*s), then binFront: the front hides the lower part of what is inside. word = still text on the
+// front (for example 'red'), in white, or '' for none.
+function binBack(x,y,col='#E63946',s=1){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-150,-120 L150,-120 L140,-132 L-140,-132 Z" fill="${mix(col,'#000000',.35)}"/></g>`;
+}
+function binFront(x,y,col='#E63946',word='',s=1){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-150,-120 L150,-120 L132,-6 Q130,0 122,0 L-122,0 Q-130,0 -132,-6 Z" fill="${col}"/>
+  <rect x="-158" y="-128" width="316" height="20" rx="10" fill="${mix(col,'#ffffff',.25)}"/>
+  <path d="M-122,-92 L-114,-26" stroke="#fff" stroke-width="9" stroke-linecap="round" opacity=".3"/>
+  ${word?`<text y="-36" text-anchor="middle" font-size="54" fill="#fff">${word}</text>`:''}</g>`;
+}
