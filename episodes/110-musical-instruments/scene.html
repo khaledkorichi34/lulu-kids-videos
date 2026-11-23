@@ -1,0 +1,148 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 110 - Musical Instruments with Lulu: first words, four toy instruments.
+   Title, "Let's make music!", then drum (Bunny), xylophone (Frog), triangle (Puppy) and shaker (Pip the
+   kitten): each appears with its name, then is played three times on the beat while Lulu bounces.
+   All four together with their names, then everyone dances: "We made music!" */
+// TIMING-START
+const SC=[0,5,10,17,24,31,38,46,52];
+const DUR=SC[SC.length-1];
+const HITS=[3.4,4.2,5.0];            // the three hits in each instrument scene
+const ALL=[1.6,2.6,3.6,4.6];          // all-together scene: drum, xylophone, triangle, shaker
+// TIMING-END
+const INK='#2D2A6E';
+const NOTE_COL=['#FF5D8F','#3FA9F5','#FF9F1C','#7B5CFF','#5CC85A'];
+
+function lastHit(lt,hits){let h=-1;for(const x of hits)if(lt>=x)h=x;return h<0?99:lt-h;}
+// how far the stick is lifted: 1 at rest, 0 at the moment of a hit
+function lift(lt,hits){let d=9;for(const x of hits)d=Math.min(d,Math.abs(lt-x));return clamp(d/.3);}
+// rising music notes from (x,y) after each hit
+function notes(lt,hits,x,y){
+  let s='';hits.forEach((h,k)=>{const q=lt-h;if(q>0&&q<1.4){const u=q/1.4;
+    s+=musicNote(x+(k-1)*55+18*Math.sin(q*4),y-30-110*u,.9,NOTE_COL[k%5],Math.sin(Math.PI*u));}});
+  return s;
+}
+// a stick from the paw (px,py) to its tip (tx,ty); kind = 'drum' | 'mallet' | 'beater'
+function held(kind,px,py,tx,ty){
+  const col=kind==='beater'?'#B9C4D3':'#C98545', w=kind==='beater'?7:9;
+  let s=`<line x1="${px}" y1="${py}" x2="${tx}" y2="${ty}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`;
+  if(kind==='drum')s+=`<circle cx="${tx}" cy="${ty}" r="11" fill="#FFF3D6"/><circle cx="${tx-3}" cy="${ty-3}" r="3.5" fill="#fff"/>`;
+  else if(kind==='mallet')s+=`<circle cx="${tx}" cy="${ty}" r="15" fill="#FF5D8F"/><circle cx="${tx-5}" cy="${ty-5}" r="5" fill="#fff" opacity=".5"/>`;
+  else s+=`<line x1="${px}" y1="${py}" x2="${lerp(px,tx,.3)}" y2="${lerp(py,ty,.3)}" stroke="#E63946" stroke-width="12" stroke-linecap="round"/>`;
+  return s;
+}
+function lulu(x,lt,t,jt,s=.75,cheer=false){
+  const j=jumps(lt,jt,.5,16);
+  return shadow(x,522,56*s/.8,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:cheer?28*Math.abs(Math.sin(lt*10)):0}),{s,sx:j.sx,sy:j.sy});
+}
+function friend(kind,x,lt,t,jt,s=.8){
+  const j=jumps(lt,jt,.5,12);
+  let c;
+  if(kind==='bunny')c=bunny({eye:blink(t,.7)});
+  else if(kind==='frog')c=frog({eye:blink(t,1.3)});
+  else if(kind==='puppy')c=puppy({eye:blink(t,.4),tail:Math.sin(t*6)});
+  else c=kitten({eye:blink(t,2.1),tail:Math.sin(t*2)});
+  return shadow(x,522,60*s/.8,-j.y)+place(x,520+j.y,c,{s,sx:j.sx,sy:j.sy,flip:kind==='puppy'});
+}
+// the four instrument scenes
+const INST=[
+  {name:'drum',     who:'bunny', say:'This is a drum.',      sound:'Boom, boom, boom!',  col:'#E63946'},
+  {name:'xylophone',who:'frog',  say:'This is a xylophone.', sound:'Ding, dong, ding!',  col:'#2F80ED'},
+  {name:'triangle', who:'puppy', say:'This is a triangle.',  sound:'Ting, ting, ting!',  col:'#7B5CFF'},
+  {name:'shaker',   who:'kitten',say:'This is a shaker.',    sound:'Shake, shake, shake!',col:'#FF8A00'},
+];
+const FX=870;  // friend x
+function instScene(n,lt,t){
+  const I=INST[n], g=back(prog(lt,.3,.7)), ht=lastHit(lt,HITS), up=lift(lt,HITS), playing=lt>HITS[0]-.6;
+  let props='',chars='',front='';
+  if(n===0){ // drum
+    props=g>0?drum(640,520,1.1*g,ht):'';
+    chars=friend('bunny',FX,lt,t,[]);
+    if(g>=1)front=held('drum',FX-46,428,690+28*up,392-70*up);
+    props+=notes(lt,HITS,640,380);
+  }else if(n===1){ // xylophone, bars 5, 1, 4
+    props=g>0?xylophone(600,520,g,[-1,5,4,5][HITS.filter(h=>lt>=h).length],ht):'';
+    const bars=[5,4,5], k=bars[Math.min(2,HITS.filter(h=>lt>=h-.3).length)];
+    chars=friend('frog',FX,lt,t,[]);
+    if(g>=1)front=held('mallet',FX-50,436,600+(-125+k*50)+10*up,442-60*up);
+    props+=notes(lt,HITS,600,380);
+  }else if(n===2){ // triangle
+    const yy=back(prog(lt,.3,.7));
+    props=yy>0?`<g opacity="${clamp(yy)}">${triangleStand(640,520,290,ht)}</g>`:'';
+    chars=friend('puppy',FX,lt,t,[]);
+    if(g>=1)front=held('beater',FX-70,440,692+60*up,396-10*up);
+    props+=notes(lt,HITS,420,380);
+    if(ht<.6)props+=sparkle(560,360,.7,1-ht/.6)+sparkle(720,330,.6,1-ht/.6);
+  }else{ // shaker, held by Pip
+    const sh=playing&&lt<HITS[2]+.5?Math.sin((lt-HITS[0]+.6)*Math.PI/.4)*22:0;
+    chars=friend('kitten',FX-140,lt,t,HITS);
+    if(g>0)front=shaker(FX-140-70,450+(playing?-8*Math.abs(Math.sin(lt*8)):0),1.05*g,-20+sh);
+    props+=notes(lt,HITS,FX-330,400);
+  }
+  chars=lulu(260,lt,t,playing?HITS.map(h=>h+.05):[1.0],.75,playing)+chars;
+  const pops=pop(I.name,640,150,104,I.col,lt,.5);
+  const cap=lt<HITS[0]-.6?caption(I.say,lt,.3):caption(I.sound,lt,HITS[0]-.6);
+  return [props,chars+front,pops,cap];
+}
+
+// all four together, smaller, each played once in turn
+function together(lt,t){
+  const sc=back(prog(lt,.2,.6));
+  const hd=lastHit(lt,[ALL[0]]), hx=lastHit(lt,[ALL[1]]), htr=lastHit(lt,[ALL[2]]), hs=lt-ALL[3];
+  let s=drum(200,520,.8*sc,hd)+xylophone(480,520,.7*sc,hx<1?3:-1,hx);
+  if(sc>.05)s+=`<g opacity="${clamp(sc)}">${triangleStand(800,520,330,htr)}</g>`;
+  const sh=hs>0&&hs<.9?Math.sin(hs*Math.PI/.3)*20:0;
+  s+=shaker(1080,520,.9*sc,sh);
+  [[200,350],[480,370],[800,300],[1080,320]].forEach(([x,y],k)=>{const q=lt-ALL[k];if(q>0&&q<.7)s+=sparkle(x-70,y,.6,1-q/.7)+sparkle(x+70,y+20,.5,1-q/.7);});
+  let pops=pop('All together!',640,130,90,INK,lt,.3,-2);
+  const X=[200,480,800,1080];
+  INST.forEach((I,k)=>{pops+=pop(I.name,X[k],260,50,I.col,lt,ALL[k]-.3);});
+  return [s,'',pops,caption('Let’s play together!',lt,.3)];
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={noSun:true,noClouds:true};
+  if(i===0){
+    props=notes(lt,[1.0,1.8,2.6],640,330);
+    chars=lulu(640,lt,t,[1.6,2.6],.85,true);
+    pops=pop('Musical Instruments',640,128,80,INK,lt,.3)+pop(`<tspan fill="${INK}">with </tspan>`+LULU,640,240,96,INK,lt,.8,-3);
+  }else if(i===1){
+    props=notes(lt,[1.2,2.0,2.8,3.6],640,330);
+    chars=lulu(640,lt,t,[1.2,2.0,2.8,3.6],.85,lt>1);
+    pops=pop('Music time!',640,150,100,'#FF5D8F',lt,.4,-2);
+    cap=caption('Let’s make music!',lt,.3);
+  }else if(i<6){
+    [props,chars,pops,cap]=instScene(i-2,lt,t);
+  }else if(i===6){
+    [props,chars,pops,cap]=together(lt,t);
+  }else{
+    props='';[255,510,770,1020].forEach((x,k)=>{for(let r=0;r<3;r++){const q=lt-(1.0+k*.35+r*1.5);if(q>0&&q<1.5){const u=q/1.5;props+=musicNote(x,420-190*u,.9,NOTE_COL[(k+r)%5],Math.sin(Math.PI*u));}}});
+    const J=[.8,1.6,2.4,3.2,4.0];
+    chars=friend('bunny',165,lt,t,J.map(x=>x+.2),.7)+friend('frog',380,lt,t,J.map(x=>x+.4),.7)
+         +lulu(640,lt,t,J,.8,true)+friend('puppy',900,lt,t,J.map(x=>x+.2),.7)+friend('kitten',1140,lt,t,J.map(x=>x+.4),.7);
+    pops=pop('Well done!',640,140,110,'#FF9F1C',lt,.3,-3);
+    cap=caption('We made music!',lt,.6);
+  }
+  svg.innerHTML=bg(t,0,'',o)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(1150,80,1.0,.95)+cloud(140,70,.8,.9);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=drum(210,690,1.05)+xylophone(1030,690,.85);
+  s+=musicNote(420,420,1.3,'#FF5D8F')+musicNote(860,400,1.3,'#7B5CFF')+musicNote(1010,450,1,'#FF9F1C');
+  s+=shadow(640,662,80)+place(640,658,duck({wing:22}),{s:1.25});
+  s+=label('Musical Instruments',640,150,86,INK,-2)+label(`<tspan fill="${INK}">with </tspan>`+LULU,640,268,96,INK,2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

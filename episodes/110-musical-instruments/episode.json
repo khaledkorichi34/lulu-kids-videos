@@ -1,0 +1,131 @@
+{
+  "number": 110,
+  "slug": "musical-instruments",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "Musical Instruments with Lulu | Learning Video for Kids",
+  "description": "Lulu and her friends play four toy instruments: a drum, a xylophone, a triangle and a shaker.\nLearn each name and hear how it sounds, then they all play together.\n\nA short, gentle first-words video for children aged 3 to 6.",
+  "duration": 52,
+  "seed": 110,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.8,
+      "type": "sparkle"
+    },
+    {
+      "t": 10.45,
+      "type": "pop"
+    },
+    {
+      "t": 13.4,
+      "type": "boing_low"
+    },
+    {
+      "t": 14.2,
+      "type": "boing_low"
+    },
+    {
+      "t": 15.0,
+      "type": "boing_low"
+    },
+    {
+      "t": 17.45,
+      "type": "pop"
+    },
+    {
+      "t": 20.4,
+      "type": "ding"
+    },
+    {
+      "t": 21.2,
+      "type": "ding"
+    },
+    {
+      "t": 22.0,
+      "type": "ding"
+    },
+    {
+      "t": 24.45,
+      "type": "pop"
+    },
+    {
+      "t": 27.4,
+      "type": "ding"
+    },
+    {
+      "t": 28.2,
+      "type": "ding"
+    },
+    {
+      "t": 29.0,
+      "type": "ding"
+    },
+    {
+      "t": 31.45,
+      "type": "pop"
+    },
+    {
+      "t": 34.4,
+      "type": "sparkle"
+    },
+    {
+      "t": 35.2,
+      "type": "sparkle"
+    },
+    {
+      "t": 36.0,
+      "type": "sparkle"
+    },
+    {
+      "t": 39.6,
+      "type": "boing_low"
+    },
+    {
+      "t": 40.6,
+      "type": "ding"
+    },
+    {
+      "t": 41.6,
+      "type": "ding"
+    },
+    {
+      "t": 42.6,
+      "type": "sparkle"
+    },
+    {
+      "t": 46.4,
+      "type": "sparkle"
+    }
+  ],
+  "check_times": [
+    2.5,
+    4.5,
+    7,
+    9.5,
+    11,
+    13.5,
+    14.4,
+    15.2,
+    18,
+    20.5,
+    21.4,
+    22.2,
+    25,
+    27.5,
+    28.4,
+    29.2,
+    32,
+    34.5,
+    35.4,
+    36.2,
+    39.6,
+    40.6,
+    41.6,
+    42.6,
+    44.5,
+    47,
+    48.4,
+    50.5
+  ]
+}

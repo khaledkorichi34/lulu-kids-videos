@@ -2224,3 +2224,52 @@ function binFront(x,y,col='#E63946',word='',s=1){
   <path d="M-122,-92 L-114,-26" stroke="#fff" stroke-width="9" stroke-linecap="round" opacity=".3"/>
   ${word?`<text y="-36" text-anchor="middle" font-size="54" fill="#fff">${word}</text>`:''}</g>`;
 }
+
+/* ---------- music instruments (episode 110) ---------- */
+// drum(x,y,s,ht): red toy drum standing on the ground, origin at the middle of its bottom (about 180 wide
+// and 135 tall at s=1). ht = time since it was hit (seconds, or a big number for still): the skin wobbles
+// and two soft rings spread out. drumStick(x,y,s,rot): stick whose round cream tip is at (x,y), the stick
+// runs 100 down from it (rot turns it about the tip).
+function drum(x,y,s=1,ht=9){
+  const w=ht<1?Math.exp(-ht*6)*Math.cos(ht*28):0, k=Math.max(0,1-ht/.6);
+  let cords='';for(let i=0;i<5;i++){const a=-75+i*30;cords+=`M${a},-112 L${a+15},-18 L${a+30},-112 `;}
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  ${k>0?`<ellipse cx="0" cy="-122" rx="${84+60*(1-k)}" ry="${24+16*(1-k)}" fill="none" stroke="#fff" stroke-width="5" opacity="${k*.7}"/>`:''}
+  <path d="M-82,-118 L82,-118 L82,-14 Q82,0 0,0 Q-82,0 -82,-14 Z" fill="#FF5D5D"/>
+  <path d="${cords}" stroke="#FFF3D6" stroke-width="5" fill="none" stroke-linejoin="round"/>
+  <rect x="-86" y="-24" width="172" height="16" rx="8" fill="#3FA9F5"/>
+  <rect x="-86" y="-124" width="172" height="16" rx="8" fill="#3FA9F5"/>
+  <ellipse cx="0" cy="${-124-4*w}" rx="80" ry="${22+4*w}" fill="#FFF3D6"/>
+  <ellipse cx="-24" cy="${-128-4*w}" rx="26" ry="6" fill="#fff" opacity=".7"/>
+  <rect x="-70" y="-100" width="10" height="60" rx="5" fill="#fff" opacity=".25"/></g>`;
+}
+function drumStick(x,y,s=1,rot=0){
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})"><rect x="-4.5" y="0" width="9" height="100" rx="4.5" fill="#C98545"/><circle r="11" fill="#FFF3D6"/><circle cx="-3" cy="-3" r="3.5" fill="#fff"/></g>`;
+}
+// triangleStand(x,y,top,ht): a little wooden stand (post on the left at x-100, arm along y=top) with a
+// silver music triangle hanging from a red string at x (about 125 wide, its bottom at top+150).
+// ht = time since it was struck: it swings a little. triangleBeater(x,y,s,rot): thin silver
+// rod with its end at (x,y), running 90 down from it.
+function triangleStand(x,y,top=300,ht=9){
+  const sw=ht<2?6*Math.exp(-ht*2.5)*Math.sin(ht*9):0;
+  return `<rect x="${x-108}" y="${top-10}" width="16" height="${y-top+10}" rx="6" fill="#A8672E"/>
+  <rect x="${x-130}" y="${y-14}" width="60" height="14" rx="7" fill="#8A5224"/>
+  <rect x="${x-110}" y="${top-12}" width="130" height="14" rx="7" fill="#C98545"/>
+  <g transform="translate(${x},${top}) rotate(${sw})">
+  <line x1="0" y1="0" x2="0" y2="30" stroke="#E63946" stroke-width="4"/>
+  <path d="M8,40 L66,146 L-66,146 L-6,42" stroke="#B9C4D3" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M10,48 L56,132" stroke="#fff" stroke-width="3" opacity=".8" stroke-linecap="round"/></g>`;
+}
+function triangleBeater(x,y,s=1,rot=0){
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})"><rect x="-3.5" y="0" width="7" height="90" rx="3.5" fill="#B9C4D3"/><rect x="-6" y="60" width="12" height="34" rx="6" fill="#E63946"/></g>`;
+}
+// shaker(x,y,s,rot): a round toy shaker on a short handle, origin at the bottom of the handle (about 70
+// wide and 150 tall at s=1). rot turns it about the bottom of the handle.
+function shaker(x,y,s=1,rot=0){
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})">
+  <rect x="-8" y="-70" width="16" height="70" rx="8" fill="#C98545"/>
+  <ellipse cx="0" cy="-108" rx="34" ry="42" fill="#FF9F1C"/>
+  <path d="M-33,-100 Q0,-84 33,-100" stroke="#FFD93B" stroke-width="9" fill="none"/>
+  <circle cx="-12" cy="-126" r="5" fill="#FFD93B"/><circle cx="10" cy="-132" r="5" fill="#FFD93B"/><circle cx="16" cy="-114" r="5" fill="#FFD93B"/>
+  <ellipse cx="-16" cy="-124" rx="7" ry="12" fill="#fff" opacity=".35"/></g>`;
+}
