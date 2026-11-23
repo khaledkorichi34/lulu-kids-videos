@@ -1,0 +1,138 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 112 - Lulu and the Little Duckling. Peep, peep! A little duckling walks up to Lulu:
+   she cannot find her mummy. Don't worry, I can help! Shh... listen: Quack! Quack!
+   Mummy Duck walks in with two more ducklings. The little duckling runs to her: Mummy!
+   Thank you, Lulu! The sun goes down, and everyone sleeps by the tree. Good night. */
+const DUR=58, SC=[0,5,11,17,24,31,38,45,51,58];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', GOLD='#FFE58A', ORANGE='#FF9F1C', TEAL='#19B8A6';
+const LX=640, DX=400, MX=1010, D2=[1140,1225], DHOME=860;   // Lulu, the little duckling, Mummy Duck, her two ducklings
+const scenery=(t,n)=>tree(140,520,1)
+  +flower(300,548,90,'#FF7FB0',t,0,.5)+flower(350,560,90,'#FFFFFF',t,1,.4)
+  +flower(560,580,90,'#B58CFF',t,3,.42)+flower(1230,590,90,'#FFD23F',t,2,.5,'#FF8C1A');
+const lulu=(x,lt,t,o={})=>{
+  const j=jumps(lt,o.hops||[],.6,o.h||16), w=o.wave?20+20*Math.sin(lt*9):(o.wing||0), st=o.walk?Math.abs(Math.sin(lt*7))*5:0;
+  return shadow(x,522,60,-j.y)+place(x,520+j.y-st,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),
+    {s:1,sx:j.sx,sy:j.sy*(o.sy||1),flip:o.flip,rot:o.walk?3*Math.sin(lt*7):0});
+};
+const MUM={body:'#FFFFFF',belly:'#EEF2F7',wingCol:'#DCE3EC'};
+const mum=(x,lt,t,o={})=>{
+  const st=o.walk?Math.abs(Math.sin(lt*6))*6:0, w=o.wave?20+20*Math.sin(lt*9):(o.wing||0);
+  return shadow(x,522,70)+place(x,520-st,duck(Object.assign({eye:o.eye!=null?o.eye:blink(t,1.1),wing:w,asleep:o.asleep},MUM)),
+    {s:1.15,sy:o.sy||1,rot:o.walk?3*Math.sin(lt*6):0,flip:o.flip});
+};
+const duckling=(x,lt,t,k,o={})=>{
+  const j=jumps(lt,o.hops||[],.4,o.h||18), st=o.walk?Math.abs(Math.sin(lt*9+k))*5:0, w=o.wave?20+20*Math.sin(lt*10):0;
+  const dy=o.dy||0;
+  return shadow(x,522+dy,28,-j.y)+place(x,520+dy+j.y-st,duck({eye:o.eye!=null?o.eye:blink(t,.5+k*.7),wing:w,asleep:o.asleep}),
+    {s:.45,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.walk?5*Math.sin(lt*9+k):(o.rot||0),flip:o.flip});
+};
+const hearts=(lt,t0,x,y)=>{let s='';for(let k=0;k<4;k++){const q=lt-t0-k*.5;if(q>0&&q<2.4){const u=q/2.4;
+  s+=heart(x+k*40+10*Math.sin(q*4+k),y-90*u,1,[PINK,ORANGE,PURPLE][k%3],Math.sin(Math.PI*u));}}return s;};
+// little sound words that float up one after another, left and right of x
+const notes=(lt,t0,x,y,txt,col,count=2)=>{let s='';for(let k=0;k<count;k++){const q=lt-t0-k*.9;if(q>0&&q<1.6){const u=q/1.6;
+  s+=`<text x="${(x+(k%2?70:-70)).toFixed(1)}" y="${(y+(k%2?40:0)-60*u).toFixed(1)}" font-size="34" fill="${col}" stroke="#fff" stroke-width="6" paint-order="stroke" text-anchor="middle" opacity="${Math.sin(Math.PI*u).toFixed(2)}">${txt}</text>`;}}return s;};
+const zzz=(lt,x,y,t0=2)=>{let s='';for(let k=0;k<3;k++){let q=lt-t0-k*.9;if(q>0){q%=2.7;
+  s+=`<text x="${(x+q*24+8*Math.sin(q*3)).toFixed(1)}" y="${(y-q*30).toFixed(1)}" font-size="${(28+q*11).toFixed(1)}" fill="#fff" opacity="${(Math.sin(Math.PI*q/2.7)*.95).toFixed(2)}">z</text>`;}}return s;};
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,chars='',fx='',pops='',cap='',behind='',noSun=false,noMoon=true;
+  switch(i){
+  case 0:{
+    // title: Lulu on a sunny day under her tree
+    chars=lulu(LX,lt,t,{hops:[2.6],h:16,wave:lt>1.2&&lt<2.4});
+    pops=pop(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,640,115,72,PINK,lt,.4,-2)
+        +pop(`<tspan fill="${ORANGE}">Little Duckling</tspan>`,640,198,80,ORANGE,lt,.9,-2);
+    break;}
+  case 1:{
+    // peep, peep! a little duckling walks in from the left
+    const u=eio(prog(lt,.3,3.4)), x=lerp(-80,DX,u);
+    chars=lulu(LX,lt,t,{flip:lt>2.2,hops:[4.0],h:14})+duckling(x,lt,t,0,{walk:lt<3.4});
+    fx=notes(lt,.4,Math.max(x,90),420,'peep',ORANGE,4);
+    cap=lt<3.4?caption('Peep! Peep! Who is that?',lt,.3):caption('A little duckling!',lt,3.6);
+    pops=pop('Peep! Peep!',640,165,100,ORANGE,lt,.5,-3);
+    break;}
+  case 2:{
+    // the duckling looks this way and that way: where is my mummy?
+    const look=lt>.6&&lt<3.4?(Math.floor((lt-.6)/.7)%2===1):false;
+    chars=lulu(LX,lt,t,{flip:true,wave:lt>3.6&&lt<4.8})+duckling(DX,lt,t,0,{flip:look});
+    cap=lt<3.4?caption('Where is my mummy?',lt,.3):caption('Hello, little duckling!',lt,3.6);
+    pops=lt<3.4?pop('Peep?',640,165,100,ORANGE,lt,.5,-3):pop('Hello!',640,165,104,PINK,lt,3.8,-3);
+    break;}
+  case 3:{
+    // don't worry, I can help! let's find your mummy
+    chars=lulu(LX,lt,t,{flip:true,hops:[.8],h:16,wave:lt>3.6&&lt<4.8})+duckling(DX,lt,t,0,{hops:[4.2,4.9],h:16});
+    fx=hearts(lt,1.0,DX+40,400);
+    cap=lt<3.4?caption("Don't worry. I can help!",lt,.3):caption("Let's find your mummy!",lt,3.6);
+    pops=pop('I can help!',640,165,100,TEAL,lt,.6,-3);
+    break;}
+  case 4:{
+    // shh... listen! Quack! Quack! from far away
+    chars=lulu(LX,lt,t,{wave:lt>.4&&lt<1.4,eye:lt>.6&&lt<3.0?.15:blink(t,0)})+duckling(DX,lt,t,0,{hops:lt>3.6?[4.0]:[],h:14});
+    fx=notes(lt,3.4,1120,430,'quack',PURPLE,3);
+    cap=lt<3.4?caption('Shh... listen!',lt,.3):caption('Quack! Quack! Who is that?',lt,3.6);
+    pops=lt<3.4?pop('Shh!',640,165,104,PURPLE,lt,.5,-3):pop('Quack! Quack!',640,165,100,PURPLE,lt,3.5,-3);
+    break;}
+  case 5:{
+    // Mummy Duck walks in with two more ducklings; the little duckling runs to her
+    const u=eio(prog(lt,.2,3.0)), mx=lerp(1420,MX,u);
+    const v=eio(prog(lt,3.4,5.4)), dx=lerp(DX,DHOME,v);
+    chars=lulu(LX,lt,t)+mum(mx,lt,t,{flip:true,walk:lt<3.0})
+      +duckling(lerp(1540,D2[0],u),lt,t,1,{flip:true,walk:lt<3.0})+duckling(lerp(1640,D2[1],u),lt,t,2,{flip:true,walk:lt<3.0})
+      +duckling(dx,lt,t,0,{walk:lt>3.4&&lt<5.4,hops:[5.6],h:18,dy:34*Math.sin(Math.PI*v)});
+    cap=lt<3.4?caption('It is Mummy Duck!',lt,.3):caption('Mummy! Mummy!',lt,3.6);
+    pops=lt<3.4?pop('Quack!',640,165,104,PURPLE,lt,.6,-3):pop('Peep! Peep!',640,165,100,ORANGE,lt,3.6,-3);
+    break;}
+  case 6:{
+    // together again: thank you, Lulu!
+    chars=lulu(LX,lt,t,{hops:[3.6,4.3],h:16})+mum(MX,lt,t,{flip:true,wave:lt>3.4&&lt<5.0})
+      +duckling(D2[0],lt,t,1,{flip:true,hops:[4.0],h:16})+duckling(D2[1],lt,t,2,{flip:true,hops:[4.3],h:16})
+      +duckling(DHOME,lt,t,0,{flip:lt<3.2,hops:[1.0,1.7],h:16});
+    fx=hearts(lt,.6,690,320);
+    cap=lt<3.2?caption('Together again!',lt,.3):caption('Thank you, Lulu!',lt,3.4);
+    pops=pop('Hooray!',640,165,104,PINK,lt,.6,-3);
+    break;}
+  case 7:{
+    // the sun goes down: time to sleep, little ones
+    const u=eio(prog(lt,.2,5.0)); n=lerp(0,.7,u); noSun=true; noMoon=true;
+    behind=sun(t,1170,lerp(100,600,u));
+    chars=lulu(LX,lt,t,{wave:lt>.5&&lt<1.6})+mum(MX,lt,t,{flip:true})
+      +duckling(D2[0],lt,t,1,{flip:true})+duckling(D2[1],lt,t,2,{flip:true})+duckling(DHOME,lt,t,0,{flip:true});
+    cap=lt<3.0?caption('The sun goes down.',lt,.3):caption('Time to sleep, little ones.',lt,3.0);
+    pops=pop('Yawn!',640,165,100,GOLD,lt,3.4,-3,NAVY);
+    break;}
+  case 8:{
+    // everyone sleeps by the tree under the moon
+    n=lerp(.7,1,eio(prog(lt,0,4))); noSun=true; noMoon=false;
+    const asleep=lt>1.0, br=1+.025*Math.sin(lt*2.2);
+    chars=lulu(LX,lt,t,{asleep,eye:.45,sy:br})+mum(MX,lt,t,{flip:true,asleep,eye:.45,sy:br})
+      +duckling(D2[0]-40,lt,t,1,{flip:true,asleep,eye:.45,sy:br})+duckling(D2[1]-30,lt,t,2,{flip:true,asleep,eye:.45,sy:br})
+      +duckling(DHOME+20,lt,t,0,{flip:true,asleep,eye:.45,sy:br});
+    pops=zzz(lt,660,330,2.0);
+    cap=caption('Good night, little ducklings.',lt,.5);
+    pops+=pop('The End',640,150,112,GOLD,lt,3.6,-3,NAVY);
+    break;}
+  }
+  svg.innerHTML=bg(t,n,behind,{noSun:noSun,noFlowers:true,noMoon,noClouds:true})+scenery(t,n)+fx+chars+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  const t=1.2;
+  let s=bg(t,0,'',{noFlowers:true,noClouds:true,noSun:true})+scenery(t,0);
+  s+=shadow(470,522,60)+place(470,520,duck({eye:1,wing:20}),{s:1});
+  s+=shadow(660,522,28)+place(660,520,duck({eye:1,wing:20}),{s:.45});
+  s+=shadow(1000,522,70)+place(1000,520,duck(Object.assign({eye:1,wing:20},MUM)),{s:1.15,flip:true});
+  s+=heart(560,360,1.3,PINK,1)+heart(780,330,1.1,ORANGE,1);
+  s+=label(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,640,120,92,PINK,-2);
+  s+=label(`<tspan fill="${ORANGE}">Little Duckling</tspan>`,640,235,100,ORANGE,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
