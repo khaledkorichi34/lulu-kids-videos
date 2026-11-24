@@ -2273,3 +2273,35 @@ function shaker(x,y,s=1,rot=0){
   <circle cx="-12" cy="-126" r="5" fill="#FFD93B"/><circle cx="10" cy="-132" r="5" fill="#FFD93B"/><circle cx="16" cy="-114" r="5" fill="#FFD93B"/>
   <ellipse cx="-16" cy="-124" rx="7" ry="12" fill="#fff" opacity=".35"/></g>`;
 }
+
+/* ---------- seaside (episode 113) ---------- */
+// crab({eye, claw, step}): little round red crab seen from the front, origin at its feet (about 190 wide
+// with claws and 120 tall at s=1). Eyes on two short stalks. claw = 0..1 claws open and wave up a little,
+// step = walking phase in radians (legs shuffle).
+function crab(o={}){
+  const e=o.eye==null?1:o.eye, c=clamp(o.claw||0), st=o.step||0, R='#F2554A', D='#D63C33';
+  const leg=(sx,k)=>{const w=5*Math.sin(st+k*1.3);return `<path d="M${sx*40},${-30+k*10} Q${sx*(66+k*4)},${-40+k*8+w} ${sx*(74+k*6)},${-2+w*.4}" stroke="${D}" stroke-width="9" fill="none" stroke-linecap="round"/>`;};
+  const claw=sx=>{const a=sx*(-10-22*c);return `<g transform="translate(${sx*58},-58) rotate(${a})">
+    <path d="M0,0 Q${sx*14},-26 ${sx*22},-44" stroke="${R}" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <g transform="translate(${sx*24},-58)"><ellipse rx="20" ry="17" fill="${R}"/>
+    <path d="M${sx*-2},-6 L${sx*6},-24 L${sx*16},-12 Z" fill="${R}" transform="rotate(${sx*-22*c})"/>
+    <path d="M${sx*-4},-4 L${sx*10},-20" stroke="${D}" stroke-width="3.5" stroke-linecap="round"/></g></g>`;};
+  const eye=x=>`<path d="M${x},-82 L${x},-108" stroke="${R}" stroke-width="8" stroke-linecap="round"/>
+    <g transform="translate(${x},-114)"><circle r="13" fill="#fff"/><g transform="scale(1,${e})"><circle cy="1" r="7.5" fill="#2b1d12"/><circle cx="2.4" cy="-1.6" r="2.6" fill="#fff"/></g></g>`;
+  return `${[0,1,2].map(k=>leg(-1,k)+leg(1,k)).join('')}${claw(-1)}${claw(1)}${eye(-20)}${eye(20)}
+  <ellipse cx="0" cy="-48" rx="58" ry="40" fill="${R}"/>
+  <ellipse cx="-18" cy="-66" rx="16" ry="8" fill="#fff" opacity=".3" transform="rotate(-20 -18 -66)"/>
+  <circle cx="-32" cy="-40" r="8" fill="#FF9AA2" opacity=".85"/><circle cx="32" cy="-40" r="8" fill="#FF9AA2" opacity=".85"/>
+  <path d="M-12,-36 Q0,-26 12,-36" stroke="#7a1d18" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+}
+// seashell(x,y,s,col,rot): fan-shaped scallop shell standing on the sand, origin at the middle of its
+// bottom (about 120 wide and 110 tall at s=1). col = main colour (default soft pink).
+function seashell(x,y,s=1,col='#FFB4C2',rot=0){
+  let ribs='';for(let k=-2;k<=2;k++){const a=k*.42;ribs+=`<path d="M0,-14 L${(Math.sin(a)*80).toFixed(1)},${(-14-Math.cos(a)*80).toFixed(1)}" stroke="#fff" stroke-width="4.5" opacity=".55" stroke-linecap="round"/>`;}
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})">
+  <ellipse cx="0" cy="-2" rx="56" ry="7" fill="#000" opacity=".12"/>
+  <path d="M-14,-4 L-26,-24 L26,-24 L14,-4 Z" fill="${col}"/>
+  <path d="M0,-14 L-60,-58 Q-62,-102 -26,-106 Q0,-116 26,-106 Q62,-102 60,-58 Z" fill="${col}"/>
+  ${ribs}
+  <path d="M-60,-58 Q-30,-52 0,-14 Q30,-52 60,-58" fill="none" stroke="#000" stroke-width="3" opacity=".06"/></g>`;
+}

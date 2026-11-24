@@ -1,0 +1,112 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 113 - Count with Lulu Under the Sea: 1 to 5.  Title, one scene per number, finale.
+   1 turtle, 2 starfish, 3 fish, 4 shells, 5 crabs. Under the water (underwater() background, no sun),
+   no loose bubbles in the counting scenes except the tiny ones from Lulu's beak (nothing extra to count). */
+const T0=.9, STEP=.7;
+const tcOf=N=>T0+(N-1)*STEP+1.0;
+const SC=[0,5];
+for(let N=1;N<=5;N++)SC.push(+(SC[SC.length-1]+tcOf(N)+3.0).toFixed(2));
+SC.push(+(SC[SC.length-1]+7.5).toFixed(2));
+const DUR=SC[SC.length-1];
+const NAVY='#2D2A6E';
+const COL=['#FF5D8F','#FF9F1C','#19B8A6','#7B5CFF','#3FA9F5'];
+const NAMES=['1 turtle','2 starfish','3 fish','4 shells','5 crabs'];
+const STAR_COL=['#FF9F1C','#FF7FB0'];
+const FISH_COL=['#FF9F1C','#FFD93B','#FF7FB0'];
+const SHELL_COL=['#FFB4C2','#FFD6A5','#D9C2FF','#FFE58A'];
+const SAND=598;
+
+function badge(x,y,k,col,lt,t0){
+  const u=prog(lt,t0+.1,t0+.4);if(u<=0)return '';
+  return `<g transform="translate(${x},${y}) scale(${back(u)})"><circle r="27" fill="#fff" stroke="${col}" stroke-width="5"/><text y="12" text-anchor="middle" font-size="36" fill="${NAVY}">${k+1}</text></g>`;
+}
+function hearts(lt,t0){
+  let s='';
+  for(let k=0;k<9;k++){const q=lt-(t0+k*.4);if(q>0){const y=610-q*120,x=110+k*132+25*Math.sin(q*2+k),o=clamp((y-50)/140)*clamp(q*3)*.9;
+    if(y>40)s+=heart(x,y,1+(k%3)*.25,['#FF5D8F','#FF9F1C','#FFFFFF'][k%3],o);}}
+  return s;
+}
+// three tiny bubbles rising from Lulu's beak
+function beakBubbles(x,y,t,s){
+  let b='';
+  for(let k=0;k<3;k++){const q=((t*.5+k/3)%1);b+=bubble(x+88*s+6*Math.sin(q*8+k),y-104*s-q*70,3+q*4,(1-q)*.8);}
+  return b;
+}
+function lulu(x,lt,t,hops,h,s,wave){
+  const j=jumps(lt,hops,.6,h);
+  return shadow(x,SAND+2,56*s/.95,-j.y)+place(x,SAND+j.y,duck({eye:blink(t,0),wing:wave?25+25*Math.sin(lt*10):0}),{s,sx:j.sx,sy:j.sy})+(j.y===0?beakBubbles(x,SAND,t,s):'');
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='';
+  if(i===0){
+    chars=lulu(640,lt,t,[1.6,2.6],30,1.1,true);
+    chars+=place(300,380+8*Math.sin(t*2),fish({eye:blink(t,1),col:'#FF9F1C',tail:Math.sin(t*7)}),{s:.8});
+    chars+=place(990,420+8*Math.sin(t*2+1),fish({eye:blink(t,2),col:'#FF7FB0',tail:Math.sin(t*7+1)}),{s:.7,flip:true});
+    pops=pop('Count Under the Sea',640,128,80,NAVY,lt,.3)+pop('with '+LULU,640,250,110,NAVY,lt,.7,-3);
+    for(let k=0;k<5;k++)pops+=pop(String(k+1),380+k*130,676,92,COL[k],lt,1.5+k*.3,(k%2?4:-4));
+  }else if(i<=5){
+    const N=i, col=COL[N-1], tc=tcOf(N);
+    const grow=k=>lt>T0+k*STEP?back(prog(lt,T0+k*STEP,T0+k*STEP+.35)):0;
+    const cheer=k=>jumps(lt,[tc+.2+k*.06],.55,30);
+    chars=lulu(220,lt,t,[tc+.2],12,.85,lt>tc);
+    pops=pop(String(N),220,330,290,col,lt,.3,-4);
+    for(let k=0;k<N;k++){
+      const g=grow(k);if(g<=0)continue;
+      const j=cheer(k), tk=T0+k*STEP;
+      if(N===1){
+        const x=760, y=420+10*Math.sin(lt*1.6)+j.y;
+        chars+=place(x,y,turtle({eye:blink(t,.4),step:lt*4}),{s:1.25*g,rot:-4});
+        pops+=badge(x+10,215,k,col,lt,tk);
+      }else if(N===2){
+        const x=[620,900][k];
+        props+=bigStar(x,520+j.y,70*g,STAR_COL[k],8*Math.sin(lt*1.5+k*2),true,blink(t,k*.8));
+        pops+=badge(x,385,k,col,lt,tk);
+      }else if(N===3){
+        const x=[540,770,1000][k], y=[400,310,400][k]+8*Math.sin(t*2+k)+j.y;
+        chars+=place(x,y,fish({eye:blink(t,k*.7),col:FISH_COL[k],tail:Math.sin(t*7+k)}),{s:.95*g});
+        pops+=badge(x,y-95,k,col,lt,tk);
+      }else if(N===4){
+        const x=[500,665,830,995][k];
+        props+=seashell(x,SAND+j.y,.95*g,SHELL_COL[k],(k%2?6:-6));
+        pops+=badge(x,420,k,col,lt,tk);
+      }else{
+        const x=[470,615,760,905,1050][k];
+        chars+=shadow(x,SAND+2,50,-j.y)+place(x,SAND+j.y,crab({eye:blink(t,k*.6),claw:lt>tc?.5+.5*Math.sin(lt*6+k):0,step:lt>tc?0:lt*5}),{s:.68*g,sx:j.sx,sy:j.sy});
+        pops+=badge(x,425,k,col,lt,tk);
+      }
+    }
+    cap=caption(NAMES[N-1],lt,tc-.2);
+  }else{
+    props=hearts(lt,3.2);
+    chars=lulu(640,lt,t,[3.5,4.6,5.7],35,1.1,true);
+    chars+=place(300,430+8*Math.sin(t*2),fish({eye:blink(t,1),col:'#FFD93B',tail:Math.sin(t*7)}),{s:.8});
+    chars+=place(990,430+8*Math.sin(t*2+1),fish({eye:blink(t,2),col:'#FF7FB0',tail:Math.sin(t*7+1)}),{s:.8,flip:true});
+    const X=[180,400,620,840,1080];
+    for(let k=0;k<5;k++)pops+=pop(String(k+1),X[k],215,170,COL[k],lt,.4+k*.5,(k%2?5:-5));
+    cap=caption('Great counting!',lt,3.2);
+  }
+  svg.innerHTML=underwater(t)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${CLIP}</defs>`+underwater(1.2);
+  s+=bigStar(1020,560,62,'#FF9F1C',10,true)+seashell(1150,640,.8,'#FFB4C2',8);
+  s+=place(880,640,crab({claw:.8}),{s:.75});
+  s+=place(1110,350,fish({col:'#FF7FB0',tail:.6}),{s:.9,flip:true});
+  s+=shadow(185,672,95)+place(175,668,duck({wing:22}),{s:1.45});
+  s+=label('1',650,300,220,COL[0],-6)+label('to',800,270,86,NAVY)+label('5',950,300,220,COL[4],4);
+  s+=label('Count with '+LULU,730,430,84,NAVY);
+  s+=label('Under the Sea',730,530,70,'#fff',0,'#1C7FC4',.14);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
