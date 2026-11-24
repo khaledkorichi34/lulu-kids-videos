@@ -2305,3 +2305,43 @@ function seashell(x,y,s=1,col='#FFB4C2',rot=0){
   ${ribs}
   <path d="M-60,-58 Q-30,-52 0,-14 Q30,-52 60,-58" fill="none" stroke="#000" stroke-width="3" opacity=".06"/></g>`;
 }
+
+/* ---------- bath tub and mud (episode 115) ---------- */
+// mudPuddle(x,y,w,rip): flat brown mud puddle on the ground, centred at (x,y), half width w.
+// rip = 0..1 an expanding ring (pass -1 for none). Draw it before the characters.
+function mudPuddle(x,y,w=150,rip=-1){
+  let s=`<ellipse cx="${x}" cy="${y+3}" rx="${w}" ry="${w*.17}" fill="#5E3F24"/>
+  <ellipse cx="${x-w*.03}" cy="${y}" rx="${w*.88}" ry="${w*.12}" fill="#8A6440"/>
+  <ellipse cx="${x-w*.42}" cy="${y-w*.03}" rx="${w*.16}" ry="${w*.022}" fill="#C9A57E" opacity=".7"/>
+  <circle cx="${x+w*.35}" cy="${y-w*.02}" r="${w*.04}" fill="#6E4C2C"/>`;
+  if(rip>=0&&rip<1)s+=`<ellipse cx="${x}" cy="${y}" rx="${w*.15+w*.7*rip}" ry="${(w*.15+w*.7*rip)*.14}" fill="none" stroke="#C9A57E" stroke-width="4" opacity="${(1-rip)*.8}"/>`;
+  return s;
+}
+// mudSplash(x,y,u,s,half): like splash() but brown mud drops. Draw it after the character that lands.
+function mudSplash(x,y,u,s=1,half=80){
+  if(u<=0||u>=1)return '';let r='';
+  const D=[[-1,.15,.75],[-1,.55,1],[-1,1,.6],[1,.15,.7],[1,.55,1],[1,1,.55]];
+  D.forEach(([d,f,h],k)=>{const px=x+d*(half+100*s*f*eout(u)+10*s), py=y-Math.sin(Math.PI*u)*75*s*h, op=clamp((1-u)*2.5);
+    r+=`<circle cx="${px}" cy="${py}" r="${(12-5*u)*s}" fill="#7A5230" opacity="${op}"/>`;});
+  return r;
+}
+// tubBack(x,y,w,n) and tubFront(x,y,w,n): a little round pink bath tub standing on the ground, origin at the
+// middle of its bottom (2*w wide, 80 tall). Draw tubBack, then the character standing inside at (x+..,y),
+// then tubFront, which covers the character's legs and lower body. n = night 0..1 darkens the water a little.
+function tubBack(x,y,w=120,n=0){
+  return `<ellipse cx="${x}" cy="${y-80}" rx="${w}" ry="${w*.2}" fill="#FFC2D4"/>
+  <ellipse cx="${x}" cy="${y-78}" rx="${w*.9}" ry="${w*.15}" fill="${mix('#8FD3FF','#3B5F92',n)}"/>`;
+}
+function tubFront(x,y,w=120,n=0){
+  const ry=w*.15, wx=w*.9;
+  return `<path d="M${x-wx},${y-78} A${wx},${ry} 0 0 0 ${x+wx},${y-78} Z" fill="${mix('#8FD3FF','#3B5F92',n)}" opacity=".85"/>
+  <path d="M${x-w},${y-80} Q${x-w},${y-80+w*.22} ${x},${y-80+w*.22} Q${x+w},${y-80+w*.22} ${x+w},${y-80} L${x+w*.86},${y-10} Q${x+w*.84},${y} ${x+w*.7},${y} L${x-w*.7},${y} Q${x-w*.84},${y} ${x-w*.86},${y-10} Z" fill="#FF8FB1"/>
+  <path d="M${x-w*.93},${y-44} Q${x},${y-30} ${x+w*.93},${y-44}" stroke="#FFFFFF" stroke-width="8" fill="none" opacity=".7" stroke-linecap="round"/>
+  <path d="M${x-w},${y-80} Q${x},${y-80+w*.22+6} ${x+w},${y-80}" stroke="#FFC2D4" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <ellipse cx="${x-w*.55}" cy="${y-58}" rx="${w*.1}" ry="6" fill="#fff" opacity=".45"/>`;
+}
+// foam(x,y,s,o): a little cluster of white soap foam centred at (x,y), opacity o.
+function foam(x,y,s=1,o=1){
+  if(o<=0)return '';
+  return `<g transform="translate(${x},${y}) scale(${s})" opacity="${o}" fill="#fff"><circle cx="-14" cy="2" r="12"/><circle cx="0" cy="-6" r="15"/><circle cx="15" cy="2" r="11"/><circle cx="2" cy="8" r="10"/><circle cx="-4" cy="-10" r="4" fill="#BFE6FF"/></g>`;
+}

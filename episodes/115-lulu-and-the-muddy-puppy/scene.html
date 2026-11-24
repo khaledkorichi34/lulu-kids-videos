@@ -1,0 +1,177 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 115 - Lulu and the Muddy Puppy. Lulu and Puppy play ball; the ball bounces into a mud puddle
+   and Puppy jumps in after it (splash!): Puppy is all muddy. Bath time: Lulu brings a little tub, Puppy
+   hops in, scrub, scrub, bubbles; Puppy hops out and shakes (shake, shake!), all clean, thank you, Lulu.
+   Sunset: a soft blanket, Puppy yawns. Night: Puppy and Lulu fall asleep. */
+const DUR=58, SC=[0,5,11,17,24,31,37,43,50,58];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', ORANGE='#F27A12', TEAL='#19B8A6', GOLD='#FFE58A', BLUE='#3FA9F5', BROWN='#8A5A2B';
+const MX=1090, MP=1110, TX=640, TP=660, PO=880, PX=780, BLX=822;   // Puppy in the mud, mud puddle, tub, Puppy in the tub, Puppy out of the tub, Puppy at night, his blanket
+const TUBDY=-34;   // Puppy stands a little higher in the tub so his body shows
+
+const lulu=(lt,t,o={})=>{
+  const x=o.x, j=jumps(lt,o.hops||[],.6,o.h||26), w=o.wave?20+20*Math.sin(lt*(o.ws||9)):(o.wing||0);
+  return shadow(x,522,60,-j.y)+place(x,520+j.y+(o.bob||0),duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),{s:1,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0,flip:o.flip});
+};
+// mud spots and foam, in the puppy's own coordinates (before the flip)
+const MUD=[[-30,-62,13],[8,-84,10],[-52,-52,8],[-16,-38,7],[-21,-14,8],[43,-16,8],[-39,-20,7],[30,-150,8],[70,-136,6],[34,-112,6]];
+const mudSpots=m=>m<=0?'':`<g opacity="${m}">${MUD.map(([x,y,r],k)=>`<ellipse cx="${x}" cy="${y}" rx="${r*1.25}" ry="${r}" fill="${k%2?'#4A3020':'#5A3A22'}"/>`).join('')}</g>`;
+const foamOn=f=>f<=0?'':foam(54,-162,1,f)+foam(-20,-108,1.1,f)+foam(22,-104,.8,f)+foam(-54,-92,.7,f);
+// Puppy faces left (towards Lulu). yawn = 0..1 how wide his mouth is open, mud / foam = 0..1.
+const pup=(lt,t,o={})=>{
+  const x=o.x, j=o.j||jumps(lt,o.hops||[],.6,o.h||24), yw=o.yawn||0;
+  const mouth=yw>0?`<ellipse cx="94" cy="-92" rx="${7+3*yw}" ry="${3+10*yw}" fill="#5a2a1a"/><ellipse cx="94" cy="${-88+6*yw}" rx="${4+2*yw}" ry="${2+3*yw}" fill="#FF8FA3"/>`:'';
+  return (o.noShadow?'':shadow(x,522,70,-j.y))+place(x,520+j.y+(o.bob||0)+(o.dy||0),puppy({eye:o.eye!=null?o.eye:blink(t,1.6),tail:o.asleep?-3.4:(o.tail!=null?o.tail:Math.sin(t*9)),ear:o.ear||0,asleep:o.asleep})+mudSpots(o.mud||0)+foamOn(o.foam||0)+mouth,{s:.95,sx:j.sx,sy:j.sy*(o.sy||1),rot:o.rot||0,flip:true});
+};
+const hopList=(a,b,step)=>{const r=[];for(let s=a;s<b-.01;s+=step)r.push(s);return r;};
+const walkBob=(w,lt)=>w>0&&w<1?-8*Math.abs(Math.sin(lt*7)):0;
+const sideClouds=(t,n)=>cloud(1000+12*Math.sin(t*.3),250,.6,1-n*.9);
+const zzz=(lt,x,y,t0=2)=>{let s='';for(let k=0;k<3;k++){let q=lt-t0-k*.9;if(q>0){q%=2.7;
+  s+=`<text x="${x+q*24+8*Math.sin(q*3)}" y="${y-q*30}" font-size="${28+q*11}" fill="#fff" opacity="${Math.sin(Math.PI*q/2.7)*.95}">z</text>`;}}return s;};
+const blanket=u=>cosyBlanket(BLX,520,176,96,u,'#8FB8FF','#FFFFFF');
+// soap bubbles floating up from the tub between t0 and t1 (they stay below y=240)
+const bubbles=(lt,t,t0,t1)=>{let s='';for(let k=0;k<9;k++){const q=lt-t0-k*.5;if(q>0&&q<2.6&&t0+k*.5<t1){const u=q/2.6;
+  s+=soapBubble(TX-90+(k*47)%190+12*Math.sin(q*3+k),430-190*u,12+6*(k%3),Math.sin(Math.PI*u),t+k);}}return s;};
+// a smooth hop from (x0, on the ground) to (x1) between a and b, height h
+const hopTo=(lt,a,b,x0,x1,h)=>{const u=prog(lt,a,b);return {x:lerp(x0,x1,eio(u)),y:-h*4*u*(1-u)};};
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',pops='',cap='',o={},behind='',front='';
+  switch(i){
+  case 0:{
+    // title: Lulu waves, Puppy hops
+    props=tree(150,520,.8);
+    chars=lulu(lt,t,{x:420,hops:[.8,3.0],h:20,wave:lt>1.4&&lt<3})+pup(lt,t,{x:840,hops:[1.2,2.0,3.4],h:30});
+    pops=pop(`${LULU}<tspan fill="${NAVY}"> and the Muddy Puppy</tspan>`,640,150,58,PINK,lt,.4,-2);
+    break;}
+  case 1:{
+    // Lulu and Puppy play ball; the last bounce goes over Puppy into the mud
+    props=tree(150,520,.8)+mudPuddle(MP,522,150);
+    const bt=clamp(lt/3.6)*3, k=Math.min(2,Math.floor(bt)), u=Math.min(1,bt-k), dir=k%2?-1:1;
+    let bx=lerp(dir>0?500:700,dir>0?700:500,u), by=486-150*4*u*(1-u);
+    if(lt>3.6){const v=prog(lt,3.6,4.6);bx=lerp(700,1180,v);by=486-230*4*v*(1-v);}
+    chars=lulu(lt,t,{x:380,hops:[2.4],h:22})+pup(lt,t,{x:800,hops:[1.2,3.7],h:30});
+    const land=prog(lt,4.6,5.4);
+    front=shadow(bx,522,30,486-by)+ball(bx,by,34,lt*360)+mudSplash(1180,506,land,.6,30);
+    cap=lt<3.6?caption('Lulu and Puppy play ball.',lt,.3):caption('Oops! The ball bounces away.',lt,3.6);
+    pops=pop('Catch!',640,165,92,ORANGE,lt,.6,-3);
+    break;}
+  case 2:{
+    // Puppy runs to the puddle and jumps in: splash! all muddy
+    props=tree(150,520,.8);
+    const run=eio(prog(lt,.3,1.4)), hp=hopTo(lt,1.5,2.2,1010,MX,70), landed=lt>=2.2;
+    const x=lt<1.5?lerp(800,1010,run):hp.x, y=lt<1.5?walkBob(run,lt):hp.y;
+    const m=clamp((lt-2.2)/.4);
+    behind='';
+    props+=mudPuddle(MP,522,150,landed?prog(lt,2.2,3.4):-1)+ball(1190,512,34,30);
+    chars=lulu(lt,t,{x:380,eye:lt>2.2&&lt<2.8?.5:blink(t,0)})
+         +pup(lt,t,{x,j:{y,sx:1,sy:1},mud:m,ear:lt>2.2?.7:0});
+    front=mudSplash(MX,510,prog(lt,2.2,3.0),1,90);
+    cap=lt<3.2?caption('Puppy jumps in.',lt,.3):caption('Oh! Puppy is all muddy!',lt,3.2);
+    pops=pop('Splash!',640,165,96,BROWN,lt,2.2,-3);
+    break;}
+  case 3:{
+    // Bath time: Lulu brings a little tub; Puppy hops in
+    props=tree(150,520,.8)+mudPuddle(MP,522,150)+ball(1190,512,34,30);
+    const tu=back(prog(lt,.5,1.1));
+    const tub=tu>0?{s:tu}:null;
+    if(tu>0&&tu<1)props+=sparkle(TX-130,400,1,1-tu)+sparkle(TX+130,380,.8,1-tu);
+    const hp=hopTo(lt,3.7,4.7,MX,TP,170), x=lt<3.7?MX:hp.x, inTub=lt>=4.3, y=lt<3.7?0:hp.y+TUBDY*prog(lt,3.7,4.7);
+    const tb=tu>0?`<g transform="translate(${TX},520) scale(${tu}) translate(${-TX},-520)">`:'';
+    if(tu>0)props+=tb+tubBack(TX,520)+'</g>';
+    chars=lulu(lt,t,{x:380,hops:[1.2],h:20,wave:lt>1.6&&lt<3.4})
+         +pup(lt,t,{x,j:{y,sx:1,sy:1},mud:1,noShadow:inTub,tail:Math.sin(t*12)});
+    if(tu>0)chars+=tb+tubFront(TX,520)+'</g>';
+    front=splash(TX,450,prog(lt,4.7,5.5),.8,110);
+    cap=lt<3.6?caption('Lulu brings a little tub.',lt,.3):caption('Hop in, Puppy!',lt,3.6);
+    pops=pop('Bath time!',640,165,92,TEAL,lt,1.3,-3);
+    break;}
+  case 4:{
+    // scrub, scrub, scrub; bubbles; the mud washes away
+    props=tree(150,520,.8)+mudPuddle(MP,522,150)+ball(1190,512,34,30)+tubBack(TX,520);
+    const f=clamp(prog(lt,.6,2.0))*(1-prog(lt,5.0,6.0)), m=1-prog(lt,1.0,4.6);
+    chars=lulu(lt,t,{x:410,wave:lt>.6&&lt<4.8,ws:14,bob:2*Math.sin(lt*8)})
+         +pup(lt,t,{x:TP,dy:TUBDY,mud:m,foam:f,noShadow:true,eye:lt>1&&lt<4.6?.5:blink(t,1.6),tail:Math.sin(t*12)})
+         +tubFront(TX,520);
+    front=bubbles(lt,t,1.0,5.8);
+    cap=lt<3.4?caption('Scrub, scrub, scrub!',lt,.3):caption('Bubbles, bubbles!',lt,3.4);
+    pops=pop('Scrub! Scrub!',640,165,84,PURPLE,lt,.6,-3);
+    break;}
+  case 5:{
+    // Puppy hops out and shakes: shake, shake, shake! Lulu giggles
+    props=tree(150,520,.8)+mudPuddle(MP,522,150)+ball(1190,512,34,30)+tubBack(TX,520);
+    const hp=hopTo(lt,.4,1.2,TP,PO,150), out=lt>=.8;
+    const x=lt<.4?TP:hp.x, y=lt<.4?TUBDY:hp.y+TUBDY*(1-prog(lt,.4,1.2));
+    const sh=lt>1.8&&lt<3.8?Math.sin(lt*40)*7:0;
+    let drops='';for(let k=0;k<3;k++)drops+=splash(PO,430,prog(lt,1.9+k*.6,2.7+k*.6),.8,95);
+    const pupS=pup(lt,t,{x,j:{y,sx:1,sy:1},rot:sh,noShadow:!out,eye:lt>1.8&&lt<3.8?.4:blink(t,1.6),tail:Math.sin(t*14)});
+    chars=lulu(lt,t,{x:380,hops:[3.8,4.5],h:16,eye:lt>3.6&&lt<5?.5:blink(t,0)})
+         +(out?tubFront(TX,520)+pupS:pupS+tubFront(TX,520));
+    front=drops;
+    cap=lt<1.8?caption('Puppy hops out.',lt,.3):caption('Shake, shake, shake!',lt,1.8);
+    pops=pop('Hee hee!',400,165,84,PINK,lt,3.8,-3);
+    break;}
+  case 6:{
+    // all clean! thank you, Lulu
+    props=tree(150,520,.8)+mudPuddle(MP,522,150)+ball(1190,512,34,30);
+    for(let k=0;k<5;k++){let q=lt-2.6-k*.5;if(q>0&&q<2.4){const u=q/2.4;
+      props+=heart(640+(k-2)*34+10*Math.sin(q*4+k),400-130*u,1,['#FF5D8F','#FF9F1C','#7B5CFF'][k%3],Math.sin(Math.PI*u));}}
+    const w=eio(prog(lt,.2,1.4));
+    chars=lulu(lt,t,{x:440,hops:[2.8,4.6],h:20,wave:lt>3.2&&lt<4.4})
+         +pup(lt,t,{x:lerp(PO,800,w),bob:walkBob(w,lt),hops:[2.6,3.4,4.2],h:30});
+    front=sparkle(890,380,1,1-prog(lt,1.4,2.6))+sparkle(800,330,.8,1-prog(lt,1.6,2.8));
+    cap=lt<3.0?caption('Puppy is all clean!',lt,.3):caption('Thank you, Lulu!',lt,3.0);
+    pops=pop('All clean!',640,165,96,TEAL,lt,.6,-3);
+    break;}
+  case 7:{
+    // sunset: Lulu brings a soft blanket; Puppy yawns
+    n=lerp(0,.75,eio(prog(lt,0,6))); o={noSun:true,noMoon:true};
+    behind=sun(t,1150,lerp(100,560,eio(prog(lt,0,5))));
+    props=tree(150,520,.8)+mudPuddle(MP,522,150)+ball(1190,512,34,30);
+    const w=eio(prog(lt,.2,1.6)), bu=eout(prog(lt,1.8,3.0)), back2=eio(prog(lt,3.2,4.2));
+    const carry=bu<=0?`<g transform="translate(${lerp(300,480,w)+70},${450+walkBob(w,lt)})"><rect x="-44" y="-22" width="88" height="44" rx="14" fill="#8FB8FF"/><circle cx="-20" cy="-4" r="6" fill="#fff" opacity=".75"/><circle cx="14" cy="6" r="6" fill="#fff" opacity=".75"/></g>`:'';
+    const lx=bu>0?lerp(480,400,back2):lerp(300,480,w);
+    const yw=prog(lt,4.4,4.9)*(1-prog(lt,5.9,6.5));
+    chars=lulu(lt,t,{x:lx,bob:walkBob(w,lt)+walkBob(back2,lt)})+carry
+         +pup(lt,t,{x:PX,tail:-3.4+Math.sin(t*4)*.5,yawn:yw,eye:lt>4.2?.5:blink(t,1.6)})+blanket(bu);
+    if(bu>0&&bu<1)front=sparkle(BLX-60,420,1,1-bu)+sparkle(BLX+70,440,.8,1-bu);
+    cap=lt<3.2?caption('The sun goes down.',lt,.3):caption('Warm and cosy, Puppy.',lt,3.2);
+    pops=pop('Yaaawn!',800,165,84,ORANGE,lt,4.5,3);
+    break;}
+  case 8:{
+    // night: Puppy falls asleep, then Lulu. The End.
+    n=lerp(.75,1,eio(prog(lt,0,2))); o={noSun:true};
+    props=tree(150,520,.8)+mudPuddle(MP,522,150)+ball(1190,512,34,30);
+    const asleep=lt>3.4, lb=eout(prog(lt,2.2,3.2)), br=k=>1+.02*Math.sin(lt*2.2+k);
+    chars=shadow(520,522,60)+place(520,520,duck({asleep,eye:lt>2?.45:blink(t,0)}),{s:1,sy:br(0),rot:asleep?3:0})
+         +cosyBlanket(505,520,170,66,lb,'#FFB3C7','#FFFFFF')
+         +pup(lt,t,{x:PX,asleep:true,tail:-3.4,sy:br(1)})+blanket(1);
+    pops=zzz(lt,700,380,.6)+zzz(lt,560,370,4.0);
+    cap=lt<3.6?caption('Good night, Puppy.',lt,.4):caption('Good night, Lulu.',lt,3.6);
+    pops+=pop('The End',640,150,112,GOLD,lt,5.2,-3,NAVY);
+    break;}
+  }
+  o.noClouds=true;
+  svg.innerHTML=bg(t,n,sideClouds(t,n)+behind,o)+props+chars+front+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,'',{noSun:true,noClouds:true});
+  s+=`<g transform="translate(0,40)">`+tubBack(820,520,150)
+    +place(420,520,duck({wing:22}),{s:1.25})
+    +place(840,520+TUBDY*1.25,puppy({eye:1,tail:.6})+foamOn(1),{s:1.2,flip:true})
+    +tubFront(820,520,150)
+    +soapBubble(700,330,22,1,1)+soapBubble(960,300,18,1,2)+soapBubble(1000,380,14,1,3)+'</g>';
+  s+=label(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,640,125,100,PINK,-2);
+  s+=label(`<tspan fill="${BROWN}">Muddy Puppy</tspan>`,640,235,100,PINK,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

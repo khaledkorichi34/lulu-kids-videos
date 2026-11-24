@@ -1,0 +1,130 @@
+{
+  "number": 115,
+  "slug": "lulu-and-the-muddy-puppy",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and the Muddy Puppy | Bedtime Story for Kids",
+  "description": "Splash! Puppy jumps into a mud puddle and gets all muddy.\nBath time! Lulu brings a little tub: scrub, scrub, bubbles, and a big shake, shake, shake.\nThe sun goes down, Puppy gets a soft blanket and the two friends fall asleep.\nA calm bedtime story for children aged 3 to 6.",
+  "duration": 58,
+  "seed": 115,
+  "lullaby_from": 50.0,
+  "sfx": [
+    {
+      "t": 0.4,
+      "type": "pop"
+    },
+    {
+      "t": 5.6,
+      "type": "pop"
+    },
+    {
+      "t": 6.2,
+      "type": "boing_high"
+    },
+    {
+      "t": 7.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 9.6,
+      "type": "boing_low"
+    },
+    {
+      "t": 13.2,
+      "type": "boing_low"
+    },
+    {
+      "t": 17.5,
+      "type": "sparkle"
+    },
+    {
+      "t": 18.3,
+      "type": "pop"
+    },
+    {
+      "t": 20.7,
+      "type": "boing_high"
+    },
+    {
+      "t": 21.7,
+      "type": "pop"
+    },
+    {
+      "t": 24.6,
+      "type": "pop"
+    },
+    {
+      "t": 25.5,
+      "type": "sparkle"
+    },
+    {
+      "t": 27.0,
+      "type": "sparkle"
+    },
+    {
+      "t": 31.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 34.8,
+      "type": "pop"
+    },
+    {
+      "t": 37.6,
+      "type": "pop"
+    },
+    {
+      "t": 38.4,
+      "type": "sparkle"
+    },
+    {
+      "t": 39.6,
+      "type": "boing_high"
+    },
+    {
+      "t": 40.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 44.8,
+      "type": "sparkle"
+    },
+    {
+      "t": 47.5,
+      "type": "pop"
+    },
+    {
+      "t": 55.2,
+      "type": "sparkle"
+    }
+  ],
+  "check_times": [
+    2.5,
+    4.0,
+    8.0,
+    9.6,
+    12.8,
+    13.5,
+    15.5,
+    18.5,
+    20.8,
+    21.2,
+    21.8,
+    23.0,
+    26.0,
+    28.0,
+    30.0,
+    31.8,
+    33.5,
+    35.0,
+    39.5,
+    40.6,
+    42.0,
+    45.0,
+    47.6,
+    49.0,
+    51.0,
+    54.0,
+    57.0
+  ]
+}
