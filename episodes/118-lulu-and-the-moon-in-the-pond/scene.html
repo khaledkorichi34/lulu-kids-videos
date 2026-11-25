@@ -1,0 +1,163 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 118 - Lulu and the Moon in the Pond. The sun goes down and Lulu walks to the pond to say
+   good night to Frog. She sees a round, shiny moon in the water: oh no, did the moon fall in?
+   Frog says: ribbit! Look up, Lulu! The moon is up in the sky. The still pond is like a mirror and
+   shows the sky. Little Fish swims by and the moon in the water wiggles (hee hee!), then the water is
+   still again. Good night, Moon! Lulu sleeps on the grass by the pond and Frog on his lily pad. */
+const DUR=52, SC=[0,5,11,17,24,31,37,44,52];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', ORANGE='#F27A12', TEAL='#19B8A6', GOLD='#FFE58A', BLUE='#1B7FD6', GREEN='#16A34A';
+const PCX=780, WL=560, PRX=440, PRY=52;     // the pond: x 340..1220, y 508..612
+const PADX=1090;                             // lily pad
+const LX=170;                                // Lulu on the grass, facing the pond
+const MX=860, MY=300;                        // the moon in the sky
+const RX=MX, RY=WL+6;                        // the moon in the pond (straight below it)
+const CLIPDEF=`<defs><clipPath id="pw"><ellipse cx="${PCX-10}" cy="${WL}" rx="${PRX*.92}" ry="${PRY*.8}"/></clipPath></defs>`;
+const water=n=>`<ellipse cx="${PCX}" cy="${WL+4}" rx="${PRX}" ry="${PRY}" fill="${mix('#3FA3E0','#1E3C66',n)}"/>
+  <ellipse cx="${PCX-10}" cy="${WL}" rx="${PRX*.92}" ry="${PRY*.8}" fill="${mix('#7DD3FA','#35598E',n)}"/>
+  <ellipse cx="${PCX-220}" cy="${WL-18}" rx="60" ry="6" fill="#fff" opacity="${.5*(1-n*.7)}"/>`;
+// the moon's picture in the water: a flat shiny oval, it wiggles when the water moves
+const moonPic=(t,o,wig=0)=>{if(o<=0)return '';let s='';
+  for(let k=0;k<5;k++){const y=RY-16+k*8, dx=wig*18*Math.sin(t*9+k*1.7), w=(k==0||k==4?30:50)*(1+wig*.15*Math.sin(t*7+k));
+    s+=`<ellipse cx="${(RX+dx).toFixed(1)}" cy="${y}" rx="${w.toFixed(1)}" ry="6" fill="#FFF3B8"/>`;}
+  return `<g clip-path="url(#pw)" opacity="${o.toFixed(2)}"><ellipse cx="${RX}" cy="${RY}" rx="${95+wig*20}" ry="30" fill="#FFF3B8" opacity=".25"/>${s}</g>`;};
+// reflected stars: tiny dots in the pond
+const starPics=(t,o)=>{if(o<=0)return '';let s='';const P=[[470,548],[590,575],[700,552],[1010,580],[640,540],[1150,560]];
+  P.forEach(([x,y],k)=>{s+=`<circle cx="${x}" cy="${y}" r="2.6" fill="#FFF8D6" opacity="${(o*(.5+.5*Math.sin(t*3+k))).toFixed(2)}"/>`;});
+  return `<g clip-path="url(#pw)">${s}</g>`;};
+const ripple=(x,lt,ph=0,w=70,o=1)=>{let s='';for(let k=0;k<2;k++){const q=((lt+ph+k*.9)%1.8)/1.8;
+  s+=`<ellipse cx="${x}" cy="${WL+4}" rx="${w*(.7+.6*q)}" ry="${11*(.7+.6*q)}" fill="none" stroke="#fff" stroke-width="3.5" opacity="${((1-q)*.6*o).toFixed(2)}"/>`;}return s;};
+const shore=(t,n)=>water(n);
+const pad=(t,n)=>lilyPad(PADX,WL-4)+reed(1196,550,95,t,0)+reed(1236,546,120,t,1);
+const lulu=(lt,t,o={})=>{
+  const x=o.x!=null?o.x:LX, j=jumps(lt,o.hops||[],.6,o.h||22), w=o.wave?20+20*Math.sin(lt*9):(o.wing!=null?o.wing:-20+6*Math.sin(lt*3));
+  const bob=o.walk?-Math.abs(Math.sin(lt*7))*8:0;
+  return shadow(x,522,58,-j.y)+place(x,520+j.y+bob,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),{s:1,sx:j.sx,sy:j.sy*(o.sy||1),rot:(o.rot||0)+(o.walk?3*Math.sin(lt*7):0)});
+};
+const frogAt=(x,y,t,o={})=>place(x,y,frog({eye:o.eye!=null?o.eye:blink(t,2.2)}),{s:.7,rot:o.rot||0,sx:o.sx||1,sy:o.sy||1});
+const frogPad=(t,o={})=>frogAt(PADX,WL-6-(o.y||0),t,o);
+const skyMoon=(y,glow=0)=>moon(MX,y)+(glow>0?sparkle(MX-80,y-60,1.3,glow)+sparkle(MX+85,y-40,1,glow)+sparkle(MX+60,y+70,1.1,glow):'');
+const hearts=(lt,t0,x,y)=>{let s='';for(let k=0;k<4;k++){const q=lt-t0-k*.5;if(q>0&&q<2.4){const u=q/2.4;
+  s+=heart(x+k*44+10*Math.sin(q*4+k),y-90*u,1,[PINK,'#FF9F1C',PURPLE][k%3],Math.sin(Math.PI*u));}}return s;};
+const zzz=(lt,x,y,t0=2)=>{let s='';for(let k=0;k<3;k++){let q=lt-t0-k*.9;if(q>0){q%=2.7;
+  s+=`<text x="${(x+q*24+8*Math.sin(q*3)).toFixed(1)}" y="${(y-q*30).toFixed(1)}" font-size="${(28+q*11).toFixed(1)}" fill="#fff" opacity="${(Math.sin(Math.PI*q/2.7)*.95).toFixed(2)}">z</text>`;}}return s;};
+// a dotted line from Lulu's eye up to the moon (look up!)
+const lookLine=(u,x0,y0)=>{if(u<=0)return '';let s='';const N=7;
+  for(let k=1;k<=N;k++){if(k/N>u)break;const x=lerp(x0,MX-70,k/N), y=lerp(y0,MY+30,k/N);
+    s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6" fill="#fff" opacity=".85"/>`;}return s;};
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',pops='',cap='',behind='',front='',noClouds=true;
+  switch(i){
+  case 0:{
+    // title: evening by the pond
+    n=.15; behind=sun(t,600,330);
+    props=shore(t,n)+pad(t,n)+frogPad(t);
+    chars=lulu(lt,t,{hops:[2.6],h:16,wave:lt>1&&lt<2.4});
+    pops=pop(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,640,120,74,PINK,lt,.4,-2)
+        +pop(`<tspan fill="${BLUE}">Moon in the Pond</tspan>`,640,205,88,BLUE,lt,.9,-2);
+    break;}
+  case 1:{
+    // the sun goes down, Lulu walks to the pond
+    const u=eio(prog(lt,0,5.6));
+    n=lerp(.15,.55,u); behind=sun(t,600,lerp(330,560,u));
+    const wx=lerp(-90,LX,eio(prog(lt,.2,3.0)));
+    props=shore(t,n)+pad(t,n)+frogPad(t);
+    chars=lulu(lt,t,{x:wx,walk:lt>.2&&lt<3.0,wave:lt>3.4&&lt<4.8});
+    cap=lt<3.0?caption('The sun goes down.',lt,.3):caption('Good night, Frog!',lt,3.0);
+    pops=pop('Ribbit!',900,165,96,GREEN,lt,4.0,-3);
+    break;}
+  case 2:{
+    // the moon rises behind Lulu's back, and Lulu sees a moon in the water: oh no!
+    n=lerp(.55,.8,eio(prog(lt,0,4))); noClouds=true;
+    const my=lerp(470,MY,eio(prog(lt,0,3.0)));
+    behind=skyMoon(my);
+    props=shore(t,n)+starPics(t,n*.8)+moonPic(t,prog(lt,.8,2.4))+pad(t,n)+frogPad(t);
+    chars=lulu(lt,t,{rot:lt>1.2?10:0,hops:[],wing:lt>3.4?-45:undefined});
+    cap=lt<3.2?caption('What is in the pond?',lt,.3):caption('A moon! Did it fall in?',lt,3.2);
+    pops=pop('Oh no!',420,165,100,PURPLE,lt,3.4,-3);
+    break;}
+  case 3:{
+    // Frog: ribbit! look up, Lulu! the moon is up in the sky
+    n=.8; noClouds=true;
+    const hop=prog(lt,.5,1.2), fy=hop>0&&hop<1?60*4*hop*(1-hop):0;
+    const up=prog(lt,2.6,3.2);
+    behind=skyMoon(MY,Math.sin(Math.PI*prog(lt,3.4,6.6)));
+    props=shore(t,n)+starPics(t,n*.8)+moonPic(t,1)+pad(t,n)+frogPad(t,{y:fy});
+    front=lookLine(prog(lt,3.2,4.2),LX+70,380);
+    chars=lulu(lt,t,{rot:lerp(10,-14,eio(up)),hops:[5.0],h:18});
+    cap=lt<3.2?caption('Ribbit! Look up, Lulu!',lt,.3):caption('The moon is in the sky!',lt,3.2);
+    pops=pop('Oh!',420,165,100,ORANGE,lt,4.2,-3);
+    break;}
+  case 4:{
+    // the pond is like a mirror: it shows the sky
+    n=.8; noClouds=true;
+    const g=Math.sin(Math.PI*prog(lt,.6,6.4));
+    behind=skyMoon(MY,g*.8);
+    props=shore(t,n)+starPics(t,n)+moonPic(t,1)+sparkle(RX-70,RY-6,1,g)+sparkle(RX+75,RY+8,.8,g)+pad(t,n)+frogPad(t);
+    chars=lulu(lt,t,{rot:lt<3.4?-10:6,hops:[4.4],h:16});
+    cap=lt<3.4?caption('The pond is like a mirror.',lt,.3):caption('It shows the sky.',lt,3.4);
+    pops=pop('A mirror!',420,165,96,TEAL,lt,1.0,-3);
+    break;}
+  case 5:{
+    // Little Fish swims by and the moon in the water wiggles
+    n=.8; noClouds=true;
+    const fu=prog(lt,.6,2.0), fx=lerp(560,780,fu), fy=WL+4-150*4*fu*(1-fu);
+    const wig=clamp(prog(lt,1.9,2.2)*(1-prog(lt,3.6,6.0)));
+    let fsh='';
+    if(fu>0&&fu<1) fsh=place(fx,fy,fish({col:'#FF9F1C',tail:Math.sin(lt*14)}),{s:.8,rot:lerp(-40,40,fu)});
+    behind=skyMoon(MY);
+    props=shore(t,n)+starPics(t,n*(1-wig))+moonPic(t,1,wig)+ripple(780,lt,.2,90,clamp(prog(lt,1.9,2.1)*(1-prog(lt,4.6,6))))
+      +splash(560,WL,prog(lt,.5,1.2),.5,30)+splash(780,WL,prog(lt,1.9,2.7),.6,40)+pad(t,n)+frogPad(t);
+    front=fsh;
+    chars=lulu(lt,t,{hops:[3.4],h:18});
+    cap=lt<3.0?caption('Little Fish swims by.',lt,.3):caption('The moon wiggles!',lt,3.0);
+    pops=pop('Hee hee!',420,165,96,PINK,lt,3.3,-3);
+    break;}
+  case 6:{
+    // the water is still again: good night, Moon!
+    n=lerp(.8,.9,prog(lt,0,6)); noClouds=true;
+    behind=skyMoon(MY);
+    props=hearts(lt,3.4,LX+120,330)+shore(t,n)+starPics(t,n)+moonPic(t,1)+pad(t,n)+frogPad(t);
+    chars=lulu(lt,t,{rot:-8,wave:lt>3.2&&lt<5.6});
+    cap=lt<3.0?caption('Shh... the water is still.',lt,.3):caption('Good night, Moon!',lt,3.0);
+    pops=pop('Shh...',420,165,96,PURPLE,lt,.8,-3);
+    break;}
+  case 7:{
+    // night: Lulu sleeps by the pond, Frog on his lily pad
+    n=lerp(.9,1,prog(lt,0,4)); noClouds=true;
+    behind=skyMoon(MY);
+    const asleep=lt>1.4, br=1+.025*Math.sin(lt*2.2);
+    props=shore(t,n)+starPics(t,n)+moonPic(t,1)+pad(t,n)+frogPad(t,{eye:asleep?.12:.5,sy:1+.02*Math.sin(lt*2+1)});
+    chars=lulu(lt,t,{asleep,eye:.45,sy:br,rot:asleep?-3:0});
+    pops=zzz(lt,LX+80,330,2.0);
+    cap=caption('Good night, little friends.',lt,.5);
+    pops+=pop('The End',640,150,112,GOLD,lt,3.8,-3,NAVY);
+    break;}
+  }
+  svg.innerHTML=CLIPDEF+bg(t,n,behind,{noSun:true,noFlowers:true,noMoon:true,noClouds})+props+chars+front+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  const n=.75;
+  let s=CLIPDEF+bg(1,n,moon(1000,350),{noSun:true,noFlowers:true,noMoon:true,noClouds:true});
+  s+=water(n)+starPics(1,.8);
+  s+=`<g clip-path="url(#pw)"><ellipse cx="1000" cy="${WL+6}" rx="90" ry="28" fill="#FFF3B8" opacity=".2"/>`;
+  for(let k=0;k<5;k++)s+=`<ellipse cx="1000" cy="${WL-10+k*8}" rx="${k==0||k==4?26:44}" ry="5.5" fill="#FFF3B8"/>`;
+  s+='</g>'+sparkle(920,WL-6,1.2,1)+sparkle(1085,WL+8,1,1);
+  s+=lilyPad(PADX+60,WL-4)+frogAt(PADX+60,WL-6,0,{});
+  s+=shadow(250,612,80)+place(250,610,duck({wing:25}),{s:1.4,rot:-6});
+  s+=nightTint(n*.5);
+  s+=label(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,640,115,92,PINK,-2);
+  s+=label(`<tspan fill="${BLUE}">Moon in the Pond</tspan>`,640,225,104,BLUE,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
