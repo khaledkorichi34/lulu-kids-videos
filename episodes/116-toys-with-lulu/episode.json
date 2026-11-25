@@ -1,0 +1,123 @@
+{
+  "number": 116,
+  "slug": "toys-with-lulu",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "My Toys with Lulu | Learn First Words for Kids",
+  "description": "Lulu and her friends play with four toys: a ball, blocks, a kite and a balloon.\nLearn each name and watch the ball bounce, the tower grow and the kite fly.\n\nA short, gentle first-words video for children aged 3 to 6.",
+  "duration": 52,
+  "seed": 116,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.8,
+      "type": "sparkle"
+    },
+    {
+      "t": 10.5,
+      "type": "pop"
+    },
+    {
+      "t": 13.4,
+      "type": "boing_high"
+    },
+    {
+      "t": 14.2,
+      "type": "boing_high"
+    },
+    {
+      "t": 15.0,
+      "type": "boing_high"
+    },
+    {
+      "t": 17.5,
+      "type": "pop"
+    },
+    {
+      "t": 20.3,
+      "type": "pop"
+    },
+    {
+      "t": 21.1,
+      "type": "pop"
+    },
+    {
+      "t": 22.0,
+      "type": "sparkle"
+    },
+    {
+      "t": 24.5,
+      "type": "pop"
+    },
+    {
+      "t": 26.8,
+      "type": "sparkle"
+    },
+    {
+      "t": 29.0,
+      "type": "sparkle"
+    },
+    {
+      "t": 31.5,
+      "type": "pop"
+    },
+    {
+      "t": 34.45,
+      "type": "boing_low"
+    },
+    {
+      "t": 35.25,
+      "type": "boing_low"
+    },
+    {
+      "t": 36.05,
+      "type": "boing_low"
+    },
+    {
+      "t": 38.8,
+      "type": "pop"
+    },
+    {
+      "t": 39.6,
+      "type": "pop"
+    },
+    {
+      "t": 40.4,
+      "type": "pop"
+    },
+    {
+      "t": 41.2,
+      "type": "pop"
+    },
+    {
+      "t": 46.4,
+      "type": "sparkle"
+    }
+  ],
+  "check_times": [
+    2.5,
+    8,
+    11.5,
+    13.0,
+    13.8,
+    14.6,
+    18,
+    20.3,
+    21.1,
+    22.5,
+    25,
+    27,
+    29.5,
+    32,
+    34,
+    35.5,
+    37,
+    39,
+    40,
+    41,
+    42,
+    44,
+    48,
+    50
+  ]
+}

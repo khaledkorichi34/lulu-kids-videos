@@ -1,0 +1,139 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 116 - Toys with Lulu: first words, four toys.
+   Title, "Let's play!", then ball (bounces with Pip the kitten), blocks (a tower of three with Bunny),
+   kite (flies up into the sky), balloon (floats, with Puppy). All four together with their names,
+   then everyone hops: "Well done!" */
+const SC=[0,5,10,17,24,31,38,46,52];
+const DUR=SC[SC.length-1];
+const HITS=[3.4,4.2,5.0];
+const ALL=[1.0,1.8,2.6,3.4];
+const INK='#2D2A6E';
+
+function lulu(x,lt,t,jt,s=.85,o={}){
+  const j=jumps(lt,jt,.5,16);
+  const w=o.wing!=null?o.wing:(o.cheer?28*Math.abs(Math.sin(lt*10)):0);
+  return shadow(x,522,56*s/.8,-j.y)+place(x,520+j.y,duck({eye:blink(t,0),wing:w}),{s,sx:j.sx,sy:j.sy,flip:o.flip});
+}
+const luluHop=(lt,jt)=>jumps(lt,jt,.5,16).y;
+function friend(kind,x,lt,t,jt,s=.8,flip=false){
+  const j=jumps(lt,jt,.5,12);
+  let c;
+  if(kind==='bunny')c=bunny({eye:blink(t,.7)});
+  else if(kind==='puppy')c=puppy({eye:blink(t,.4),tail:Math.sin(t*6)});
+  else c=kitten({eye:blink(t,2.1),tail:Math.sin(t*2)});
+  return shadow(x,522,60*s/.8,-j.y)+place(x,520+j.y,c,{s,sx:j.sx,sy:j.sy,flip});
+}
+// bouncing height of the ball: lands at each of the HITS
+function bounceY(lt,h){
+  if(lt<HITS[0]-.8||lt>HITS[2])return 0;
+  return h*Math.abs(Math.sin(Math.PI*(lt-(HITS[0]-.8))/.8));
+}
+// kite with string from (hx,hy) to the bottom of the kite
+function kiteOn(kx,ky,s,r,sway,hx,hy,sag=40){
+  const bx=kx-Math.sin(r*Math.PI/180)*85*s, by=ky+Math.cos(r*Math.PI/180)*85*s;
+  return `<path d="M${hx},${hy} Q${(hx+bx)/2},${Math.max(hy,by)+sag} ${bx},${by}" stroke="#fff" stroke-width="3" fill="none" opacity=".9"/>`+kite(kx,ky,s,r,sway);
+}
+
+const TOYS=[
+  {name:'ball',    say:'This is a ball.',    act:'Bounce, bounce, bounce!', col:'#E63946'},
+  {name:'blocks',  say:'These are blocks.',  act:'Up, up, up!',             col:'#2F80ED'},
+  {name:'kite',    say:'This is a kite.',    act:'Up in the sky!',          col:'#19A89A'},
+  {name:'balloon', say:'This is a balloon.', act:'Float, float, float!',    col:'#FF5D8F'},
+];
+const FX=960;
+function toyScene(n,lt,t){
+  const T=TOYS[n], g=prog(lt,.3,.8)>0.001?back(prog(lt,.3,.8)):0, go=lt>HITS[0]-.8;
+  let props='',chars='',front='';
+  if(n===0){ // ball rolls in, then bounces three times
+    const u=eout(prog(lt,.3,1.6)), x=lerp(1400,640,u), r=58;
+    const y=520-bounceY(lt,170);
+    props=shadow(x,522,56,bounceY(lt,170))+ball(x,y,r,-(1400-x)/r*57.3);
+    chars=lulu(330,lt,t,go?HITS.map(h=>h+.05):[1.8],.85,{cheer:go})+friend('kitten',FX,lt,t,go?HITS.map(h=>h+.15):[]);
+    if(go&&lt<5.6)HITS.forEach(h=>{const q=lt-h;if(q>0&&q<.5)props+=sparkle(580,500,.6,1-q/.5)+sparkle(700,505,.5,1-q/.5);});
+  }else if(n===1){ // three blocks pop into a tower
+    const cols=[BLOCKS[0],BLOCKS[3],BLOCKS[4]], s=1.25;
+    const g0=back(prog(lt,.3,.7));
+    if(g0>0)props+=toyBlock(640,520,cols[0],0,s*g0);
+    [HITS[0],HITS[1]].forEach((h,k)=>{const q=back(prog(lt,h-.25,h+.1));if(q>0)props+=toyBlock(640,520-64*s*(k+1),cols[k+1],0,s*q);});
+    const q3=prog(lt,HITS[2]-.25,HITS[2]+.1);
+    if(q3>0)props+=sparkle(560,520-64*s*2.6,.7,Math.sin(Math.PI*clamp(q3*1.5,0,1)))+sparkle(720,520-64*s*2.2,.6,Math.sin(Math.PI*clamp(q3*1.5,0,1)));
+    chars=lulu(330,lt,t,go?[HITS[2]+.1]:[1.8],.85,{cheer:lt>HITS[2]})+friend('bunny',FX,lt,t,go?HITS.map(h=>h+.1):[]);
+  }else if(n===2){ // the kite goes up into the sky
+    const LX=300, jt=[1.6], hy=520-48+luluHop(lt,jt), hx=LX+16;
+    const u=eio(prog(lt,2.6,4.8));
+    const kx=lerp(470,900,u)+14*u*Math.sin(lt*1.6), ky=lerp(430,270,u)+12*u*Math.sin(lt*2.1);
+    const r=lerp(-40,-10,u)+9*u*Math.sin(lt*1.4), s=lerp(.75,.85,u)*g;
+    chars=lulu(LX,lt,t,jt,.85,{wing:0});
+    if(g>0)front=kiteOn(kx,ky,s,r,Math.sin(lt*3.2),hx,hy,lerp(6,50,u));
+    if(lt>4.8)props+=sparkle(1010,200,.6,.5+.5*Math.sin(lt*5))+sparkle(800,330,.5,.5+.5*Math.sin(lt*5+2));
+  }else{ // Lulu holds a balloon, it floats and bobs
+    const LX=380, jt=go?HITS.map(h=>h+.05):[], hx=LX+16, hy=520-48+luluHop(lt,jt);
+    const bx=hx+95+16*Math.sin(lt*1.7), by=270+(go?10*Math.sin(lt*3.9):0)+luluHop(lt,jt)*.6;
+    if(g>0)front=balloon(bx,lerp(hy,by,g),58*g,'#FF5D8F',hx,hy);
+    chars=lulu(LX,lt,t,jt,.85,{wing:0})+friend('puppy',FX,lt,t,go?HITS.map(h=>h+.15):[],.8,true);
+  }
+  const pops=pop(T.name,640,150,104,T.col,lt,.5);
+  const cap=lt<HITS[0]-.8?caption(T.say,lt,.3):caption(T.act,lt,HITS[0]-.8);
+  return [props,chars+front,pops,cap];
+}
+
+// all four toys together, each with its name
+function together(lt,t){
+  const X=[200,480,800,1080];
+  const sc=k=>{const u=prog(lt,ALL[k]-.3,ALL[k]+.1);return u>0.001?back(u):0;};
+  let s='';
+  if(sc(0)>0)s+=ball(X[0],520,52*sc(0),0);
+  if(sc(1)>0)[0,1,2].forEach(k=>{s+=toyBlock(X[1],520-56*k,[BLOCKS[0],BLOCKS[3],BLOCKS[4]][k],0,.875*sc(1));});
+  if(sc(2)>0)s+=kite(X[2],355+8*Math.sin(lt*2),.6*sc(2),-8+6*Math.sin(lt*1.4),Math.sin(lt*3));
+  if(sc(3)>0)s+=balloon(X[3],345+8*Math.sin(lt*1.8),50*sc(3),'#FF5D8F',X[3],520)+toyBlock(X[3],520,BLOCKS[1],0,.6*sc(3));
+  let pops='';
+  TOYS.forEach((T,k)=>{pops+=pop(T.name,X[k],230,60,T.col,lt,ALL[k]-.2);});
+  return [s,'',pops,caption('Ball, blocks, kite, balloon!',lt,.3)];
+}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={noSun:true,noClouds:true};
+  if(i===0){
+    props=ball(250,520,48,0)+toyBlock(1030,520,BLOCKS[4],0,1)+toyBlock(1030,456,BLOCKS[2],0,1);
+    chars=lulu(640,lt,t,[1.6,2.6],.95,{cheer:true});
+    pops=pop('My Toys',640,128,96,INK,lt,.3)+pop(`<tspan fill="${INK}">with </tspan>`+LULU,640,240,96,INK,lt,.8,-3);
+  }else if(i===1){
+    chars=lulu(640,lt,t,[1.2,2.0,2.8,3.6],.95,{cheer:lt>1});
+    pops=pop('Play time!',640,150,100,'#FF9F1C',lt,.4,-2);
+    cap=caption('Let’s play with toys!',lt,.3);
+  }else if(i<6){
+    [props,chars,pops,cap]=toyScene(i-2,lt,t);
+  }else if(i===6){
+    [props,chars,pops,cap]=together(lt,t);
+  }else{
+    const J=[.8,1.6,2.4,3.2,4.0];
+    props=ball(1110,520,44,0);
+    chars=friend('bunny',190,lt,t,J.map(x=>x+.2),.7)+friend('kitten',420,lt,t,J.map(x=>x+.4),.7)
+         +lulu(660,lt,t,J,.85,{cheer:true})+friend('puppy',940,lt,t,J.map(x=>x+.2),.7,true);
+    pops=pop('Well done!',640,140,110,'#FF9F1C',lt,.3,-3);
+    cap=caption('Playing is fun!',lt,.6);
+  }
+  svg.innerHTML=bg(t,0,'',o)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=cloud(1150,80,1.0,.95)+cloud(140,70,.8,.9);
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=balloon(1060,400,62,'#FF5D8F',1000,640);
+  s+=ball(220,690,70,-20)+toyBlock(1000,690,BLOCKS[0],0,1.1)+toyBlock(1000,620,BLOCKS[3],0,1.1);
+  s+=shadow(640,662,80)+place(640,658,duck({wing:22}),{s:1.25});
+  s+=label('My Toys',640,150,100,INK,-2)+label(`<tspan fill="${INK}">with </tspan>`+LULU,640,268,96,INK,2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
