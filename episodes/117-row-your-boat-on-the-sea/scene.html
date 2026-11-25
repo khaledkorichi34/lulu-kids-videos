@@ -1,0 +1,112 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script src="../../toolkit/rhymes.js"></script>
+<script>
+/* Episode 117 - Row, Row, Row Your Boat on the calm blue sea (sing-along).
+   Verse 1: Lulu rows with Puppy on the sea; a golden sparkle twinkles on the water on every "merrily".
+   Puppy dreams of his red ball on "Life is but a dream".
+   Verse 2: a little sailboat sails in far away on the horizon.
+   Verse 3: a sandy beach comes near and Crab waves from the sand. Ending: "Hello, Crab!" */
+const BPM=96, START=5.0;
+const LINES=rhymeTimes(RHYMES.row,START,3,4,BPM);
+const END=rhymeEnd(LINES);
+const DUR=61, SC=[0,DUR];
+const SPB=60/BPM;
+const V2=LINES[4].t0, V3=LINES[8].t0;
+const HOR=372, WATER=470, BX=600;
+const SPK_X=[90,200,310,905], SPK_Y=[452,440,452,444];
+
+// the open sea from the horizon down (covers the green hills of bg)
+function sea(t){
+  let s=`<rect x="0" y="${HOR}" width="1280" height="${720-HOR}" fill="#6CC8F2"/>
+  <rect x="0" y="${HOR}" width="1280" height="5" fill="#A9E2FA"/>`;
+  for(let k=0;k<9;k++){const x=((k*163+30-t*14)%1400+1400)%1400-60, y=HOR+22+(k*29)%70;
+    s+=`<path d="M${x.toFixed(1)},${y} q12,-5 24,0 q12,5 24,0" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".5"/>`;}
+  return s;
+}
+// golden sparkle on the water: u = 0..1 since it appeared
+function glint(x,y,u){
+  const s=Math.sin(Math.PI*clamp(u))*1.9, o=Math.sin(Math.PI*clamp(u));
+  return `<ellipse cx="${x}" cy="${y+16}" rx="${26+30*u}" ry="${5+5*u}" fill="none" stroke="#fff" stroke-width="3" opacity="${(o*.7).toFixed(2)}"/>
+  <path transform="translate(${x},${y}) scale(${s.toFixed(2)}) rotate(${(u*40).toFixed(1)})" d="M0,-14 Q2,-2 14,0 Q2,2 0,14 Q-2,2 -14,0 Q-2,-2 0,-14Z" fill="#FFE45C" opacity="${o.toFixed(2)}"/>
+  ${sparkle(x+22,y-18,.6*s/1.9,o)}`;
+}
+// sandy beach coming in from the right, b = its left edge at the waterline
+function beach(b,t){
+  return `<path d="M${b-30},${WATER+70} Q${b+30},${WATER+20} ${b+150},${WATER+14} Q${b+400},${WATER+2} 1300,${WATER} L1300,720 L${b-30},720Z" fill="#F3D9A4"/>
+  <path d="M${b-30},${WATER+70} Q${b+30},${WATER+20} ${b+150},${WATER+14}" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round" opacity="${(.6+.3*Math.sin(t*2)).toFixed(2)}"/>
+  <ellipse cx="${b+230}" cy="${WATER+60}" rx="16" ry="5" fill="#E2BE7E"/><ellipse cx="${b+120}" cy="${WATER+110}" rx="12" ry="4" fill="#E2BE7E"/>`;
+}
+
+function render(t){
+  const singing=t>START-.4&&t<END+.3;
+  const p=t<END+.5?beatPulse(LINES,t):0;
+  const flow=singing?1:(t<START?prog(t,1,START-.4):1-.7*prog(t,END,END+2));
+  const by=585+4*Math.sin(t*2.1);
+  let far='',chars='',front='',sky='',pops='',cap='';
+
+  // verse 2: a little sailboat sails in far away on the horizon and stays (right of Lulu's head)
+  if(t>V2-2.5){const u=eio(prog(t,V2-2.5,V3+4));far+=place(lerp(1380,860,u),HOR+12+2*Math.sin(t*2),sailboat({rock:2*Math.sin(t*1.5)}),{s:.3});}
+
+  // a golden sparkle twinkles on the sea on every "merrily"
+  for(const Lx of LINES)if(Lx.index===2){
+    [0,3,6,9].forEach((wi,k)=>{const u=(t-Lx.words[wi].t0)/1.1;if(u<0||u>1)return;far+=glint(SPK_X[k],SPK_Y[k],u);});
+  }
+
+  // verse 3: the beach comes near; Crab waves from the sand next to a shell
+  const bu=eio(prog(t,V3-1,V3+5)), b=lerp(1480,990,bu);
+  if(bu>0){
+    far+=beach(b,t)+seashell(b+250,WATER+52,.42,'#FFB4C2',8);
+    const wave=t>END+.6;
+    far+=place(b+150,WATER+40-4*p,crab({eye:blink(t,1.7),claw:wave?.5+.5*Math.sin((t-END)*6):(t>V3+4?.6*p:0),step:t<V3+5?t*6:0}),{s:.55});
+  }
+
+  // Lulu rows, one stroke every one and a half beats; Puppy stands at the back and wags his tail
+  const ph=singing?2*Math.PI*(t-START)/(3*SPB):0;
+  const row=Math.sin(ph)*flow;
+  const oa=38+16*row;
+  const wave=t>END+.6?Math.sin((t-END)*6)*28*prog(t,END+.6,END+1):0;
+  chars+=boatBack(BX,by);
+  chars+=place(BX-150,by-46-4*p,puppy({eye:blink(t,2.2),tail:Math.sin(t*7),ear:t>END+.6?.5+.5*Math.sin((t-END)*6):.4*p}),{s:.7,rot:2*Math.sin(t*1.6)});
+  chars+=place(BX+10,by-58-5*p,duck({eye:blink(t,0),wing:t>END+.6?-60+wave:-10-22*row}),{s:.95,rot:3*row});
+  front+=boatFront(BX,by)+oar(BX+138,by-66,oa);
+  const bladeX=BX+138+100*Math.sin(oa*Math.PI/180);
+  front+=`<ellipse cx="${bladeX.toFixed(1)}" cy="${by+14}" rx="${30+10*row}" ry="7" fill="#fff" opacity="${(.5*flow).toFixed(2)}"/>`;
+  for(let k=0;k<3;k++){const q=((t*.9+k/3)%1);front+=`<path d="M${BX-220-q*140},${by-4+q*10} q-20,-6 -40,0" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity="${((1-q)*.6*flow).toFixed(2)}"/>`;}
+
+  // a dream bubble on "Life is but a dream": Puppy dreams of his red ball
+  for(const Lx of LINES)if(Lx.index===3&&t>=Lx.t0-.2&&t<Lx.t1+.7){
+    const o=prog(t,Lx.t0-.2,Lx.t0+.3)*(1-prog(t,Lx.t1+.1,Lx.t1+.7));
+    const hop=Math.abs(Math.sin((t-Lx.t0)*3.2))*34;
+    sky+=`<g opacity="${o.toFixed(2)}"><circle cx="500" cy="400" r="9" fill="#fff"/><circle cx="478" cy="364" r="14" fill="#fff"/>
+      <ellipse cx="420" cy="250" rx="112" ry="78" fill="#fff"/><ellipse cx="420" cy="250" rx="98" ry="64" fill="#FFF1D6"/>
+      <ellipse cx="420" cy="299" rx="${30-hop*.25}" ry="5" fill="#000" opacity=".12"/>${ball(420,300-hop,32,(t-Lx.t0)*120)}${sparkle(370,215,.7)}${sparkle(474,222,.6)}</g>`;
+  }
+
+  // title card, then the words of the song, then hello
+  const to=1-prog(t,3.9,4.5);
+  if(to>0)pops=`<g opacity="${to}">`+pop('Row, Row, Row',640,165,96,'#FF5D8F',t,.4,-2,'#fff')+pop('Your Boat',640,285,112,'#1B7FD6',t,1.0,2,'#fff')+`</g>`;
+  cap=t<END+.6?karaoke(LINES,t,'#1B7FD6'):caption('Hello, Crab!',t-END,.6);
+
+  const cl=cloud(170+12*Math.sin(t*.3),96,.8,1)+cloud(700+10*Math.sin(t*.25),70,.6,.9);
+  svg.innerHTML=bg(t,0,'',{noFlowers:true,noClouds:true})+cl+sea(t)+stream(t,WATER,0,38*flow+6)+far+chars+front+sky+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(0,0,'',{noFlowers:true,noClouds:true})+sea(0)+stream(0,WATER,0,0);
+  const b=990;
+  s+=beach(b,0)+seashell(b+250,WATER+52,.42,'#FFB4C2',8)+place(b+150,WATER+40,crab({claw:.8}),{s:.55});
+  s+=glint(140,450,.5)+glint(905,444,.5);
+  const by=590;
+  s+=boatBack(BX,by)+place(BX-150,by-46,puppy({ear:.4}),{s:.7})+place(BX+10,by-58,duck({wing:-20}),{s:.95});
+  s+=boatFront(BX,by)+oar(BX+138,by-66,40);
+  s+=label('Row, Row, Row',590,170,110,'#FF5D8F',-3,'#fff')+label('Your Boat',590,305,128,'#1B7FD6',-2,'#fff');
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
