@@ -2345,3 +2345,19 @@ function foam(x,y,s=1,o=1){
   if(o<=0)return '';
   return `<g transform="translate(${x},${y}) scale(${s})" opacity="${o}" fill="#fff"><circle cx="-14" cy="2" r="12"/><circle cx="0" cy="-6" r="15"/><circle cx="15" cy="2" r="11"/><circle cx="2" cy="8" r="10"/><circle cx="-4" cy="-10" r="4" fill="#BFE6FF"/></g>`;
 }
+
+/* ---------- little brook (episode 121) ---------- */
+// brook(x,t,n): a little brook seen from the side, flowing from the far hills (y about 466) towards us across the
+// meadow at x. About 100 wide at the ground line y=520 (x-50..x+50) and wider lower down (x-120..x+130 at y=720).
+// Little ripples drift towards the viewer. n = night 0..1. Draw it after bg() and before the characters;
+// characters stand on either side of it (x-60 or less, x+60 or more) or jump over it.
+function brook(x,t,n=0){
+  const W=mix('#4DB8F0','#2B4C8C',n), L=mix('#8FD8FF','#45689E',n), E=mix('#4E9E3A','#26493E',n);
+  const hw=y=>y<520?lerp(12,50,(y-466)/54):lerp(50,125,(y-520)/200);
+  let s=`<path d="M${x-12},466 Q${x-30},494 ${x-50},520 Q${x-84},610 ${x-120},720 L${x+130},720 Q${x+90},610 ${x+50},520 Q${x+30},494 ${x+12},466 Z" fill="${W}"/>`;
+  s+=`<path d="M${x-12},466 Q${x-30},494 ${x-50},520 Q${x-84},610 ${x-120},720" stroke="${E}" stroke-width="9" fill="none" stroke-linecap="round"/>`;
+  s+=`<path d="M${x+12},466 Q${x+30},494 ${x+50},520 Q${x+90},610 ${x+130},720" stroke="${E}" stroke-width="9" fill="none" stroke-linecap="round"/>`;
+  for(let k=0;k<6;k++){const q=((t*.22+k/6)%1), y=470+q*250, w=hw(y)*.45, dx=(k%2?.25:-.25)*hw(y);
+    s+=`<path d="M${(x+dx-w).toFixed(1)},${y.toFixed(1)} q${(w/2).toFixed(1)},${(-3-4*q).toFixed(1)} ${w.toFixed(1)},0" stroke="${L}" stroke-width="${(2.5+3*q).toFixed(1)}" fill="none" stroke-linecap="round" opacity="${(.9*Math.sin(Math.PI*q)).toFixed(2)}"/>`;}
+  return s;
+}

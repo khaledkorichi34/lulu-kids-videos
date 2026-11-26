@@ -1,0 +1,127 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 121 - Lulu and the Little Lamb. Trying something new together.
+   Little Lamb comes to play (Baa! Hello, Lulu!). Lulu hops over a little brook (hop!).
+   Little Lamb is not sure: the brook looks too big. Lulu hops back: let's try together!
+   One, two, three... they hop over together. Lamb did it! Hooray! They play (hop, hop, hop),
+   the sun goes down (Thank you, Lulu! You were brave, Little Lamb!), and they sleep side by side. */
+const DUR=52, SC=[0,5,11,18,24,31,37,44,52];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', ORANGE='#F27A12', TEAL='#19B8A6', GOLD='#FFE58A', BLUE='#1B7FD6', GREEN='#16A34A';
+const BKX=640;                    // the brook (x 590..690 at the ground line)
+const LS=.9;                      // lamb scale (about 140 tall)
+// Lulu: x, hops, wave, flip, walk; o.arc = [t0,dur,x0,x1,h] a jump that also moves her across
+function arcAt(lt,a){ // a = [t0,dur,x0,x1,h]
+  const u=prog(lt,a[0],a[0]+a[1]), j=jump(lt,a[0],a[1],a[4]);
+  return {x:lerp(a[2],a[3],u), y:j?j.y:0, sx:j?j.sx:1, sy:j?j.sy:1, air:u>0&&u<1};
+}
+const lulu=(lt,t,o={})=>{
+  let x=o.x, j=jumps(lt,o.hops||[],.6,o.h||22);
+  if(o.arc){const a=arcAt(lt,o.arc); x=a.x; if(a.air||a.sx!==1)j=a;}
+  const w=o.wave?20+20*Math.sin(lt*9):(o.wing!=null?o.wing:0);
+  const bob=o.walk?-Math.abs(Math.sin(lt*7))*8:0;
+  return shadow(x,522,58,-j.y)+place(x,520+j.y+bob,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),
+    {s:1,sx:j.sx,sy:j.sy*(o.sy||1),flip:o.flip,rot:(o.rot||0)+(o.walk?3*Math.sin(lt*7):0)});
+};
+const lambC=(lt,t,o={})=>{
+  let x=o.x, j=jumps(lt,o.hops||[],.55,o.h||20);
+  if(o.arc){const a=arcAt(lt,o.arc); x=a.x; if(a.air||a.sx!==1)j=a;}
+  const bob=o.walk?-Math.abs(Math.sin(lt*8))*7:0;
+  return shadow(x,522,62,-j.y)+place(x,520+j.y+bob,lamb({eye:o.eye!=null?o.eye:blink(t,1.3),ear:o.ear||0,asleep:o.asleep,fluff:o.fluff||0}),
+    {s:LS,sx:j.sx,sy:j.sy*(o.sy||1),flip:o.flip,rot:(o.rot||0)+(o.walk?3*Math.sin(lt*8):0)});
+};
+const hearts=(lt,t0,x,y)=>{let s='';for(let k=0;k<4;k++){const q=lt-t0-k*.5;if(q>0&&q<2.4){const u=q/2.4;
+  s+=heart(x+k*44+10*Math.sin(q*4+k),y-90*u,1,[PINK,'#FF9F1C',PURPLE][k%3],Math.sin(Math.PI*u));}}return s;};
+const sparkles=(x,y,lt,t0)=>{const u=prog(lt,t0,t0+1.2);if(u<=0||u>=1)return '';
+  let s='';for(let k=0;k<6;k++){const a=k*Math.PI/3+.4, d=40+u*110;s+=sparkle(x+Math.cos(a)*d,y+Math.sin(a)*d*.7,1.3,1-u);}return s;};
+const zzz=(lt,x,y,t0=2)=>{let s='';for(let k=0;k<3;k++){let q=lt-t0-k*.9;if(q>0){q%=2.7;
+  s+=`<text x="${(x+q*24+8*Math.sin(q*3)).toFixed(1)}" y="${(y-q*30).toFixed(1)}" font-size="${(28+q*11).toFixed(1)}" fill="#fff" opacity="${(Math.sin(Math.PI*q/2.7)*.95).toFixed(2)}">z</text>`;}}return s;};
+const ground=(t,n)=>brook(BKX,t,n)+flower(470,560,80,'#FF7FB0',t,4,.4)+flower(860,566,80,'#FFFFFF',t,5,.38)+flower(940,548,80,'#B58CFF',t,6,.34);
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',pops='',cap='',behind='';
+  switch(i){
+  case 0:{
+    // title: Lulu and Little Lamb in the meadow, the brook between them
+    props=ground(t,n);
+    chars=lulu(lt,t,{x:380,hops:[2.6],h:18,wave:lt>1&&lt<2.4})+lambC(lt,t,{x:900,flip:true,hops:[3.4],h:18});
+    pops=pop(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,640,120,74,PINK,lt,.4,-2)
+        +pop(`<tspan fill="${TEAL}">Little Lamb</tspan>`,640,205,92,TEAL,lt,.9,-2);
+    break;}
+  case 1:{
+    // Little Lamb trots in from the left: Baa! Hello, Lulu!
+    const lx=lerp(-120,260,eio(prog(lt,.1,2.4)));
+    props=ground(t,n);
+    chars=lulu(lt,t,{x:480,flip:true,wave:lt>3.4&&lt<5.2,hops:[3.3],h:16})+lambC(lt,t,{x:lx,walk:lt>.1&&lt<2.4,hops:[2.8],h:16});
+    cap=lt<3.2?caption('Baa! Hello, Lulu!',lt,.3):caption('Hello, Little Lamb!',lt,3.2);
+    pops=pop('Baa!',280,165,96,TEAL,lt,2.6,-3);
+    break;}
+  case 2:{
+    // Lulu hops over the little brook
+    props=ground(t,n);
+    chars=lulu(lt,t,{arc:[2.4,.9,480,820,90]})+lambC(lt,t,{x:260});
+    cap=lt<3.6?caption("Let's play over there!",lt,.3):caption('Lulu hops over. Hop!',lt,3.6);
+    pops=pop('Hop!',650,165,104,ORANGE,lt,2.7,-3);
+    break;}
+  case 3:{
+    // Little Lamb walks to the edge, then steps back: the brook looks too big
+    const a=eio(prog(lt,.3,1.6)), b=eio(prog(lt,2.2,3.0)), lx=lerp(lerp(260,470,a),340,b);
+    props=ground(t,n);
+    chars=lulu(lt,t,{x:820,flip:true})+lambC(lt,t,{x:lx,walk:(lt>.3&&lt<1.6)||(lt>2.2&&lt<3.0),ear:lt>2.2?-20:0,rot:lt>2.2?3:0});
+    cap=lt<3.2?caption('Little Lamb is not sure.',lt,.3):caption('The brook looks too big.',lt,3.2);
+    pops=pop('Hmm...',400,165,96,PURPLE,lt,1.8,-3);
+    break;}
+  case 4:{
+    // Lulu hops back: let's try together! One, two, three...
+    props=ground(t,n);
+    chars=lulu(lt,t,{arc:[.4,.9,820,540,90],flip:lt<1.4})+lambC(lt,t,{x:340,ear:lt<1.8?-20:0,hops:[2.2],h:12});
+    cap=lt<3.6?caption("Let's try together!",lt,1.4):caption('Ready? One, two, three...',lt,3.6);
+    pops=pop('One,',290,165,82,PINK,lt,4.2,-3)+pop('two,',555,165,82,ORANGE,lt,4.9,-3)+pop('three...',855,165,82,PURPLE,lt,5.6,-3);
+    break;}
+  case 5:{
+    // they hop over together: Lamb did it! Hooray!
+    props=hearts(lt,3.2,760,330)+ground(t,n);
+    chars=lambC(lt,t,{arc:[.4,.95,340,800,95],hops:[3.0,3.8],h:22})+lulu(lt,t,{arc:[.5,.9,540,1000,85],hops:[3.4,4.2],h:22,wave:lt>2.6})
+      +sparkles(800,400,lt,1.5);
+    cap=lt<3.0?caption('Hop! Little Lamb did it!',lt,1.2):caption('Hooray!',lt,3.0);
+    pops=pop('Whee!',640,165,104,TEAL,lt,.6,-3);
+    break;}
+  case 6:{
+    // they play in the meadow while the sun goes down
+    n=lerp(0,.45,eio(prog(lt,0,7)));
+    props=ground(t,n);
+    chars=lambC(lt,t,{x:780,flip:true,hops:[.6,1.6,2.6],h:30})+lulu(lt,t,{x:950,flip:true,hops:[1.1,2.1,3.1],h:30});
+    cap=lt<3.6?caption('Baa! Thank you, Lulu!',lt,.3):caption('You were brave, Little Lamb!',lt,3.6);
+    pops=pop('Hop, hop, hop!',560,165,90,ORANGE,lt,.5,-3);
+    break;}
+  case 7:{
+    // night: Lulu and Little Lamb sleep side by side
+    n=lerp(.6,1,prog(lt,0,3.5)); behind=moon(1150,110);
+    const asleep=lt>1.4, br=1+.025*Math.sin(lt*2.2);
+    props=ground(t,n);
+    chars=lambC(lt,t,{x:800,flip:true,asleep,eye:.45,sy:br})+lulu(lt,t,{x:970,flip:true,asleep,eye:.45,sy:1+.025*Math.sin(lt*2.2+1)});
+    pops=zzz(lt,860,330,2.0);
+    cap=caption('Good night, Lulu and Lamb.',lt,.5);
+    pops+=pop('The End',420,165,112,GOLD,lt,3.8,-3,NAVY);
+    break;}
+  }
+  svg.innerHTML=bg(t,n,behind,{noMoon:true,noSun:i===7,noClouds:i>=6})+props+chars+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(1,0,'',{});
+  s+=brook(BKX,1,0);
+  s+=shadow(820,612,80)+place(820,600,lamb({}),{s:1.35,rot:-12})+sparkle(700,380,1.6,1)+sparkle(960,330,1.3,1);
+  s+=shadow(300,700,80)+place(300,690,duck({wing:25}),{s:1.3,rot:-4});
+  s+=label(`${LULU}<tspan fill="${NAVY}"> and the</tspan>`,640,115,92,PINK,-2);
+  s+=label(`<tspan fill="${TEAL}">Little Lamb</tspan>`,640,225,110,TEAL,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

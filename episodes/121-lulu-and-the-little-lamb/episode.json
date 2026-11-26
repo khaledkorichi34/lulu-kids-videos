@@ -1,0 +1,26 @@
+{
+  "number": 121,
+  "slug": "lulu-and-the-little-lamb",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu and the Little Lamb | Bedtime Story for Kids",
+  "description": "Lulu hops over a little brook, but Little Lamb is not sure. It looks too big!\nLulu hops back: let's try together. One, two, three... hop! Little Lamb did it!\nThey play in the meadow and sleep side by side under the moon.\nA calm bedtime story about being brave, for children aged 3 to 6.",
+  "duration": 52,
+  "seed": 121,
+  "lullaby_from": 44.0,
+  "sfx": [
+    {"t": 0.4, "type": "pop"},
+    {"t": 7.6, "type": "pop"},
+    {"t": 13.4, "type": "boing_high"},
+    {"t": 19.8, "type": "pop"},
+    {"t": 24.4, "type": "boing_high"},
+    {"t": 28.2, "type": "ding"},
+    {"t": 28.9, "type": "ding"},
+    {"t": 29.6, "type": "ding"},
+    {"t": 31.4, "type": "boing_high"},
+    {"t": 32.5, "type": "sparkle"},
+    {"t": 37.5, "type": "pop"},
+    {"t": 47.8, "type": "pop"}
+  ],
+  "check_times": [2.0, 4.5, 7.0, 9.5, 12.5, 13.85, 16.0, 19.0, 21.0, 23.0, 24.85, 26.5, 29.9, 31.85, 33.0, 35.5, 38.5, 41.5, 45.0, 49.0]
+}
