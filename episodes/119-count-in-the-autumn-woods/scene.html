@@ -1,0 +1,110 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 119 - Count with Lulu in the Autumn Woods: 1 to 5.  Title, one scene per number, finale.
+   1 squirrel, 2 hedgehogs, 3 pumpkins, 4 acorns, 5 autumn leaves. Counting scenes use
+   bg(t,0,'',{noSun:true,noFlowers:true,noClouds:true}) and no tree or loose leaves (nothing extra to count). */
+const T0=.9, STEP=.7;
+const tcOf=N=>T0+(N-1)*STEP+1.0;
+const SC=[0,5];
+for(let N=1;N<=5;N++)SC.push(+(SC[SC.length-1]+tcOf(N)+3.0).toFixed(2));
+SC.push(+(SC[SC.length-1]+7.5).toFixed(2));
+const DUR=SC[SC.length-1];
+const NAVY='#2D2A6E';
+const COL=['#FF5D8F','#FF9F1C','#19B8A6','#7B5CFF','#3FA9F5'];
+const NAMES=['1 squirrel','2 hedgehogs','3 pumpkins','4 acorns','5 leaves'];
+const LEAF_COL=['#E63946','#F28C28','#F6C026','#F28C28','#E63946'];
+const G=530;
+
+function badge(x,y,k,col,lt,t0){
+  const u=prog(lt,t0+.1,t0+.4);if(u<=0)return '';
+  return `<g transform="translate(${x},${y}) scale(${back(u)})"><circle r="27" fill="#fff" stroke="${col}" stroke-width="5"/><text y="12" text-anchor="middle" font-size="36" fill="${NAVY}">${k+1}</text></g>`;
+}
+function hearts(lt,t0){
+  let s='';
+  for(let k=0;k<9;k++){const q=lt-(t0+k*.4);if(q>0){const y=610-q*120,x=110+k*132+25*Math.sin(q*2+k),o=clamp((y-50)/140)*clamp(q*3)*.9;
+    if(y>40)s+=heart(x,y,1+(k%3)*.25,['#FF5D8F','#FF9F1C','#FFFFFF'][k%3],o);}}
+  return s;
+}
+function lulu(x,lt,t,hops,h,s,wave){
+  const j=jumps(lt,hops,.6,h);
+  return shadow(x,G+2,56*s/.95,-j.y)+place(x,G+j.y,duck({eye:blink(t,0),wing:wave?25+25*Math.sin(lt*10):0}),{s,sx:j.sx,sy:j.sy});
+}
+// leaves drifting down (title scene only)
+function drift(t){
+  let s='';
+  for(let k=0;k<5;k++){const q=((t*.15+k/5)%1);s+=`<g opacity="${clamp(q*5)*clamp((1-q)*5)}">`+autumnLeaf(440+k*110+40*Math.sin(q*6+k),300+q*200,1.3,40*Math.sin(q*7+k),AUTUMN[k%3])+'</g>';}
+  return s;
+}
+const BG=t=>bg(t,0,'',{noSun:true,noFlowers:true,noClouds:true});
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',back0=BG(t);
+  if(i===0){
+    props=autumnTree(1130,G,.7)+drift(t)+leafPile(1000,G+6,1,.5);
+    chars=lulu(640,lt,t,[1.6,2.6],30,1.1,true);
+    chars+=shadow(300,G+2,60)+place(300,G,squirrel({eye:blink(t,1),tail:Math.sin(t*2)}),{s:.9});
+    pops=pop('Count in the Autumn Woods',640,128,76,NAVY,lt,.3)+pop('with '+LULU,640,250,110,NAVY,lt,.7,-3);
+    for(let k=0;k<5;k++)pops+=pop(String(k+1),380+k*130,676,92,COL[k],lt,1.5+k*.3,(k%2?4:-4));
+  }else if(i<=5){
+    const N=i, col=COL[N-1], tc=tcOf(N);
+    const grow=k=>lt>T0+k*STEP?back(prog(lt,T0+k*STEP,T0+k*STEP+.35)):0;
+    const cheer=k=>jumps(lt,[tc+.2+k*.06],.55,30);
+    chars=lulu(220,lt,t,[tc+.2],12,.85,lt>tc);
+    pops=pop(String(N),220,300,290,col,lt,.3,-4);
+    for(let k=0;k<N;k++){
+      const g=grow(k);if(g<=0)continue;
+      const j=cheer(k), tk=T0+k*STEP;
+      if(N===1){
+        const x=780;
+        chars+=shadow(x,G+2,80,-j.y)+place(x,G+j.y,squirrel({eye:blink(t,.4),tail:Math.sin(t*2),acorn:true}),{s:1.3*g,sx:j.sx,sy:j.sy});
+        pops+=badge(x,265,k,col,lt,tk);
+      }else if(N===2){
+        const x=[650,930][k];
+        chars+=shadow(x,G+2,80,-j.y)+place(x,G+j.y,hedgehog({eye:blink(t,k*.8)}),{s:1.3*g,sx:j.sx,sy:j.sy});
+        pops+=badge(x,330,k,col,lt,tk);
+      }else if(N===3){
+        const x=[540,760,980][k];
+        props+=pumpkin(x,G+j.y,.6*g,4*Math.sin(lt*2+k));
+        pops+=badge(x,350,k,col,lt,tk);
+      }else if(N===4){
+        const x=[500,665,830,995][k];
+        props+=shadow(x,G+2,30,-j.y)+acorn(x,G+j.y,2*g,(k%2?6:-6));
+        pops+=badge(x,370,k,col,lt,tk);
+      }else{
+        const x=[470,615,760,905,1050][k], y=450+6*Math.sin(t*2+k)+j.y;
+        props+=autumnLeaf(x,y,2.4*g,-20+10*Math.sin(t*1.5+k),LEAF_COL[k]);
+        pops+=badge(x,365,k,col,lt,tk);
+      }
+    }
+    cap=caption(NAMES[N-1],lt,tc-.2);
+  }else{
+    props=hearts(lt,3.2);
+    chars=lulu(640,lt,t,[3.5,4.6,5.7],35,1.1,true);
+    chars+=shadow(330,G+2,60)+place(330,G,squirrel({eye:blink(t,1),tail:Math.sin(t*2)}),{s:.9});
+    chars+=shadow(960,G+2,60)+place(960,G,hedgehog({eye:blink(t,2)}),{s:1.1,flip:true});
+    const X=[180,400,620,840,1080];
+    for(let k=0;k<5;k++)pops+=pop(String(k+1),X[k],215,170,COL[k],lt,.4+k*.5,(k%2?5:-5));
+    cap=caption('Great counting!',lt,3.2);
+  }
+  svg.innerHTML=back0+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=BG(1.2)+autumnTree(1150,G,.75);
+  s+=pumpkin(1010,640,.55,-4)+acorn(1140,660,1.8,8)+autumnLeaf(330,230,2,-20,'#E63946')+autumnLeaf(420,330,1.6,25,'#F6C026');
+  s+=place(860,650,hedgehog({}),{s:1});
+  s+=shadow(185,672,95)+place(175,668,duck({wing:22}),{s:1.45});
+  s+=label('1',650,300,220,COL[0],-6)+label('to',800,270,86,NAVY)+label('5',950,300,220,COL[4],4);
+  s+=label('Count with '+LULU,730,430,84,NAVY);
+  s+=label('Autumn Woods',730,530,70,'#fff',0,'#E8742A',.14);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
