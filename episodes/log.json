@@ -2315,5 +2315,28 @@
   "videoId": "Q-wM4momvg8",
   "tiktokPostId": 444037080,
   "published": "2026-11-27"
+ },
+ {
+  "number": 123,
+  "slug": "are-you-sleeping-by-the-pond",
+  "format": "rhyme",
+  "ages": "2-6",
+  "title": "Are You Sleeping? by the Pond with Lulu | Nursery Rhyme for Kids",
+  "topic": "Sing-along: Are You Sleeping? (Brother John), 3 verses, by a little pond with reeds and lily pads at sunrise; three golden bells hang on a wooden beam and swing on 'Morning bells are ringing' and 'Ding, dang, dong'; Lulu wakes Frog (verse 1), the little turtle (verse 2) and two sleepy ducklings (verse 3) on the last 'Dong!'; everyone hops 'Good morning, friends!'",
+  "cast": [
+   "duck",
+   "frog",
+   "turtle",
+   "ducklings",
+   "bells",
+   "bell beam",
+   "pond",
+   "lily pad",
+   "reeds"
+  ],
+  "rhyme": "brotherjohn",
+  "videoId": "amw4lw2QMUU",
+  "tiktokPostId": 444347198,
+  "published": "2026-11-27"
  }
 ]
