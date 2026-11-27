@@ -1,0 +1,123 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 122 - Loud and Quiet: loud/quiet, heavy/light, dirty/clean, high/low. Title, one scene per pair, finale. */
+const SC=[0,4.5,14,23.5,33,42.5,49];
+const DUR=SC[SC.length-1];
+const CA='#FF5D8F', CB='#19B8A6', INK='#2D2A6E';
+const XL=320, XR=960, WY=160;
+const T1=.5, C1=.8, T2=3.6, C2=3.9, C3=6.7;
+const HITS=[1.1,1.7,2.3,2.9];
+const PAIRS=[['loud','quiet','The drum is loud','Shh! The kitten is quiet'],
+             ['heavy','light','The pumpkin is heavy','The feather is light'],
+             ['dirty','clean','Puppy is dirty','Pip is clean'],
+             ['high','low','The bird is high','The snail is low']];
+const cap1=s=>s[0].toUpperCase()+s.slice(1);
+
+function hearts(lt,t0){
+  let s='';
+  for(let k=0;k<9;k++){const q=lt-(t0+k*.4);if(q>0){const y=610-q*120,x=110+k*132+25*Math.sin(q*2+k),o=clamp((y-50)/140)*clamp(q*3)*.9;
+    if(y>40)s+=heart(x,y,1+(k%3)*.25,['#FF5D8F','#FF9F1C','#FFFFFF'][k%3],o);}}
+  return s;
+}
+const grow=(lt,t0)=>lt>t0?back(prog(lt,t0,t0+.4)):0;
+function words(p,lt){
+  const pl=lt>C3?1+.06*Math.sin((lt-C3)*6):1;
+  const w=(txt,x,col,t0,rot)=>{const s=pop(txt,x,WY,130,col,lt,t0,rot);return s&&pl!==1?`<g transform="translate(${x},${WY-45}) scale(${pl}) translate(${-x},${-(WY-45)})">${s}</g>`:s;};
+  return w(p[0],XL,CA,T1,-4)+w(p[1],XR,CB,T2,4);
+}
+function caps(p,lt){
+  if(lt>=C3)return caption(`${cap1(p[0])} and ${p[1]}!`,lt,C3);
+  if(lt>=C2)return caption(p[3],lt,C2);
+  return caption(p[2],lt,C1);
+}
+const bob=(lt,t0,k)=>lt>t0?jumps(lt,[t0+k*.25],.5,22):{y:0,sx:1,sy:1};
+const lulu=(t,lt,x,s,off,flipBefore=true)=>shadow(x,522,52*s/.85)+place(x,520,duck({eye:blink(t,off),wing:lt>C3?24*Math.abs(Math.sin(lt*9)):0}),{s,flip:flipBefore&&lt<T2});
+// mud spots on the puppy (its own coordinates, before the flip)
+const MUD=[[-30,-62,13],[8,-84,10],[-52,-52,8],[-16,-38,7],[-21,-14,8],[43,-16,8],[-39,-20,7],[30,-150,8],[70,-136,6],[34,-112,6]];
+const mudSpots=()=>MUD.map(([x,y,r],k)=>`<ellipse cx="${x}" cy="${y}" rx="${r*1.25}" ry="${r}" fill="${k%2?'#4A3020':'#5A3A22'}"/>`).join('');
+// little "z" letters over a sleeping friend
+function zzz(x,y,lt,t0){let s='';for(let k=0;k<3;k++){const q=((lt-t0)*.5+k/3)%1;if(lt<t0)continue;
+  s+=`<text x="${x+q*40}" y="${y-q*70}" font-size="${26+q*14}" fill="${INK}" opacity="${Math.sin(q*Math.PI)*.8}" text-anchor="middle">z</text>`;}return s;}
+// how far the drum stick tip is lifted (0 = on the drum)
+function stickLift(lt){let best=9;HITS.forEach(h=>{const d=lt-h;if(d>=0&&d<best)best=d;});
+  if(lt<HITS[0]-.25||lt>HITS[HITS.length-1]+.4)return 40;
+  let up=1;HITS.forEach(h=>{const d=h-lt;if(d>=0&&d<.25)up=Math.min(up,d/.25);});
+  if(best<.3)up=Math.min(up,best/.3);return 40*up;}
+function lastHit(lt){let ht=9;HITS.forEach(h=>{if(lt>=h)ht=lt-h;});return ht;}
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',o={noSun:true,noClouds:true},night=0,behind='';
+  if(i===0){
+    const j=jumps(lt,[1.4,2.4],.6,30);
+    chars=drum(220,520,.9,lt<1.4?9:(lt-1.4)%1)+drumStick(250,404-20*Math.abs(Math.sin(lt*Math.PI)),1,200);
+    chars+=shadow(1060,522,60)+place(1060,520,kitten({eye:1,asleep:true,tail:Math.sin(lt*.8)*.3}),{s:.8})+zzz(1110,370,lt,.5);
+    chars+=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:20+20*Math.sin(lt*9),eye:blink(t,0)}),{s:1.1,sx:j.sx,sy:j.sy});
+    pops=pop('More opposites with',640,128,80,INK,lt,.3)+pop(LULU,640,262,140,'#FF5D8F',lt,.7,-3);
+  }else if(i<=4){
+    const p=PAIRS[i-1];
+    if(i===1){ // a loud drum and a quiet, sleeping kitten
+      const gA=grow(lt,T1), gB=grow(lt,T2), jA=bob(lt,C3+.2,0);
+      if(gA>0){chars+=shadow(XL,524,110*gA,-jA.y)+drum(XL,520+jA.y,1.1*gA,lastHit(lt));
+        if(gA>=1)chars+=drumStick(XL+30,520+jA.y-134-stickLift(lt),1.1,205);}
+      if(gB>0)chars+=shadow(XR,524,70*gB)+place(XR,520,kitten({eye:1,asleep:true,tail:Math.sin(lt*.8)*.3}),{s:.85*gB})+(gB>=1?zzz(XR+55,360,lt,T2+.5):'');
+      chars+=lulu(t,lt,650,.85,.3);
+    }else if(i===2){ // a heavy pumpkin and a light feather
+      const gA=grow(lt,T1), jB=bob(lt,C3+.2,0);
+      const push=lt>1.3&&lt<3.3, rock=push?3*Math.sin((lt-1.3)*9):0;
+      if(gA>0)chars+=shadow(XL,524,120*gA)+pumpkin(XL,520,.95*gA,rock);
+      if(lt>T2-.3){ // the feather floats down slowly, swinging
+        const u=eout(prog(lt,T2-.3,T2+2.4)), fy=lerp(270,490,u), sw=(1-u)*Math.sin((lt-T2)*2.6);
+        chars+=shadow(XR,524,60*u,0)+feather(XR+60*sw,fy+jB.y,1.8,-20*sw+8);
+      }
+      const lx=push?505:540;
+      chars+=shadow(lx,522,52)+place(lx,520,duck({eye:blink(t,.6),wing:push?18:(lt>C3?24*Math.abs(Math.sin(lt*9)):0)}),{s:.85,flip:lt<T2,rot:push?-6:0});
+    }else if(i===3){ // a dirty, muddy puppy and a clean kitten
+      const gA=grow(lt,T1), gB=grow(lt,T2), jA=bob(lt,C3+.2,0), jB=bob(lt,C3+.2,1);
+      props=mudPuddle(XL,526,170);
+      if(gA>0)chars+=shadow(XL,522,70*gA,-jA.y)+place(XL,520+jA.y,puppy({eye:blink(t,.4),tail:Math.sin(t*8)})+mudSpots(),{s:.95*gA,sx:jA.sx,sy:jA.sy});
+      if(gB>0){chars+=shadow(XR,522,62*gB,-jB.y)+place(XR,520+jB.y,kitten({eye:blink(t,1.1),tail:Math.sin(t*2)}),{s:.85*gB,sx:jB.sx,sy:jB.sy});
+        for(let k=0;k<4;k++){const q=(lt-T2-.2-k*.35);if(q>0){const a=k*1.7;chars+=sparkle(XR+[-95,90,-80,100][k],[300,330,430,450][k]+jB.y,.9,Math.abs(Math.sin(q*3+a)));}}}
+      chars+=lulu(t,lt,650,.85,.8);
+    }else{ // a bird flying high in the sky and a snail low on the ground
+      const jB=bob(lt,C3+.2,0);
+      if(lt>T1-.3){const u=eout(prog(lt,T1-.3,T1+1.6)), bx=lerp(-80,XL,u), by=350+10*Math.sin(lt*2.2);
+        chars+=place(bx,by,bird({eye:blink(t,.5),wing:-40*Math.abs(Math.sin(t*12))}),{s:.8});}
+      if(lt>T2-.4){const u=eout(prog(lt,T2-.4,T2+2.2)), sx=lerp(1380,XR,u);
+        chars+=shadow(sx,522,70,-jB.y)+place(sx,520+jB.y,snail({eye:blink(t,.9),look:Math.sin(lt*2)}),{s:.8,flip:true,sx:jB.sx,sy:jB.sy});}
+      chars+=lulu(t,lt,650,.85,.2);
+    }
+    pops=words(p,lt);
+    cap=caps(p,lt);
+  }else{
+    o={noClouds:true};
+    const j=jumps(lt,[2.6,3.7,4.8],.6,35), jb=jumps(lt,[2.9,4.0,5.1],.55,30);
+    props=hearts(lt,2.4);
+    chars=shadow(300,522,60,-jb.y)+place(300,520+jb.y,puppy({eye:blink(t,.4),tail:Math.sin(t*8)}),{s:.85,sx:jb.sx,sy:jb.sy});
+    chars+=shadow(640,522,66,-j.y)+place(640,520+j.y,duck({wing:25+25*Math.sin(lt*10),eye:blink(t,0)}),{s:1.05,sx:j.sx,sy:j.sy});
+    chars+=shadow(980,522,56,-jb.y)+place(980,520+jb.y,kitten({eye:blink(t,1.1),tail:Math.sin(t*2)}),{s:.85,sx:jb.sx,sy:jb.sy});
+    pops=pop('Well done!',640,170,120,'#FF9F1C',lt,.4,-3);
+    cap=caption('Opposites are fun!',lt,1.6);
+  }
+  svg.innerHTML=bg(t,night,behind,o)+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=`<defs>${skyGrad('g','#4DB9FF','#DDF5FF')}${CLIP}</defs><rect width="1280" height="720" fill="url(#g)"/>`;
+  s+=`<path d="M0,500 Q300,410 640,480 T1280,470 L1280,720 L0,720Z" fill="#9ADB6F"/>`;
+  s+=`<path d="M0,580 Q380,510 760,565 T1280,550 L1280,720 L0,720Z" fill="#6CC24A"/>`;
+  s+=shadow(210,664,130)+drum(210,660,1.25,.12)+drumStick(250,488,1.25,205);
+  s+=shadow(1080,664,80)+place(1080,660,kitten({asleep:true}),{s:1.05})+`<text x="1150" y="430" font-size="44" fill="${INK}" text-anchor="middle">z</text><text x="1185" y="385" font-size="34" fill="${INK}" text-anchor="middle" opacity=".7">z</text>`;
+  s+=shadow(640,662,130)+place(640,658,duck({wing:22}),{s:1.75});
+  s+=label('loud',200,300,120,CA,-5)+label('quiet',1060,300,110,CB,4);
+  s+=label('Opposites',640,110,96,INK)+label(LULU,640,215,90,'#FF5D8F',-3);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

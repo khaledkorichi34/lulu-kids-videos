@@ -1,0 +1,110 @@
+{
+  "number": 122,
+  "slug": "loud-and-quiet-opposites",
+  "format": "learning",
+  "ages": "3-6",
+  "title": "Loud and Quiet: Opposites with Lulu | Learn Opposites for Kids",
+  "description": "Learn four new opposites with Lulu the little duck!\n\nA loud drum and a quiet sleeping kitten, a heavy pumpkin and a light feather, a dirty puppy and a clean kitten, and a bird up high and a snail down low.\n\nA short, gentle first-words video for children aged 3 to 6.",
+  "duration": 49,
+  "seed": 122,
+  "lullaby_from": null,
+  "sfx": [
+    {
+      "t": 0.7,
+      "type": "sparkle"
+    },
+    {
+      "t": 5.0,
+      "type": "pop"
+    },
+    {
+      "t": 5.6,
+      "type": "boing_low"
+    },
+    {
+      "t": 6.2,
+      "type": "boing_low"
+    },
+    {
+      "t": 6.8,
+      "type": "boing_low"
+    },
+    {
+      "t": 7.4,
+      "type": "boing_low"
+    },
+    {
+      "t": 8.1,
+      "type": "pop"
+    },
+    {
+      "t": 11.4,
+      "type": "ding"
+    },
+    {
+      "t": 14.5,
+      "type": "pop"
+    },
+    {
+      "t": 17.6,
+      "type": "pop"
+    },
+    {
+      "t": 20.9,
+      "type": "ding"
+    },
+    {
+      "t": 24.0,
+      "type": "pop"
+    },
+    {
+      "t": 27.1,
+      "type": "pop"
+    },
+    {
+      "t": 27.4,
+      "type": "sparkle"
+    },
+    {
+      "t": 30.4,
+      "type": "ding"
+    },
+    {
+      "t": 33.5,
+      "type": "pop"
+    },
+    {
+      "t": 36.6,
+      "type": "pop"
+    },
+    {
+      "t": 39.9,
+      "type": "ding"
+    },
+    {
+      "t": 42.9,
+      "type": "pop"
+    },
+    {
+      "t": 44.9,
+      "type": "sparkle"
+    }
+  ],
+  "check_times": [
+    2.0,
+    6.0,
+    8.6,
+    11.6,
+    16.0,
+    19.0,
+    21.4,
+    26.0,
+    28.5,
+    31.0,
+    35.0,
+    38.0,
+    40.5,
+    45.8,
+    47.5
+  ]
+}
