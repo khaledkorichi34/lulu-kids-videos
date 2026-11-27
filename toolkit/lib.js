@@ -2361,3 +2361,33 @@ function brook(x,t,n=0){
     s+=`<path d="M${(x+dx-w).toFixed(1)},${y.toFixed(1)} q${(w/2).toFixed(1)},${(-3-4*q).toFixed(1)} ${w.toFixed(1)},0" stroke="${L}" stroke-width="${(2.5+3*q).toFixed(1)}" fill="none" stroke-linecap="round" opacity="${(.9*Math.sin(Math.PI*q)).toFixed(2)}"/>`;}
   return s;
 }
+
+/* ---------- drawing easel and crayon stroke (episode 124) ---------- */
+// easel(x,y,n): a wooden drawing easel standing on the ground at (x,y) with a big sheet of paper.
+// The paper covers x-150..x+150, y-290..y-70 (300 x 220); draw the picture on it afterwards with
+// crayonLine(). A little ledge under the paper is at y-66. The easel top reaches y-312. n = night 0..1.
+function easel(x,y,n=0){
+  const W=mix('#B8875A','#5E4A52',n), D=mix('#9C6B3F','#4A3A44',n), P=mix('#FFFDF5','#9FA3C9',n);
+  return `<g transform="translate(${x},${y})">
+  <path d="M-8,-300 L22,0" stroke="${D}" stroke-width="14" stroke-linecap="round"/>
+  <path d="M-110,0 L-20,-312" stroke="${W}" stroke-width="16" stroke-linecap="round"/>
+  <path d="M110,0 L20,-312" stroke="${W}" stroke-width="16" stroke-linecap="round"/>
+  <rect x="-164" y="-302" width="328" height="242" rx="10" fill="${W}"/>
+  <rect x="-150" y="-290" width="300" height="220" rx="6" fill="${P}"/>
+  <rect x="-172" y="-70" width="344" height="16" rx="7" fill="${D}"/>
+  <circle cx="-120" cy="-284" r="6" fill="${mix('#FF5D8F','#7A4A70',n)}"/><circle cx="120" cy="-284" r="6" fill="${mix('#3FA9F5','#40508A',n)}"/></g>`;
+}
+// crayonLine(d,u,col,w): an SVG path d drawn like a crayon line, u = 0..1 how much of it is drawn so far.
+// Round caps, w = line width (default 9). Use it on the easel paper, step by step.
+function crayonLine(d,u,col,w=9){
+  if(u<=0)return '';
+  return `<path d="${d}" pathLength="1" stroke-dasharray="1 2" stroke-dashoffset="${(1-clamp(u)).toFixed(4)}" stroke="${col}" stroke-width="${w}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+}
+// heldCrayon(x,y,col,ang): a small crayon whose tip is at (x,y), its body pointing down-left by ang degrees
+// (default 40), as if held by a character standing to the left. About 100 long.
+function heldCrayon(x,y,col='#E63946',ang=40){
+  return `<g transform="translate(${x},${y}) rotate(${180-ang})">
+  <path d="M0,0 L22,-11 L22,11 Z" fill="${col}"/><path d="M0,0 L9,-4.5 L9,4.5 Z" fill="#3a2a1a" opacity=".35"/>
+  <rect x="20" y="-12" width="80" height="24" rx="7" fill="${col}"/>
+  <rect x="30" y="-12" width="7" height="24" fill="#000" opacity=".18"/><rect x="82" y="-12" width="7" height="24" fill="#000" opacity=".18"/></g>`;
+}

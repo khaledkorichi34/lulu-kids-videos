@@ -1,0 +1,171 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 124 - Lulu Draws a Picture. Making something kind for a friend.
+   Lulu has paper and crayons: what can I draw? First a big yellow sun (it smiles), then green grass
+   and a red flower. Bunny hops in: what is that? Wait and see! Lulu draws a little bunny and a heart.
+   Ta-da! It is you, Bunny! This is for you! Thank you, Lulu! A big, warm hug. They sleep under the moon. */
+const DUR=52, SC=[0,5,11,17,23,30,36,44,52];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', ORANGE='#F27A12', TEAL='#19B8A6', GOLD='#FFE58A', GREEN='#16A34A';
+const YEL='#FFC21A', GRN='#3FB34F', RED='#E63946', LAV='#8E6CCF', HPINK='#FF6FA0';
+const EX=640, LX=380;   // easel centre (paper x 490..790, y 230..450) and Lulu's place while drawing
+
+// ---- the picture: crayon strokes sampled as point lists, drawn at fixed global times ----
+const circ=(cx,cy,r,a0=0,n=40,rx,ry)=>{const p=[];rx=rx||r;ry=ry||r;for(let k=0;k<=n;k++){const a=a0+k/n*Math.PI*2;p.push([cx+Math.cos(a)*rx,cy+Math.sin(a)*ry]);}return p;};
+const STROKES=[];
+const add=(pts,t0,t1,col,w=9)=>STROKES.push({pts,t0,t1,col,w});
+// sun (scene 2)
+add(circ(548,285,22,-Math.PI/2),12.0,13.6,YEL);
+for(let k=0;k<8;k++){const a=k*Math.PI/4-Math.PI/2, ts=13.7+k*.13;add([[548+Math.cos(a)*31,285+Math.sin(a)*31],[548+Math.cos(a)*41,285+Math.sin(a)*41]],ts,ts+.11,YEL,7);}
+// grass and a red flower (scene 3)
+{const p=[];for(let k=0;k<=56;k++){const x=505+k*5;p.push([x,432-6*Math.abs(Math.sin((x-505)/18))]);}add(p,17.6,19.4,GRN,8);}
+add([[738,428],[738,372]],19.8,20.4,GRN,8);
+for(let k=0;k<5;k++){const a=k*Math.PI*2/5-Math.PI/2, ts=20.5+k*.22;add(circ(738+Math.cos(a)*14,358+Math.sin(a)*14,5,a,10),ts,ts+.2,RED,10);}
+add(circ(738,358,3,0,8),21.65,21.85,YEL,9);
+// a little bunny (scene 4)
+add(circ(630,324,7,Math.PI/2,24,7,19),26.4,26.8,LAV,7);
+add(circ(650,324,7,Math.PI/2,24,7,19),26.8,27.2,LAV,7);
+add(circ(640,362,21,-Math.PI/2,36),27.2,28.0,LAV,7);
+add(circ(640,405,27,-Math.PI/2,40,30,24),28.0,29.0,LAV,7);
+const ST=t=>STROKES.filter(s=>t>=s.t0);
+const along=(pts,u)=>{let L=0;const d=[];for(let k=1;k<pts.length;k++){const l=Math.hypot(pts[k][0]-pts[k-1][0],pts[k][1]-pts[k-1][1]);d.push(l);L+=l;}
+  let r=u*L;for(let k=0;k<d.length;k++){if(r<=d[k]){const f=d[k]?r/d[k]:0;return [lerp(pts[k][0],pts[k+1][0],f),lerp(pts[k][1],pts[k+1][1],f)];}r-=d[k];}return pts[pts.length-1];};
+const dstr=p=>'M'+p.map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' L');
+function picture(t){
+  let s='';
+  // fills that appear once a shape is finished (drawn first so the lines stay on top)
+  const sf=prog(t,13.6,14.0); if(sf>0)s+=`<circle cx="548" cy="285" r="21" fill="#FFE27A" opacity="${sf.toFixed(2)}"/>`;
+  const bf=prog(t,29.0,29.4); if(bf>0)s+=`<g opacity="${bf.toFixed(2)}" fill="#FFFFFF"><ellipse cx="640" cy="405" rx="27" ry="21"/><circle cx="640" cy="362" r="18"/><ellipse cx="630" cy="324" rx="4" ry="15" fill="#FFC6DA"/><ellipse cx="650" cy="324" rx="4" ry="15" fill="#FFC6DA"/></g>`;
+  for(const k of ST(t)) s+=crayonLine(dstr(k.pts),prog(t,k.t0,k.t1),k.col,k.w);
+  // the sun smiles
+  const sm=prog(t,14.9,15.5); if(sm>0)s+=`<g opacity="${sm.toFixed(2)}"><circle cx="541" cy="281" r="3" fill="#7A4A10"/><circle cx="555" cy="281" r="3" fill="#7A4A10"/><path d="M540,290 Q548,297 556,290" stroke="#7A4A10" stroke-width="3" fill="none" stroke-linecap="round"/></g>`;
+  // the little bunny's face
+  const bfc=prog(t,29.2,29.7); if(bfc>0)s+=`<g opacity="${bfc.toFixed(2)}"><circle cx="633" cy="359" r="3.2" fill="#3a2a3a"/><circle cx="647" cy="359" r="3.2" fill="#3a2a3a"/><ellipse cx="640" cy="368" rx="4" ry="3" fill="#FF7FA5"/><path d="M634,373 Q640,378 646,373" stroke="#3a2a3a" stroke-width="2.4" fill="none" stroke-linecap="round"/></g>`;
+  // a pink heart next to the bunny (scene 5)
+  const hu=prog(t,30.3,30.8); if(hu>0)s+=heart(706,312,.85*back(hu),HPINK,1);
+  return s;
+}
+// the crayon in Lulu's hand: tip on the stroke being drawn right now
+function activeCrayon(t){
+  for(const k of STROKES){if(t>=k.t0-.25&&t<=k.t1+.25){
+    const u=prog(t,k.t0,k.t1), p=along(k.pts,u);return heldCrayon(p[0],p[1],k.col,38);}}
+  // between strokes in one drawing burst, keep showing the crayon at the end of the last stroke
+  return '';
+}
+function drawingNow(t){return STROKES.some(k=>t>=k.t0-.25&&t<=k.t1+.25);}
+// crayons lying on the easel ledge (the one in use is missing)
+function ledge(t){
+  const cols=[[YEL,'#D99A00'],[GRN,'#23843A'],[RED,'#B5222D'],[LAV,'#6A4BAA']];
+  const using=STROKES.find(k=>t>=k.t0-.25&&t<=k.t1+.25);
+  let s='';cols.forEach((c,k)=>{if(using&&using.col===c[0])return;s+=place(535+k*76,456,crayon(0,0,64,c[0],c[1]),{s:.4});});
+  return s;
+}
+
+const lulu=(lt,t,o={})=>{
+  let x=o.x; const j=jumps(lt,o.hops||[],.6,o.h||22);
+  const w=o.wave?20+20*Math.sin(lt*9):(o.draw?-30+12*Math.sin(t*10):(o.wing!=null?o.wing:0));
+  const bob=o.walk?-Math.abs(Math.sin(lt*7))*8:0;
+  return shadow(x,522,58,-j.y)+place(x,520+j.y+bob,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep}),
+    {s:1,sx:j.sx,sy:j.sy*(o.sy||1),flip:o.flip,rot:(o.rot||0)+(o.walk?3*Math.sin(lt*7):0)});
+};
+const bunC=(lt,t,o={})=>{
+  const j=jumps(lt,o.hops||[],.55,o.h||20);
+  return shadow(o.x,522,56,-j.y)+place(o.x,520+j.y,bunny({eye:o.eye!=null?o.eye:blink(t,1.1),ear:o.ear||0}),
+    {s:.95,sx:j.sx,sy:j.sy*(o.sy||1),flip:o.flip,rot:o.rot||0});
+};
+const hearts=(lt,t0,x,y)=>{let s='';for(let k=0;k<4;k++){const q=lt-t0-k*.5;if(q>0&&q<2.4){const u=q/2.4;
+  s+=heart(x+k*40+10*Math.sin(q*4+k),y-80*u,1,[PINK,'#FF9F1C',PURPLE][k%3],Math.sin(Math.PI*u));}}return s;};
+const sparkles=(x,y,lt,t0)=>{const u=prog(lt,t0,t0+1.2);if(u<=0||u>=1)return '';
+  let s='';for(let k=0;k<6;k++){const a=k*Math.PI/3+.4, d=40+u*100;s+=sparkle(x+Math.cos(a)*d,y+Math.sin(a)*d*.7,1.2,1-u);}return s;};
+const zzz=(lt,x,y,t0=2)=>{let s='';for(let k=0;k<3;k++){let q=lt-t0-k*.9;if(q>0){q%=2.7;
+  s+=`<text x="${(x+q*24+8*Math.sin(q*3)).toFixed(1)}" y="${(y-q*30).toFixed(1)}" font-size="${(28+q*11).toFixed(1)}" fill="#fff" opacity="${(Math.sin(Math.PI*q/2.7)*.95).toFixed(2)}">z</text>`;}}return s;};
+const fl=t=>flower(200,566,80,'#FF7FB0',t,4,.4)+flower(1110,560,80,'#B58CFF',t,6,.36);
+const studio=t=>fl(t)+easel(EX,520,0)+picture(t)+ledge(t);
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,props='',chars='',pops='',cap='',behind='',front='';
+  switch(i){
+  case 0:{
+    // title: Lulu with two big crayons in the meadow
+    props=fl(t)+crayon(300,560,260,RED,'#B5222D')+crayon(985,560,260,'#3FA9F5','#1B7FD6');
+    chars=lulu(lt,t,{x:640,hops:[2.6],h:18,wave:lt>1&&lt<2.4});
+    pops=pop(`${LULU}<tspan fill="${NAVY}"> Draws</tspan>`,640,125,92,PINK,lt,.4,-2)
+        +pop(`<tspan fill="${ORANGE}">a Picture</tspan>`,640,235,100,ORANGE,lt,.9,-2);
+    break;}
+  case 1:{
+    // Lulu has paper and crayons: what can I draw?
+    props=studio(t);
+    chars=lulu(lt,t,{x:lerp(-120,LX,eio(prog(lt,.1,1.8))),walk:lt>.1&&lt<1.8,rot:lt>3.6?-6:0});
+    cap=lt<3.4?caption('Lulu has paper and crayons.',lt,.3):caption('What can I draw?',lt,3.4);
+    pops=pop('Hmm...',250,165,96,PURPLE,lt,3.8,-3);
+    break;}
+  case 2:{
+    // a big yellow sun, and it smiles
+    props=studio(t);
+    chars=lulu(lt,t,{x:LX,draw:drawingNow(t)})+activeCrayon(t);
+    cap=lt<3.9?caption('First, a big yellow sun.',lt,.3):caption('The sun is smiling!',lt,3.9);
+    pops=pop('Swish!',250,165,96,ORANGE,lt,1.2,-3);
+    break;}
+  case 3:{
+    // green grass and a red flower
+    props=studio(t);
+    chars=lulu(lt,t,{x:LX,draw:drawingNow(t)})+activeCrayon(t);
+    cap=lt<2.8?caption('Then some green grass...',lt,.3):caption('...and a red flower.',lt,2.8);
+    pops=pop('Swish, swish!',340,165,76,GREEN,lt,.9,-3);
+    break;}
+  case 4:{
+    // Bunny hops in: what is that? Wait and see! Lulu draws a little bunny
+    const bx=lerp(1400,960,eio(prog(lt,.1,2.0)));
+    props=studio(t);
+    chars=lulu(lt,t,{x:LX,draw:drawingNow(t)})+activeCrayon(t)+bunC(lt,t,{x:bx,flip:true,hops:[.3,.95,1.6],h:22,ear:lt>4?-10:0,rot:lt>4?-5:0});
+    cap=lt<3.2?caption('Hello, Lulu! What is that?',lt,.4):caption('Wait and see!',lt,3.2);
+    pops=pop('Hop, hop!',760,165,84,TEAL,lt,.5,-3);
+    break;}
+  case 5:{
+    // ta-da! It is you, Bunny! This is for you!
+    props=hearts(lt,1.8,890,300)+studio(t);
+    chars=lulu(lt,t,{x:LX,wave:lt>.9&&lt<2.6})+bunC(lt,t,{x:960,flip:true,hops:[1.6,2.4,3.2],h:24})+sparkles(640,350,lt,.6);
+    cap=lt<3.2?caption('Ta-da! It is you, Bunny!',lt,.4):caption('This is for you!',lt,3.2);
+    pops=pop('Ta-da!',640,165,104,PINK,lt,.6,-3);
+    break;}
+  case 6:{
+    // the sun goes down: thank you, Lulu! A big, warm hug
+    n=lerp(0,.45,eio(prog(lt,0,8)));
+    const lx=lerp(LX,815,eio(prog(lt,.4,2.6))), hug=prog(lt,3.0,3.5);
+    props=hearts(lt,3.6,880,320)+studio(t);
+    chars=bunC(lt,t,{x:lerp(1000,975,hug),flip:true,rot:-hug*6,hops:[.5],h:18})+lulu(lt,t,{x:lx,walk:lt>.4&&lt<2.6,rot:hug*6});
+    cap=lt<3.4?caption('Thank you, Lulu! I love it!',lt,.3):caption('A big, warm hug.',lt,3.4);
+    pops=pop('Hug!',860,165,100,PINK,lt,3.6,-3);
+    break;}
+  case 7:{
+    // night: Lulu and Bunny sleep next to the picture
+    n=lerp(.6,1,prog(lt,0,3.5)); behind=moon(1150,110);
+    const asleep=lt>1.4;
+    props=studio(t);
+    chars=lulu(lt,t,{x:840,asleep,eye:.45,sy:1+.025*Math.sin(lt*2.2+1)})+bunC(lt,t,{x:1010,flip:true,eye:asleep?.12:.45,sy:1+.025*Math.sin(lt*2.2)});
+    pops=zzz(lt,930,300,2.0);
+    cap=caption('Good night, Lulu and Bunny.',lt,.5);
+    pops+=pop('The End',300,165,112,GOLD,lt,3.8,-3,NAVY);
+    break;}
+  }
+  svg.innerHTML=bg(t,n,behind,{noMoon:true,noSun:i===7,noClouds:i>=6})+props+chars+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(1,0,'',{});
+  s+=easel(820,640,0);
+  // the finished picture, moved to the thumbnail easel (+180, +120)
+  s+=`<g transform="translate(180,120)">${picture(40)}</g>`;
+  s+=shadow(330,700,80)+place(330,690,duck({wing:25}),{s:1.3,rot:-4});
+  s+=label(`${LULU}<tspan fill="${NAVY}"> Draws</tspan>`,640,115,100,PINK,-2);
+  s+=label(`<tspan fill="${ORANGE}">a Picture</tspan>`,400,225,96,ORANGE,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>

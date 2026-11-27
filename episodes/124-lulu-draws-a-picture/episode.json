@@ -1,0 +1,28 @@
+{
+  "number": 124,
+  "slug": "lulu-draws-a-picture",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu Draws a Picture | Bedtime Story for Kids",
+  "description": "Lulu has paper and crayons. She draws a smiling sun, green grass and a red flower.\nBunny hops in: what is that? Wait and see! Lulu draws a little bunny and a heart.\nTa-da! It is a picture for Bunny. A big, warm hug, then good night under the moon.\nA calm bedtime story about making something kind for a friend, for children aged 3 to 6.",
+  "duration": 52,
+  "seed": 124,
+  "lullaby_from": 44.0,
+  "sfx": [
+    {"t": 0.4, "type": "pop"},
+    {"t": 8.8, "type": "pop"},
+    {"t": 12.2, "type": "sparkle"},
+    {"t": 15.0, "type": "ding"},
+    {"t": 20.5, "type": "pop"},
+    {"t": 21.7, "type": "ding"},
+    {"t": 23.3, "type": "boing_high"},
+    {"t": 23.95, "type": "boing_high"},
+    {"t": 24.6, "type": "boing_high"},
+    {"t": 29.3, "type": "ding"},
+    {"t": 30.6, "type": "sparkle"},
+    {"t": 31.6, "type": "boing_high"},
+    {"t": 39.6, "type": "pop"},
+    {"t": 47.8, "type": "pop"}
+  ],
+  "check_times": [2.5, 4.5, 7.0, 9.5, 12.8, 14.2, 15.8, 18.5, 20.9, 22.5, 23.6, 24.0, 27.6, 28.5, 29.8, 31.85, 32.5, 34.5, 37.6, 39.8, 42.5, 46.0, 50.0]
+}
