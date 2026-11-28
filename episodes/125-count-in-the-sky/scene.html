@@ -1,0 +1,118 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 125 - Count with Lulu in the Sky: 1 to 5.  Title, one scene per number, finale.
+   1 rainbow, 2 kites, 3 balloons, 4 birds, 5 butterflies. Counting scenes use
+   bg(t,0,'',{noSun:true,noFlowers:true,noClouds:true}) so nothing extra can be counted. */
+const T0=.9, STEP=.7;
+const tcOf=N=>T0+(N-1)*STEP+1.0;
+const SC=[0,5];
+for(let N=1;N<=5;N++)SC.push(+(SC[SC.length-1]+tcOf(N)+3.0).toFixed(2));
+SC.push(+(SC[SC.length-1]+7.5).toFixed(2));
+const DUR=SC[SC.length-1];
+const NAVY='#2D2A6E';
+const COL=['#FF5D8F','#FF9F1C','#19B8A6','#7B5CFF','#3FA9F5'];
+const NAMES=['1 rainbow','2 kites','3 balloons','4 birds','5 butterflies'];
+const BAL=['#FF5D8F','#FFD23F','#3FA9F5'];
+const BIRD=[['#2979E8','#1B5FC4','#CFE6FF'],['#E63946','#B5222D','#FFD6DA'],['#F6C026','#D9A010','#FFF3C4'],['#19B8A6','#118A7C','#C8F2EC']];
+const BFLY=[['#FF8C42','#FFC94D'],['#FF5D8F','#FFB4C2'],['#7B5CFF','#C3B5FF'],['#19B8A6','#9BE6DA'],['#3FA9F5','#BFE3FF']];
+const G=530;
+
+function badge(x,y,k,col,lt,t0){
+  const u=prog(lt,t0+.1,t0+.4);if(u<=0)return '';
+  return `<g transform="translate(${x},${y}) scale(${back(u)})"><circle r="27" fill="#fff" stroke="${col}" stroke-width="5"/><text y="12" text-anchor="middle" font-size="36" fill="${NAVY}">${k+1}</text></g>`;
+}
+function hearts(lt,t0){
+  let s='';
+  for(let k=0;k<9;k++){const q=lt-(t0+k*.4);if(q>0){const y=610-q*120,x=110+k*132+25*Math.sin(q*2+k),o=clamp((y-50)/140)*clamp(q*3)*.9;
+    if(y>40)s+=heart(x,y,1+(k%3)*.25,['#FF5D8F','#FF9F1C','#FFFFFF'][k%3],o);}}
+  return s;
+}
+function lulu(x,lt,t,hops,h,s,wave){
+  const j=jumps(lt,hops,.6,h);
+  return shadow(x,G+2,56*s/.95,-j.y)+place(x,G+j.y,duck({eye:blink(t,0),wing:wave?25+25*Math.sin(lt*10):0}),{s,sx:j.sx,sy:j.sy});
+}
+function flyBird(x,y,t,k,s,flip){
+  const c=BIRD[k%4];
+  return place(x,y,bird({eye:blink(t,k*.7),wing:-25+25*Math.sin(t*9+k),col:c[0],dark:c[1],belly:c[2]}),{s,flip});
+}
+function bfly(x,y,t,k,s){
+  const c=BFLY[k%5], f=.75+.25*Math.sin(t*8+k*1.3);
+  return place(x,y,bigButterfly({flap:f,eye:blink(t,k*.6),col:c[0],col2:c[1]}),{s,rot:8*Math.sin(t*1.4+k)});
+}
+const BG=t=>bg(t,0,'',{noSun:true,noFlowers:true,noClouds:true});
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let props='',chars='',pops='',cap='',back0=BG(t);
+  if(i===0){
+        props=kite(1110,330+8*Math.sin(t*1.5),.8,8*Math.sin(t*1.2),t)+balloon(140,330+10*Math.sin(t*1.7),48,BAL[0],140,G);
+    chars=lulu(640,lt,t,[1.6,2.6],30,1.1,true);
+    pops=pop('Count in the Sky',640,128,84,NAVY,lt,.3)+pop('with '+LULU,640,250,110,NAVY,lt,.7,-3);
+    for(let k=0;k<5;k++)pops+=pop(String(k+1),380+k*130,676,92,COL[k],lt,1.5+k*.3,(k%2?4:-4));
+  }else if(i<=5){
+    const N=i, col=COL[N-1], tc=tcOf(N);
+    const grow=k=>lt>T0+k*STEP?back(prog(lt,T0+k*STEP,T0+k*STEP+.35)):0;
+    const cheer=k=>jumps(lt,[tc+.2+k*.06],.55,22);
+    chars=lulu(220,lt,t,[tc+.2],12,.85,lt>tc);
+    pops=pop(String(N),220,300,290,col,lt,.3,-4);
+    for(let k=0;k<N;k++){
+      const tk=T0+k*STEP, g=grow(k);
+      if(N===1){
+        const u=prog(lt,T0,T0+1);if(u<=0)continue;
+        props+=rainbow(790,G-20,300,eout(u));
+        pops+=badge(790,410,k,col,lt,tk);
+        continue;
+      }
+      if(g<=0)continue;
+      const j=cheer(k);
+      if(N===2){
+        const x=[650,940][k], y=[290,250][k]+8*Math.sin(t*1.5+k)+j.y;
+        props+=`<path d="M${x},${y+85} Q${x-40},${y+220} ${x-90},${G-5}" stroke="#7A7A9A" stroke-width="2" fill="none" opacity="${g>0?1:0}"/>`;
+        props+=kite(x,y,.85*g,8*Math.sin(t*1.2+k),t+k);
+        pops+=badge(x,y-115,k,col,lt,tk);
+      }else if(N===3){
+        const x=[580,800,1020][k], y=290+10*Math.sin(t*1.7+k*2)+j.y;
+        props+=balloon(x,y,55*g,BAL[k],x+(k-1)*20,G-5);
+        pops+=badge(x,y-105,k,col,lt,tk);
+      }else if(N===4){
+        const x=[520,700,880,1060][k], y=[400,360,400,360][k]+10*Math.sin(t*2+k)+j.y;
+        chars+=flyBird(x,y,t,k,.6*g,false);
+        pops+=badge(x+10,y-150,k,col,lt,tk);
+      }else{
+        const x=[490,635,780,925,1070][k], y=[360,320,360,320,360][k]+8*Math.sin(t*2.2+k)+j.y;
+        chars+=bfly(x,y,t,k,.55*g);
+        pops+=badge(x,y-95,k,col,lt,tk);
+      }
+    }
+    cap=caption(NAMES[N-1],lt,tc-.2);
+  }else{
+    props=rainbow(640,G+40,340,1,.7)+hearts(lt,3.2);
+    chars=lulu(640,lt,t,[3.5,4.6,5.7],30,1.1,true);
+    chars+=flyBird(330,420+10*Math.sin(t*2),t,0,.55,false)+bfly(960,400+8*Math.sin(t*2),t,1,.5);
+    const X=[180,400,620,840,1080];
+    for(let k=0;k<5;k++)pops+=pop(String(k+1),X[k],215,170,COL[k],lt,.4+k*.5,(k%2?5:-5));
+    cap=caption('Great counting!',lt,3.2);
+  }
+  svg.innerHTML=back0+props+chars+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=bg(1.2,0,'',{noSun:true,noFlowers:true});
+  s+=rainbow(1150,630,190,1,.9);
+  s+=balloon(1110,230,50,BAL[0],1130,620)+balloon(1210,290,44,BAL[2],1160,620);
+  s+=kite(140,170,.6,-10,1);
+  s+=place(470,250,bigButterfly({flap:.8,col:BFLY[2][0],col2:BFLY[2][1]}),{s:.4,rot:-8});
+  s+=shadow(185,672,95)+place(175,668,duck({wing:22}),{s:1.45});
+  s+=label('1',560,330,220,COL[0],-6)+label('to',710,300,86,NAVY)+label('5',860,330,220,COL[4],4);
+  s+=label('Count with '+LULU,700,460,84,NAVY);
+  s+=label('In the Sky',700,560,74,'#fff',0,'#3FA9F5',.14);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
