@@ -2391,3 +2391,19 @@ function heldCrayon(x,y,col='#E63946',ang=40){
   <rect x="20" y="-12" width="80" height="24" rx="7" fill="${col}"/>
   <rect x="30" y="-12" width="7" height="24" fill="#000" opacity=".18"/><rect x="82" y="-12" width="7" height="24" fill="#000" opacity=".18"/></g>`;
 }
+
+/* ---------- frogspawn (episode 126) ---------- */
+// frogspawn(x,y,s,hatch,wob): a floating clump of frog eggs, centred at (x,y) (about 260 wide and 170 tall at s=1):
+// clear jelly balls, each with a small dark egg in the middle. hatch = 0..1 fades the dark centres
+// (the tadpoles have hatched). wob = little gentle wobble (pass t).
+const SPAWN=(function(){const p=[];let s=11;const r=()=>(s=(s*16807)%2147483647)/2147483647;
+  for(let k=0;k<26;k++){const a=k*2.4, d=14*Math.sqrt(k+.5);p.push([Math.cos(a)*d*1.45,Math.sin(a)*d*.85,15+r()*5,r()*6.28]);}return p;})();
+function frogspawn(x,y,s=1,hatch=0,wob=0){
+  let o=`<g transform="translate(${x},${y}) scale(${s})">`;
+  SPAWN.forEach(([px,py,r,ph])=>{const dx=2*Math.sin(wob*1.3+ph), dy=2*Math.cos(wob+ph);
+    o+=`<circle cx="${(px+dx).toFixed(1)}" cy="${(py+dy).toFixed(1)}" r="${r.toFixed(1)}" fill="#E8F7FF" opacity=".55" stroke="#fff" stroke-width="2" stroke-opacity=".8"/>`;});
+  SPAWN.forEach(([px,py,r,ph])=>{const dx=2*Math.sin(wob*1.3+ph), dy=2*Math.cos(wob+ph);
+    if(hatch<1)o+=`<circle cx="${(px+dx).toFixed(1)}" cy="${(py+dy).toFixed(1)}" r="${(r*.32).toFixed(1)}" fill="#2a3a2a" opacity="${(1-hatch).toFixed(2)}"/>`;
+    o+=`<circle cx="${(px+dx-r*.35).toFixed(1)}" cy="${(py+dy-r*.4).toFixed(1)}" r="${(r*.18).toFixed(1)}" fill="#fff" opacity=".9"/>`;});
+  return o+'</g>';
+}
