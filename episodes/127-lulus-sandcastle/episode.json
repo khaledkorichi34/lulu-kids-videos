@@ -1,0 +1,29 @@
+{
+  "number": 127,
+  "slug": "lulus-sandcastle",
+  "format": "story",
+  "ages": "3-6",
+  "title": "Lulu's Sandcastle | Bedtime Story for Kids",
+  "description": "Lulu builds a sandcastle at the beach, but the dry sand falls down. Oops!\nCrab walks in sideways to help: try wet sand! A little wave makes the sand wet.\nOne, two, three towers, a shell and a flag. Ta-da! Then good night under the moon.\nA calm bedtime story about trying again with a friend, for children aged 3 to 6.",
+  "duration": 55,
+  "seed": 127,
+  "lullaby_from": 48.0,
+  "sfx": [
+    {"t": 0.4, "type": "pop"},
+    {"t": 8.7, "type": "boing_high"},
+    {"t": 11.8, "type": "pop"},
+    {"t": 12.2, "type": "pop"},
+    {"t": 12.8, "type": "pop"},
+    {"t": 14.6, "type": "boing_low"},
+    {"t": 19.6, "type": "ding"},
+    {"t": 24.0, "type": "sparkle"},
+    {"t": 30.2, "type": "pop"},
+    {"t": 31.5, "type": "pop"},
+    {"t": 32.8, "type": "pop"},
+    {"t": 36.5, "type": "ding"},
+    {"t": 37.0, "type": "sparkle"},
+    {"t": 38.1, "type": "ding"},
+    {"t": 51.8, "type": "pop"}
+  ],
+  "check_times": [2.5, 4.5, 7.0, 9.8, 11.7, 12.3, 13.9, 14.1, 15.5, 19.0, 21.5, 24.3, 25.0, 27.5, 29.4, 30.0, 31.2, 32.8, 34.0, 36.0, 37.5, 39.5, 43.0, 46.5, 50.0, 53.5]
+}

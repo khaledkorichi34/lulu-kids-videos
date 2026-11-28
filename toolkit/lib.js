@@ -2407,3 +2407,43 @@ function frogspawn(x,y,s=1,hatch=0,wob=0){
     o+=`<circle cx="${(px+dx-r*.35).toFixed(1)}" cy="${(py+dy-r*.4).toFixed(1)}" r="${(r*.18).toFixed(1)}" fill="#fff" opacity=".9"/>`;});
   return o+'</g>';
 }
+
+/* ---------- sandcastle (episode 127) ---------- */
+// bucket(o): little purple toy bucket with a yellow rim, origin at the middle of its bottom (about 84 wide,
+// 80 tall, the handle reaches 112 at s=1). o.inv = true draws it upside down (rim on the ground, no handle),
+// o.water = 0..1 shows water inside (upright only), o.col = body colour.
+function bucket(o={}){
+  const C=o.col||'#9B6BFF', D='#6A4BAA', R='#FFD23F';
+  let body=`<path d="M-42,-80 L42,-80 L32,0 L-32,0 Z" fill="${C}"/>
+  <path d="M-20,-72 L-16,-8" stroke="#fff" stroke-width="5" opacity=".35" stroke-linecap="round"/>
+  <rect x="-46" y="-86" width="92" height="14" rx="7" fill="${R}"/>`;
+  if(o.inv) return `<g transform="translate(0,-86) scale(1,-1)">${body}</g>`;
+  const w=clamp(o.water||0);
+  return `<path d="M-40,-82 Q0,-140 40,-82" stroke="${D}" stroke-width="5" fill="none"/>${body}`
+    +(w>0?`<ellipse cx="0" cy="-80" rx="38" ry="6" fill="#7CC8FF" opacity="${w.toFixed(2)}"/>`:'');
+}
+// sandTower(x,y,w,h,c,wet): a bucket-shaped sand tower standing on the sand, origin at the middle of its
+// bottom (w wide at the bottom, h tall). c = 0..1 crumbles it into a low round mound (dry sand falling down).
+// wet = 0..1 turns the sand darker (wet sand). Little bumps on top while it stands.
+function sandTower(x,y,w,h,c=0,wet=0){
+  c=clamp(c);const col=mix('#F3D9A4','#D9AE68',wet), dk=mix('#E2BF7E','#C0924E',wet);
+  const H=lerp(h,h*.3,eio(c)), bw=lerp(w,w*1.55,eio(c)), tw=lerp(w*.78,w*.2,eio(c)), bulge=lerp(0,H*.8,eio(c));
+  let s=`<g transform="translate(${x},${y})"><ellipse cx="0" cy="2" rx="${bw*.55}" ry="7" fill="#000" opacity=".1"/>
+  <path d="M${-bw/2},0 L${-tw/2},${-H} Q0,${-H-bulge} ${tw/2},${-H} L${bw/2},0 Z" fill="${col}"/>`;
+  if(c<.4){const o=1-c/.4;
+    s+=`<g opacity="${o.toFixed(2)}"><path d="M${-w*.33},${-h*.18} L${w*.33},${-h*.18}" stroke="${dk}" stroke-width="5" stroke-linecap="round"/>
+    <path d="M${-w*.3},${-h*.55} L${w*.3},${-h*.55}" stroke="${dk}" stroke-width="5" stroke-linecap="round"/>
+    <rect x="${-tw/2}" y="${-H-14}" width="${tw*.26}" height="18" rx="4" fill="${col}"/>
+    <rect x="${-tw*.13}" y="${-H-14}" width="${tw*.26}" height="18" rx="4" fill="${col}"/>
+    <rect x="${tw/2-tw*.26}" y="${-H-14}" width="${tw*.26}" height="18" rx="4" fill="${col}"/>
+    <rect x="-7" y="${-h*.45}" width="14" height="18" rx="7" fill="${dk}"/></g>`;}
+  if(c>0&&c<1){for(let k=0;k<7;k++){const a=(k-3)/3, u=c;
+    s+=`<circle cx="${(a*bw*.45).toFixed(1)}" cy="${(-H*(1-u)-h*.5*(1-u)*Math.abs(Math.sin(k*1.7))).toFixed(1)}" r="5" fill="${col}" opacity="${(1-u).toFixed(2)}"/>`;}}
+  return s+'</g>';
+}
+// sandFlag(x,y,col,wave): a little stick with a waving flag, origin at the bottom of the stick (about 66 tall).
+function sandFlag(x,y,col='#FF5D8F',wave=0){
+  const q=5*Math.sin(wave*4);
+  return `<g transform="translate(${x},${y})"><rect x="-2.5" y="-66" width="5" height="66" rx="2.5" fill="#8A5A2B"/>
+  <path d="M2,-64 Q20,${-62+q} 38,${-54+q*.6} Q20,${-48+q} 2,-44 Z" fill="${col}"/></g>`;
+}

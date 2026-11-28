@@ -1,0 +1,179 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block;width:1280px;height:720px}text{font-family:'Poppins',sans-serif;font-weight:700}</style>
+</head><body>
+<svg id="s" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="../../toolkit/lib.js"></script>
+<script>
+/* Episode 127 - Lulu's Sandcastle. Trying again with a friend's help (and wet sand sticks together).
+   Lulu is at the beach with her bucket: let's build a sandcastle! She fills the bucket with dry sand,
+   pat, pat, lifts it... and the tower falls down (oops!). Crab walks in sideways: I can help! Try wet sand!
+   A little wave comes up the sand (whoosh!) and the sand is wet: wet sand sticks together.
+   Lulu builds one, two, three towers. Crab puts a shell on top and Lulu a little flag: ta-da!
+   Thank you, Crab! Sunset, bye-bye sunny day. Lulu and Crab sleep beside the sandcastle under the moon. */
+const DUR=55, SC=[0,5,11,17,23,29,35,41,48,55];
+const NAVY='#2D2A6E', PINK='#FF5D8F', PURPLE='#7B5CFF', ORANGE='#F27A12', TEAL='#19B8A6', GOLD='#FFE58A', BLUE='#1B7FD6';
+const LX=400, CX=660, KX=930;          // Lulu, the castle, Crab
+const TW=[[590,74,96],[730,74,96],[660,84,124]];   // towers: x, width, height (left, right, middle)
+
+// beach: sky (day to night), the sun setting into the sea, sea with little waves, sand
+function beach(t,n,o={}){
+  let s=`<defs>${skyGrad('bsky',mix('#5EC2FF','#14153F',n),mix('#DDF5FF','#4A4FA3',n))}</defs><rect width="1280" height="720" fill="url(#bsky)"/>`;
+  if(n>0) STARS.forEach(p=>{if(p[1]<350)s+=`<circle cx="${p[0]}" cy="${p[1]}" r="${p[2]}" fill="#FFF8D6" opacity="${(n*(.55+.45*Math.sin(t*3+p[3]))).toFixed(2)}"/>`;});
+  if(!o.noSun) s+=sun(t,1150,100+n*560);
+  if(o.moon) s+=moon(1150,110);
+  if(!o.noClouds) s+=cloud(((140+t*8)%1500)-110,300,.6,1-n*.75)+cloud(((820+t*6)%1500)-110,280,.5,1-n*.75);
+  s+=`<rect y="372" width="1280" height="120" fill="${mix('#3FA9F5','#24407A',n)}"/><rect y="372" width="1280" height="14" fill="${mix('#7CC8FF','#3A5A99',n)}"/>`;
+  s+=waves(250,410,300,t*.8)+waves(950,432,300,t*.9);
+  s+=`<path d="M0,470 Q320,448 640,466 T1280,458 L1280,720 L0,720Z" fill="${mix('#F7E2B0','#8C7F6A',n)}"/>`;
+  s+=`<path d="M0,478 Q320,456 640,474 T1280,466" stroke="#fff" stroke-width="7" fill="none" opacity="${(.7-n*.4).toFixed(2)}"/>`;
+  s+=`<path d="M0,580 Q400,550 800,576 T1280,565 L1280,720 L0,720Z" fill="${mix('#EFD39A','#857559',n)}"/>`;
+  s+=seashell(130,600,.4,'#FFB4C2',-8)+seashell(1200,612,.42,'#D9C2FF',8);
+  return s;
+}
+// a little wave sliding up the sand and back; r = 0..1 how far it reaches
+function sea(r){
+  if(r<=0)return '';
+  const Y=lerp(468,552,r);
+  return `<path d="M0,468 L1280,460 L1280,${Y-6} Q960,${Y+10} 640,${Y} T0,${Y-4} Z" fill="#7CC8FF" opacity=".6"/>
+  <path d="M1280,${Y-6} Q960,${Y+10} 640,${Y} T0,${Y-4}" stroke="#fff" stroke-width="8" fill="none" opacity=".9" stroke-linecap="round"/>`;
+}
+// a darker wet patch on the sand where the wave was
+const wetSand=w=>w>0?`<ellipse cx="640" cy="530" rx="560" ry="26" fill="#C9A36A" opacity="${(.35*w).toFixed(2)}"/>`:'';
+
+const heldBucket=(x,y,o={})=>place(x-8,y-6,bucket(o),{s:.5});
+const lulu=(lt,t,o={})=>{
+  const x=o.x, j=jumps(lt,o.hops||[],.55,o.h||20);
+  const w=o.wave?20+20*Math.sin(lt*9):(o.wing||0);
+  const bob=o.walk?-Math.abs(Math.sin(lt*7))*8:0;
+  return shadow(x,522,58,-j.y)+place(x,520+j.y+bob,duck({eye:o.eye!=null?o.eye:blink(t,0),wing:w,asleep:o.asleep})+(o.bucket?bucket2(o):''),
+    {s:1,sx:j.sx,sy:j.sy*(o.sy||1),rot:(o.rot||0)+(o.walk?3*Math.sin(lt*7):0)});
+};
+// the bucket hanging from Lulu's wing (drawn in Lulu's own coordinates)
+const bucket2=o=>`<g transform="translate(-14,-18) scale(.5)">${bucket({water:o.water||0})}</g>`;
+const crabC=(lt,t,o={})=>{
+  const j=jumps(lt,o.hops||[],.5,o.h||16);
+  return shadow(o.x,522,70,-j.y)+place(o.x,520+j.y,crab({eye:o.eye!=null?o.eye:blink(t,.7),claw:o.claw||0,step:o.step||0}),{s:.9,sx:j.sx,sy:j.sy*(o.sy||1)});
+};
+const hearts=(lt,t0,x,y)=>{let s='';for(let k=0;k<4;k++){const q=lt-t0-k*.5;if(q>0&&q<2.4){const u=q/2.4;
+  s+=heart(x+k*40+10*Math.sin(q*4+k),y-80*u,1,[PINK,'#FF9F1C',PURPLE][k%3],Math.sin(Math.PI*u));}}return s;};
+const sparkles=(x,y,lt,t0)=>{const u=prog(lt,t0,t0+1.2);if(u<=0||u>=1)return '';
+  let s='';for(let k=0;k<6;k++){const a=k*Math.PI/3+.4, d=40+u*100;s+=sparkle(x+Math.cos(a)*d,y+Math.sin(a)*d*.7,1.2,1-u);}return s;};
+const zzz=(lt,x,y,t0=2)=>{let s='';for(let k=0;k<3;k++){let q=lt-t0-k*.9;if(q>0){q%=2.7;
+  s+=`<text x="${(x+q*24+8*Math.sin(q*3)).toFixed(1)}" y="${(y-q*30).toFixed(1)}" font-size="${(28+q*11).toFixed(1)}" fill="#fff" opacity="${(Math.sin(Math.PI*q/2.7)*.95).toFixed(2)}">z</text>`;}}return s;};
+// the bucket pressed down (upside down) on the sand at x, then lifted off: d = drop 0..1, l = lift 0..1
+function pressBucket(x,d,l){
+  if(d<=0||l>=1)return '';
+  const y=520-lerp(160,0,eout(d))-lerp(0,150,eio(l));
+  return place(x,y,bucket({inv:true}),{s:.95,rot:l*-12})+(l>0?'':'');
+}
+// the finished castle: towers that are up at time t (scene 5 onwards), plus shell and flag
+const castle=(t,wet=1)=>{
+  let s='';
+  const up=[30.2,31.5,32.8];
+  TW.forEach((w,k)=>{if(t>=up[k]){const g=back(prog(t,up[k],up[k]+.3));s+=place(w[0],525,sandTower(0,0,w[1],w[2],0,wet),{sy:lerp(.85,1,g)});}});
+  return s;
+};
+const shellOn=t=>{const u=prog(t,35.6,36.5);if(u<=0)return '';
+  const x=lerp(KX-90,CX,eio(u)), y=lerp(440,525-124-14,eio(u))-Math.sin(Math.PI*u)*80;
+  return seashell(x,y,.3,'#FFB4C2',lerp(30,0,u));};
+const flagOn=t=>{const u=prog(t,36.9,37.3);if(u<=0)return '';return place(CX+28,525-124-12,sandFlag(0,0,PINK,t),{s:back(u)});};
+
+function render(t){
+  const [i,lt]=sceneAt(t,SC);
+  let n=0,bo={},props='',chars='',pops='',cap='',low='';
+  switch(i){
+  case 0:{
+    // title: Lulu with her bucket on the beach
+    props=place(820,525,sandTower(0,0,80,104,0,0),{})+sandFlag(848,425,PINK,t)+place(500,525,bucket({}),{s:.8});
+    chars=lulu(lt,t,{x:640,hops:[2.6],h:18,wave:lt>1&&lt<2.4});
+    pops=pop(`${LULU}<tspan fill="${NAVY}">'s</tspan>`,640,125,96,PINK,lt,.4,-2)
+        +pop(`<tspan fill="${ORANGE}">Sandcastle</tspan>`,640,240,104,ORANGE,lt,.9,-2);
+    break;}
+  case 1:{
+    // Lulu walks onto the beach with her bucket: let's build a sandcastle!
+    const x=lerp(-120,LX,eio(prog(lt,.1,2.0)));
+    chars=lulu(lt,t,{x,walk:lt>.1&&lt<2.0,bucket:true,hops:[3.7,4.3],h:18});
+    cap=lt<3.2?caption('Lulu is at the beach.',lt,.3):caption("Let's build a sandcastle!",lt,3.2);
+    pops=pop('Hooray!',780,165,96,PINK,lt,3.7,-3);
+    break;}
+  case 2:{
+    // dry sand: pat, pat... lift... it falls down. Oops!
+    const d=prog(lt,.3,.8), l=prog(lt,2.6,3.1), cr=prog(lt,3.5,4.3);
+    if(lt>=2.75) props=place(CX,525,sandTower(0,0,84,124,cr,0),{});
+    props+=pressBucket(CX,d,l);
+    chars=lulu(lt,t,{x:LX,hops:[1.2,1.8],h:16,wing:(lt>1&&lt<2.2)?-30+20*Math.sin(lt*14):0,bucket:l>=1,rot:lt>4.4?-5:0});
+    cap=lt<3.8?caption('Fill it up... pat, pat!',lt,.3):caption('Oh no! It fell down.',lt,3.8);
+    pops=pop('Pat, pat!',300,165,88,TEAL,lt,1.1,-3)+pop('Oops!',880,165,100,ORANGE,lt,3.9,3);
+    break;}
+  case 3:{
+    // Crab walks in sideways: I can help! Try wet sand!
+    const u=eio(prog(lt,.1,2.2)), x=lerp(1420,KX,u);
+    props=place(CX,525,sandTower(0,0,84,124,1,0),{});
+    chars=lulu(lt,t,{x:LX,bucket:true,hops:[2.6],h:14})+crabC(lt,t,{x,step:u<1?lt*12:0,claw:lt>2.3?.6+.4*Math.sin(lt*6):0});
+    cap=lt<3.3?caption('Hello, Lulu! I can help!',lt,.4):caption('Try wet sand!',lt,3.3);
+    pops=pop('Step, step!',700,165,84,BLUE,lt,.6,-3);
+    break;}
+  case 4:{
+    // a little wave comes up the sand (whoosh!); wet sand sticks together
+    const r=lt<1.8?eio(prog(lt,.5,1.8)):1-eio(prog(lt,1.8,3.0)), w=prog(lt,1.0,2.0);
+    low=wetSand(w)+sea(r);
+    props=place(CX,525,sandTower(0,0,84,124,1,w),{});
+    chars=lulu(lt,t,{x:LX,bucket:true,hops:[1.4],h:14})+crabC(lt,t,{x:KX,claw:lt>3.4?.5+.5*Math.sin(lt*6):0,hops:[1.4],h:12});
+    cap=lt<3.3?caption('A little wave comes up.',lt,.3):caption('Wet sand sticks together!',lt,3.3);
+    pops=pop('Whoosh!',640,165,100,BLUE,lt,.8,-3);
+    break;}
+  case 5:{
+    // build again with wet sand: one, two, three towers
+    low=wetSand(1);
+    const T0=[.2,1.5,2.8];
+    props=castle(t);
+    TW.forEach((w,k)=>{props+=pressBucket(w[0],prog(lt,T0[k],T0[k]+.35),prog(lt,T0[k]+.9,T0[k]+1.2));});
+    chars=lulu(lt,t,{x:LX,bucket:lt>4.1,hops:[.6,1.9,3.2],h:14,wing:lt<4?-25+15*Math.sin(lt*12):0})+crabC(lt,t,{x:KX,claw:.4+.4*Math.sin(lt*5)});
+    cap=lt<3.4?caption('Fill it up, pat, and lift!',lt,.3):caption('One, two, three towers!',lt,3.4);
+    pops=pop('One!',300,165,84,PINK,lt,1.2,-3)+pop('Two!',590,165,84,TEAL,lt,2.5,0)+pop('Three!',880,165,84,ORANGE,lt,3.8,3);
+    break;}
+  case 6:{
+    // a shell from Crab, a flag from Lulu: ta-da!
+    low=wetSand(1);
+    props=hearts(lt,3.4,470,330)+castle(t)+shellOn(t)+flagOn(t);
+    chars=lulu(lt,t,{x:LX,bucket:true,hops:[3.3],h:16,wave:lt>2&&lt<3.2})+crabC(lt,t,{x:KX,claw:lt<1.5?1:.5,hops:[3.3],h:14})+sparkles(CX,400,lt,2.1);
+    cap=lt<3.0?caption('A shell and a little flag...',lt,.3):caption('Ta-da! A sandcastle!',lt,3.0);
+    pops=pop('Ta-da!',640,165,104,PINK,lt,3.1,-3);
+    break;}
+  case 7:{
+    // the sun goes down: thank you, Crab! Bye-bye, sunny day
+    n=lerp(0,.5,eio(prog(lt,0,7)));
+    low=wetSand(1);
+    props=hearts(lt,.8,450,330)+castle(t)+shellOn(t)+flagOn(t);
+    chars=lulu(lt,t,{x:LX,bucket:true,wave:lt>3.8&&lt<5.6})+crabC(lt,t,{x:KX,claw:lt>3.8&&lt<5.6?.5+.5*Math.sin(lt*6):.3});
+    cap=lt<3.6?caption('Thank you, Crab!',lt,.3):caption('Bye-bye, sunny day.',lt,3.6);
+    break;}
+  case 8:{
+    // night: Lulu and Crab sleep beside the sandcastle
+    n=lerp(.6,1,prog(lt,0,3.5)); bo={noSun:true,moon:true,noClouds:true};
+    const asleep=lt>1.4;
+    low=wetSand(.6);
+    props=castle(t)+shellOn(t)+flagOn(t);
+    chars=lulu(lt,t,{x:LX,asleep,eye:.45,sy:1+.025*Math.sin(lt*2.2+1)})+crabC(lt,t,{x:KX,eye:asleep?.12:.45,sy:1+.025*Math.sin(lt*2.2)});
+    pops=zzz(lt,470,300,2.0);
+    cap=caption('Good night, Lulu and Crab.',lt,.5);
+    pops+=pop('The End',640,165,112,GOLD,lt,3.8,-3,NAVY);
+    break;}
+  }
+  if(i===7) bo={noClouds:true};
+  svg.innerHTML=beach(t,n,bo)+low+props+chars+nightTint(n)+pops+cap+fades(t,SC,DUR);
+}
+
+function thumb(){
+  let s=beach(1,0,{});
+  s+=place(860,600,sandTower(0,0,90,110,0,.6),{})+place(1020,600,sandTower(0,0,90,110,0,.6),{})+place(940,600,sandTower(0,0,100,150,0,.6),{});
+  s+=seashell(940,600-150-16,.34,'#FFB4C2',0)+sandFlag(972,436,PINK,0);
+  s+=shadow(330,672,80)+place(330,662,duck({wing:25}),{s:1.3,rot:-4});
+  s+=label(`${LULU}<tspan fill="${NAVY}">'s</tspan>`,640,120,110,PINK,-2);
+  s+=label(`<tspan fill="${ORANGE}">Sandcastle</tspan>`,640,240,112,ORANGE,-2);
+  return s;
+}
+window.renderAt=render;
+window.renderThumb=()=>{svg.innerHTML=thumb();};
+</script></body></html>
